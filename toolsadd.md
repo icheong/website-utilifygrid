@@ -83,12 +83,52 @@ Here is a curated list of 20 highly specific, friction-free utility tools for ea
 
 ---
 
-## Category 5: **AI Web Tools**
+
+## Category 1: **Calculators**
+1. **CPM & Digital Ad Spend ROI Calculator**  Uses reactive sliders for budget and impressions to instantly calculate CPM, expected clicks, and CPC for marketing professionals.
+2. **Compound Interest & Wealth Growth Calculator**  A financial planning utility that maps out year-by-year balance growth based on initial investment, monthly contributions, and annual rates.
+3. **SaaS Churn, LTV, & CAC Runway Calculator**  Evaluates business health by processing average revenue, churn percentage, and acquisition costs to determine customer lifetime value.
+4. **Car Loan Amortization & Lease Calculator**  Generates a complete monthly repayment schedule and total interest summary based on vehicle price, down payments, and loan terms.
+5. **Freelance Invoice, Tax, & Net Pay Calculator**  Helps independent contractors calculate gross totals, estimated tax withholdings, and final net take-home pay with a "copy to clipboard" receipt feature.
+
+## Category 2: **Converters**
+1. **CSV to Clean JSON/XML Data Converter**  A high-utility data tool that parses text rows and header arrays into prettified, indented code structures for developers.
+2. **Unix Timestamp to ISO/Human Date Converter**  Transforms millisecond or standard epoch integers into multiple human-readable formats including UTC, ISO 8601, and local time strings.
+3. **Hex / RGB to Tailwind CSS Color Palette Generator**  Evaluates specific color codes against the Tailwind CSS dictionary to find the closest utility class naming match for UI designers.
+4. **SQL Database Schema Syntax Translator**  Uses regex string replacement to transform table creation scripts between MySQL, PostgreSQL, and SQLite dialects.
+5. **Document EPUB to Clean PDF Layout Formatter**  Parses structural manuscript copy into a print-ready, padded layout using browser-native print functions and CSS rules.
+
+## Category 3: **Web Tools**
+1. **Htaccess & Nginx URL Rewrite Rule Builder** Generates optimized server configuration syntax for 301 and 302 redirects based on source and destination URL inputs.
+2. **Client-Side Brotli & Gzip Compression Inspector** Utilizes the native CompressionStream API to test exactly how many bytes are saved when compressing specific text blocks.
+3. **Password Cryptographic Hash & Security Evaluator** Calculates password entropy bits and generates SHA-256 hash variations entirely within the browser sandbox for security testing.
+4. **HTML Meta Tag & Open Graph Social Card Previewer** Builds SEO <meta> blocks and renders a visual mock-up of how links will appear when shared on social media platforms.
+
+## Category 4: **Health Tools**
+1. **Macro Nutrient & Calorie Deficit Target Allocator** Distributes daily calorie targets into specific gram counts for protein, carbs, and fats based on user fitness goals.
+2. **Basal Metabolic Rate (BMR) Katch-McArdle Calculator** Uses lean body mass and body fat percentage to calculate highly accurate metabolic rates and total daily energy expenditure (TDEE).
+3. **Ovulation & Conception Fertility Window Matrix** Maps out peak fertility windows and estimated conception schedules using JavaScript date mechanics and cycle length inputs.
+4. **Hydration & Sweat-Rate Fluid Loss Calculator** Analyzes pre- and post-workout weight changes to recommend custom hourly fluid replacement protocols for athletes.
+
+## Category 5: **Estimators**
+1. **Home Renovation Cost Range Matrix** Matches room types and square footage against a localized cost configuration to provide high and low-end budget estimates.
+2. **Amazon FBA Margin & Merchant Profit Estimator** Stores category fee tiers locally to calculate net margins, ROI, and dollar profit per unit for e-commerce entrepreneurs.
+3. **Solar Panel ROI & Monthly Savings Estimator** Estimates equipment payoff time and long-term utility savings based on monthly bills, available roof space, and regional sun exposure.
+4. **Freelance Project Scope & Budget Estimator** Features an interactive checklist of production tiers (UI, Backend, QA) to build a real-time project estimate total for consultants.
+5. **Strata Sinking Fund & Asset Life Expectancy Estimator** Evaluates building age and maintenance timelines to determine if current reserve funds are sufficient for future capital works.
+
+## Category 6: **Text Processing**
+1. **Side-by-Side Visual Code Diff Checker** Iterates through two text blocks line-by-line to highlight removals and additions in a clean, color-coded comparison layout.
+2. **Regex Extraction & Real-Time Pattern Filter** Applies user-defined regular expressions to large text blocks to instantly display matching patterns in a bulleted list.
+3. **Markdown to Clean Rich HTML / Confluence Converter** Transforms standard markdown symbols into clean HTML markup with a live visual rich-text preview window.
+4. **JSON Data Payload Schema Validator** Passes input strings through a JSON.parse wrapper to pinpoint syntax errors or output beautifully indented, valid code.
+5. **Programming Variable String Case Converter** Mutates text strings instantly between camelCase, snake_case, PascalCase, kebab-case, and CONSTANT_CASE formats.
+
+## Category 7: **AI Web Tools**
 1. **Cross-Model Prompt Architect & Tokenizer**  Optimizes prompt structure for specific AI "dialects" (XML for Claude, JSON for GPT, Context-Long for Gemini) while providing real-time, per-model token counts and cost estimation.
-
----
-
-## Category 6: **AI Power Tools**
-1. **Prompt Chain Builder (Chain-of-Thought)**  Visual workflow editor to stack instructions for complex reasoning tasks, testing if breaking a problem into steps improves accuracy.
-
----
+2. **Prompt Chain Builder (Chain-of-Thought)**  Visual workflow editor to stack instructions for complex reasoning tasks, testing if breaking a problem into steps improves accuracy.
+3. **Hallucination & Fact-Check Guard**  Uses JavaScript regex and logic to highlight "High-Risk Zones": any specific years, dollar amounts, proper nouns, or statistics. Add a sidebar checklist that generates "Verification Tasks" for each highlighted item so the user can verify them manually before publishing.
+4. **Structured Data (JSON/Schema) AI Formatter**  The user pastes raw AI-generated text (like a product review or recipe). Provide buttons for "Product," "FAQ," and "Recipe." The JavaScript must attempt to extract key-value pairs from the text and wrap them into a valid, prettified <script type="application/ld+json"> block. Include a "Copy to Clipboard" button.
+5. **Context Window "Weight" Analyzer**  Create a single-file "Prompt Weight Analyzer." The user pastes a long prompt. The script should calculate the token count (using a 1 token ≈ 4 characters approximation) and use a visual heat-map effect to show which paragraphs are the longest. Provide a "Cost Estimator" where the user can input a price-per-1k-tokens to see the price of a single call for that prompt.
+6. **System Prompt Safety Stress-Tester** Create a self-contained "AI Prompt Red-Teamer." Provide an input for a "System Prompt." Provide a "Stress Test" button that runs a local JS loop comparing the prompt against a library of 10 common "jailbreak" strategies (like the DAN method or Persona Adoption). It should flag if the user's prompt contains enough "Strong Constraints" to resist these common exploits.
+7. **AI Brand Voice Alignment Gauge** Create a single-file HTML/CSS/JS "AI Voice Matcher." Provide two text areas: "Reference Text" (The original brand voice) and "AI Output." The script should compare word frequency, average sentence length, and the use of "Power Words" between both blocks. Output a "Match Percentage" score and a list of stylistic discrepancies (e.g., "AI is too formal" or "Sentences are too long").
