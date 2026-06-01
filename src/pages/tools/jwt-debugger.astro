@@ -1,0 +1,422 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'jwt-debugger')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ═══ THE TOOL ═══ -->
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+      Paste a JWT token
+    </h2>
+
+    <!-- Token input -->
+    <div style="margin-bottom:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+        <label style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em;" for="jwt-input">
+          Encoded Token
+        </label>
+        <div style="display:flex; gap:0.5rem;">
+          <button id="load-sample-btn"
+            style="font-size:0.75rem; color:#1D4ED8; background:none; border:none; cursor:pointer; font-weight:500; padding:0; text-decoration:underline;">
+            Load sample
+          </button>
+          <button id="clear-btn"
+            style="font-size:0.75rem; color:#94A3B8; background:none; border:none; cursor:pointer; font-weight:500; padding:0; text-decoration:underline;">
+            Clear
+          </button>
+        </div>
+      </div>
+      <textarea
+        id="jwt-input"
+        spellcheck="false"
+        autocomplete="off"
+        placeholder="Paste your JWT here — e.g. eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        style="width:100%; height:100px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.78rem; font-family:'Fira Code',monospace; color:#0F172A; line-height:1.6; resize:vertical; outline:none; box-sizing:border-box; transition:border-color 0.15s; word-break:break-all;"
+        onfocus="this.style.borderColor='#1D4ED8';"
+        onblur="this.style.borderColor='#E2E8F0';"
+      ></textarea>
+    </div>
+
+    <!-- Token parts colour legend -->
+    <div id="token-parts-display" style="display:none; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.75rem; padding:0.875rem 1rem; margin-bottom:1.25rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.8; word-break:break-all;">
+      <div style="font-size:0.72rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em; font-family:'Inter',sans-serif; margin-bottom:0.5rem;">Token parts</div>
+      <span id="part-header" style="color:#DC2626; font-weight:600;"></span><span style="color:#94A3B8;">.</span><span id="part-payload" style="color:#7C3AED; font-weight:600;"></span><span style="color:#94A3B8;">.</span><span id="part-signature" style="color:#0D9488; font-weight:600;"></span>
+    </div>
+
+    <!-- Error -->
+    <div id="jwt-error" style="display:none; margin-bottom:1rem; color:#DC2626; font-size:0.82rem; background:#FEF2F2; border:1px solid #FECACA; border-radius:0.5rem; padding:0.6rem 0.875rem;"></div>
+
+    <!-- Decoded panels -->
+    <div id="decoded-panels" style="display:none; display:none;">
+
+      <!-- Header -->
+      <div style="margin-bottom:1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <div style="width:10px; height:10px; border-radius:2px; background:#DC2626; flex-shrink:0;"></div>
+            <span style="font-size:0.78rem; font-weight:700; color:#DC2626; text-transform:uppercase; letter-spacing:0.06em;">Header</span>
+            <span style="font-size:0.72rem; color:#94A3B8;">Algorithm &amp; token type</span>
+          </div>
+          <button class="copy-panel-btn" data-target="header-output"
+            style="font-size:0.72rem; color:#475569; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.375rem; cursor:pointer; padding:0.2rem 0.55rem; transition:all 0.15s;">
+            Copy
+          </button>
+        </div>
+        <div id="header-output"
+          style="background:#FFF5F5; border:1.5px solid #FECACA; border-radius:0.75rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; line-height:1.7; color:#7F1D1D; white-space:pre-wrap; word-break:break-all; min-height:60px;">
+        </div>
+        <div id="header-meta" style="margin-top:0.4rem; display:flex; flex-wrap:wrap; gap:0.4rem;"></div>
+      </div>
+
+      <!-- Payload -->
+      <div style="margin-bottom:1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <div style="width:10px; height:10px; border-radius:2px; background:#7C3AED; flex-shrink:0;"></div>
+            <span style="font-size:0.78rem; font-weight:700; color:#7C3AED; text-transform:uppercase; letter-spacing:0.06em;">Payload</span>
+            <span style="font-size:0.72rem; color:#94A3B8;">Claims data</span>
+          </div>
+          <button class="copy-panel-btn" data-target="payload-output"
+            style="font-size:0.72rem; color:#475569; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.375rem; cursor:pointer; padding:0.2rem 0.55rem; transition:all 0.15s;">
+            Copy
+          </button>
+        </div>
+        <div id="payload-output"
+          style="background:#FAF5FF; border:1.5px solid #E9D5FF; border-radius:0.75rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; line-height:1.7; color:#3B0764; white-space:pre-wrap; word-break:break-all; min-height:80px;">
+        </div>
+        <div id="payload-meta" style="margin-top:0.5rem; display:flex; flex-direction:column; gap:0.35rem;"></div>
+      </div>
+
+      <!-- Signature -->
+      <div>
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+          <div style="width:10px; height:10px; border-radius:2px; background:#0D9488; flex-shrink:0;"></div>
+          <span style="font-size:0.78rem; font-weight:700; color:#0D9488; text-transform:uppercase; letter-spacing:0.06em;">Signature</span>
+          <span style="font-size:0.72rem; color:#94A3B8;">Verification bytes</span>
+        </div>
+        <div id="signature-output"
+          style="background:#F0FDFA; border:1.5px solid #99F6E4; border-radius:0.75rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.7; color:#134E4A; word-break:break-all;">
+        </div>
+        <p style="font-size:0.75rem; color:#94A3B8; margin-top:0.5rem; line-height:1.5;">
+          ⚠️ Signature verification requires the secret or public key and cannot be performed client-side securely. This tool decodes and inspects the token only — never paste production secrets into any web tool.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ═══ HOW TO USE ═══ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
+      How to use the JWT Debugger
+    </h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste any JWT — a bearer token from an API response, an Authorization header value, or a token from your application logs — into the input field. The token is decoded instantly as you type, with no button click required.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The three coloured panels show the <strong style="color:#DC2626;">header</strong> (algorithm and token type), the <strong style="color:#7C3AED;">payload</strong> (claims and data), and the <strong style="color:#0D9488;">signature</strong> bytes. The token parts display at the top colour-codes the raw token so you can see exactly where each section begins and ends.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">
+      Where the payload contains standard registered claims — <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">exp</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">iat</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">nbf</code> — the tool converts their Unix timestamps into human-readable dates and shows whether the token is currently valid, expired, or not yet active.
+    </p>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
+      How JWT decoding works
+    </h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:1rem;">
+      A JWT consists of three Base64URL-encoded segments separated by dots. Decoding is straightforward — no key or secret is needed to read the header and payload.
+    </p>
+
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:1rem;">
+      {[
+        ['Structure',   'header.payload.signature',   'Three dot-separated Base64URL segments'],
+        ['Header',      'Base64URL decode → JSON',     'Contains alg (algorithm) and typ (token type)'],
+        ['Payload',     'Base64URL decode → JSON',     'Contains claims: registered, public, or private'],
+        ['Signature',   'Raw bytes — not decoded',     'Requires the secret/key to verify; displayed as hex'],
+        ['Base64URL',   'Base64 with - and _ instead of + and /', 'URL-safe variant; padding = chars are stripped'],
+      ].map(([label, value, note]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.75rem 1rem;">
+          <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:0.625rem; margin-bottom:0.25rem;">
+            <span style="font-size:0.82rem; font-weight:700; color:#0F172A; min-width:90px;">{label}</span>
+            <code style="font-size:0.8rem; color:#1D4ED8; background:#EFF6FF; padding:0.15rem 0.5rem; border-radius:0.25rem;">{value}</code>
+          </div>
+          <p style="font-size:0.78rem; color:#64748B; margin:0;">{note}</p>
+        </div>
+      ))}
+    </div>
+
+    <p style="color:#64748B; font-size:0.82rem; line-height:1.6;">
+      Decoding happens entirely in your browser using the native <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">atob()</code> function. No token data is ever transmitted to a server.
+    </p>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+      Frequently asked questions
+    </h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+
+      {[
+        {
+          q: 'What is a JWT?',
+          a: 'A JSON Web Token (JWT) is a compact, URL-safe token format defined in RFC 7519. It is widely used to represent claims between two parties — most commonly to authenticate users in web applications and APIs. A JWT is self-contained: the server can verify the token and read its claims without a database lookup, as long as it holds the signing key.',
+        },
+        {
+          q: 'Is it safe to paste my JWT into this tool?',
+          a: 'This tool decodes tokens entirely in your browser — nothing is sent to any server. However, you should still be cautious with production tokens. A JWT payload is only Base64-encoded, not encrypted, meaning anyone who intercepts a token can read its claims. Treat tokens like passwords: avoid pasting live production tokens into any tool you do not fully control. Use test or expired tokens when debugging.',
+        },
+        {
+          q: 'What is the difference between the header, payload, and signature?',
+          a: 'The header identifies the signing algorithm (e.g. HS256, RS256) and token type. The payload contains the claims — data about the user or session, such as user ID, roles, and expiry time. The signature is a cryptographic hash of the header and payload, created with a secret or private key. The signature proves the token has not been tampered with, but it does not encrypt the payload.',
+        },
+        {
+          q: 'What are registered JWT claims?',
+          a: 'Registered claims are a set of predefined, optional fields with standardised meanings: iss (issuer), sub (subject), aud (audience), exp (expiration time), nbf (not before), iat (issued at), and jti (JWT ID). The exp, nbf, and iat fields hold Unix timestamps. This tool automatically converts those timestamps to human-readable dates.',
+        },
+        {
+          q: 'Why can\'t this tool verify the signature?',
+          a: 'Signature verification requires the secret key (for HMAC algorithms like HS256) or the public key (for RSA/ECDSA algorithms like RS256). Exposing those keys to a browser tool would defeat their purpose. Signature verification should only be performed server-side in trusted code. This tool is for inspecting and debugging the token contents — not for verifying authenticity.',
+        },
+        {
+          q: 'What does "token expired" mean?',
+          a: 'The exp claim in a JWT payload contains a Unix timestamp representing the moment the token ceases to be valid. If the current time is past that timestamp, the token is expired and a properly implemented server should reject it. This tool compares the exp value against the current time in your browser and flags whether the token is currently valid, expired, or not yet active.',
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  // ── DOM refs ───────────────────────────────────────────────────
+  const jwtInput        = document.getElementById('jwt-input')          as HTMLTextAreaElement;
+  const jwtError        = document.getElementById('jwt-error')!;
+  const decodedPanels   = document.getElementById('decoded-panels')!;
+  const tokenPartsDisp  = document.getElementById('token-parts-display')!;
+  const partHeader      = document.getElementById('part-header')!;
+  const partPayload     = document.getElementById('part-payload')!;
+  const partSignature   = document.getElementById('part-signature')!;
+  const headerOutput    = document.getElementById('header-output')!;
+  const payloadOutput   = document.getElementById('payload-output')!;
+  const signatureOutput = document.getElementById('signature-output')!;
+  const headerMeta      = document.getElementById('header-meta')!;
+  const payloadMeta     = document.getElementById('payload-meta')!;
+  const loadSampleBtn   = document.getElementById('load-sample-btn') as HTMLButtonElement;
+  const clearBtn        = document.getElementById('clear-btn')        as HTMLButtonElement;
+
+  // A real (non-sensitive) sample JWT — signed with the secret "secret"
+  const SAMPLE = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3JfMTIzNDU2IiwibmFtZSI6IkFsaWNlIEpvaG5zb24iLCJlbWFpbCI6ImFsaWNlQGV4YW1wbGUuY29tIiwicm9sZXMiOlsiYWRtaW4iLCJlZGl0b3IiXSwiaWF0IjoxNzE2MDAwMDAwLCJleHAiOjI1MzQwMjMwMDgsImlzcyI6Imh0dHBzOi8vYXV0aC5leGFtcGxlLmNvbSIsImF1ZCI6Imh0dHBzOi8vYXBpLmV4YW1wbGUuY29tIn0.placeholder';
+
+  // ── Helpers ────────────────────────────────────────────────────
+  function base64UrlDecode(str: string): string {
+    // Convert Base64URL → Base64 → decode
+    let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (b64.length % 4) b64 += '=';
+    try {
+      return decodeURIComponent(
+        atob(b64)
+          .split('')
+          .map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+          .join('')
+      );
+    } catch {
+      return atob(b64);
+    }
+  }
+
+  function formatJson(obj: unknown): string {
+    return JSON.stringify(obj, null, 2);
+  }
+
+  function unixToDate(ts: number): string {
+    return new Date(ts * 1000).toLocaleString(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+  }
+
+  function makeTag(text: string, color: string, bg: string, border: string): HTMLSpanElement {
+    const tag = document.createElement('span');
+    tag.style.cssText = `display:inline-block; padding:0.2rem 0.6rem; border-radius:999px; font-size:0.72rem; font-weight:600; color:${color}; background:${bg}; border:1px solid ${border};`;
+    tag.textContent = text;
+    return tag;
+  }
+
+  function copyPanel(targetId: string, btn: HTMLButtonElement) {
+    const el = document.getElementById(targetId)!;
+    navigator.clipboard.writeText(el.textContent || '').then(() => {
+      btn.textContent = '✓ Copied';
+      btn.style.color = '#16A34A';
+      btn.style.background = '#F0FDF4';
+      btn.style.borderColor = '#BBF7D0';
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.style.color = '#475569';
+        btn.style.background = '#F8FAFC';
+        btn.style.borderColor = '#E2E8F0';
+      }, 2000);
+    });
+  }
+
+  // ── Main decode ────────────────────────────────────────────────
+  function decode() {
+    const raw = jwtInput.value.trim();
+
+    // Reset state
+    jwtError.style.display  = 'none';
+    decodedPanels.style.display = 'none';
+    tokenPartsDisp.style.display = 'none';
+    headerMeta.innerHTML    = '';
+    payloadMeta.innerHTML   = '';
+
+    if (!raw) return;
+
+    const parts = raw.split('.');
+    if (parts.length !== 3) {
+      jwtError.textContent = `Invalid JWT: expected 3 dot-separated parts, found ${parts.length}.`;
+      jwtError.style.display = 'block';
+      return;
+    }
+
+    const [rawHeader, rawPayload, rawSignature] = parts;
+
+    // ── Decode header ──
+    let header: Record<string, unknown>;
+    try {
+      header = JSON.parse(base64UrlDecode(rawHeader));
+    } catch {
+      jwtError.textContent = 'Could not decode header — the first segment is not valid Base64URL JSON.';
+      jwtError.style.display = 'block';
+      return;
+    }
+
+    // ── Decode payload ──
+    let payload: Record<string, unknown>;
+    try {
+      payload = JSON.parse(base64UrlDecode(rawPayload));
+    } catch {
+      jwtError.textContent = 'Could not decode payload — the second segment is not valid Base64URL JSON.';
+      jwtError.style.display = 'block';
+      return;
+    }
+
+    // ── Colour-coded token display ──
+    partHeader.textContent    = rawHeader;
+    partPayload.textContent   = rawPayload;
+    partSignature.textContent = rawSignature;
+    tokenPartsDisp.style.display = 'block';
+
+    // ── Header panel ──
+    headerOutput.textContent = formatJson(header);
+
+    // Header meta tags: algorithm + type
+    headerMeta.innerHTML = '';
+    if (header.alg) {
+      headerMeta.appendChild(makeTag(`alg: ${header.alg}`, '#991B1B', '#FFF5F5', '#FECACA'));
+    }
+    if (header.typ) {
+      headerMeta.appendChild(makeTag(`typ: ${header.typ}`, '#991B1B', '#FFF5F5', '#FECACA'));
+    }
+
+    // ── Payload panel ──
+    payloadOutput.textContent = formatJson(payload);
+
+    // ── Payload meta: registered claims ──
+    payloadMeta.innerHTML = '';
+    const now = Math.floor(Date.now() / 1000);
+
+    const claimRows: string[] = [];
+
+    if (typeof payload.iat === 'number') {
+      claimRows.push(`<span style="font-size:0.78rem; color:#5B21B6;">iat (issued at):</span> <span style="font-size:0.78rem; font-family:'Fira Code',monospace; color:#3B0764;">${unixToDate(payload.iat)}</span>`);
+    }
+
+    if (typeof payload.exp === 'number') {
+      const expired = now > payload.exp;
+      const timeLabel = expired
+        ? `Expired ${Math.round((now - payload.exp) / 60)} minutes ago`
+        : `Expires in ${Math.round((payload.exp - now) / 60)} minutes`;
+      const tagColor  = expired ? '#991B1B' : '#166534';
+      const tagBg     = expired ? '#FEF2F2' : '#F0FDF4';
+      const tagBorder = expired ? '#FECACA' : '#BBF7D0';
+      claimRows.push(`<span style="font-size:0.78rem; color:#5B21B6;">exp (expires):</span> <span style="font-size:0.78rem; font-family:'Fira Code',monospace; color:#3B0764;">${unixToDate(payload.exp)}</span>`);
+      const statusTag = makeTag(expired ? '⚠ Token expired' : '✓ Token valid', tagColor, tagBg, tagBorder);
+      statusTag.style.marginTop = '0.25rem';
+      payloadMeta.appendChild(statusTag);
+    }
+
+    if (typeof payload.nbf === 'number') {
+      const notYet = now < payload.nbf;
+      claimRows.push(`<span style="font-size:0.78rem; color:#5B21B6;">nbf (not before):</span> <span style="font-size:0.78rem; font-family:'Fira Code',monospace; color:#3B0764;">${unixToDate(payload.nbf)}</span>`);
+      if (notYet) {
+        payloadMeta.appendChild(makeTag('⚠ Token not yet active', '#92400E', '#FFFBEB', '#FDE68A'));
+      }
+    }
+
+    if (typeof payload.iss === 'string') {
+      claimRows.push(`<span style="font-size:0.78rem; color:#5B21B6;">iss (issuer):</span> <span style="font-size:0.78rem; font-family:'Fira Code',monospace; color:#3B0764;">${payload.iss}</span>`);
+    }
+    if (typeof payload.sub === 'string') {
+      claimRows.push(`<span style="font-size:0.78rem; color:#5B21B6;">sub (subject):</span> <span style="font-size:0.78rem; font-family:'Fira Code',monospace; color:#3B0764;">${payload.sub}</span>`);
+    }
+    if (payload.aud) {
+      const aud = Array.isArray(payload.aud) ? payload.aud.join(', ') : payload.aud;
+      claimRows.push(`<span style="font-size:0.78rem; color:#5B21B6;">aud (audience):</span> <span style="font-size:0.78rem; font-family:'Fira Code',monospace; color:#3B0764;">${aud}</span>`);
+    }
+
+    if (claimRows.length > 0) {
+      const claimBox = document.createElement('div');
+      claimBox.style.cssText = 'background:#FAF5FF; border:1px solid #E9D5FF; border-radius:0.5rem; padding:0.6rem 0.875rem; display:flex; flex-direction:column; gap:0.3rem; margin-top:0.5rem;';
+      claimBox.innerHTML = `<div style="font-size:0.7rem; font-weight:700; color:#7C3AED; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.2rem;">Registered claims</div>` + claimRows.map(r => `<div>${r}</div>`).join('');
+      payloadMeta.prepend(claimBox);
+    }
+
+    // ── Signature panel ──
+    // Display as the raw Base64URL string — we can't do more without the key
+    signatureOutput.textContent = rawSignature;
+
+    decodedPanels.style.display = 'block';
+  }
+
+  // ── Event listeners ────────────────────────────────────────────
+  let debounceTimer: ReturnType<typeof setTimeout>;
+  jwtInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(decode, 200);
+  });
+
+  loadSampleBtn.addEventListener('click', () => {
+    jwtInput.value = SAMPLE;
+    decode();
+  });
+
+  clearBtn.addEventListener('click', () => {
+    jwtInput.value = '';
+    jwtError.style.display = 'none';
+    decodedPanels.style.display = 'none';
+    tokenPartsDisp.style.display = 'none';
+  });
+
+  // Copy buttons
+  document.querySelectorAll<HTMLButtonElement>('.copy-panel-btn').forEach(btn => {
+    btn.addEventListener('click', () => copyPanel(btn.dataset.target!, btn));
+  });
+</script>

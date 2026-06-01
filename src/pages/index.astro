@@ -1,0 +1,282 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import tools from '../data/tools.json';
+import categories from '../data/categories.json';
+
+const featuredTools = tools.filter(t => t.featured);
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "UtilifyGrid – Online Tools Collection",
+  "description": "A curated collection of browser-based calculators, converters, and utility tools.",
+  "itemListElement": tools.map((tool, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "url": `https://utilifygrid.com/tools/${tool.slug}`,
+    "name": tool.name
+  }))
+};
+---
+
+<BaseLayout
+  title="UtilifyGrid – Calculators, Converters & Web Utilities"
+  description="Browser-based tools for everyday tasks. Calculators, unit converters, health estimators, and developer utilities — accurate, instant, and always free."
+  canonicalUrl="/"
+  structuredData={structuredData}
+>
+
+  <!-- ═══ HERO ═══ -->
+  <section style="background:linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 55%, #EA580C 100%); padding:4rem 1rem 5rem;">
+    <div style="max-width:52rem; margin:0 auto; text-align:center;">
+
+      <div style="display:inline-block; background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.35); color:#FCD34D; font-size:0.8rem; font-weight:600; padding:0.3rem 0.9rem; border-radius:999px; margin-bottom:1.25rem; letter-spacing:0.05em; text-transform:uppercase;">
+        No sign-up · No downloads · Always free
+      </div>
+
+      <h1 style="font-family:'Sora',sans-serif; font-size:clamp(2rem,5vw,3.25rem); font-weight:800; color:#FFF; line-height:1.15; margin-bottom:1rem; letter-spacing:-0.02em;">
+        The tools you reach for,<br/>
+        <span style="color:#FCD34D;">right when you need them.</span>
+      </h1>
+
+      <p style="color:#BFDBFE; font-size:1.05rem; max-width:36rem; margin:0 auto 2rem; line-height:1.75;">
+        UtilifyGrid is a growing library of practical browser tools — from health calculators and unit converters to developer utilities and financial estimators. Everything runs locally in your browser. No data leaves your device.
+      </p>
+
+      <!-- Search box — solid white background, clearly visible -->
+      <div style="position:relative; max-width:32rem; margin:0 auto;">
+        <div style="display:flex; align-items:center; background:#FFFFFF; border:2px solid #FFFFFF; border-radius:0.875rem; box-shadow:0 8px 32px rgba(0,0,0,0.25); overflow:hidden;">
+          <svg style="width:1.25rem; height:1.25rem; color:#94A3B8; margin-left:1rem; flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input
+            id="tool-search"
+            type="search"
+            placeholder="Search tools… e.g. BMI, hex, percentage, JWT"
+            style="flex:1; padding:1rem 1rem 1rem 0.75rem; border:none; outline:none; font-size:0.95rem; color:#0F172A; background:transparent; font-family:'Inter',sans-serif;"
+            autocomplete="off"
+            aria-label="Search tools"
+          />
+        </div>
+      </div>
+
+      <!-- Stats strip -->
+      <div style="display:flex; justify-content:center; gap:2.5rem; margin-top:2.5rem; flex-wrap:wrap;">
+        {[
+          [`${tools.length}+`, 'Tools available'],
+          [categories.length.toString(), 'Categories'],
+          ['100%', 'Runs in browser'],
+        ].map(([num, label]) => (
+          <div style="text-align:center;">
+            <div style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#FCD34D;">{num}</div>
+            <div style="font-size:0.8rem; color:#93C5FD;">{label}</div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ CATEGORY TABS ═══ -->
+  <section class="cat-tabs-bar sticky top-16 z-40">
+    <div style="max-width:80rem; margin:0 auto; padding:0 1rem; overflow-x:auto;">
+      <div style="display:flex; gap:0.25rem; padding:0.625rem 0; min-width:max-content;">
+        <button class="cat-btn active" data-category="all"
+          style="padding:0.4rem 1rem; border-radius:0.5rem; font-size:0.875rem; font-weight:500; border:none; cursor:pointer; background:#1D4ED8; color:#fff; transition:all 0.15s;">
+          All Tools
+        </button>
+        {categories.map(cat => (
+          <button class="cat-btn" data-category={cat.slug}
+            style="padding:0.4rem 1rem; border-radius:0.5rem; font-size:0.875rem; font-weight:500; border:none; cursor:pointer; background:transparent; color:var(--text-secondary); transition:all 0.15s;">
+            {cat.icon} {cat.name}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div style="max-width:80rem; margin:0 auto; padding:2.5rem 1rem 3rem;">
+
+    <!-- ═══ FEATURED ═══ -->
+    <div id="featured-section">
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem;">
+        <div style="width:4px; height:1.5rem; background:#F59E0B; border-radius:2px;"></div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">Popular Right Now</h2>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1.25rem; margin-bottom:3rem;" id="featured-grid">
+        {featuredTools.map(tool => (
+          <a
+            href={`/tools/${tool.slug}`}
+            class="tool-card tool-card-themed"
+            data-category={tool.category}
+            data-name={tool.name.toLowerCase()}
+            data-tags={tool.tags.join(' ')}
+            style="display:block; padding:1.25rem;"
+          >
+            <div style="display:flex; align-items:flex-start; gap:1rem;">
+              <div style="width:2.75rem; height:2.75rem; border-radius:0.625rem; background:linear-gradient(135deg,#DBEAFE,#EFF6FF); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">
+                {tool.icon}
+              </div>
+              <div style="min-width:0;">
+                <div style="font-family:'Sora',sans-serif; font-weight:600; color:var(--text-primary); font-size:0.95rem; margin-bottom:0.3rem;">{tool.name}</div>
+                <div style="font-size:0.82rem; color:var(--text-secondary); line-height:1.5;">{tool.shortDescription}</div>
+                <div style="margin-top:0.6rem;">
+                  <span style="display:inline-block; background:#FFF7ED; color:#EA580C; font-size:0.72rem; font-weight:600; padding:0.15rem 0.6rem; border-radius:999px; text-transform:capitalize;">
+                    {tool.category.replace(/-/g, ' ')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- ═══ ALL TOOLS ═══ -->
+    <div>
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem;">
+        <div style="width:4px; height:1.5rem; background:#1D4ED8; border-radius:2px;"></div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">All Tools</h2>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:0.875rem;" id="all-tools-grid">
+        {tools.map(tool => (
+          <a
+            href={`/tools/${tool.slug}`}
+            class="tool-card tool-card-themed"
+            data-category={tool.category}
+            data-name={tool.name.toLowerCase()}
+            data-tags={tool.tags.join(' ')}
+            style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:1.1rem 0.75rem;"
+          >
+            <span style="font-size:1.75rem; margin-bottom:0.5rem;">{tool.icon}</span>
+            <span style="font-size:0.82rem; font-weight:600; color:var(--text-primary); line-height:1.35;">{tool.name}</span>
+            <span style="font-size:0.72rem; color:var(--text-muted); margin-top:0.25rem; text-transform:capitalize;">{tool.category.replace(/-/g,' ')}</span>
+          </a>
+        ))}
+      </div>
+
+      <div id="no-results" style="display:none; text-align:center; padding:5rem 1rem; color:var(--text-muted);">
+        <div style="font-size:3rem; margin-bottom:1rem;">🔍</div>
+        <p style="font-size:1.1rem; font-weight:600; color:var(--text-secondary);">No tools matched your search</p>
+        <p style="font-size:0.875rem; margin-top:0.5rem;">Try a broader term, or browse by category above</p>
+      </div>
+    </div>
+
+    <!-- ═══ SEO / ABOUT SECTION ═══ -->
+    <div id="about-section" style="margin-top:4rem; padding-top:3rem; border-top:1px solid var(--border);">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:2.5rem;">
+
+        <div>
+          <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What is UtilifyGrid?</h2>
+          <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+            UtilifyGrid is a collection of practical, browser-based tools designed to handle the calculations and conversions that come up in everyday life and work. Every tool on this site runs entirely in your browser — nothing is sent to a server, and nothing requires an account or download.
+          </p>
+          <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+            Whether you're checking a health metric, converting between units, working with colour values in CSS, or debugging an API token, UtilifyGrid aims to give you a clean, accurate answer quickly.
+          </p>
+        </div>
+
+        <div>
+          <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Why browser-based tools?</h2>
+          <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+            Most tools people search for online don't need a server. A BMI calculation, a unit conversion, or a colour format change can be done instantly with JavaScript — which means your data stays on your device, the tool loads in milliseconds, and there's nothing to install or maintain.
+          </p>
+          <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+            This approach also makes UtilifyGrid fast and reliable on any device — desktop, tablet, or mobile — without apps or logins.
+          </p>
+        </div>
+
+        <div>
+          <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Accuracy & methodology</h2>
+          <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+            Each tool on UtilifyGrid is based on established formulas, published standards, or widely accepted conventions. Where relevant, tools link to their source methodology — for example, WHO definitions for health metrics, or IEEE standards for unit conversions.
+          </p>
+          <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+            Results are provided for informational purposes. For medical, financial, or legal decisions, always consult a qualified professional.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Category cards -->
+      <div style="margin-top:3rem;">
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Browse by category</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem;">
+          {categories.map(cat => (
+            <a
+              href={`/category/${cat.slug}`}
+              class="tool-card-themed"
+              style="display:block; padding:1.1rem 1.25rem; text-decoration:none;"
+            >
+              <div style="font-size:1.5rem; margin-bottom:0.4rem;">{cat.icon}</div>
+              <div style="font-family:'Sora',sans-serif; font-weight:600; color:var(--text-primary); font-size:0.9rem; margin-bottom:0.25rem;">{cat.name}</div>
+              <div style="font-size:0.8rem; color:var(--text-secondary); line-height:1.5;">{cat.description}</div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</BaseLayout>
+
+<style>
+  .cat-btn:hover:not(.active) {
+    background: var(--bg-surface-2) !important;
+    color: #1D4ED8 !important;
+  }
+</style>
+
+<script>
+  const searchInput    = document.getElementById('tool-search')    as HTMLInputElement;
+  const allCards       = document.querySelectorAll<HTMLElement>('.tool-card');
+  const catBtns        = document.querySelectorAll<HTMLButtonElement>('.cat-btn');
+  const noResults      = document.getElementById('no-results')!;
+  const featuredSection = document.getElementById('featured-section')!;
+  const aboutSection   = document.getElementById('about-section')!;
+
+  let activeCategory = 'all';
+  let searchQuery    = '';
+
+  function filterTools() {
+    let visible = 0;
+    allCards.forEach(card => {
+      const name     = card.dataset.name     || '';
+      const tags     = card.dataset.tags     || '';
+      const category = card.dataset.category || '';
+      const show =
+        (!searchQuery || name.includes(searchQuery) || tags.includes(searchQuery)) &&
+        (activeCategory === 'all' || category === activeCategory);
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    const isFiltering = searchQuery || activeCategory !== 'all';
+    noResults.style.display       = visible === 0 ? 'block' : 'none';
+    featuredSection.style.display = isFiltering ? 'none' : '';
+    aboutSection.style.display    = isFiltering ? 'none' : '';
+  }
+
+  searchInput?.addEventListener('input', e => {
+    searchQuery = (e.target as HTMLInputElement).value.toLowerCase().trim();
+    filterTools();
+  });
+
+  catBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCategory = btn.dataset.category || 'all';
+      catBtns.forEach(b => {
+        b.style.background = 'transparent';
+        b.style.color      = 'var(--text-secondary)';
+        b.classList.remove('active');
+      });
+      btn.style.background = '#1D4ED8';
+      btn.style.color      = '#fff';
+      btn.classList.add('active');
+      filterTools();
+    });
+  });
+</script>

@@ -1,0 +1,234 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans:    'Inter', system-ui, sans-serif;
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-mono:    'Fira Code', 'JetBrains Mono', monospace;
+
+  --color-brand-blue:       #1D4ED8;
+  --color-brand-blue-dark:  #1E3A8A;
+  --color-brand-blue-light: #DBEAFE;
+  --color-brand-amber:      #F59E0B;
+  --color-brand-amber-dark: #D97706;
+  --color-brand-orange:     #EA580C;
+}
+
+/* ── Light theme (default) ───────────────────────── */
+:root {
+  --bg-page:        #F8FAFC;
+  --bg-surface:     #FFFFFF;
+  --bg-surface-2:   #F1F5F9;
+  --bg-surface-3:   #E2E8F0;
+  --text-primary:   #0F172A;
+  --text-secondary: #475569;
+  --text-muted:     #94A3B8;
+  --border:         #E2E8F0;
+  --border-hover:   #CBD5E1;
+  --shadow-card:    0 1px 3px rgba(0,0,0,0.07);
+  --shadow-card-hover: 0 8px 24px rgba(0,0,0,0.10);
+  --ad-bg:          #FFFFFF;
+  --cat-tab-bg:     #FFFFFF;
+  --cat-tab-border: #E2E8F0;
+}
+
+/* ── Dark theme ──────────────────────────────────── */
+:root.dark {
+  --bg-page:        #0B1120;
+  --bg-surface:     #131E30;
+  --bg-surface-2:   #1A2740;
+  --bg-surface-3:   #243450;
+  --text-primary:   #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted:     #64748B;
+  --border:         rgba(255,255,255,0.08);
+  --border-hover:   rgba(255,255,255,0.16);
+  --shadow-card:    0 1px 3px rgba(0,0,0,0.4);
+  --shadow-card-hover: 0 8px 24px rgba(0,0,0,0.5);
+  --ad-bg:          #131E30;
+  --cat-tab-bg:     #131E30;
+  --cat-tab-border: rgba(255,255,255,0.08);
+}
+
+/* ── Base ────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Sora', system-ui, sans-serif;
+}
+
+/* ── Theme-aware utility classes ─────────────────── */
+.surface        { background: var(--bg-surface); }
+.surface-2      { background: var(--bg-surface-2); }
+.border-theme   { border-color: var(--border); }
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }
+
+/* ── Tool cards ──────────────────────────────────── */
+.tool-card-themed {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+.tool-card-themed:hover {
+  border-color: #1D4ED8;
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+.dark .tool-card-themed:hover {
+  border-color: #3B82F6;
+}
+
+/* ── Category tabs bar ───────────────────────────── */
+.cat-tabs-bar {
+  background: var(--cat-tab-bg);
+  border-bottom: 1px solid var(--cat-tab-border);
+}
+
+/* ── Inputs ──────────────────────────────────────── */
+.input-themed {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  color: var(--text-primary);
+  transition: border-color 0.15s;
+}
+.input-themed:focus {
+  outline: none;
+  border-color: #1D4ED8;
+  box-shadow: 0 0 0 3px rgba(29,78,216,0.15);
+}
+.input-themed::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── Theme toggle button ─────────────────────────── */
+#theme-toggle {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: #BFDBFE;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+#theme-toggle:hover {
+  background: rgba(255,255,255,0.18);
+  color: #FFF;
+  border-color: rgba(255,255,255,0.35);
+}
+
+/* ── Prevent flash of wrong theme ────────────────── */
+/* Applied inline in <head> before body renders       */
+
+/* ── Additional dark mode fixes ──────────────────────────────── */
+
+/* Ensure body bg transitions smoothly */
+body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Category page & shared surface cards */
+:root.dark .surface,
+:root.dark [style*="background:#fff"],
+:root.dark [style*="background: #fff"],
+:root.dark [style*="background:#FFFFFF"],
+:root.dark [style*="background: #FFFFFF"] {
+  background: var(--bg-surface) !important;
+}
+:root.dark [style*="background:#F8FAFC"],
+:root.dark [style*="background: #F8FAFC"] {
+  background: var(--bg-surface-2) !important;
+}
+
+/* Hardcoded dark text throughout pages */
+:root.dark [style*="color:#0F172A"],
+:root.dark [style*="color: #0F172A"],
+:root.dark [style*="color:#1E293B"],
+:root.dark [style*="color: #1E293B"] {
+  color: var(--text-primary) !important;
+}
+:root.dark [style*="color:#475569"],
+:root.dark [style*="color: #475569"] {
+  color: var(--text-secondary) !important;
+}
+:root.dark [style*="color:#64748B"],
+:root.dark [style*="color: #64748B"] {
+  color: var(--text-secondary) !important;
+}
+:root.dark [style*="color:#94A3B8"],
+:root.dark [style*="color: #94A3B8"] {
+  color: var(--text-muted) !important;
+}
+
+/* Borders */
+:root.dark [style*="border-top:1px solid #E2E8F0"],
+:root.dark [style*="border-bottom:1px solid #E2E8F0"],
+:root.dark [style*="border:1px solid #E2E8F0"],
+:root.dark [style*="border: 1px solid #E2E8F0"],
+:root.dark [style*="border:1.5px solid #E2E8F0"],
+:root.dark [style*="border: 1.5px solid #E2E8F0"],
+:root.dark [style*="border-color:#E2E8F0"] {
+  border-color: var(--border) !important;
+}
+
+/* Category tab bar bg */
+:root.dark .cat-tabs-bar {
+  background: var(--bg-surface) !important;
+  border-color: var(--border) !important;
+}
+:root.dark .cat-btn:hover:not(.active) {
+  background: var(--bg-surface-2) !important;
+  color: #60A5FA !important;
+}
+
+/* Tool card featured icon gradient background */
+:root.dark .tool-card-themed [style*="background:linear-gradient(135deg,#DBEAFE,#EFF6FF)"] {
+  background: var(--bg-surface-2) !important;
+}
+
+/* Featured tool category badge */
+:root.dark [style*="background:#FFF7ED"][style*="color:#EA580C"] {
+  background: rgba(234,88,12,0.15) !important;
+}
+
+/* Tags on tool pages */
+:root.dark [style*="background:var(--bg-surface-2)"][style*="color:var(--text-secondary)"] {
+  background: var(--bg-surface-3) !important;
+}
+
+/* Adbar wrapper */
+:root.dark [style*="background:var(--ad-bg)"] {
+  background: var(--bg-surface) !important;
+}
+
+/* ── Scrollbar (dark mode) ──────────────────────────────────── */
+:root.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+:root.dark ::-webkit-scrollbar-track {
+  background: var(--bg-page);
+}
+:root.dark ::-webkit-scrollbar-thumb {
+  background: var(--bg-surface-3);
+  border-radius: 4px;
+}
+:root.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}

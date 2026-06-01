@@ -1,0 +1,540 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-to-typescript')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ═══ THE TOOL ═══ -->
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+      Paste your JSON payload
+    </h2>
+
+    <!-- Mode toggle -->
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+      {[
+        ['typescript', '🔷 TypeScript Interface'],
+        ['zod',        '🛡️ Zod Schema'],
+        ['both',       '⚡ Both'],
+      ].map(([mode, label], i) => (
+        <button
+          class="mode-btn"
+          data-mode={mode}
+          style={`padding:0.45rem 1rem; border-radius:0.5rem; font-size:0.85rem; font-weight:500; border:1.5px solid ${i === 0 ? '#1D4ED8' : '#E2E8F0'}; background:${i === 0 ? '#EFF6FF' : '#fff'}; color:${i === 0 ? '#1D4ED8' : '#475569'}; cursor:pointer; transition:all 0.15s;`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Options row -->
+    <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.75rem; padding:0.75rem 1rem; margin-bottom:1.25rem;">
+      <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; font-weight:500; color:#475569; cursor:pointer; user-select:none;">
+        <input type="checkbox" id="opt-optional" style="width:14px; height:14px; cursor:pointer;" />
+        Optional fields (?)
+      </label>
+      <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; font-weight:500; color:#475569; cursor:pointer; user-select:none;">
+        <input type="checkbox" id="opt-readonly" style="width:14px; height:14px; cursor:pointer;" />
+        Readonly properties
+      </label>
+      <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; font-weight:500; color:#475569; cursor:pointer; user-select:none;">
+        <input type="checkbox" id="opt-export" checked style="width:14px; height:14px; cursor:pointer;" />
+        Export keyword
+      </label>
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <label style="font-size:0.82rem; font-weight:500; color:#475569;" for="root-name">Root name</label>
+        <input
+          id="root-name"
+          type="text"
+          value="Root"
+          maxlength="40"
+          style="width:90px; padding:0.3rem 0.6rem; border:1.5px solid #E2E8F0; border-radius:0.4rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; outline:none;"
+          onfocus="this.style.borderColor='#1D4ED8';"
+          onblur="this.style.borderColor='#E2E8F0';"
+        />
+      </div>
+    </div>
+
+    <!-- Two-panel workspace -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+
+      <!-- Input -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <span style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em;">JSON Input</span>
+          <button id="load-sample-btn"
+            style="font-size:0.75rem; color:#1D4ED8; background:none; border:none; cursor:pointer; font-weight:500; padding:0; text-decoration:underline;">
+            Load sample
+          </button>
+        </div>
+        <textarea
+          id="json-input"
+          spellcheck="false"
+          placeholder='Paste JSON here…&#10;&#10;{&#10;  "id": 1,&#10;  "name": "Alice"&#10;}'
+          style="width:100%; height:280px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; line-height:1.6; resize:vertical; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='#1D4ED8';"
+          onblur="this.style.borderColor='#E2E8F0';"
+        ></textarea>
+        <div id="json-error" style="display:none; margin-top:0.5rem; color:#DC2626; font-size:0.8rem; background:#FEF2F2; border:1px solid #FECACA; border-radius:0.5rem; padding:0.5rem 0.75rem;"></div>
+      </div>
+
+      <!-- Output -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <span style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em;" id="output-label">TypeScript Output</span>
+          <button id="copy-output-btn"
+            style="font-size:0.75rem; color:#475569; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.4rem; cursor:pointer; font-weight:500; padding:0.2rem 0.65rem; transition:all 0.15s;"
+            onmouseover="this.style.background='#EFF6FF'; this.style.color='#1D4ED8'; this.style.borderColor='#BFDBFE';"
+            onmouseout="this.style.background='#F8FAFC'; this.style.color='#475569'; this.style.borderColor='#E2E8F0';"
+          >
+            Copy
+          </button>
+        </div>
+        <textarea
+          id="ts-output"
+          readonly
+          placeholder="Generated code will appear here…"
+          style="width:100%; height:280px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; line-height:1.6; resize:vertical; outline:none; box-sizing:border-box; background:#F8FAFC;"
+        ></textarea>
+      </div>
+
+    </div>
+
+    <!-- Generate button -->
+    <div style="margin-top:1rem; display:flex; gap:0.75rem; align-items:center;">
+      <button
+        id="generate-btn"
+        style="padding:0.7rem 1.75rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.625rem; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
+        onmouseover="this.style.background='#1E3A8A';"
+        onmouseout="this.style.background='#1D4ED8';"
+      >
+        Generate
+      </button>
+      <button
+        id="clear-btn"
+        style="padding:0.7rem 1.25rem; background:#fff; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.9rem; font-weight:500; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.background='#F8FAFC';"
+        onmouseout="this.style.background='#fff';"
+      >
+        Clear
+      </button>
+      <span id="success-msg" style="display:none; font-size:0.82rem; color:#16A34A; font-weight:500;">✓ Generated successfully</span>
+    </div>
+
+  </div>
+
+  <!-- ═══ HOW TO USE ═══ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
+      How to use the JSON to TypeScript Generator
+    </h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste any valid JSON object or array into the left panel. Choose your output format — TypeScript interface, Zod schema, or both — using the toggle buttons at the top. Then click <strong style="color:#0F172A;">Generate</strong> or simply start typing and the output updates automatically.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Use the <strong style="color:#0F172A;">options row</strong> to customise the output. You can mark all fields as optional (useful when building partial update types), add <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">readonly</code> modifiers to every property, toggle the <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">export</code> keyword, and set a custom name for the root interface or schema.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">
+      The generator handles nested objects (producing separate named interfaces), arrays, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">null</code> values, mixed-type arrays (union types), and empty objects. Click <strong style="color:#0F172A;">Load sample</strong> to see an example with nested data.
+    </p>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
+      How the generator works
+    </h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:1rem;">
+      The generator recursively walks the parsed JSON structure and maps each value's JavaScript type to the appropriate TypeScript or Zod equivalent.
+    </p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:1rem;">
+      {[
+        ['string',          'string',                    'z.string()'],
+        ['number',          'number',                    'z.number()'],
+        ['boolean',         'boolean',                   'z.boolean()'],
+        ['null',            'null',                      'z.null()'],
+        ['object',          'InterfaceName',             'z.object({…})'],
+        ['array of one type','type[]',                   'z.array(z.type())'],
+        ['mixed array',     '(string | number)[]',       'z.union([…])'],
+        ['empty object',    'Record<string, unknown>',   'z.record(z.unknown())'],
+      ].map(([json, ts, zod]) => (
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; background:#fff; border:1px solid #E2E8F0; border-radius:0.5rem; padding:0.6rem 0.875rem; font-size:0.8rem;">
+          <span style="color:#475569; font-weight:600;">{json}</span>
+          <code style="color:#1D4ED8; background:#EFF6FF; padding:0.1rem 0.4rem; border-radius:0.25rem;">{ts}</code>
+          <code style="color:#7C3AED; background:#F5F3FF; padding:0.1rem 0.4rem; border-radius:0.25rem;">{zod}</code>
+        </div>
+      ))}
+    </div>
+    <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.5rem; padding:0.5rem 0.875rem; margin-bottom:0.75rem;">
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; font-size:0.72rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.05em; padding:0.25rem 0.4rem;">
+        <span>JSON value</span><span>TypeScript</span><span>Zod</span>
+      </div>
+    </div>
+    <p style="color:#64748B; font-size:0.82rem; line-height:1.6;">
+      Nested objects are extracted into separate named interfaces or schemas. The child name is derived by capitalising the parent key — for example, a key <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">address</code> produces an <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">Address</code> interface. All generation runs entirely in your browser — no JSON is ever sent to a server.
+    </p>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+      Frequently asked questions
+    </h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+
+      {[
+        {
+          q: 'What is a TypeScript interface?',
+          a: 'A TypeScript interface is a compile-time contract that describes the shape of an object — which properties it has and what type each property holds. Interfaces are erased at runtime and add no overhead to your JavaScript output. They are the standard way to type-check objects in TypeScript codebases.',
+        },
+        {
+          q: 'What is Zod?',
+          a: 'Zod is a TypeScript-first schema validation library. Unlike interfaces, Zod schemas exist at runtime and can validate, parse, and transform data from external sources like APIs or form inputs. A Zod schema both enforces structure at runtime and infers a TypeScript type, so you get type safety and runtime validation from a single declaration.',
+        },
+        {
+          q: 'When should I use a TypeScript interface vs a Zod schema?',
+          a: 'Use a TypeScript interface when you control the data source and only need compile-time type checking — for example, internal function signatures or component props. Use a Zod schema when data comes from an external source (an API response, form submission, environment variable, or local storage) where you need to validate the shape at runtime before trusting it.',
+        },
+        {
+          q: 'How are nested objects handled?',
+          a: 'Each nested object is extracted into its own named interface or schema. The name is derived from the parent property key with the first letter capitalised. For example, a field called "address" containing an object will produce an Address interface and the parent will reference it as address: Address. This keeps the output clean and avoids deeply nested inline type definitions.',
+        },
+        {
+          q: 'What happens with null values?',
+          a: 'If a JSON field is null, the generator types it as null in TypeScript or z.null() in Zod. In practice you may want to change this to string | null or z.string().nullable() once you know the actual intended type — the generator uses only what the JSON sample provides, so a null value carries no information about what the field holds when populated.',
+        },
+        {
+          q: 'Can I generate types from a JSON array?',
+          a: 'Yes. If you paste a JSON array at the root level, the generator infers the type of the array items and wraps the output accordingly — for example Root[] in TypeScript or z.array(RootSchema) in Zod. Arrays of objects extract the object shape as a separate named type.',
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  // ── DOM refs ───────────────────────────────────────────────────
+  const jsonInput     = document.getElementById('json-input')      as HTMLTextAreaElement;
+  const tsOutput      = document.getElementById('ts-output')       as HTMLTextAreaElement;
+  const jsonError     = document.getElementById('json-error')!;
+  const generateBtn   = document.getElementById('generate-btn')    as HTMLButtonElement;
+  const clearBtn      = document.getElementById('clear-btn')       as HTMLButtonElement;
+  const copyBtn       = document.getElementById('copy-output-btn') as HTMLButtonElement;
+  const loadSampleBtn = document.getElementById('load-sample-btn') as HTMLButtonElement;
+  const successMsg    = document.getElementById('success-msg')!;
+  const outputLabel   = document.getElementById('output-label')!;
+  const modeBtns      = document.querySelectorAll<HTMLButtonElement>('.mode-btn');
+  const optOptional   = document.getElementById('opt-optional')    as HTMLInputElement;
+  const optReadonly   = document.getElementById('opt-readonly')    as HTMLInputElement;
+  const optExport     = document.getElementById('opt-export')      as HTMLInputElement;
+  const rootNameInput = document.getElementById('root-name')       as HTMLInputElement;
+
+  let activeMode: 'typescript' | 'zod' | 'both' = 'typescript';
+
+  // ── Sample JSON ───────────────────────────────────────────────
+  const SAMPLE = JSON.stringify({
+    id: 1,
+    name: "Alice Johnson",
+    email: "alice@example.com",
+    isActive: true,
+    score: 98.5,
+    tags: ["admin", "editor"],
+    address: {
+      street: "123 Main St",
+      city: "Sydney",
+      postcode: "2000",
+      country: "Australia"
+    },
+    metadata: {
+      createdAt: "2025-01-15T10:30:00Z",
+      updatedAt: "2025-05-29T08:00:00Z",
+      version: 3
+    },
+    avatar: null
+  }, null, 2);
+
+  // ── Type inference helpers ────────────────────────────────────
+  function capitalize(s: string): string {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  function sanitizeName(key: string): string {
+    // Turn kebab-case / snake_case into PascalCase
+    return key
+      .replace(/[-_](.)/g, (_, c) => c.toUpperCase())
+      .replace(/^(.)/, c => c.toUpperCase());
+  }
+
+  type JsonValue = string | number | boolean | null | JsonValue[] | { [k: string]: JsonValue };
+
+  function inferTsType(
+    value: JsonValue,
+    key: string,
+    interfaces: Map<string, string>,
+    opts: { optional: boolean; readonly: boolean; exportKw: boolean }
+  ): string {
+    if (value === null) return 'null';
+    if (typeof value === 'string') return 'string';
+    if (typeof value === 'number') return 'number';
+    if (typeof value === 'boolean') return 'boolean';
+
+    if (Array.isArray(value)) {
+      if (value.length === 0) return 'unknown[]';
+      const types = [...new Set(value.map(v => inferTsType(v, key, interfaces, opts)))];
+      const inner = types.length === 1 ? types[0] : `(${types.join(' | ')})`;
+      return `${inner}[]`;
+    }
+
+    if (typeof value === 'object') {
+      const typeName = sanitizeName(key);
+      if (Object.keys(value).length === 0) return 'Record<string, unknown>';
+      buildTsInterface(value as Record<string, JsonValue>, typeName, interfaces, opts);
+      return typeName;
+    }
+
+    return 'unknown';
+  }
+
+  function buildTsInterface(
+    obj: Record<string, JsonValue>,
+    name: string,
+    interfaces: Map<string, string>,
+    opts: { optional: boolean; readonly: boolean; exportKw: boolean }
+  ) {
+    if (interfaces.has(name)) return;
+    const ro = opts.readonly ? 'readonly ' : '';
+    const q  = opts.optional ? '?' : '';
+    const lines = Object.entries(obj).map(([k, v]) => {
+      const type = inferTsType(v, k, interfaces, opts);
+      return `  ${ro}${k}${q}: ${type};`;
+    });
+    const expKw = opts.exportKw ? 'export ' : '';
+    interfaces.set(name, `${expKw}interface ${name} {\n${lines.join('\n')}\n}`);
+  }
+
+  // ── Zod inference helpers ─────────────────────────────────────
+  function inferZodType(
+    value: JsonValue,
+    key: string,
+    schemas: Map<string, string>,
+    opts: { optional: boolean; exportKw: boolean }
+  ): string {
+    if (value === null) return opts.optional ? 'z.null().optional()' : 'z.null()';
+    if (typeof value === 'string') return opts.optional ? 'z.string().optional()' : 'z.string()';
+    if (typeof value === 'number') return opts.optional ? 'z.number().optional()' : 'z.number()';
+    if (typeof value === 'boolean') return opts.optional ? 'z.boolean().optional()' : 'z.boolean()';
+
+    if (Array.isArray(value)) {
+      if (value.length === 0) return 'z.array(z.unknown())';
+      const types = [...new Set(value.map(v => inferZodType(v, key, schemas, { ...opts, optional: false })))];
+      const inner = types.length === 1
+        ? types[0]
+        : `z.union([${types.join(', ')}])`;
+      const arr = `z.array(${inner})`;
+      return opts.optional ? `${arr}.optional()` : arr;
+    }
+
+    if (typeof value === 'object') {
+      const schemaName = `${sanitizeName(key)}Schema`;
+      if (Object.keys(value).length === 0) return 'z.record(z.unknown())';
+      buildZodSchema(value as Record<string, JsonValue>, schemaName, schemas, opts);
+      return opts.optional ? `${schemaName}.optional()` : schemaName;
+    }
+
+    return 'z.unknown()';
+  }
+
+  function buildZodSchema(
+    obj: Record<string, JsonValue>,
+    name: string,
+    schemas: Map<string, string>,
+    opts: { optional: boolean; exportKw: boolean }
+  ) {
+    if (schemas.has(name)) return;
+    // placeholder to prevent infinite recursion
+    schemas.set(name, '');
+    const lines = Object.entries(obj).map(([k, v]) => {
+      const type = inferZodType(v, k, schemas, opts);
+      return `  ${k}: ${type},`;
+    });
+    const expKw = opts.exportKw ? 'export ' : '';
+    schemas.set(name, `${expKw}const ${name} = z.object({\n${lines.join('\n')}\n});`);
+  }
+
+  // ── Main generate ─────────────────────────────────────────────
+  function generate() {
+    jsonError.style.display = 'none';
+    successMsg.style.display = 'none';
+    tsOutput.value = '';
+
+    const raw = jsonInput.value.trim();
+    if (!raw) {
+      showError('Please paste a JSON payload to generate from.');
+      return;
+    }
+
+    let parsed: JsonValue;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e: any) {
+      showError(`JSON parse error: ${e.message}`);
+      return;
+    }
+
+    const opts = {
+      optional: optOptional.checked,
+      readonly: optReadonly.checked,
+      exportKw: optExport.checked,
+    };
+
+    const rootName = rootNameInput.value.trim() || 'Root';
+    const parts: string[] = [];
+
+    // Handle root array
+    let target: Record<string, JsonValue>;
+    let isRootArray = false;
+    if (Array.isArray(parsed)) {
+      isRootArray = true;
+      const first = parsed.find(v => typeof v === 'object' && v !== null && !Array.isArray(v));
+      target = (first as Record<string, JsonValue>) ?? {};
+    } else if (typeof parsed === 'object' && parsed !== null) {
+      target = parsed as Record<string, JsonValue>;
+    } else {
+      showError('Root JSON value must be an object or array of objects.');
+      return;
+    }
+
+    if (activeMode === 'typescript' || activeMode === 'both') {
+      const interfaces = new Map<string, string>();
+      buildTsInterface(target, rootName, interfaces, opts);
+
+      // Output in dependency order (nested first, root last)
+      const ordered = [...interfaces.entries()].reverse();
+      const tsBlock = ordered.map(([, v]) => v).join('\n\n');
+
+      const rootRef = isRootArray ? `export type ${rootName}List = ${rootName}[];` : '';
+      parts.push([tsBlock, rootRef].filter(Boolean).join('\n\n'));
+    }
+
+    if (activeMode === 'zod' || activeMode === 'both') {
+      const schemas = new Map<string, string>();
+      const zodOpts = { optional: opts.optional, exportKw: opts.exportKw };
+      const schemaName = `${rootName}Schema`;
+      buildZodSchema(target, schemaName, schemas, zodOpts);
+
+      const importLine = `import { z } from 'zod';`;
+      const ordered = [...schemas.entries()].reverse();
+      const zodBlock = ordered.map(([, v]) => v).join('\n\n');
+
+      // Infer type from root schema
+      const expKw = opts.exportKw ? 'export ' : '';
+      const typeInfer = `${expKw}type ${rootName} = z.infer<typeof ${schemaName}>;`;
+      const listLine  = isRootArray
+        ? `\n${expKw}type ${rootName}List = ${rootName}[];`
+        : '';
+
+      parts.push([importLine, zodBlock, typeInfer + listLine].join('\n\n'));
+    }
+
+    if (parts.length === 0) return;
+
+    const separator = activeMode === 'both'
+      ? '\n\n// ─────────────────────────────────────────\n// Zod Schema\n// ─────────────────────────────────────────\n\n'
+      : '';
+
+    tsOutput.value = activeMode === 'both'
+      ? `// TypeScript Interfaces\n// ─────────────────────────────────────────\n\n${parts[0]}${separator}${parts[1]}`
+      : parts[0];
+
+    successMsg.style.display = 'inline';
+    setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+  }
+
+  function showError(msg: string) {
+    jsonError.textContent = msg;
+    jsonError.style.display = 'block';
+  }
+
+  // ── Mode switching ────────────────────────────────────────────
+  const modeLabels: Record<string, string> = {
+    typescript: 'TypeScript Output',
+    zod:        'Zod Schema Output',
+    both:       'TypeScript + Zod Output',
+  };
+
+  modeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeMode = btn.dataset.mode as typeof activeMode;
+      modeBtns.forEach(b => {
+        b.style.background  = '#fff';
+        b.style.color       = '#475569';
+        b.style.borderColor = '#E2E8F0';
+      });
+      btn.style.background  = '#EFF6FF';
+      btn.style.color       = '#1D4ED8';
+      btn.style.borderColor = '#1D4ED8';
+      outputLabel.textContent = modeLabels[activeMode];
+      if (jsonInput.value.trim()) generate();
+    });
+  });
+
+  // ── Buttons ───────────────────────────────────────────────────
+  generateBtn.addEventListener('click', generate);
+
+  clearBtn.addEventListener('click', () => {
+    jsonInput.value  = '';
+    tsOutput.value   = '';
+    jsonError.style.display  = 'none';
+    successMsg.style.display = 'none';
+  });
+
+  copyBtn.addEventListener('click', () => {
+    if (!tsOutput.value) return;
+    navigator.clipboard.writeText(tsOutput.value).then(() => {
+      copyBtn.textContent = '✓ Copied!';
+      copyBtn.style.background   = '#F0FDF4';
+      copyBtn.style.color        = '#16A34A';
+      copyBtn.style.borderColor  = '#BBF7D0';
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy';
+        copyBtn.style.background  = '#F8FAFC';
+        copyBtn.style.color       = '#475569';
+        copyBtn.style.borderColor = '#E2E8F0';
+      }, 2000);
+    });
+  });
+
+  loadSampleBtn.addEventListener('click', () => {
+    jsonInput.value = SAMPLE;
+    generate();
+  });
+
+  // ── Live generation on input ──────────────────────────────────
+  let debounceTimer: ReturnType<typeof setTimeout>;
+  jsonInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(generate, 400);
+  });
+
+  // Option changes re-trigger generation
+  [optOptional, optReadonly, optExport].forEach(el => {
+    el.addEventListener('change', () => { if (jsonInput.value.trim()) generate(); });
+  });
+  rootNameInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => { if (jsonInput.value.trim()) generate(); }, 300);
+  });
+</script>

@@ -1,0 +1,388 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'hex-to-rgb')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ═══ THE TOOL ═══ -->
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.5rem;">
+      Convert a colour
+    </h2>
+
+    <!-- Input row -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:flex-end; margin-bottom:1.25rem;">
+
+      <!-- Native colour picker -->
+      <div>
+        <label style="display:block; font-size:0.8rem; font-weight:600; color:#475569; margin-bottom:0.35rem;">
+          Pick a colour
+        </label>
+        <input
+          id="color-picker"
+          type="color"
+          value="#6366F1"
+          style="width:3.5rem; height:2.85rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; padding:0.2rem; cursor:pointer; background:#fff;"
+          title="Use the colour picker"
+        />
+      </div>
+
+      <!-- HEX input -->
+      <div style="flex:1; min-width:160px;">
+        <label style="display:block; font-size:0.8rem; font-weight:600; color:#475569; margin-bottom:0.35rem;" for="hex-input">
+          HEX code
+        </label>
+        <div style="display:flex; align-items:center; border:1.5px solid #E2E8F0; border-radius:0.625rem; overflow:hidden; background:#fff; transition:border-color 0.15s;" id="hex-input-wrap">
+          <span style="padding:0 0.6rem 0 0.9rem; color:#94A3B8; font-size:1rem; font-weight:600; user-select:none;">#</span>
+          <input
+            id="hex-input"
+            type="text"
+            maxlength="8"
+            placeholder="6366F1"
+            autocomplete="off"
+            spellcheck="false"
+            style="flex:1; padding:0.7rem 0.75rem 0.7rem 0; border:none; outline:none; font-size:1rem; font-family:'Fira Code',monospace; color:#0F172A; text-transform:uppercase; background:transparent;"
+          />
+        </div>
+      </div>
+
+      <button
+        id="convert-btn"
+        style="padding:0.7rem 1.75rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.625rem; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s; white-space:nowrap;"
+        onmouseover="this.style.background='#1E3A8A';"
+        onmouseout="this.style.background='#1D4ED8';"
+      >
+        Convert
+      </button>
+    </div>
+
+    <!-- Error -->
+    <div id="hex-error" style="display:none; color:#DC2626; font-size:0.85rem; margin-bottom:0.75rem;"></div>
+
+    <!-- Results grid -->
+    <div id="results-grid" style="display:none; margin-top:0.5rem;">
+
+      <!-- Colour preview swatch -->
+      <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1.25rem;">
+        <div
+          id="color-swatch"
+          style="width:5rem; height:5rem; border-radius:0.875rem; border:1.5px solid #E2E8F0; flex-shrink:0; transition:background 0.2s;"
+        ></div>
+        <div>
+          <div style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.25rem;">Preview</div>
+          <div id="swatch-label" style="font-family:'Fira Code',monospace; font-size:1rem; color:#0F172A; font-weight:600;"></div>
+          <div id="swatch-name" style="font-size:0.8rem; color:#94A3B8; margin-top:0.15rem;"></div>
+        </div>
+      </div>
+
+      <!-- Output cards -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:0.75rem;" id="output-cards">
+      </div>
+
+    </div>
+
+    <!-- Live update hint -->
+    <p style="font-size:0.78rem; color:#94A3B8; margin-top:1rem;">
+      💡 The colour picker and HEX input stay in sync — change either one and click Convert, or just type and press Enter.
+    </p>
+  </div>
+
+  <!-- ═══ HOW TO USE ═══ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
+      How to use the HEX to RGB Converter
+    </h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      There are two ways to input a colour. You can type or paste a HEX code directly into the text field — with or without the leading <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">#</code> symbol. Three-character shorthand codes like <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">FFF</code> or <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">09C</code> are also accepted and automatically expanded.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Alternatively, click the colour picker square on the left to open your browser's native colour selector and choose any colour visually. The HEX field will update automatically.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">
+      Once you click Convert (or press Enter), the tool outputs the colour as RGB, RGBA, HSL, and ready-to-use CSS values — each with a one-click copy button. The colour preview swatch shows you an accurate visual of the result.
+    </p>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
+      How HEX to RGB conversion works
+    </h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:1rem;">
+      A HEX colour code represents three colour channels — red, green, and blue — each encoded as a two-digit base-16 (hexadecimal) number. The conversion to RGB simply reads each pair and converts it to its decimal equivalent.
+    </p>
+
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1rem;">
+      {[
+        ['HEX pair → decimal',    '#FF6600 → R=255, G=102, B=0',           'Each 2-char pair is parsed as hex: FF=255, 66=102, 00=0'],
+        ['3-char shorthand',      '#F60 → #FF6600',                         'Each character is doubled: F→FF, 6→66, 0→00'],
+        ['RGB → HSL conversion',  'Hue, Saturation, Lightness',             'Derived mathematically from normalised RGB values (0–1 range)'],
+        ['CSS output formats',    'rgb(), rgba(), hsl(), hex',              'Formatted to match valid CSS colour syntax exactly'],
+      ].map(([label, example, note]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:0.75rem; margin-bottom:0.35rem;">
+            <span style="font-size:0.82rem; font-weight:600; color:#475569;">{label}</span>
+            <code style="font-size:0.82rem; color:#1D4ED8; background:#EFF6FF; padding:0.15rem 0.5rem; border-radius:0.375rem;">{example}</code>
+          </div>
+          <p style="font-size:0.8rem; color:#94A3B8; margin:0;">{note}</p>
+        </div>
+      ))}
+    </div>
+
+    <p style="color:#64748B; font-size:0.82rem; line-height:1.6;">
+      All conversions happen entirely in your browser using JavaScript. No colour data is sent to any server.
+    </p>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+      Frequently asked questions
+    </h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+
+      {[
+        {
+          q: 'What is a HEX colour code?',
+          a: 'A HEX colour code is a six-digit base-16 number used in CSS and design tools to represent a colour. It encodes red, green, and blue channel values as pairs of hexadecimal digits, prefixed with a # symbol. For example, #FF0000 is pure red, #00FF00 is pure green, and #0000FF is pure blue.',
+        },
+        {
+          q: 'How do I convert HEX to RGB?',
+          a: 'Split the HEX code into three two-character pairs and convert each from base-16 to base-10. For example, #FF6600: FF = 255 (red), 66 = 102 (green), 00 = 0 (blue), giving rgb(255, 102, 0). This tool does the conversion automatically.',
+        },
+        {
+          q: 'What is the difference between RGB and RGBA?',
+          a: 'RGB defines a colour using red, green, and blue values (each 0–255). RGBA adds a fourth value — alpha — which controls opacity on a scale from 0 (fully transparent) to 1 (fully opaque). For example, rgba(99, 102, 241, 0.5) is 50% transparent indigo.',
+        },
+        {
+          q: 'What is HSL and when should I use it?',
+          a: 'HSL stands for Hue, Saturation, and Lightness. Hue is the colour angle on a 360° wheel, saturation is the intensity (0% is grey, 100% is vivid), and lightness ranges from 0% (black) to 100% (white). Many designers prefer HSL because adjusting lightness or saturation feels more intuitive than tweaking RGB numbers.',
+        },
+        {
+          q: 'What does a 3-character HEX code mean?',
+          a: 'A 3-character HEX code is a shorthand where each digit represents both digits of a standard pair. For example, #F60 expands to #FF6600. This shorthand is only valid when both digits in each pair are identical.',
+        },
+        {
+          q: 'Can I use this tool to convert RGB back to HEX?',
+          a: 'This tool currently converts from HEX to RGB, RGBA, and HSL. To go the other direction — RGB to HEX — you can use the colour picker: set the RGB values in your system colour picker and it will show you the equivalent HEX code.',
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  const hexInput    = document.getElementById('hex-input')    as HTMLInputElement;
+  const colorPicker = document.getElementById('color-picker') as HTMLInputElement;
+  const convertBtn  = document.getElementById('convert-btn')  as HTMLButtonElement;
+  const hexWrap     = document.getElementById('hex-input-wrap')!;
+  const hexError    = document.getElementById('hex-error')!;
+  const resultsGrid = document.getElementById('results-grid')!;
+  const colorSwatch = document.getElementById('color-swatch')!;
+  const swatchLabel = document.getElementById('swatch-label')!;
+  const swatchName  = document.getElementById('swatch-name')!;
+  const outputCards = document.getElementById('output-cards')!;
+
+  // ── Helpers ────────────────────────────────────────────────────
+
+  function parseHex(raw: string): { r: number; g: number; b: number } | null {
+    let hex = raw.replace(/^#/, '').trim();
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    if (hex.length === 6 && /^[0-9A-Fa-f]{6}$/.test(hex)) {
+      return {
+        r: parseInt(hex.slice(0, 2), 16),
+        g: parseInt(hex.slice(2, 4), 16),
+        b: parseInt(hex.slice(4, 6), 16),
+      };
+    }
+    return null;
+  }
+
+  function rgbToHsl(r: number, g: number, b: number): { h: number; s: number; l: number } {
+    const rn = r / 255, gn = g / 255, bn = b / 255;
+    const max = Math.max(rn, gn, bn), min = Math.min(rn, gn, bn);
+    const l = (max + min) / 2;
+    if (max === min) return { h: 0, s: 0, l: Math.round(l * 100) };
+    const d = max - min;
+    const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    let h = 0;
+    if (max === rn) h = ((gn - bn) / d + (gn < bn ? 6 : 0)) / 6;
+    else if (max === gn) h = ((bn - rn) / d + 2) / 6;
+    else h = ((rn - gn) / d + 4) / 6;
+    return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+  }
+
+  function toHex2(n: number): string {
+    return n.toString(16).padStart(2, '0').toUpperCase();
+  }
+
+  function copyToClipboard(text: string, btn: HTMLButtonElement) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied';
+      btn.style.background = '#F0FDF4';
+      btn.style.color = '#16A34A';
+      btn.style.borderColor = '#BBF7D0';
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.background = '#F8FAFC';
+        btn.style.color = '#475569';
+        btn.style.borderColor = '#E2E8F0';
+      }, 2000);
+    });
+  }
+
+  function makeCard(label: string, value: string, note: string): HTMLDivElement {
+    const card = document.createElement('div');
+    card.style.cssText = 'background:#fff; border:1.5px solid #E2E8F0; border-radius:0.75rem; padding:0.875rem 1rem;';
+    card.innerHTML = `
+      <div style="font-size:0.72rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;">${label}</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+        <code style="font-family:'Fira Code',monospace; font-size:0.9rem; color:#0F172A; word-break:break-all;">${value}</code>
+        <button class="copy-btn" data-value="${value}"
+          style="flex-shrink:0; padding:0.25rem 0.65rem; border:1px solid #E2E8F0; border-radius:0.4rem; font-size:0.75rem; font-weight:500; color:#475569; background:#F8FAFC; cursor:pointer; transition:all 0.15s; white-space:nowrap;">
+          Copy
+        </button>
+      </div>
+      <div style="font-size:0.75rem; color:#CBD5E1; margin-top:0.35rem;">${note}</div>
+    `;
+    return card;
+  }
+
+  // ── Main convert function ──────────────────────────────────────
+
+  function convert() {
+    hexError.style.display = 'none';
+    hexWrap.style.borderColor = '#E2E8F0';
+
+    const raw = hexInput.value.trim();
+    if (!raw) {
+      hexError.textContent = 'Please enter a HEX colour code.';
+      hexError.style.display = 'block';
+      hexWrap.style.borderColor = '#FCA5A5';
+      resultsGrid.style.display = 'none';
+      return;
+    }
+
+    const rgb = parseHex(raw);
+    if (!rgb) {
+      hexError.textContent = 'Invalid HEX code. Please enter a 3 or 6 character hex value (e.g. FF6600 or F60).';
+      hexError.style.display = 'block';
+      hexWrap.style.borderColor = '#FCA5A5';
+      resultsGrid.style.display = 'none';
+      return;
+    }
+
+    const { r, g, b } = rgb;
+    const hsl = rgbToHsl(r, g, b);
+    const fullHex = `#${toHex2(r)}${toHex2(g)}${toHex2(b)}`;
+
+    // Update picker to match typed hex
+    colorPicker.value = fullHex;
+
+    // Swatch
+    colorSwatch.style.background = fullHex;
+    swatchLabel.textContent = fullHex;
+
+    // Rough luminance to decide text colour on swatch label
+    const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    swatchLabel.style.color = lum > 0.55 ? '#1E293B' : '#F8FAFC';
+
+    // Perceived colour name hint (basic)
+    const names: [string, [number,number], [number,number], [number,number]][] = [
+      ['Red',     [340,20],  [50,100], [30,70]],
+      ['Orange',  [20,45],   [60,100], [35,70]],
+      ['Yellow',  [45,70],   [60,100], [45,75]],
+      ['Green',   [70,165],  [30,100], [20,70]],
+      ['Cyan',    [165,195], [40,100], [30,70]],
+      ['Blue',    [195,265], [30,100], [20,70]],
+      ['Violet',  [265,290], [30,100], [25,70]],
+      ['Pink',    [290,340], [40,100], [40,80]],
+    ];
+    let colourName = '';
+    for (const [name, hRange, sRange, lRange] of names) {
+      const hh = hsl.h < hRange[0] && name === 'Red' ? hsl.h + 360 : hsl.h;
+      if (hh >= hRange[0] && hh < hRange[1] && hsl.s >= sRange[0] && hsl.l >= lRange[0] && hsl.l <= lRange[1]) {
+        colourName = name; break;
+      }
+    }
+    if (hsl.s < 8) colourName = hsl.l < 20 ? 'Black' : hsl.l > 85 ? 'White' : 'Grey';
+    swatchName.textContent = colourName;
+
+    // Build output cards
+    outputCards.innerHTML = '';
+    const cards = [
+      ['HEX',  fullHex,                         '6-digit uppercase hex'],
+      ['RGB',  `rgb(${r}, ${g}, ${b})`,          'CSS rgb() function'],
+      ['RGBA', `rgba(${r}, ${g}, ${b}, 1)`,      'CSS rgba() — alpha defaults to 1 (opaque)'],
+      ['HSL',  `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`, 'CSS hsl() — Hue / Saturation / Lightness'],
+      ['R',    r.toString(),                     `Red channel (0–255)`],
+      ['G',    g.toString(),                     `Green channel (0–255)`],
+      ['B',    b.toString(),                     `Blue channel (0–255)`],
+      ['Hue',  `${hsl.h}°`,                      'Position on the colour wheel (0–360°)'],
+    ];
+
+    cards.forEach(([label, value, note]) => {
+      const card = makeCard(label, value, note);
+      outputCards.appendChild(card);
+    });
+
+    // Wire up copy buttons
+    outputCards.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => copyToClipboard(btn.dataset.value!, btn));
+    });
+
+    resultsGrid.style.display = 'block';
+  }
+
+  // ── Event listeners ────────────────────────────────────────────
+
+  convertBtn.addEventListener('click', convert);
+
+  hexInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') convert();
+  });
+
+  hexInput.addEventListener('focus', () => {
+    hexWrap.style.borderColor = '#1D4ED8';
+  });
+  hexInput.addEventListener('blur', () => {
+    hexWrap.style.borderColor = hexError.style.display === 'block' ? '#FCA5A5' : '#E2E8F0';
+  });
+
+  // Auto-uppercase as user types
+  hexInput.addEventListener('input', () => {
+    const cur = hexInput.selectionStart;
+    hexInput.value = hexInput.value.toUpperCase().replace(/[^0-9A-F#]/g, '');
+    hexInput.setSelectionRange(cur, cur);
+  });
+
+  // Sync colour picker → hex input
+  colorPicker.addEventListener('input', () => {
+    hexInput.value = colorPicker.value.replace('#', '').toUpperCase();
+  });
+
+  colorPicker.addEventListener('change', () => {
+    hexInput.value = colorPicker.value.replace('#', '').toUpperCase();
+    convert();
+  });
+
+  // Run on load with the default value
+  window.addEventListener('load', () => {
+    hexInput.value = '6366F1';
+    convert();
+  });
+</script>

@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import tools from '../../data/tools.json';
+import categories from '../../data/categories.json';
+
+export async function getStaticPaths() {
+  return categories.map(cat => ({
+    params: { category: cat.slug },
+    props: { category: cat },
+  }));
+}
+
+const { category } = Astro.props;
+const categoryTools = tools.filter(t => t.category === category.slug);
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": `${category.name} – Free Online Tools`,
+  "description": category.description,
+  "url": `https://yoursite.com/category/${category.slug}`,
+  "hasPart": categoryTools.map(t => ({
+    "@type": "WebApplication",
+    "name": t.name,
+    "url": `https://yoursite.com/tools/${t.slug}`
+  }))
+};
+---
+
+<BaseLayout
+  title={`${category.name} – Free Online Tools | ToolBox`}
+  description={category.description}
+  canonicalUrl={`/category/${category.slug}`}
+  structuredData={structuredData}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+      <ol class="flex items-center gap-2">
+        <li><a href="/" class="hover:text-indigo-600 transition-colors">Home</a></li>
+        <li class="text-gray-300">›</li>
+        <li class="text-gray-800 font-medium">{category.name}</li>
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-4xl">{category.icon}</span>
+        <h1 class="text-3xl font-bold text-gray-900">{category.name}</h1>
+      </div>
+      <p class="text-gray-500 max-w-xl">{category.description}</p>
+      <p class="text-sm text-gray-400 mt-1">{categoryTools.length} tools available</p>
+    </div>
+
+    <!-- Tools grid -->
+    {categoryTools.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {categoryTools.map(tool => (
+          <a
+            href={`/tools/${tool.slug}`}
+            class="group bg-white rounded-2xl border border-gray-200 p-5 hover:border-indigo-300 hover:shadow-lg transition-all"
+          >
+            <div class="flex items-start gap-4">
+              <span class="text-3xl shrink-0">{tool.icon}</span>
+              <div>
+                <h2 class="font-semibold text-gray-900 group-hover:text-indigo-700 transition-colors">
+                  {tool.name}
+                </h2>
+                <p class="text-sm text-gray-500 mt-1 leading-relaxed">
+                  {tool.shortDescription}
+                </p>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-20 text-gray-400">
+        <div class="text-5xl mb-4">🚧</div>
+        <p class="text-lg font-medium">Coming soon</p>
+        <p class="text-sm mt-1">Tools for this category are on the way.</p>
+      </div>
+    )}
+
+    <!-- Other categories -->
+    <div class="mt-16 pt-8 border-t border-gray-200">
+      <h2 class="text-lg font-bold text-gray-900 mb-5">Browse Other Categories</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        {categories
+          .filter(c => c.slug !== category.slug)
+          .map(cat => (
+            <a
+              href={`/category/${cat.slug}`}
+              class="flex flex-col items-center text-center p-4 bg-white rounded-xl border border-gray-200 hover:border-indigo-300 hover:shadow-md transition-all group"
+            >
+              <span class="text-2xl mb-1">{cat.icon}</span>
+              <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-700">{cat.name}</span>
+            </a>
+          ))}
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>

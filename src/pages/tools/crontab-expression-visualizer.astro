@@ -1,0 +1,923 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ═══ THE TOOL ═══ -->
+  <div slot="tool">
+
+    <!-- Live cron expression display + copy -->
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <code id="cron-display"
+        style="flex:1; min-width:0; font-family:'Fira Code',monospace; font-size:1.3rem; font-weight:700; color:var(--text-primary); background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.75rem 1.1rem; letter-spacing:0.06em; white-space:nowrap; overflow-x:auto;">
+        * * * * *
+      </code>
+      <button id="copy-btn"
+        style="flex-shrink:0; padding:0.65rem 1.25rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.625rem; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s; white-space:nowrap;"
+        onmouseover="this.style.background='#1E3A8A';" onmouseout="this.style.background='#1D4ED8';">
+        Copy
+      </button>
+      <button id="reset-btn"
+        style="flex-shrink:0; padding:0.65rem 1rem; background:var(--bg-surface-2); color:var(--text-secondary); border:1.5px solid var(--border); border-radius:0.625rem; font-size:0.875rem; font-weight:500; cursor:pointer; transition:all 0.15s; white-space:nowrap;"
+        onmouseover="this.style.borderColor='#1D4ED8';this.style.color='#1D4ED8';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">
+        Reset
+      </button>
+    </div>
+
+    <!-- Human-readable description -->
+    <div id="human-desc"
+      style="background:linear-gradient(135deg,#EFF6FF,#F0FDF4); border:1.5px solid #BFDBFE; border-radius:0.875rem; padding:1rem 1.25rem; margin-bottom:1.75rem; font-size:0.9rem; color:#1E3A8A; font-weight:500; line-height:1.6; min-height:48px;">
+      Runs every minute.
+    </div>
+
+    <!-- ── FIELD CONTROLS ── -->
+    <div style="display:flex; flex-direction:column; gap:1.25rem;">
+
+      <!-- Minutes -->
+      <div class="field-block">
+        <div class="field-header">
+          <span class="field-name" style="color:#7C3AED;">Minutes</span>
+          <span class="field-pos">0–59</span>
+          <div class="preset-row" id="preset-minute"></div>
+        </div>
+        <div class="field-body">
+          <div class="mode-row">
+            <button class="fmode active" data-field="minute" data-mode="every">Every minute</button>
+            <button class="fmode" data-field="minute" data-mode="specific">Specific</button>
+            <button class="fmode" data-field="minute" data-mode="range">Range</button>
+            <button class="fmode" data-field="minute" data-mode="every-n">Every N</button>
+          </div>
+          <!-- every: no controls -->
+          <div class="mode-pane" id="minute-pane-every"></div>
+          <!-- specific: checkboxes 0–59 -->
+          <div class="mode-pane" id="minute-pane-specific" style="display:none;">
+            <div class="checkbox-grid" id="minute-checkboxes"></div>
+          </div>
+          <!-- range: from / to sliders -->
+          <div class="mode-pane" id="minute-pane-range" style="display:none;">
+            <div class="range-row">
+              <label class="range-label">From</label>
+              <input type="range" class="cron-range" id="minute-from" min="0" max="58" value="0" />
+              <span class="range-val" id="minute-from-val">0</span>
+              <label class="range-label" style="margin-left:1rem;">To</label>
+              <input type="range" class="cron-range" id="minute-to" min="1" max="59" value="30" />
+              <span class="range-val" id="minute-to-val">30</span>
+            </div>
+          </div>
+          <!-- every-n -->
+          <div class="mode-pane" id="minute-pane-every-n" style="display:none;">
+            <div class="range-row">
+              <label class="range-label">Every</label>
+              <input type="range" class="cron-range" id="minute-n" min="2" max="30" value="5" />
+              <span class="range-val" id="minute-n-val">5</span>
+              <label class="range-label" style="margin-left:0.5rem;">minutes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hours -->
+      <div class="field-block">
+        <div class="field-header">
+          <span class="field-name" style="color:#1D4ED8;">Hours</span>
+          <span class="field-pos">0–23</span>
+          <div class="preset-row" id="preset-hour"></div>
+        </div>
+        <div class="field-body">
+          <div class="mode-row">
+            <button class="fmode active" data-field="hour" data-mode="every">Every hour</button>
+            <button class="fmode" data-field="hour" data-mode="specific">Specific</button>
+            <button class="fmode" data-field="hour" data-mode="range">Range</button>
+            <button class="fmode" data-field="hour" data-mode="every-n">Every N</button>
+          </div>
+          <div class="mode-pane" id="hour-pane-every"></div>
+          <div class="mode-pane" id="hour-pane-specific" style="display:none;">
+            <div class="checkbox-grid" id="hour-checkboxes"></div>
+          </div>
+          <div class="mode-pane" id="hour-pane-range" style="display:none;">
+            <div class="range-row">
+              <label class="range-label">From</label>
+              <input type="range" class="cron-range" id="hour-from" min="0" max="22" value="9" />
+              <span class="range-val" id="hour-from-val">9</span>
+              <label class="range-label" style="margin-left:1rem;">To</label>
+              <input type="range" class="cron-range" id="hour-to" min="1" max="23" value="17" />
+              <span class="range-val" id="hour-to-val">17</span>
+            </div>
+          </div>
+          <div class="mode-pane" id="hour-pane-every-n" style="display:none;">
+            <div class="range-row">
+              <label class="range-label">Every</label>
+              <input type="range" class="cron-range" id="hour-n" min="2" max="12" value="2" />
+              <span class="range-val" id="hour-n-val">2</span>
+              <label class="range-label" style="margin-left:0.5rem;">hours</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day of Month -->
+      <div class="field-block">
+        <div class="field-header">
+          <span class="field-name" style="color:#0D9488;">Day of Month</span>
+          <span class="field-pos">1–31</span>
+        </div>
+        <div class="field-body">
+          <div class="mode-row">
+            <button class="fmode active" data-field="dom" data-mode="every">Every day</button>
+            <button class="fmode" data-field="dom" data-mode="specific">Specific</button>
+            <button class="fmode" data-field="dom" data-mode="range">Range</button>
+          </div>
+          <div class="mode-pane" id="dom-pane-every"></div>
+          <div class="mode-pane" id="dom-pane-specific" style="display:none;">
+            <div class="checkbox-grid" id="dom-checkboxes"></div>
+          </div>
+          <div class="mode-pane" id="dom-pane-range" style="display:none;">
+            <div class="range-row">
+              <label class="range-label">From</label>
+              <input type="range" class="cron-range" id="dom-from" min="1" max="30" value="1" />
+              <span class="range-val" id="dom-from-val">1</span>
+              <label class="range-label" style="margin-left:1rem;">To</label>
+              <input type="range" class="cron-range" id="dom-to" min="2" max="31" value="15" />
+              <span class="range-val" id="dom-to-val">15</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Month -->
+      <div class="field-block">
+        <div class="field-header">
+          <span class="field-name" style="color:#EA580C;">Month</span>
+          <span class="field-pos">1–12</span>
+        </div>
+        <div class="field-body">
+          <div class="mode-row">
+            <button class="fmode active" data-field="month" data-mode="every">Every month</button>
+            <button class="fmode" data-field="month" data-mode="specific">Specific</button>
+            <button class="fmode" data-field="month" data-mode="range">Range</button>
+          </div>
+          <div class="mode-pane" id="month-pane-every"></div>
+          <div class="mode-pane" id="month-pane-specific" style="display:none;">
+            <div class="checkbox-grid month-names" id="month-checkboxes"></div>
+          </div>
+          <div class="mode-pane" id="month-pane-range" style="display:none;">
+            <div class="range-row">
+              <label class="range-label">From</label>
+              <select class="cron-select" id="month-from">
+                <option value="1">Jan</option><option value="2">Feb</option>
+                <option value="3">Mar</option><option value="4">Apr</option>
+                <option value="5">May</option><option value="6">Jun</option>
+                <option value="7">Jul</option><option value="8">Aug</option>
+                <option value="9">Sep</option><option value="10">Oct</option>
+                <option value="11">Nov</option>
+              </select>
+              <label class="range-label" style="margin-left:1rem;">To</label>
+              <select class="cron-select" id="month-to">
+                <option value="2">Feb</option><option value="3">Mar</option>
+                <option value="4">Apr</option><option value="5">May</option>
+                <option value="6">Jun</option><option value="7">Jul</option>
+                <option value="8">Aug</option><option value="9">Sep</option>
+                <option value="10">Oct</option><option value="11">Nov</option>
+                <option value="12" selected>Dec</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day of Week -->
+      <div class="field-block">
+        <div class="field-header">
+          <span class="field-name" style="color:#DC2626;">Day of Week</span>
+          <span class="field-pos">0=Sun … 6=Sat</span>
+        </div>
+        <div class="field-body">
+          <div class="mode-row">
+            <button class="fmode active" data-field="dow" data-mode="every">Every day</button>
+            <button class="fmode" data-field="dow" data-mode="specific">Specific</button>
+            <button class="fmode" data-field="dow" data-mode="range">Range</button>
+          </div>
+          <div class="mode-pane" id="dow-pane-every"></div>
+          <div class="mode-pane" id="dow-pane-specific" style="display:none;">
+            <div class="checkbox-grid dow-names" id="dow-checkboxes"></div>
+          </div>
+          <div class="mode-pane" id="dow-pane-range" style="display:none;">
+            <div class="range-row">
+              <label class="range-label">From</label>
+              <select class="cron-select" id="dow-from">
+                <option value="0">Sun</option><option value="1">Mon</option>
+                <option value="2">Tue</option><option value="3">Wed</option>
+                <option value="4">Thu</option><option value="5">Fri</option>
+              </select>
+              <label class="range-label" style="margin-left:1rem;">To</label>
+              <select class="cron-select" id="dow-to">
+                <option value="1">Mon</option><option value="2">Tue</option>
+                <option value="3">Wed</option><option value="4">Thu</option>
+                <option value="5">Fri</option><option value="6" selected>Sat</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /fields -->
+
+    <!-- ── QUICK TEMPLATES ── -->
+    <div style="margin-top:1.75rem; padding-top:1.5rem; border-top:1px solid var(--border);">
+      <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.75rem;">Common schedules</div>
+      <div style="display:flex; flex-wrap:wrap; gap:0.5rem;" id="templates-row"></div>
+    </div>
+
+    <!-- ── NEXT RUNS PREVIEW ── -->
+    <div style="margin-top:1.5rem;">
+      <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.5rem;">Next 5 scheduled runs</div>
+      <div id="next-runs"
+        style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:var(--text-secondary); line-height:2;">
+        —
+      </div>
+    </div>
+
+  </div><!-- /tool -->
+
+
+  <!-- ═══ HOW TO USE ═══ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Crontab Visualizer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Use the five field sections — <strong style="color:var(--text-primary);">Minutes, Hours, Day of Month, Month,</strong> and <strong style="color:var(--text-primary);">Day of Week</strong> — to build your schedule. Each field has four modes: run on every unit, pick specific values, define a range, or set an "every N" step.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The cron expression at the top updates in real time, and the blue banner below it translates your settings into plain English. Click <strong style="color:var(--text-primary);">Copy</strong> to copy the expression to your clipboard, or pick one of the <strong style="color:var(--text-primary);">Common schedules</strong> buttons to jump straight to a standard setup like "Every weekday at 9am".
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      The <strong style="color:var(--text-primary);">Next 5 scheduled runs</strong> panel shows the actual upcoming dates and times your expression would trigger, so you can verify the schedule looks right before deploying it.
+    </p>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Cron expression format</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:1rem;">
+      A standard cron expression has five space-separated fields, each controlling a time unit. The scheduler runs a job when the current time matches all five fields simultaneously.
+    </p>
+    <div style="overflow-x:auto; margin-bottom:1rem;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.84rem;">
+        <thead>
+          <tr style="background:var(--bg-surface-2);">
+            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border);">Field</th>
+            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border);">Position</th>
+            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border);">Range</th>
+            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border);">Special values</th>
+          </tr>
+        </thead>
+        <tbody>
+          {[
+            ['Minute',       '1st', '0–59', '* , - /'],
+            ['Hour',         '2nd', '0–23', '* , - /'],
+            ['Day of month', '3rd', '1–31', '* , - /'],
+            ['Month',        '4th', '1–12', '* , - /'],
+            ['Day of week',  '5th', '0–6 (Sun–Sat)', '* , - /'],
+          ].map(([f, pos, range, sp]) => (
+            <tr>
+              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-primary); font-weight:600;">{f}</td>
+              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-muted); font-family:'Fira Code',monospace;">{pos}</td>
+              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-secondary);">{range}</td>
+              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-secondary); font-family:'Fira Code',monospace;">{sp}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:0.625rem;">
+      {[
+        ['*',   'Any / every value in this field'],
+        [',',   'List separator — e.g. 1,3,5 means 1st, 3rd, and 5th'],
+        ['-',   'Range — e.g. 9-17 means hours 9 through 17 inclusive'],
+        ['/',   'Step — e.g. */5 means every 5 units; 0/15 means 0, 15, 30, 45'],
+      ].map(([sym, desc]) => (
+        <div style="display:flex; gap:0.75rem; align-items:baseline; background:var(--bg-surface); border:1px solid var(--border); border-radius:0.5rem; padding:0.5rem 0.875rem;">
+          <code style="font-family:'Fira Code',monospace; font-size:0.9rem; font-weight:700; color:#1D4ED8; min-width:24px;">{sym}</code>
+          <span style="font-size:0.82rem; color:var(--text-secondary);">{desc}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: 'What is a cron job?',
+          a: 'A cron job is a scheduled task on Unix-like systems, managed by the cron daemon. It runs a command or script automatically at a defined time interval — for example, every night at midnight, every Monday morning, or every five minutes. Cron is used for backups, report generation, data syncing, cache clearing, and many other recurring automation tasks.',
+        },
+        {
+          q: 'What does * * * * * mean?',
+          a: 'Five asterisks mean "match every value in every field" — so the job runs every minute of every hour of every day. It is the most permissive schedule possible and is rarely used in production. It is the default starting point in this tool.',
+        },
+        {
+          q: 'How do I run a job every 5 minutes?',
+          a: 'Use */5 in the minute field: */5 * * * *. The / character is a step operator — */5 means "starting at 0, every 5 units". This produces runs at :00, :05, :10, :15, and so on throughout the day.',
+        },
+        {
+          q: 'How do I run a job at 9am on weekdays only?',
+          a: 'Use 0 9 * * 1-5. The 0 9 sets the time to exactly 9:00am. The * * leaves day-of-month and month unrestricted. The 1-5 restricts day-of-week to Monday (1) through Friday (5).',
+        },
+        {
+          q: 'What is the difference between day-of-month and day-of-week?',
+          a: 'Day-of-month (3rd field) matches calendar dates — e.g. the 1st, 15th, or last day of each month. Day-of-week (5th field) matches named days — Monday through Sunday. When both are set to non-wildcard values, most cron implementations run the job if EITHER condition matches (OR logic), not only when both match. Use * in one field to avoid ambiguity.',
+        },
+        {
+          q: 'Can cron run more frequently than once a minute?',
+          a: 'Standard cron has a one-minute resolution — it cannot schedule sub-minute intervals. For sub-minute scheduling, you need a different tool: a loop inside a script, a systemd timer with a finer interval, or a task queue like Celery or Bull. Some cloud schedulers (AWS EventBridge, GitHub Actions) also support 1-minute minimum.',
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  /* ── Field blocks ── */
+  .field-block {
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    border-radius: 0.875rem;
+    overflow: hidden;
+  }
+  .field-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-surface-2);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .field-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+  .field-pos {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--bg-surface-3);
+    padding: 0.1rem 0.5rem;
+    border-radius: 0.3rem;
+  }
+  .preset-row {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin-left: auto;
+  }
+  .field-body {
+    padding: 0.875rem 1rem;
+  }
+
+  /* ── Mode buttons ── */
+  .mode-row {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.875rem;
+  }
+  .fmode {
+    padding: 0.3rem 0.75rem;
+    border-radius: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1.5px solid var(--border);
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .fmode.active {
+    background: #EFF6FF;
+    border-color: #1D4ED8;
+    color: #1D4ED8;
+  }
+  :root.dark .fmode.active {
+    background: rgba(29,78,216,0.2);
+    color: #93C5FD;
+    border-color: #3B82F6;
+  }
+  .fmode:hover:not(.active) {
+    border-color: #1D4ED8;
+    color: #1D4ED8;
+  }
+
+  /* ── Range row ── */
+  .range-row {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+  }
+  .range-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .cron-range {
+    flex: 1;
+    min-width: 80px;
+    max-width: 200px;
+    height: 4px;
+    cursor: pointer;
+    accent-color: #1D4ED8;
+  }
+  .range-val {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    min-width: 28px;
+    text-align: center;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.35rem;
+  }
+
+  /* ── Select ── */
+  .cron-select {
+    padding: 0.35rem 0.6rem;
+    border: 1.5px solid var(--border);
+    border-radius: 0.4rem;
+    background: var(--bg-surface-2);
+    color: var(--text-primary);
+    font-size: 0.82rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .cron-select:focus { border-color: #1D4ED8; }
+
+  /* ── Checkbox grid ── */
+  .checkbox-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .cb-btn {
+    padding: 0.25rem 0.55rem;
+    border-radius: 0.375rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: 'Fira Code', monospace;
+    border: 1.5px solid var(--border);
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.1s;
+    user-select: none;
+  }
+  .cb-btn.on {
+    background: #1D4ED8;
+    border-color: #1D4ED8;
+    color: #fff;
+  }
+  :root.dark .cb-btn.on {
+    background: #2563EB;
+    border-color: #3B82F6;
+  }
+
+  /* ── Template chips ── */
+  .tpl-chip {
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1.5px solid var(--border);
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tpl-chip:hover {
+    border-color: #1D4ED8;
+    color: #1D4ED8;
+    background: #EFF6FF;
+  }
+  :root.dark .tpl-chip:hover {
+    background: rgba(29,78,216,0.15);
+    color: #93C5FD;
+  }
+</style>
+
+<script>
+(function () {
+
+  // ── State ──────────────────────────────────────────────────────────
+  const state = {
+    minute: { mode: 'every', specific: new Set<number>(), from: 0, to: 30, n: 5 },
+    hour:   { mode: 'every', specific: new Set<number>(), from: 9, to: 17, n: 2 },
+    dom:    { mode: 'every', specific: new Set<number>(), from: 1, to: 15 },
+    month:  { mode: 'every', specific: new Set<number>(), from: 1, to: 12 },
+    dow:    { mode: 'every', specific: new Set<number>(), from: 1, to: 5 },
+  };
+
+  const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const DOW_NAMES   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  // ── Build checkbox grids ──────────────────────────────────────────
+  function buildCheckboxes(containerId: string, min: number, max: number, labels?: string[]) {
+    const el = document.getElementById(containerId)!;
+    el.innerHTML = '';
+    for (let i = min; i <= max; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'cb-btn';
+      btn.dataset.val = String(i);
+      btn.textContent = labels ? labels[i - min] : String(i);
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('on');
+        updateAll();
+      });
+      el.appendChild(btn);
+    }
+  }
+
+  buildCheckboxes('minute-checkboxes', 0, 59);
+  buildCheckboxes('hour-checkboxes',   0, 23);
+  buildCheckboxes('dom-checkboxes',    1, 31);
+  buildCheckboxes('month-checkboxes',  1, 12, MONTH_NAMES);
+  buildCheckboxes('dow-checkboxes',    0,  6, DOW_NAMES);
+
+  // ── Wire mode buttons ─────────────────────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.fmode').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const field = btn.dataset.field!;
+      const mode  = btn.dataset.mode!;
+      (state as any)[field].mode = mode;
+
+      // Update active button
+      document.querySelectorAll<HTMLButtonElement>(`.fmode[data-field="${field}"]`).forEach(b => {
+        b.classList.toggle('active', b.dataset.mode === mode);
+      });
+
+      // Show/hide panes
+      ['every','specific','range','every-n'].forEach(m => {
+        const pane = document.getElementById(`${field}-pane-${m}`);
+        if (pane) pane.style.display = m === mode ? 'block' : 'none';
+      });
+
+      updateAll();
+    });
+  });
+
+  // ── Wire range sliders ────────────────────────────────────────────
+  function wireSlider(id: string, valId: string, onUpdate: (v: number) => void) {
+    const el  = document.getElementById(id) as HTMLInputElement;
+    const val = document.getElementById(valId)!;
+    if (!el) return;
+    el.addEventListener('input', () => {
+      val.textContent = el.value;
+      onUpdate(parseInt(el.value));
+    });
+  }
+
+  wireSlider('minute-from', 'minute-from-val', v => { state.minute.from = v; updateAll(); });
+  wireSlider('minute-to',   'minute-to-val',   v => { state.minute.to   = v; updateAll(); });
+  wireSlider('minute-n',    'minute-n-val',    v => { state.minute.n    = v; updateAll(); });
+  wireSlider('hour-from',   'hour-from-val',   v => { state.hour.from   = v; updateAll(); });
+  wireSlider('hour-to',     'hour-to-val',     v => { state.hour.to     = v; updateAll(); });
+  wireSlider('hour-n',      'hour-n-val',      v => { state.hour.n      = v; updateAll(); });
+  wireSlider('dom-from',    'dom-from-val',    v => { state.dom.from    = v; updateAll(); });
+  wireSlider('dom-to',      'dom-to-val',      v => { state.dom.to      = v; updateAll(); });
+
+  // Month selects
+  document.getElementById('month-from')?.addEventListener('change', (e) => {
+    state.month.from = parseInt((e.target as HTMLSelectElement).value);
+    updateAll();
+  });
+  document.getElementById('month-to')?.addEventListener('change', (e) => {
+    state.month.to = parseInt((e.target as HTMLSelectElement).value);
+    updateAll();
+  });
+  document.getElementById('dow-from')?.addEventListener('change', (e) => {
+    state.dow.from = parseInt((e.target as HTMLSelectElement).value);
+    updateAll();
+  });
+  document.getElementById('dow-to')?.addEventListener('change', (e) => {
+    state.dow.to = parseInt((e.target as HTMLSelectElement).value);
+    updateAll();
+  });
+
+  // ── Field → cron token ────────────────────────────────────────────
+  function fieldToken(field: string): string {
+    const s = (state as any)[field];
+
+    if (s.mode === 'every') return '*';
+
+    if (s.mode === 'specific') {
+      const checked = Array.from(document.querySelectorAll<HTMLButtonElement>(`#${field}-checkboxes .cb-btn.on`))
+        .map(b => parseInt(b.dataset.val!))
+        .sort((a, b) => a - b);
+      return checked.length > 0 ? checked.join(',') : '*';
+    }
+
+    if (s.mode === 'range') {
+      const from = s.from ?? 0;
+      const to   = s.to   ?? 1;
+      if (from >= to) return String(from);
+      return `${from}-${to}`;
+    }
+
+    if (s.mode === 'every-n') {
+      return `*/${s.n}`;
+    }
+
+    return '*';
+  }
+
+  // ── Human-readable description ────────────────────────────────────
+  function humanField(field: string, unitSingular: string, unitPlural: string,
+                       labels?: string[], offset = 0): string {
+    const s = (state as any)[field];
+
+    if (s.mode === 'every') return `every ${unitSingular}`;
+
+    if (s.mode === 'specific') {
+      const checked = Array.from(document.querySelectorAll<HTMLButtonElement>(`#${field}-checkboxes .cb-btn.on`))
+        .map(b => parseInt(b.dataset.val!))
+        .sort((a, b) => a - b);
+      if (!checked.length) return `every ${unitSingular}`;
+      const names = checked.map(v => labels ? labels[v - offset] : String(v));
+      if (names.length === 1) return names[0];
+      return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+    }
+
+    if (s.mode === 'range') {
+      const fromLabel = labels ? labels[s.from - offset] : s.from;
+      const toLabel   = labels ? labels[s.to   - offset] : s.to;
+      return `${fromLabel} through ${toLabel}`;
+    }
+
+    if (s.mode === 'every-n') {
+      return `every ${s.n} ${unitPlural}`;
+    }
+
+    return `every ${unitSingular}`;
+  }
+
+  function buildHumanDesc(min: string, hr: string, dom: string, mon: string, dow: string): string {
+    const parts: string[] = [];
+
+    // Time part
+    const mState = state.minute;
+    const hState = state.hour;
+
+    if (hState.mode === 'every' && mState.mode === 'every') {
+      parts.push('every minute');
+    } else if (hState.mode === 'every' && mState.mode === 'every-n') {
+      parts.push(`every ${mState.n} minutes`);
+    } else if (hState.mode === 'every' && mState.mode === 'specific') {
+      const checked = Array.from(document.querySelectorAll<HTMLButtonElement>(`#minute-checkboxes .cb-btn.on`))
+        .map(b => parseInt(b.dataset.val!)).sort((a,b)=>a-b);
+      parts.push(`at minute ${checked.join(', ')} of every hour`);
+    } else if (hState.mode === 'specific' && mState.mode === 'specific') {
+      const mins = Array.from(document.querySelectorAll<HTMLButtonElement>(`#minute-checkboxes .cb-btn.on`))
+        .map(b => b.dataset.val!).sort();
+      const hrs  = Array.from(document.querySelectorAll<HTMLButtonElement>(`#hour-checkboxes .cb-btn.on`))
+        .map(b => parseInt(b.dataset.val!)).map(h => `${h}:${(mins[0]||'0').padStart(2,'0')}`).sort();
+      if (mins.length && hrs.length) {
+        parts.push(`at ${hrs.join(', ')}`);
+      } else {
+        parts.push(`at ${humanField('minute','minute','minutes')} past ${humanField('hour','hour','hours')}`);
+      }
+    } else if (mState.mode === 'specific' && hState.mode === 'every') {
+      const mins = Array.from(document.querySelectorAll<HTMLButtonElement>(`#minute-checkboxes .cb-btn.on`))
+        .map(b => b.dataset.val!).join(', ');
+      parts.push(`at minute ${mins || '*'} of every hour`);
+    } else {
+      parts.push(`at ${humanField('minute','minute','minutes')} past ${humanField('hour','hour','hours')}`);
+    }
+
+    // Day part
+    const domMode = state.dom.mode;
+    const dowMode = state.dow.mode;
+
+    if (domMode === 'every' && dowMode === 'every') {
+      // nothing extra
+    } else if (domMode !== 'every' && dowMode === 'every') {
+      parts.push(`on day ${humanField('dom','day','days')} of the month`);
+    } else if (domMode === 'every' && dowMode !== 'every') {
+      parts.push(`on ${humanField('dow','day','days', DOW_NAMES, 0)}`);
+    } else {
+      parts.push(`on day ${humanField('dom','day','days')} of the month and on ${humanField('dow','day','days', DOW_NAMES, 0)}`);
+    }
+
+    // Month part
+    if (state.month.mode !== 'every') {
+      parts.push(`in ${humanField('month','month','months', MONTH_NAMES, 1)}`);
+    }
+
+    return parts.join(', ').replace(/^./, c => c.toUpperCase()) + '.';
+  }
+
+  // ── Next runs ─────────────────────────────────────────────────────
+  function matchesField(token: string, value: number): boolean {
+    if (token === '*') return true;
+    if (token.startsWith('*/')) {
+      const step = parseInt(token.slice(2));
+      return value % step === 0;
+    }
+    if (token.includes('-')) {
+      const [a, b] = token.split('-').map(Number);
+      return value >= a && value <= b;
+    }
+    if (token.includes(',')) {
+      return token.split(',').map(Number).includes(value);
+    }
+    return parseInt(token) === value;
+  }
+
+  function computeNextRuns(expr: string, count = 5): string[] {
+    const [minT, hrT, domT, monT, dowT] = expr.split(' ');
+    const results: string[] = [];
+    const now = new Date();
+    now.setSeconds(0, 0);
+    const d = new Date(now.getTime() + 60_000); // start one minute from now
+
+    let iterations = 0;
+    while (results.length < count && iterations < 200_000) {
+      iterations++;
+      if (
+        matchesField(monT, d.getMonth() + 1) &&
+        (matchesField(domT, d.getDate()) || matchesField(dowT, d.getDay())) &&
+        matchesField(hrT, d.getHours()) &&
+        matchesField(minT, d.getMinutes())
+      ) {
+        results.push(d.toLocaleString(undefined, {
+          weekday: 'short', month: 'short', day: 'numeric',
+          hour: '2-digit', minute: '2-digit', hour12: false,
+        }));
+      }
+      d.setMinutes(d.getMinutes() + 1);
+    }
+    return results;
+  }
+
+  // ── Main update ───────────────────────────────────────────────────
+  function updateAll() {
+    const min = fieldToken('minute');
+    const hr  = fieldToken('hour');
+    const dom = fieldToken('dom');
+    const mon = fieldToken('month');
+    const dow = fieldToken('dow');
+    const expr = `${min} ${hr} ${dom} ${mon} ${dow}`;
+
+    document.getElementById('cron-display')!.textContent = expr;
+    document.getElementById('human-desc')!.textContent   = buildHumanDesc(min, hr, dom, mon, dow);
+
+    const runs = computeNextRuns(expr);
+    document.getElementById('next-runs')!.innerHTML = runs.length
+      ? runs.map((r, i) => `<span style="display:block; padding:0.1rem 0; ${i % 2 === 0 ? '' : 'color:var(--text-muted);'}">${r}</span>`).join('')
+      : '<span style="color:var(--text-muted);">Could not compute next runs for this expression.</span>';
+  }
+
+  // ── Common templates ──────────────────────────────────────────────
+  const TEMPLATES = [
+    { label: 'Every minute',      expr: '* * * * *'   },
+    { label: 'Every 5 min',       expr: '*/5 * * * *'  },
+    { label: 'Every 15 min',      expr: '*/15 * * * *' },
+    { label: 'Every 30 min',      expr: '*/30 * * * *' },
+    { label: 'Hourly',            expr: '0 * * * *'    },
+    { label: 'Daily midnight',    expr: '0 0 * * *'    },
+    { label: 'Daily 9am',         expr: '0 9 * * *'    },
+    { label: 'Weekdays 9am',      expr: '0 9 * * 1-5'  },
+    { label: 'Weekly Mon 9am',    expr: '0 9 * * 1'    },
+    { label: 'Monthly 1st',       expr: '0 0 1 * *'    },
+    { label: 'Yearly Jan 1st',    expr: '0 0 1 1 *'    },
+  ];
+
+  const tplRow = document.getElementById('templates-row')!;
+  TEMPLATES.forEach(tpl => {
+    const chip = document.createElement('button');
+    chip.className = 'tpl-chip';
+    chip.textContent = tpl.label;
+    chip.title = tpl.expr;
+    chip.addEventListener('click', () => applyTemplate(tpl.expr));
+    tplRow.appendChild(chip);
+  });
+
+  function applyTemplate(expr: string) {
+    const [min, hr, dom, mon, dow] = expr.split(' ');
+    // Reset all to 'every' first
+    ['minute','hour','dom','month','dow'].forEach(f => {
+      (state as any)[f].mode = 'every';
+      document.querySelectorAll<HTMLButtonElement>(`.fmode[data-field="${f}"]`).forEach(b => {
+        b.classList.toggle('active', b.dataset.mode === 'every');
+      });
+      ['every','specific','range','every-n'].forEach(m => {
+        const p = document.getElementById(`${f}-pane-${m}`);
+        if (p) p.style.display = m === 'every' ? 'block' : 'none';
+      });
+    });
+
+    // Apply each field
+    applyTokenToField('minute', min);
+    applyTokenToField('hour',   hr);
+    applyTokenToField('dom',    dom);
+    applyTokenToField('month',  mon);
+    applyTokenToField('dow',    dow);
+
+    updateAll();
+  }
+
+  function applyTokenToField(field: string, token: string) {
+    const s = (state as any)[field];
+
+    if (token === '*') {
+      setFieldMode(field, 'every');
+      return;
+    }
+    if (token.startsWith('*/')) {
+      const n = parseInt(token.slice(2));
+      s.n = n;
+      const slEl = document.getElementById(`${field}-n`) as HTMLInputElement;
+      const valEl = document.getElementById(`${field}-n-val`);
+      if (slEl) { slEl.value = String(n); }
+      if (valEl) { valEl.textContent = String(n); }
+      setFieldMode(field, 'every-n');
+      return;
+    }
+    if (token.includes('-')) {
+      const [a, b] = token.split('-').map(Number);
+      s.from = a; s.to = b;
+      const fromEl  = document.getElementById(`${field}-from`) as HTMLInputElement|HTMLSelectElement;
+      const toEl    = document.getElementById(`${field}-to`)   as HTMLInputElement|HTMLSelectElement;
+      const fromVal = document.getElementById(`${field}-from-val`);
+      const toVal   = document.getElementById(`${field}-to-val`);
+      if (fromEl) fromEl.value = String(a);
+      if (toEl)   toEl.value   = String(b);
+      if (fromVal) fromVal.textContent = String(a);
+      if (toVal)   toVal.textContent   = String(b);
+      setFieldMode(field, 'range');
+      return;
+    }
+    if (/^\d+$/.test(token) || token.includes(',')) {
+      const vals = token.split(',').map(Number);
+      document.querySelectorAll<HTMLButtonElement>(`#${field}-checkboxes .cb-btn`).forEach(b => {
+        const v = parseInt(b.dataset.val!);
+        b.classList.toggle('on', vals.includes(v));
+      });
+      setFieldMode(field, 'specific');
+      return;
+    }
+  }
+
+  function setFieldMode(field: string, mode: string) {
+    (state as any)[field].mode = mode;
+    document.querySelectorAll<HTMLButtonElement>(`.fmode[data-field="${field}"]`).forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
+    ['every','specific','range','every-n'].forEach(m => {
+      const p = document.getElementById(`${field}-pane-${m}`);
+      if (p) p.style.display = m === mode ? 'block' : 'none';
+    });
+  }
+
+  // ── Copy button ───────────────────────────────────────────────────
+  document.getElementById('copy-btn')!.addEventListener('click', () => {
+    const expr = document.getElementById('cron-display')!.textContent || '';
+    const btn  = document.getElementById('copy-btn') as HTMLButtonElement;
+    navigator.clipboard.writeText(expr).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.style.background = '#16A34A';
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.style.background = '#1D4ED8';
+      }, 2000);
+    });
+  });
+
+  // ── Reset button ──────────────────────────────────────────────────
+  document.getElementById('reset-btn')!.addEventListener('click', () => {
+    applyTemplate('* * * * *');
+  });
+
+  // ── Initial render ────────────────────────────────────────────────
+  updateAll();
+
+})();
+</script>

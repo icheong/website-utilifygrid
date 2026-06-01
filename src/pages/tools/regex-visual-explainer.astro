@@ -1,0 +1,682 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'regex-visual-explainer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ── INTERACTIVE TOOL ─────────────────────────────────────────── -->
+  <div slot="tool">
+    <div class="tool-card-surface" style="display:flex;flex-direction:column;gap:1.5rem;">
+
+      <!-- Input row -->
+      <div style="display:flex;flex-direction:column;gap:.75rem;">
+        <div style="display:flex;gap:.75rem;align-items:stretch;flex-wrap:wrap;">
+          <!-- Pattern input -->
+          <div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:.4rem;">
+            <label for="inp-pattern" style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;">Regular Expression</label>
+            <div style="display:flex;align-items:center;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.6rem;overflow:hidden;">
+              <span style="padding:.6rem .75rem;font-family:'Fira Code',monospace;font-size:1rem;color:var(--text-muted);border-right:1px solid var(--border);user-select:none;">/</span>
+              <input id="inp-pattern" type="text" class="input-themed" value="^(\w+)\s+(foo|bar)\s*$"
+                style="flex:1;border:none;border-radius:0;background:transparent;font-family:'Fira Code',monospace;font-size:.95rem;padding:.6rem .5rem;"
+                placeholder="e.g. ^(\d+)\.\d{2}$" autocomplete="off" spellcheck="false" aria-label="Regular expression pattern">
+              <span style="padding:.6rem .75rem;font-family:'Fira Code',monospace;font-size:1rem;color:var(--text-muted);border-left:1px solid var(--border);user-select:none;">/</span>
+              <!-- Flags -->
+              <div style="display:flex;gap:2px;padding:.4rem .6rem;border-left:1px solid var(--border);">
+                <button id="flag-g" class="flag-btn active" title="Global" aria-pressed="true">g</button>
+                <button id="flag-i" class="flag-btn" title="Case insensitive" aria-pressed="false">i</button>
+                <button id="flag-m" class="flag-btn" title="Multiline" aria-pressed="false">m</button>
+                <button id="flag-s" class="flag-btn" title="Dot-all" aria-pressed="false">s</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error banner -->
+        <div id="regex-error" style="display:none;padding:.6rem 1rem;border-radius:.5rem;background:color-mix(in srgb,#ef4444 12%,transparent);border:1px solid color-mix(in srgb,#ef4444 30%,transparent);color:#f87171;font-family:'Fira Code',monospace;font-size:.85rem;"></div>
+
+        <!-- Test string -->
+        <div style="display:flex;flex-direction:column;gap:.4rem;">
+          <label for="inp-test" style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;">Test String</label>
+          <textarea id="inp-test" class="input-themed ctrl-select"
+            style="font-family:'Fira Code',monospace;font-size:.9rem;resize:vertical;min-height:80px;padding:.65rem .85rem;line-height:1.6;"
+            placeholder="Paste a string to test against the regex..."
+            spellcheck="false">hello foo
+world bar
+test baz</textarea>
+        </div>
+
+        <!-- Match summary -->
+        <div id="match-summary" style="font-size:.85rem;color:var(--text-muted);min-height:1.4em;"></div>
+      </div>
+
+      <!-- Highlighted test output -->
+      <div>
+        <div style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem;">Match Highlights</div>
+        <div id="highlight-output"
+          style="font-family:'Fira Code',monospace;font-size:.9rem;line-height:1.8;padding:.85rem 1rem;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.6rem;min-height:60px;white-space:pre-wrap;word-break:break-all;color:var(--text-primary);">
+          Enter a pattern to see matches highlighted here.
+        </div>
+      </div>
+
+      <!-- Visual flowchart -->
+      <div>
+        <div style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.75rem;">Token Breakdown</div>
+        <div id="token-flow" style="display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;min-height:48px;">
+          <span style="color:var(--text-muted);font-size:.875rem;">Parse a regex above to see the token breakdown.</span>
+        </div>
+      </div>
+
+      <!-- Groups table (shown when capture groups exist) -->
+      <div id="groups-section" style="display:none;">
+        <div style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem;">Capture Groups</div>
+        <div style="overflow-x:auto;">
+          <table id="groups-table" style="width:100%;border-collapse:collapse;font-size:.85rem;">
+            <thead>
+              <tr style="background:var(--bg-surface-2);">
+                <th style="padding:.5rem .85rem;text-align:left;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);">Group</th>
+                <th style="padding:.5rem .85rem;text-align:left;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);">Pattern</th>
+                <th style="padding:.5rem .85rem;text-align:left;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);">Match #1</th>
+                <th style="padding:.5rem .85rem;text-align:left;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);">Match #2</th>
+                <th style="padding:.5rem .85rem;text-align:left;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);">Match #3</th>
+              </tr>
+            </thead>
+            <tbody id="groups-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── HOW TO USE ────────────────────────────────────────────────── -->
+  <div slot="how-to-use">
+    <p>Type or paste a regular expression into the pattern field — the delimiters <code>/</code> are shown for clarity but don't need to be included. Toggle the <strong>flags</strong> on the right of the input: <code>g</code> (find all matches), <code>i</code> (case-insensitive), <code>m</code> (multiline anchors), <code>s</code> (dot matches newlines).</p>
+    <p>The <strong>Token Breakdown</strong> strip below the input parses your regex into labelled, colour-coded nodes — anchors, literals, character classes, quantifiers, alternations, and capture groups each get a distinct style so you can spot structural issues at a glance.</p>
+    <p>Paste any test string into the <strong>Test String</strong> box. Matches are highlighted in the output area in real time. If your pattern contains capture groups, the <strong>Capture Groups</strong> table shows what each group matched across the first three matches, so you can verify sub-expression behaviour without running code.</p>
+  </div>
+
+  <!-- ── HOW IT WORKS ──────────────────────────────────────────────── -->
+  <div slot="how-it-works">
+    <p>The parser walks the regex string character-by-character, tracking bracket depth, escape sequences, and lookahead context to classify each component into a token type. It does not use an external library — the tokeniser is a hand-written finite state machine running entirely in your browser.</p>
+    <p>Match highlighting uses the browser's native <code>RegExp</code> object with the flags you select. The test string is scanned with <code>matchAll()</code> (global flag) or <code>exec()</code>, and the result indices are used to splice <code>&lt;mark&gt;</code> elements into the output. Capture group extraction iterates over each <code>MatchResult</code> object, pulling numbered sub-groups directly. No data leaves your browser at any point.</p>
+  </div>
+
+  <!-- ── FAQ ──────────────────────────────────────────────────────── -->
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What regex flavour does this tool use?",
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool uses JavaScript's built-in ECMAScript regex engine — the same engine that runs in Chrome, Firefox, and Safari. It supports all standard features including lookaheads, lookbehinds, named capture groups, and Unicode property escapes, but not PCRE-specific syntax like (?P<name>) or possessive quantifiers." }
+        },
+        {
+          "@type": "Question",
+          "name": "What does the 's' (dot-all) flag do?",
+          "acceptedAnswer": { "@type": "Answer", "text": "By default, the dot (.) metacharacter matches any character except newline (\\n). With the s flag enabled, dot matches every character including newlines, which is essential for matching patterns that span multiple lines." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a capture group?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A capture group is a section of a regex wrapped in parentheses, e.g. (\\w+). It has two effects: it groups the enclosed pattern so quantifiers apply to it as a unit, and it captures the matched text so you can extract it programmatically. The Capture Groups table in this tool shows what each group matched." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a non-capturing group?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A non-capturing group (?:...) groups tokens for quantifier or alternation purposes without capturing the matched text. It does not appear in match results or the capture groups table. Use it when you need grouping but don't need the extracted value." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does my regex say 'Invalid regular expression'?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The error banner shows the exact JavaScript engine error message. Common causes include unmatched parentheses or brackets, an unescaped special character used as a literal (e.g. a bare + or ?), an invalid escape sequence like \\p without a Unicode property, or a lookbehind with a variable-length pattern in older engines." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this tool support named capture groups?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Named capture groups use the syntax (?<name>...). The token breakdown will label them as Named Group, and the capture groups table will display the group name alongside its matched values." }
+        }
+      ]
+    }
+    </script>
+
+    <details open>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What regex flavour does this tool use?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">JavaScript's ECMAScript regex engine — the same one in Chrome, Firefox, and Safari. Supports lookaheads, lookbehinds, named capture groups, and Unicode property escapes. PCRE-specific syntax like <code>(?P&lt;name&gt;)</code> is not supported.</p>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What does the <code>s</code> (dot-all) flag do?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">By default, <code>.</code> matches any character except newline. With <code>s</code> enabled, dot matches every character including <code>\n</code> — essential for patterns that span multiple lines.</p>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What is a capture group?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">Parentheses <code>(...)</code> group a sub-pattern and capture the matched text. The Capture Groups table shows what each group matched across the first three matches.</p>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What is a non-capturing group?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;"><code>(?:...)</code> groups tokens for quantifier or alternation purposes without capturing the matched text. It won't appear in the capture groups table.</p>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">Why does my regex show "Invalid regular expression"?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">Common causes: unmatched parentheses or brackets, an unescaped special character used as a literal, an invalid escape sequence, or a variable-length lookbehind in older engines. The red banner shows the exact engine error.</p>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">Does this support named capture groups?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">Yes. Use <code>(?&lt;name&gt;...)</code>. The token breakdown labels them as Named Group and the capture groups table shows the name alongside matched values.</p>
+    </details>
+  </div>
+
+</ToolLayout>
+
+<style>
+  /* Flag toggle buttons */
+  .flag-btn {
+    font-family: 'Fira Code', monospace;
+    font-size: .8rem;
+    font-weight: 700;
+    width: 24px;
+    height: 24px;
+    border-radius: .3rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flag-btn.active {
+    background: color-mix(in srgb, #6366f1 20%, transparent);
+    border-color: #6366f1;
+    color: #a5b4fc;
+  }
+
+  /* Token chip colours */
+  .token-chip {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: .35rem .6rem;
+    border-radius: .45rem;
+    font-family: 'Fira Code', monospace;
+    font-size: .85rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    position: relative;
+  }
+  .token-chip .chip-label {
+    font-family: 'Inter', sans-serif;
+    font-size: .6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    opacity: .75;
+  }
+  /* connector arrow between tokens */
+  .token-arrow {
+    color: var(--text-muted);
+    font-size: .75rem;
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  /* Chip type colours */
+  .chip-anchor    { background:color-mix(in srgb,#f59e0b 15%,transparent); border-color:color-mix(in srgb,#f59e0b 40%,transparent); color:#fcd34d; }
+  .chip-literal   { background:color-mix(in srgb,#94a3b8 12%,transparent); border-color:color-mix(in srgb,#94a3b8 30%,transparent); color:#cbd5e1; }
+  .chip-class     { background:color-mix(in srgb,#10b981 15%,transparent); border-color:color-mix(in srgb,#10b981 35%,transparent); color:#6ee7b7; }
+  .chip-quantifier{ background:color-mix(in srgb,#8b5cf6 15%,transparent); border-color:color-mix(in srgb,#8b5cf6 35%,transparent); color:#c4b5fd; }
+  .chip-group     { background:color-mix(in srgb,#3b82f6 15%,transparent); border-color:color-mix(in srgb,#3b82f6 35%,transparent); color:#93c5fd; }
+  .chip-namedgroup{ background:color-mix(in srgb,#06b6d4 15%,transparent); border-color:color-mix(in srgb,#06b6d4 35%,transparent); color:#67e8f9; }
+  .chip-ncgroup   { background:color-mix(in srgb,#64748b 15%,transparent); border-color:color-mix(in srgb,#64748b 30%,transparent); color:#94a3b8; }
+  .chip-alternation{background:color-mix(in srgb,#f43f5e 15%,transparent); border-color:color-mix(in srgb,#f43f5e 35%,transparent); color:#fca5a5; }
+  .chip-lookahead { background:color-mix(in srgb,#f97316 15%,transparent); border-color:color-mix(in srgb,#f97316 35%,transparent); color:#fdba74; }
+  .chip-escape    { background:color-mix(in srgb,#84cc16 15%,transparent); border-color:color-mix(in srgb,#84cc16 30%,transparent); color:#bef264; }
+  .chip-dot       { background:color-mix(in srgb,#e879f9 15%,transparent); border-color:color-mix(in srgb,#e879f9 35%,transparent); color:#f0abfc; }
+
+  /* Match highlight */
+  mark.regex-match {
+    background: color-mix(in srgb, #6366f1 35%, transparent);
+    color: inherit;
+    border-radius: 2px;
+    outline: 1px solid #6366f1;
+  }
+
+  /* FAQ */
+  details { border-top: 1px solid var(--border); }
+  details:last-child { border-bottom: 1px solid var(--border); }
+  details summary { list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+
+  /* groups table cells */
+  #groups-table td {
+    padding: .45rem .85rem;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-size: .82rem;
+    vertical-align: top;
+  }
+  #groups-table tr:nth-child(even) td { background: var(--bg-surface-2); }
+</style>
+
+<script>
+(function () {
+
+  // ── DOM refs ──────────────────────────────────────────────────────
+  const inpPattern   = document.getElementById('inp-pattern');
+  const inpTest      = document.getElementById('inp-test');
+  const errorEl      = document.getElementById('regex-error');
+  const summaryEl    = document.getElementById('match-summary');
+  const hlOutput     = document.getElementById('highlight-output');
+  const tokenFlow    = document.getElementById('token-flow');
+  const groupsSec    = document.getElementById('groups-section');
+  const groupsBody   = document.getElementById('groups-body');
+  const flagBtns     = document.querySelectorAll('.flag-btn');
+
+  // ── Flag state ────────────────────────────────────────────────────
+  const flagState = { g: true, i: false, m: false, s: false };
+
+  flagBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const f = btn.id.replace('flag-', '');
+      flagState[f] = !flagState[f];
+      btn.classList.toggle('active', flagState[f]);
+      btn.setAttribute('aria-pressed', String(flagState[f]));
+      update();
+    });
+  });
+
+  // ── Regex builder ─────────────────────────────────────────────────
+  function buildRegex(pattern) {
+    const flags = Object.entries(flagState).filter(([,v]) => v).map(([k]) => k).join('');
+    try {
+      const re = new RegExp(pattern, flags);
+      errorEl.style.display = 'none';
+      return re;
+    } catch (e) {
+      errorEl.textContent = '⚠ ' + e.message;
+      errorEl.style.display = 'block';
+      return null;
+    }
+  }
+
+  // ── Token types ───────────────────────────────────────────────────
+  // Returns array of { text, type, description }
+  function tokenise(pattern) {
+    const tokens = [];
+    let i = 0;
+
+    function peek(offset = 0) { return pattern[i + offset]; }
+    function consume() { return pattern[i++]; }
+
+    function readQuantifier() {
+      // Check for ?, *, +, {n,m} after current position
+      const c = peek();
+      if (!c) return null;
+      if (c === '?' || c === '*' || c === '+') {
+        i++;
+        const lazy = peek() === '?' ? (i++, '?') : '';
+        return c + lazy;
+      }
+      if (c === '{') {
+        let j = i + 1, num = '';
+        while (j < pattern.length && pattern[j] !== '}' && pattern[j] !== ',') num += pattern[j++];
+        if (pattern[j] === ',') {
+          j++;
+          let num2 = '';
+          while (j < pattern.length && pattern[j] !== '}') num2 += pattern[j++];
+          if (pattern[j] === '}') {
+            const lazy = pattern[j + 1] === '?' ? (j++, '?') : '';
+            i = j + 1;
+            return `{${num},${num2}}` + lazy;
+          }
+        } else if (pattern[j] === '}') {
+          const lazy = pattern[j + 1] === '?' ? (j++, '?') : '';
+          i = j + 1;
+          return `{${num}}` + lazy;
+        }
+      }
+      return null;
+    }
+
+    while (i < pattern.length) {
+      const ch = consume();
+
+      // Anchor
+      if (ch === '^' || ch === '$') {
+        tokens.push({ text: ch, type: 'anchor', description: ch === '^' ? 'Start anchor' : 'End anchor' });
+        continue;
+      }
+
+      // Dot
+      if (ch === '.') {
+        const q = readQuantifier();
+        tokens.push({ text: '.' + (q || ''), type: 'dot', description: 'Any character' + (q ? ' ' + describeQuantifier(q) : '') });
+        continue;
+      }
+
+      // Alternation
+      if (ch === '|') {
+        tokens.push({ text: '|', type: 'alternation', description: 'Or' });
+        continue;
+      }
+
+      // Escape sequence
+      if (ch === '\\') {
+        const next = consume() || '';
+        const escaped = '\\' + next;
+        const q = readQuantifier();
+        const desc = escapeDesc(next);
+        tokens.push({ text: escaped + (q || ''), type: 'escape', description: desc + (q ? ' ' + describeQuantifier(q) : '') });
+        continue;
+      }
+
+      // Character class
+      if (ch === '[') {
+        let cls = '[';
+        while (i < pattern.length && peek() !== ']') {
+          if (peek() === '\\') { cls += consume(); }
+          cls += consume();
+        }
+        cls += consume() || ''; // consume ]
+        const q = readQuantifier();
+        tokens.push({ text: cls + (q || ''), type: 'class', description: 'Character class' + (q ? ' ' + describeQuantifier(q) : '') });
+        continue;
+      }
+
+      // Group
+      if (ch === '(') {
+        let type = 'group', label = 'Capture group', prefix = '';
+
+        if (peek() === '?') {
+          const p2 = peek(1);
+          if (p2 === ':') { i += 2; type = 'ncgroup'; label = 'Non-capturing group'; prefix = '(?:'; }
+          else if (p2 === '=') { i += 2; type = 'lookahead'; label = 'Positive lookahead'; prefix = '(?='; }
+          else if (p2 === '!') { i += 2; type = 'lookahead'; label = 'Negative lookahead'; prefix = '(?!'; }
+          else if (p2 === '<') {
+            const p3 = peek(2);
+            if (p3 === '=' || p3 === '!') { i += 3; type = 'lookahead'; label = p3 === '=' ? 'Positive lookbehind' : 'Negative lookbehind'; prefix = `(?<${p3}`; }
+            else {
+              // Named group (?<name>
+              i += 2; // skip ?<
+              let name = '';
+              while (i < pattern.length && peek() !== '>') name += consume();
+              consume(); // >
+              type = 'namedgroup'; label = `Named group: ${name}`; prefix = `(?<${name}>`;
+            }
+          } else if (p2 === '\'') {
+            // Named group (?'name'
+            i += 2;
+            let name = '';
+            while (i < pattern.length && peek() !== '\'') name += consume();
+            consume();
+            type = 'namedgroup'; label = `Named group: ${name}`; prefix = `(?'${name}'`;
+          }
+        }
+
+        // Collect body by tracking depth
+        let body = '', depth = 1;
+        while (i < pattern.length && depth > 0) {
+          const c2 = consume();
+          if (c2 === '\\') { body += c2 + (consume() || ''); continue; }
+          if (c2 === '(') depth++;
+          if (c2 === ')') { depth--; if (depth === 0) break; }
+          body += c2;
+        }
+        const q = readQuantifier();
+        const full = ch + prefix + body + ')' + (q || '');
+        tokens.push({ text: full, type, description: label + (q ? ' ' + describeQuantifier(q) : '') });
+        continue;
+      }
+
+      // Close paren (orphan — just emit as literal)
+      if (ch === ')') {
+        tokens.push({ text: ch, type: 'literal', description: 'Literal )' });
+        continue;
+      }
+
+      // Literal
+      const q = readQuantifier();
+      tokens.push({ text: ch + (q || ''), type: 'literal', description: `Literal "${ch}"` + (q ? ' ' + describeQuantifier(q) : '') });
+    }
+
+    return tokens;
+  }
+
+  function escapeDesc(c) {
+    const map = {
+      d: 'Digit [0-9]', D: 'Non-digit', w: 'Word char [a-zA-Z0-9_]', W: 'Non-word char',
+      s: 'Whitespace', S: 'Non-whitespace', b: 'Word boundary', B: 'Non-word boundary',
+      n: 'Newline', r: 'Carriage return', t: 'Tab', '0': 'Null char',
+    };
+    return map[c] ? `\\${c} — ${map[c]}` : `Escaped "${c}"`;
+  }
+
+  function describeQuantifier(q) {
+    const lazy = q.endsWith('?');
+    const base = lazy ? q.slice(0, -1) : q;
+    const suffix = lazy ? ' (lazy)' : ' (greedy)';
+    if (base === '*') return '× zero or more' + suffix;
+    if (base === '+') return '× one or more' + suffix;
+    if (base === '?') return '× zero or one' + suffix;
+    const m = base.match(/^\{(\d+)\}$/);
+    if (m) return `× exactly ${m[1]}` + suffix;
+    const m2 = base.match(/^\{(\d*),(\d*)\}$/);
+    if (m2) {
+      if (m2[1] === '' && m2[2] === '') return '× any times' + suffix;
+      if (m2[2] === '') return `× ${m2[1]} or more` + suffix;
+      return `× ${m2[1]}–${m2[2]}` + suffix;
+    }
+    return '';
+  }
+
+  // ── Render token chips ────────────────────────────────────────────
+  function renderTokens(tokens) {
+    tokenFlow.innerHTML = '';
+    if (!tokens.length) {
+      tokenFlow.innerHTML = '<span style="color:var(--text-muted);font-size:.875rem;">Empty pattern.</span>';
+      return;
+    }
+    tokens.forEach((tok, idx) => {
+      const chip = document.createElement('div');
+      chip.className = `token-chip chip-${tok.type}`;
+      chip.title = tok.description;
+
+      const code = document.createElement('span');
+      code.textContent = tok.text.length > 18 ? tok.text.slice(0, 16) + '…' : tok.text;
+      chip.appendChild(code);
+
+      const lbl = document.createElement('span');
+      lbl.className = 'chip-label';
+      lbl.textContent = labelForType(tok.type);
+      chip.appendChild(lbl);
+
+      tokenFlow.appendChild(chip);
+
+      if (idx < tokens.length - 1) {
+        const arrow = document.createElement('span');
+        arrow.className = 'token-arrow';
+        arrow.textContent = '→';
+        tokenFlow.appendChild(arrow);
+      }
+    });
+  }
+
+  function labelForType(type) {
+    return {
+      anchor: 'Anchor', literal: 'Literal', class: 'Char class', quantifier: 'Quantifier',
+      group: 'Group', namedgroup: 'Named group', ncgroup: 'Non-cap', alternation: 'Or',
+      lookahead: 'Lookahead', escape: 'Escape', dot: 'Any char',
+    }[type] || type;
+  }
+
+  // ── Highlight matches ─────────────────────────────────────────────
+  function highlightMatches(re, testStr) {
+    if (!re) {
+      hlOutput.textContent = testStr || 'Enter a pattern to see matches highlighted here.';
+      summaryEl.textContent = '';
+      return 0;
+    }
+
+    // Clone as global for matchAll
+    const flags = re.flags.includes('g') ? re.flags : re.flags + 'g';
+    let globalRe;
+    try { globalRe = new RegExp(re.source, flags); } catch { return 0; }
+
+    const matches = [...testStr.matchAll(globalRe)];
+
+    if (!matches.length) {
+      hlOutput.textContent = testStr || '';
+      summaryEl.textContent = testStr ? '0 matches' : '';
+      summaryEl.style.color = 'var(--text-muted)';
+      return 0;
+    }
+
+    summaryEl.textContent = `${matches.length} match${matches.length !== 1 ? 'es' : ''} found`;
+    summaryEl.style.color = '#10b981';
+
+    // Build highlighted HTML by splicing marks around match ranges
+    let html = '';
+    let cursor = 0;
+    for (const m of matches) {
+      const start = m.index;
+      const end   = start + m[0].length;
+      html += escHtml(testStr.slice(cursor, start));
+      html += `<mark class="regex-match">${escHtml(m[0])}</mark>`;
+      cursor = end;
+      // Avoid infinite loop on zero-length match
+      if (m[0].length === 0) cursor++;
+    }
+    html += escHtml(testStr.slice(cursor));
+    hlOutput.innerHTML = html || ' ';
+    return matches.length;
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Capture groups table ──────────────────────────────────────────
+  function renderGroups(re, testStr) {
+    if (!re) { groupsSec.style.display = 'none'; return; }
+
+    const flags = re.flags.includes('g') ? re.flags : re.flags + 'g';
+    let globalRe;
+    try { globalRe = new RegExp(re.source, flags); } catch { groupsSec.style.display = 'none'; return; }
+
+    const matches = [...testStr.matchAll(globalRe)];
+    if (!matches.length) { groupsSec.style.display = 'none'; return; }
+
+    // Check how many capture groups exist
+    const groupCount = (re.source.match(/(?<!\\)\(/g) || []).length;
+    // Filter to only actual capturing groups (rough: subtract non-cap and lookahead)
+    const ncCount = (re.source.match(/\(\?[:=!<]/g) || []).length;
+    const capCount = groupCount - ncCount;
+    if (capCount === 0) { groupsSec.style.display = 'none'; return; }
+
+    groupsSec.style.display = 'block';
+    groupsBody.innerHTML = '';
+
+    // Named groups
+    const namedGroupRe = /\(\?<([^>]+)>/g;
+    const names = [];
+    let nm;
+    while ((nm = namedGroupRe.exec(re.source)) !== null) names.push(nm[1]);
+
+    for (let g = 1; g <= capCount; g++) {
+      const tr = document.createElement('tr');
+      const name = names[g - 1] || null;
+      const vals = matches.slice(0, 3).map(m => {
+        const v = name ? m.groups?.[name] : m[g];
+        return v !== undefined && v !== null ? v : '—';
+      });
+      while (vals.length < 3) vals.push('—');
+
+      tr.innerHTML = `
+        <td>${name ? `<strong>${name}</strong>` : `Group ${g}`}</td>
+        <td style="color:var(--text-muted);">${escHtml(extractGroupPattern(re.source, g))}</td>
+        ${vals.map(v => `<td>${escHtml(v)}</td>`).join('')}
+      `;
+      groupsBody.appendChild(tr);
+    }
+  }
+
+  // Best-effort: extract the nth capturing group's source
+  function extractGroupPattern(source, n) {
+    let count = 0, depth = 0, i = 0;
+    while (i < source.length) {
+      if (source[i] === '\\') { i += 2; continue; }
+      if (source[i] === '[') { while (i < source.length && source[i] !== ']') i++; i++; continue; }
+      if (source[i] === '(' ) {
+        const nonCap = source[i+1] === '?' && (source[i+2] === ':' || source[i+2] === '=' || source[i+2] === '!');
+        if (!nonCap) {
+          count++;
+          if (count === n) {
+            // Collect until matching close
+            let body = '', d = 1; i++;
+            while (i < source.length && d > 0) {
+              if (source[i] === '\\') { body += source[i] + source[i+1]; i += 2; continue; }
+              if (source[i] === '(') d++;
+              if (source[i] === ')') { d--; if (d === 0) break; }
+              body += source[i++];
+            }
+            return body.length > 20 ? body.slice(0, 18) + '…' : body;
+          }
+        }
+        depth++;
+      }
+      if (source[i] === ')') depth--;
+      i++;
+    }
+    return '…';
+  }
+
+  // ── Main update ───────────────────────────────────────────────────
+  function update() {
+    const pattern = inpPattern.value;
+    const testStr = inpTest.value;
+
+    if (!pattern) {
+      errorEl.style.display = 'none';
+      tokenFlow.innerHTML   = '<span style="color:var(--text-muted);font-size:.875rem;">Enter a regex above.</span>';
+      hlOutput.textContent  = testStr || 'Enter a pattern to see matches highlighted here.';
+      summaryEl.textContent = '';
+      groupsSec.style.display = 'none';
+      return;
+    }
+
+    const re = buildRegex(pattern);
+    if (!re) {
+      tokenFlow.innerHTML = '<span style="color:#f87171;font-size:.875rem;">Fix the regex error above.</span>';
+      hlOutput.textContent = testStr;
+      summaryEl.textContent = '';
+      groupsSec.style.display = 'none';
+      return;
+    }
+
+    try {
+      const tokens = tokenise(pattern);
+      renderTokens(tokens);
+    } catch {
+      tokenFlow.innerHTML = '<span style="color:var(--text-muted);font-size:.875rem;">Could not parse tokens.</span>';
+    }
+
+    highlightMatches(re, testStr);
+    renderGroups(re, testStr);
+  }
+
+  // ── Wire inputs ───────────────────────────────────────────────────
+  inpPattern.addEventListener('input', update);
+  inpTest.addEventListener('input', update);
+
+  // ── Init ──────────────────────────────────────────────────────────
+  update();
+})();
+</script>

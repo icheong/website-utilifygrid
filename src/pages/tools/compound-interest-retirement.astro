@@ -1,0 +1,558 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'compound-interest-retirement')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ── INTERACTIVE TOOL ─────────────────────────────────────────── -->
+  <div slot="tool">
+    <div class="tool-card-surface" style="display:flex;flex-direction:column;gap:1.5rem;">
+
+      <!-- Inputs grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;">
+
+        <!-- Current Age -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-age" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Current Age</label>
+            <output id="out-age" class="input-badge">30</output>
+          </div>
+          <input id="inp-age" type="range" min="18" max="70" value="30" class="ctrl-slider" aria-label="Current age">
+          <div class="range-bounds"><span>18</span><span>70</span></div>
+        </div>
+
+        <!-- Current Savings -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-savings" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Current Savings</label>
+            <output id="out-savings" class="input-badge">$25,000</output>
+          </div>
+          <input id="inp-savings" type="range" min="0" max="1000000" step="1000" value="25000" class="ctrl-slider" aria-label="Current savings">
+          <div class="range-bounds"><span>$0</span><span>$1M</span></div>
+        </div>
+
+        <!-- Monthly Contribution -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-contrib" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Monthly Contribution</label>
+            <output id="out-contrib" class="input-badge">$1,000</output>
+          </div>
+          <input id="inp-contrib" type="range" min="0" max="10000" step="50" value="1000" class="ctrl-slider" aria-label="Monthly contribution">
+          <div class="range-bounds"><span>$0</span><span>$10k</span></div>
+        </div>
+
+        <!-- Annual Return -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-return" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Expected Annual Return</label>
+            <output id="out-return" class="input-badge">7%</output>
+          </div>
+          <input id="inp-return" type="range" min="1" max="15" step="0.5" value="7" class="ctrl-slider" aria-label="Expected annual return">
+          <div class="range-bounds"><span>1%</span><span>15%</span></div>
+        </div>
+
+        <!-- Monthly Expenses -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-expenses" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Monthly Expenses at Retirement</label>
+            <output id="out-expenses" class="input-badge">$3,500</output>
+          </div>
+          <input id="inp-expenses" type="range" min="500" max="20000" step="100" value="3500" class="ctrl-slider" aria-label="Monthly expenses at retirement">
+          <div class="range-bounds"><span>$500</span><span>$20k</span></div>
+        </div>
+
+        <!-- Safe Withdrawal Rate -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-swr" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Safe Withdrawal Rate</label>
+            <output id="out-swr" class="input-badge">4%</output>
+          </div>
+          <input id="inp-swr" type="range" min="2" max="6" step="0.1" value="4" class="ctrl-slider" aria-label="Safe withdrawal rate">
+          <div class="range-bounds"><span>2%</span><span>6%</span></div>
+        </div>
+
+      </div>
+
+      <!-- KPI cards -->
+      <div id="kpi-row" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;">
+        <div class="kpi-card">
+          <div id="kpi-fire-age" class="kpi-value" style="color:var(--text-primary);">—</div>
+          <div class="kpi-label">FIRE Age</div>
+        </div>
+        <div class="kpi-card">
+          <div id="kpi-years" class="kpi-value" style="color:var(--text-primary);">—</div>
+          <div class="kpi-label">Years to FIRE</div>
+        </div>
+        <div class="kpi-card">
+          <div id="kpi-portfolio" class="kpi-value" style="color:var(--text-primary);">—</div>
+          <div class="kpi-label">Portfolio at FIRE</div>
+        </div>
+        <div class="kpi-card">
+          <div id="kpi-income" class="kpi-value" style="color:var(--text-primary);">—</div>
+          <div class="kpi-label">Monthly Passive Income</div>
+        </div>
+      </div>
+
+      <!-- No-FIRE warning -->
+      <div id="no-fire-msg" style="display:none;padding:.75rem 1rem;border-radius:.5rem;background:color-mix(in srgb,var(--text-muted) 10%,transparent);color:var(--text-muted);font-size:.875rem;">
+        ⚠️ With current settings, passive income won't exceed expenses before age 80. Try increasing contributions or return rate.
+      </div>
+
+      <!-- Chart -->
+      <div style="position:relative;">
+        <canvas id="fire-chart" height="320" style="width:100%;display:block;border-radius:.5rem;"></canvas>
+        <div id="chart-tooltip" style="position:absolute;pointer-events:none;opacity:0;transition:opacity .15s;background:var(--bg-surface);border:1px solid var(--border);border-radius:.5rem;padding:.6rem .85rem;font-size:.8rem;color:var(--text-primary);min-width:180px;line-height:1.7;z-index:10;"></div>
+      </div>
+
+      <!-- Legend -->
+      <div style="display:flex;flex-wrap:wrap;gap:1.25rem;font-size:.8rem;color:var(--text-secondary);">
+        <span style="display:flex;align-items:center;gap:.4rem;"><span style="width:12px;height:12px;border-radius:3px;background:#6366f1;flex-shrink:0;"></span>Portfolio Growth</span>
+        <span style="display:flex;align-items:center;gap:.4rem;"><span style="width:12px;height:12px;border-radius:50%;background:#10b981;flex-shrink:0;"></span>Monthly Passive Income</span>
+        <span style="display:flex;align-items:center;gap:.4rem;"><span style="width:12px;height:4px;background:#f59e0b;flex-shrink:0;border-radius:2px;"></span>Monthly Expenses (threshold)</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── HOW TO USE ────────────────────────────────────────────────── -->
+  <div slot="how-to-use">
+    <p>Set your <strong>current age</strong> and <strong>current savings</strong> to establish your starting point. Then dial in your <strong>monthly contribution</strong> — the amount you invest each month after expenses. Adjust the <strong>expected annual return</strong> to reflect your portfolio's projected growth rate (7% is a common long-run stock market estimate after inflation).</p>
+    <p>Enter your estimated <strong>monthly expenses at retirement</strong> — the lifestyle cost you'll need your portfolio to cover. Finally, set your <strong>safe withdrawal rate (SWR)</strong>: the percentage of your portfolio you can withdraw annually without running out of money. The widely-cited 4% rule (from the Trinity Study) is the default.</p>
+    <p>The chart updates instantly. The vertical crossover point — where the green passive income line meets the orange expenses threshold — is your <strong>FIRE date</strong>. The KPI cards above show your projected FIRE age, years remaining, portfolio size at that moment, and the monthly income it would generate.</p>
+  </div>
+
+  <!-- ── HOW IT WORKS ──────────────────────────────────────────────── -->
+  <div slot="how-it-works">
+    <p>The portfolio at any point in time is calculated using the standard future value of a lump sum plus a recurring contribution series:</p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Portfolio(t) = S × (1 + r/12)^(12t)
+             + C × [((1 + r/12)^(12t) − 1) / (r/12)]
+
+Monthly Passive Income(t) = Portfolio(t) × SWR / 12
+
+FIRE crossover when: MonthlyPassiveIncome(t) ≥ MonthlyExpenses</pre>
+    <p>Where <strong>S</strong> is current savings, <strong>r</strong> is the annual return rate as a decimal, <strong>t</strong> is years elapsed, <strong>C</strong> is monthly contribution, and <strong>SWR</strong> is the safe withdrawal rate as a decimal. The model compounds monthly for precision. All calculations run entirely in your browser — no data is sent anywhere.</p>
+  </div>
+
+  <!-- ── FAQ ──────────────────────────────────────────────────────── -->
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is FIRE?",
+          "acceptedAnswer": { "@type": "Answer", "text": "FIRE stands for Financial Independence, Retire Early. It describes the point at which your invested assets generate enough passive income to cover living expenses indefinitely, freeing you from the need to work for money." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the 4% rule?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The 4% rule originates from the 1998 Trinity Study, which found that a retirement portfolio invested in stocks and bonds could sustain a 4% annual withdrawal rate over a 30-year horizon with a high probability of not running out of money. It remains a popular planning benchmark, though some advisors recommend 3–3.5% for longer retirement periods." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is a 7% annual return realistic?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The US stock market has returned roughly 10% annually before inflation and around 7% after inflation over the long run. 7% is a commonly used real (inflation-adjusted) return estimate for a diversified equity portfolio. Your actual returns will vary year to year, and past performance does not guarantee future results." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this account for inflation?",
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool does not separately model inflation. To account for it, use a return rate that is already adjusted for inflation (e.g. 7% real return rather than 10% nominal) and enter your expenses in today's dollars. This gives you a conservative, inflation-adjusted crossover estimate." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I factor in government pension or superannuation?",
+          "acceptedAnswer": { "@type": "Answer", "text": "You can approximate this by reducing your monthly expenses figure by the expected monthly pension or super drawdown amount. For example, if you expect $1,000/month from superannuation and need $4,000/month total, enter $3,000 as your monthly expenses — representing the gap your portfolio needs to cover." }
+        },
+        {
+          "@type": "Question",
+          "name": "What if I plan to increase my contributions over time?",
+          "acceptedAnswer": { "@type": "Answer", "text": "This visualizer models a fixed monthly contribution. To approximate increasing contributions, you can run the tool twice — once with your current contribution to estimate your portfolio at a mid-point, then use that as the starting savings with a higher contribution rate. A staged model gives a rough upper bound on how much earlier increasing contributions moves your FIRE date." }
+        }
+      ]
+    }
+    </script>
+
+    <details open>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What is FIRE?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">FIRE stands for Financial Independence, Retire Early. It describes the point at which your invested assets generate enough passive income to cover living expenses indefinitely, freeing you from the need to work for money.</p>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What is the 4% rule?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">The 4% rule originates from the 1998 Trinity Study, which found that a retirement portfolio could sustain a 4% annual withdrawal rate over a 30-year horizon with a high probability of not running out of money. Some advisors recommend 3–3.5% for longer early-retirement periods.</p>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">Is a 7% annual return realistic?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">The US stock market has returned roughly 7% annually after inflation over the long run. It's a commonly used real return estimate for a diversified equity portfolio. Your actual returns will vary year to year.</p>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">Does this account for inflation?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">Not automatically. To account for it, use an inflation-adjusted return rate (e.g. 7% real rather than 10% nominal) and enter expenses in today's dollars. This gives a conservative, inflation-adjusted crossover estimate.</p>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">How do I factor in superannuation or government pension?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">Reduce your monthly expenses by the expected pension or super drawdown. If you need $4,000/month total and expect $1,000 from super, enter $3,000 as monthly expenses — the gap your personal portfolio needs to cover.</p>
+    </details>
+    <details>
+      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What if I plan to increase contributions over time?</summary>
+      <p style="color:var(--text-secondary);margin-top:.5rem;">This tool models a fixed monthly contribution. To approximate stepped increases, run the tool to a mid-point age, note the portfolio value, then re-run using that as starting savings with a higher contribution rate.</p>
+    </details>
+  </div>
+
+</ToolLayout>
+
+<style>
+  .input-group { display: flex; flex-direction: column; gap: .4rem; }
+  .input-label-row { display: flex; justify-content: space-between; align-items: center; }
+  .input-badge {
+    font-family: 'Fira Code', monospace;
+    font-size: .8rem;
+    font-weight: 700;
+    padding: .15rem .5rem;
+    border-radius: .375rem;
+    background: color-mix(in srgb, var(--text-muted) 15%, transparent);
+    color: var(--text-primary);
+    min-width: 70px;
+    text-align: right;
+  }
+  .ctrl-slider {
+    width: 100%;
+    accent-color: #6366f1;
+    cursor: pointer;
+  }
+  .range-bounds {
+    display: flex;
+    justify-content: space-between;
+    font-size: .72rem;
+    color: var(--text-muted);
+  }
+  .kpi-card {
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    padding: 1rem;
+    text-align: center;
+  }
+  .kpi-value {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .kpi-label {
+    font-size: .75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-top: .25rem;
+  }
+  details { border-top: 1px solid var(--border); }
+  details:last-child { border-bottom: 1px solid var(--border); }
+  details summary { list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+</style>
+
+<script>
+(function () {
+  // ── Helpers ──────────────────────────────────────────────────────
+  const fmtUSD = (n) =>
+    n >= 1_000_000
+      ? '$' + (n / 1_000_000).toFixed(2) + 'M'
+      : n >= 1_000
+      ? '$' + (n / 1_000).toFixed(1) + 'k'
+      : '$' + Math.round(n).toLocaleString();
+
+  const fmtFull = (n) =>
+    '$' + Math.round(n).toLocaleString();
+
+  // ── DOM refs ──────────────────────────────────────────────────────
+  const sliders = {
+    age:      document.getElementById('inp-age'),
+    savings:  document.getElementById('inp-savings'),
+    contrib:  document.getElementById('inp-contrib'),
+    ret:      document.getElementById('inp-return'),
+    expenses: document.getElementById('inp-expenses'),
+    swr:      document.getElementById('inp-swr'),
+  };
+  const outputs = {
+    age:      document.getElementById('out-age'),
+    savings:  document.getElementById('out-savings'),
+    contrib:  document.getElementById('out-contrib'),
+    ret:      document.getElementById('out-return'),
+    expenses: document.getElementById('out-expenses'),
+    swr:      document.getElementById('out-swr'),
+  };
+  const kpi = {
+    fireAge:   document.getElementById('kpi-fire-age'),
+    years:     document.getElementById('kpi-years'),
+    portfolio: document.getElementById('kpi-portfolio'),
+    income:    document.getElementById('kpi-income'),
+  };
+  const noFireMsg  = document.getElementById('no-fire-msg');
+  const canvas     = document.getElementById('fire-chart');
+  const tooltip    = document.getElementById('chart-tooltip');
+  const ctx        = canvas.getContext('2d');
+
+  // ── Model ─────────────────────────────────────────────────────────
+  function buildSeries(age, savings, contrib, annualReturn, expenses, swr) {
+    const r        = annualReturn / 100;
+    const maxYears = 80 - age;
+    const points   = [];
+
+    for (let t = 0; t <= maxYears; t++) {
+      const months   = t * 12;
+      const factor   = Math.pow(1 + r / 12, months);
+      const portfolio =
+        savings * factor +
+        (r === 0
+          ? contrib * months
+          : contrib * ((factor - 1) / (r / 12)));
+      const passiveIncome = (portfolio * swr) / 100 / 12;
+      points.push({ age: age + t, t, portfolio, passiveIncome });
+    }
+
+    let crossover = null;
+    for (let i = 1; i < points.length; i++) {
+      if (points[i].passiveIncome >= expenses) {
+        crossover = points[i];
+        break;
+      }
+    }
+
+    return { points, crossover, expenses };
+  }
+
+  // ── Chart ─────────────────────────────────────────────────────────
+  const C = {
+    portfolio: '#6366f1',
+    income:    '#10b981',
+    expenses:  '#f59e0b',
+    grid:      'rgba(255,255,255,0.06)',
+    tick:      '#9ca3af',
+    crossover: '#f43f5e',
+    bg:        'transparent',
+  };
+
+  let lastPoints = [];
+
+  function drawChart(points, crossover, expenses) {
+    lastPoints = points;
+    const dpr  = window.devicePixelRatio || 1;
+    const W    = canvas.parentElement.clientWidth;
+    const H    = 320;
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const ML = 72, MR = 20, MT = 20, MB = 36;
+    const cW = W - ML - MR;
+    const cH = H - MT - MB;
+    const n  = points.length;
+
+    // Y axis: scale on passive income (secondary axis); portfolio on a hidden scale
+    const maxIncome   = Math.max(...points.map(p => p.passiveIncome), expenses * 1.5);
+    const maxPortfolio = Math.max(...points.map(p => p.portfolio));
+
+    const xOf = (i) => ML + (i / (n - 1)) * cW;
+    const yOfIncome = (v) => MT + cH - (v / maxIncome) * cH;
+    const yOfPortfolio = (v) => MT + cH - (v / maxPortfolio) * cH;
+
+    // Grid
+    ctx.font = "11px 'Inter',sans-serif";
+    for (let g = 0; g <= 4; g++) {
+      const v = (maxIncome / 4) * g;
+      const y = yOfIncome(v);
+      ctx.beginPath();
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth   = 1;
+      ctx.moveTo(ML, y);
+      ctx.lineTo(ML + cW, y);
+      ctx.stroke();
+      ctx.fillStyle   = C.tick;
+      ctx.textAlign   = 'right';
+      ctx.fillText(fmtUSD(v) + '/mo', ML - 6, y + 4);
+    }
+
+    // X axis labels
+    ctx.textAlign   = 'center';
+    ctx.fillStyle   = C.tick;
+    const step = Math.ceil(n / 10);
+    points.forEach((p, i) => {
+      if (i % step !== 0 && i !== n - 1) return;
+      ctx.fillText(p.age, xOf(i), H - MB + 16);
+    });
+
+    // Axis lines
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth   = 1;
+    ctx.moveTo(ML, MT);
+    ctx.lineTo(ML, MT + cH);
+    ctx.lineTo(ML + cW, MT + cH);
+    ctx.stroke();
+
+    // Portfolio area + line
+    ctx.beginPath();
+    ctx.moveTo(xOf(0), yOfPortfolio(points[0].portfolio));
+    points.forEach((p, i) => ctx.lineTo(xOf(i), yOfPortfolio(p.portfolio)));
+    ctx.lineTo(xOf(n - 1), MT + cH);
+    ctx.lineTo(xOf(0), MT + cH);
+    ctx.closePath();
+    const gradP = ctx.createLinearGradient(0, MT, 0, MT + cH);
+    gradP.addColorStop(0, 'rgba(99,102,241,0.25)');
+    gradP.addColorStop(1, 'rgba(99,102,241,0.02)');
+    ctx.fillStyle = gradP;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.strokeStyle = C.portfolio;
+    ctx.lineWidth   = 2;
+    ctx.lineJoin    = 'round';
+    points.forEach((p, i) => i === 0 ? ctx.moveTo(xOf(i), yOfPortfolio(p.portfolio)) : ctx.lineTo(xOf(i), yOfPortfolio(p.portfolio)));
+    ctx.stroke();
+
+    // Expenses threshold dashed line
+    const yExp = yOfIncome(expenses);
+    ctx.beginPath();
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = C.expenses;
+    ctx.lineWidth   = 1.5;
+    ctx.moveTo(ML, yExp);
+    ctx.lineTo(ML + cW, yExp);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle  = C.expenses;
+    ctx.textAlign  = 'left';
+    ctx.font       = "10px 'Inter',sans-serif";
+    ctx.fillText('Expenses: ' + fmtFull(expenses) + '/mo', ML + 4, yExp - 5);
+
+    // Passive income line
+    ctx.beginPath();
+    ctx.strokeStyle = C.income;
+    ctx.lineWidth   = 2.5;
+    ctx.lineJoin    = 'round';
+    points.forEach((p, i) => i === 0 ? ctx.moveTo(xOf(i), yOfIncome(p.passiveIncome)) : ctx.lineTo(xOf(i), yOfIncome(p.passiveIncome)));
+    ctx.stroke();
+
+    // Dots on passive income
+    points.forEach((p, i) => {
+      if (i % step !== 0 && i !== n - 1) return;
+      ctx.beginPath();
+      ctx.arc(xOf(i), yOfIncome(p.passiveIncome), 3, 0, Math.PI * 2);
+      ctx.fillStyle   = C.income;
+      ctx.fill();
+      ctx.strokeStyle = 'var(--bg-surface)';
+      ctx.lineWidth   = 1.5;
+      ctx.stroke();
+    });
+
+    // Crossover marker
+    if (crossover) {
+      const cx = xOf(crossover.t);
+      const cy = yOfIncome(crossover.passiveIncome);
+      ctx.beginPath();
+      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+      ctx.fillStyle   = C.crossover;
+      ctx.fill();
+      ctx.strokeStyle = 'var(--bg-surface)';
+      ctx.lineWidth   = 2;
+      ctx.stroke();
+
+      ctx.fillStyle  = C.crossover;
+      ctx.font       = "bold 11px 'Sora',sans-serif";
+      ctx.textAlign  = cx > W - 100 ? 'right' : 'left';
+      ctx.fillText('FIRE ✦ Age ' + crossover.age, cx + (ctx.textAlign === 'right' ? -14 : 14), cy - 10);
+    }
+
+    // Tooltip on mousemove
+    canvas.onmousemove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx   = e.clientX - rect.left;
+      let   best = -1, bd = Infinity;
+      points.forEach((p, i) => {
+        const d = Math.abs(xOf(i) - mx);
+        if (d < bd) { bd = d; best = i; }
+      });
+      if (best === -1 || bd > cW / n) { tooltip.style.opacity = '0'; return; }
+      const p  = points[best];
+      const tx = xOf(best);
+      const ty = yOfIncome(p.passiveIncome);
+      tooltip.innerHTML = `
+        <strong style="color:var(--text-primary);">Age ${p.age}</strong><br>
+        <span style="color:${C.portfolio};">■</span> Portfolio: ${fmtFull(p.portfolio)}<br>
+        <span style="color:${C.income};">●</span> Passive Income: ${fmtFull(p.passiveIncome)}/mo<br>
+        <span style="color:${C.expenses};">—</span> Expenses: ${fmtFull(expenses)}/mo
+      `;
+      const tW = 200, tH = 80;
+      let left = tx + 14, top = ty - tH / 2;
+      if (left + tW > W) left = tx - tW - 14;
+      if (top < 0) top = 4;
+      tooltip.style.left    = left + 'px';
+      tooltip.style.top     = top + 'px';
+      tooltip.style.opacity = '1';
+    };
+    canvas.onmouseleave = () => { tooltip.style.opacity = '0'; };
+  }
+
+  // ── Update ────────────────────────────────────────────────────────
+  function update() {
+    const age      = parseInt(sliders.age.value, 10);
+    const savings  = parseFloat(sliders.savings.value);
+    const contrib  = parseFloat(sliders.contrib.value);
+    const ret      = parseFloat(sliders.ret.value);
+    const expenses = parseFloat(sliders.expenses.value);
+    const swr      = parseFloat(sliders.swr.value);
+
+    // Update output badges
+    outputs.age.value      = age;
+    outputs.savings.value  = fmtFull(savings);
+    outputs.contrib.value  = fmtFull(contrib);
+    outputs.ret.value      = ret + '%';
+    outputs.expenses.value = fmtFull(expenses);
+    outputs.swr.value      = swr + '%';
+
+    const { points, crossover } = buildSeries(age, savings, contrib, ret, expenses, swr);
+
+    if (crossover) {
+      noFireMsg.style.display        = 'none';
+      kpi.fireAge.textContent        = 'Age ' + crossover.age;
+      kpi.years.textContent          = (crossover.age - age) + ' yrs';
+      kpi.portfolio.textContent      = fmtUSD(crossover.portfolio);
+      kpi.income.textContent         = fmtFull(crossover.passiveIncome) + '/mo';
+
+      // Accent the FIRE age card
+      kpi.fireAge.style.color        = '#f43f5e';
+      kpi.years.style.color          = '#f59e0b';
+      kpi.portfolio.style.color      = '#6366f1';
+      kpi.income.style.color         = '#10b981';
+    } else {
+      noFireMsg.style.display        = 'block';
+      kpi.fireAge.textContent        = '> 80';
+      kpi.years.textContent          = '—';
+      kpi.portfolio.textContent      = '—';
+      kpi.income.textContent         = '—';
+      kpi.fireAge.style.color        = 'var(--text-muted)';
+      kpi.years.style.color          = 'var(--text-muted)';
+      kpi.portfolio.style.color      = 'var(--text-muted)';
+      kpi.income.style.color         = 'var(--text-muted)';
+    }
+
+    drawChart(points, crossover, expenses);
+  }
+
+  // ── Wire up sliders ───────────────────────────────────────────────
+  Object.values(sliders).forEach(s => s.addEventListener('input', update));
+
+  // ── Resize ────────────────────────────────────────────────────────
+  window.addEventListener('resize', update);
+
+  // ── Init ──────────────────────────────────────────────────────────
+  update();
+})();
+</script>

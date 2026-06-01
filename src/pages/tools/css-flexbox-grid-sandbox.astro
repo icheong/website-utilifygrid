@@ -1,0 +1,626 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'css-flexbox-grid-sandbox')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ═══ THE TOOL ═══ -->
+  <div slot="tool">
+
+    <!-- Mode toggle -->
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem;">
+      <button id="mode-flex" class="mode-btn active-mode"
+        style="flex:1; padding:0.6rem 1rem; border-radius:0.625rem; font-size:0.9rem; font-weight:600; border:1.5px solid #1D4ED8; background:#EFF6FF; color:#1D4ED8; cursor:pointer; transition:all 0.15s;">
+        ⬡ Flexbox
+      </button>
+      <button id="mode-grid" class="mode-btn"
+        style="flex:1; padding:0.6rem 1rem; border-radius:0.625rem; font-size:0.9rem; font-weight:600; border:1.5px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">
+        ⊞ Grid
+      </button>
+    </div>
+
+    <div style="display:grid; gap:1.5rem;" id="sandbox-layout">
+
+      <!-- ── CONTROLS PANEL ── -->
+      <div id="controls-panel" style="display:flex; flex-direction:column; gap:1.25rem;">
+
+        <!-- FLEXBOX CONTROLS -->
+        <div id="flex-controls">
+          <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.75rem;">Container properties</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">flex-direction</label>
+              <select id="flex-direction" class="ctrl-select">
+                <option value="row" selected>row</option>
+                <option value="row-reverse">row-reverse</option>
+                <option value="column">column</option>
+                <option value="column-reverse">column-reverse</option>
+              </select>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">flex-wrap</label>
+              <select id="flex-wrap" class="ctrl-select">
+                <option value="nowrap" selected>nowrap</option>
+                <option value="wrap">wrap</option>
+                <option value="wrap-reverse">wrap-reverse</option>
+              </select>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">justify-content</label>
+              <select id="flex-justify" class="ctrl-select">
+                <option value="flex-start" selected>flex-start</option>
+                <option value="flex-end">flex-end</option>
+                <option value="center">center</option>
+                <option value="space-between">space-between</option>
+                <option value="space-around">space-around</option>
+                <option value="space-evenly">space-evenly</option>
+              </select>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">align-items</label>
+              <select id="flex-align-items" class="ctrl-select">
+                <option value="stretch" selected>stretch</option>
+                <option value="flex-start">flex-start</option>
+                <option value="flex-end">flex-end</option>
+                <option value="center">center</option>
+                <option value="baseline">baseline</option>
+              </select>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">align-content</label>
+              <select id="flex-align-content" class="ctrl-select">
+                <option value="normal" selected>normal</option>
+                <option value="flex-start">flex-start</option>
+                <option value="flex-end">flex-end</option>
+                <option value="center">center</option>
+                <option value="space-between">space-between</option>
+                <option value="space-around">space-around</option>
+                <option value="stretch">stretch</option>
+              </select>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">gap</label>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="range" id="flex-gap" min="0" max="48" value="8" step="4" style="flex:1; height:4px; cursor:pointer; accent-color:#1D4ED8;" />
+                <span id="flex-gap-val" style="font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-secondary); min-width:32px; text-align:right;">8px</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Item count -->
+          <div style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid var(--border);">
+            <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.5rem;">Items</div>
+            <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <label class="ctrl-label" style="margin:0;">Count</label>
+                <input type="range" id="flex-item-count" min="1" max="10" value="4" style="width:80px; height:4px; cursor:pointer; accent-color:#1D4ED8;" />
+                <span id="flex-item-count-val" style="font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-secondary); min-width:16px;">4</span>
+              </div>
+              <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; color:var(--text-secondary); cursor:pointer;">
+                <input type="checkbox" id="flex-vary-size" style="accent-color:#1D4ED8;" /> Vary item sizes
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRID CONTROLS -->
+        <div id="grid-controls" style="display:none;">
+          <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.75rem;">Container properties</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">Columns</label>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="range" id="grid-cols" min="1" max="6" value="3" style="flex:1; height:4px; cursor:pointer; accent-color:#1D4ED8;" />
+                <span id="grid-cols-val" style="font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-secondary); min-width:16px;">3</span>
+              </div>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">Rows</label>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="range" id="grid-rows" min="1" max="6" value="2" style="flex:1; height:4px; cursor:pointer; accent-color:#1D4ED8;" />
+                <span id="grid-rows-val" style="font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-secondary); min-width:16px;">2</span>
+              </div>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">column-gap</label>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="range" id="grid-col-gap" min="0" max="48" value="12" step="4" style="flex:1; height:4px; cursor:pointer; accent-color:#1D4ED8;" />
+                <span id="grid-col-gap-val" style="font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-secondary); min-width:32px; text-align:right;">12px</span>
+              </div>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">row-gap</label>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="range" id="grid-row-gap" min="0" max="48" value="12" step="4" style="flex:1; height:4px; cursor:pointer; accent-color:#1D4ED8;" />
+                <span id="grid-row-gap-val" style="font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-secondary); min-width:32px; text-align:right;">12px</span>
+              </div>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">justify-items</label>
+              <select id="grid-justify-items" class="ctrl-select">
+                <option value="stretch" selected>stretch</option>
+                <option value="start">start</option>
+                <option value="end">end</option>
+                <option value="center">center</option>
+              </select>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">align-items</label>
+              <select id="grid-align-items" class="ctrl-select">
+                <option value="stretch" selected>stretch</option>
+                <option value="start">start</option>
+                <option value="end">end</option>
+                <option value="center">center</option>
+              </select>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">Column template</label>
+              <select id="grid-col-template" class="ctrl-select">
+                <option value="repeat({n}, 1fr)" selected>Equal (1fr each)</option>
+                <option value="repeat({n}, minmax(0, 1fr))">Min 0, 1fr</option>
+                <option value="repeat({n}, auto)">Auto</option>
+                <option value="repeat({n}, minmax(120px, 1fr))">minmax(120px, 1fr)</option>
+              </select>
+            </div>
+
+            <div class="ctrl-group">
+              <label class="ctrl-label">Row template</label>
+              <select id="grid-row-template" class="ctrl-select">
+                <option value="repeat({n}, 1fr)" selected>Equal (1fr each)</option>
+                <option value="repeat({n}, auto)">Auto</option>
+                <option value="repeat({n}, minmax(60px, auto))">minmax(60px, auto)</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid var(--border);">
+            <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.5rem;">Items</div>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <label class="ctrl-label" style="margin:0;">Count</label>
+              <input type="range" id="grid-item-count" min="1" max="12" value="6" style="width:80px; height:4px; cursor:pointer; accent-color:#1D4ED8;" />
+              <span id="grid-item-count-val" style="font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-secondary); min-width:16px;">6</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── LIVE PREVIEW ── -->
+      <div style="min-width:0;">
+        <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.5rem;">Live preview</div>
+        <div id="preview-container"
+          style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.25rem; min-height:200px; overflow:hidden; width:100%; box-sizing:border-box;">
+          <div id="preview-box" style="width:100%; max-width:100%; min-width:0; min-height:160px; box-sizing:border-box;">
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CSS OUTPUT ── -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+          <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em;">Generated CSS</div>
+          <div style="display:flex; gap:0.5rem;">
+            <button id="copy-css-btn"
+              style="font-size:0.75rem; padding:0.25rem 0.75rem; border:1px solid var(--border); border-radius:0.4rem; background:var(--bg-surface-2); color:var(--text-secondary); cursor:pointer; transition:all 0.15s; font-weight:500;">
+              Copy CSS
+            </button>
+            <button id="reset-btn"
+              style="font-size:0.75rem; padding:0.25rem 0.75rem; border:1px solid var(--border); border-radius:0.4rem; background:var(--bg-surface-2); color:var(--text-secondary); cursor:pointer; transition:all 0.15s; font-weight:500;">
+              Reset
+            </button>
+          </div>
+        </div>
+        <pre id="css-output"
+          style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:1rem; font-family:'Fira Code',monospace; font-size:0.82rem; line-height:1.7; color:var(--text-primary); overflow-x:auto; margin:0; white-space:pre-wrap; word-break:break-all;"></pre>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ═══ HOW TO USE ═══ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">
+      How to use the CSS Flexbox & Grid Sandbox
+    </h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Choose between <strong style="color:var(--text-primary);">Flexbox</strong> and <strong style="color:var(--text-primary);">Grid</strong> using the toggle at the top. The controls panel updates to show the relevant CSS properties for each layout mode.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Adjust any property using the dropdowns or sliders — the live preview and generated CSS update instantly. The preview shows real browser-rendered output with numbered child items so you can see exactly how each property affects placement and sizing.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      When you have a layout you like, click <strong style="color:var(--text-primary);">Copy CSS</strong> to copy the complete, production-ready CSS block to your clipboard. The output includes both the container rules and a representative child rule — ready to drop into your stylesheet.
+    </p>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">
+      Flexbox vs Grid — when to use each
+    </h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1rem;">
+      {[
+        ['Flexbox', 'One-dimensional', 'Best for rows or columns of items — navigation bars, button groups, card rows, centring a single element.'],
+        ['Grid',    'Two-dimensional', 'Best for full page layouts, image galleries, dashboard panels — anything needing both row and column control simultaneously.'],
+        ['Flexbox: justify-content', 'Main axis alignment', 'Controls how items are distributed along the flex direction — e.g. space-between spreads them out.'],
+        ['Flexbox: align-items',     'Cross axis alignment','Controls how items align perpendicular to flex direction — e.g. center vertically aligns items in a row.'],
+        ['Grid: fr unit',            'Fractional space',    '1fr means "one equal share of available space". repeat(3, 1fr) creates three equal columns.'],
+        ['Grid: gap',                'Gutters',             'Sets the space between rows and columns without using margins. column-gap and row-gap can differ.'],
+      ].map(([label, sublabel, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:0.5rem; margin-bottom:0.3rem;">
+            <span style="font-size:0.85rem; font-weight:700; color:var(--text-primary);">{label}</span>
+            <code style="font-size:0.78rem; color:#1D4ED8; background:#EFF6FF; padding:0.1rem 0.45rem; border-radius:0.25rem;">{sublabel}</code>
+          </div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); margin:0; line-height:1.6;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">
+      Frequently asked questions
+    </h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: 'What is CSS Flexbox?',
+          a: 'Flexbox (Flexible Box Layout) is a CSS layout model designed for arranging items in a single direction — either a row or a column. It excels at distributing space among items and aligning them within a container, even when their sizes are dynamic or unknown. It is the standard approach for navigation bars, toolbars, centring elements, and any single-axis layout.',
+        },
+        {
+          q: 'What is CSS Grid?',
+          a: 'CSS Grid is a two-dimensional layout system that lets you control both rows and columns simultaneously. It is ideal for full page layouts, card grids, dashboards, and any design requiring precise placement in both axes. Unlike Flexbox, Grid lets you define the layout from the container rather than relying on the items to determine their own sizing.',
+        },
+        {
+          q: 'Should I use Flexbox or Grid?',
+          a: 'Use Flexbox when your layout is fundamentally one-dimensional — a row of buttons, a vertical stack of cards, a centred element. Use Grid when you need two-dimensional control — placing items in specific rows and columns, or building a full page structure. The two are complementary: it is common to use Grid for the outer page structure and Flexbox for the components within each area.',
+        },
+        {
+          q: 'What does the fr unit mean in CSS Grid?',
+          a: 'The fr (fraction) unit represents a share of the available space in a grid container. For example, grid-template-columns: 1fr 2fr 1fr creates three columns where the middle column gets twice as much space as each outer column. It is similar to the flex-grow concept in Flexbox — space is distributed proportionally after fixed-size columns are allocated.',
+        },
+        {
+          q: 'What is the difference between justify-content and align-items in Flexbox?',
+          a: 'justify-content controls alignment along the main axis (the flex-direction). In a row, this means horizontal; in a column, vertical. align-items controls alignment along the cross axis — perpendicular to flex-direction. In a row, this means vertical; in a column, horizontal. A common pattern is justify-content: center combined with align-items: center to centre an element in both dimensions.',
+        },
+        {
+          q: 'Does the generated CSS work in all modern browsers?',
+          a: 'Yes. Both Flexbox and CSS Grid have full support across all modern browsers — Chrome, Firefox, Safari, and Edge. Grid has been supported since 2017 and Flexbox since 2015. The generated code uses no experimental properties and requires no vendor prefixes for modern browser targets.',
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  .ctrl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .ctrl-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-family: 'Fira Code', monospace;
+  }
+  .ctrl-select {
+    padding: 0.4rem 0.6rem;
+    border: 1.5px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 0.82rem;
+    font-family: 'Fira Code', monospace;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .ctrl-select:focus {
+    border-color: #1D4ED8;
+  }
+
+  /* Preview child items */
+  .preview-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.4rem;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+    min-height: 40px;
+    transition: all 0.2s ease;
+  }
+
+  #sandbox-layout {
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 800px) {
+    #sandbox-layout {
+      grid-template-columns: 260px minmax(0, 1fr);
+      grid-template-rows: auto auto;
+    }
+    #controls-panel {
+      grid-row: 1 / 3;
+    }
+    /* Prevent right-column children from blowing out their track */
+    #sandbox-layout > div:not(#controls-panel) {
+      min-width: 0;
+    }
+  }
+</style>
+
+<script>
+  // ── Colour palette for preview items ──────────────────────────
+  const ITEM_COLORS = [
+    '#6366F1', '#EC4899', '#F59E0B', '#10B981',
+    '#3B82F6', '#EF4444', '#8B5CF6', '#14B8A6',
+    '#F97316', '#06B6D4', '#84CC16', '#A855F7',
+  ];
+
+  // ── State ──────────────────────────────────────────────────────
+  let mode: 'flex' | 'grid' = 'flex';
+
+  // ── DOM refs ───────────────────────────────────────────────────
+  const modeFlex   = document.getElementById('mode-flex')    as HTMLButtonElement;
+  const modeGrid   = document.getElementById('mode-grid')    as HTMLButtonElement;
+  const flexCtrl   = document.getElementById('flex-controls')!;
+  const gridCtrl   = document.getElementById('grid-controls')!;
+  const previewBox = document.getElementById('preview-box')!;
+  const cssOutput  = document.getElementById('css-output')!;
+  const copyCssBtn = document.getElementById('copy-css-btn') as HTMLButtonElement;
+  const resetBtn   = document.getElementById('reset-btn')    as HTMLButtonElement;
+
+  // Flex controls
+  const fDirection    = document.getElementById('flex-direction')    as HTMLSelectElement;
+  const fWrap         = document.getElementById('flex-wrap')         as HTMLSelectElement;
+  const fJustify      = document.getElementById('flex-justify')      as HTMLSelectElement;
+  const fAlignItems   = document.getElementById('flex-align-items')  as HTMLSelectElement;
+  const fAlignContent = document.getElementById('flex-align-content')as HTMLSelectElement;
+  const fGap          = document.getElementById('flex-gap')          as HTMLInputElement;
+  const fGapVal       = document.getElementById('flex-gap-val')!;
+  const fItemCount    = document.getElementById('flex-item-count')   as HTMLInputElement;
+  const fItemCountVal = document.getElementById('flex-item-count-val')!;
+  const fVarySize     = document.getElementById('flex-vary-size')    as HTMLInputElement;
+
+  // Grid controls
+  const gCols         = document.getElementById('grid-cols')         as HTMLInputElement;
+  const gColsVal      = document.getElementById('grid-cols-val')!;
+  const gRows         = document.getElementById('grid-rows')         as HTMLInputElement;
+  const gRowsVal      = document.getElementById('grid-rows-val')!;
+  const gColGap       = document.getElementById('grid-col-gap')      as HTMLInputElement;
+  const gColGapVal    = document.getElementById('grid-col-gap-val')!;
+  const gRowGap       = document.getElementById('grid-row-gap')      as HTMLInputElement;
+  const gRowGapVal    = document.getElementById('grid-row-gap-val')!;
+  const gJustifyItems = document.getElementById('grid-justify-items')as HTMLSelectElement;
+  const gAlignItems   = document.getElementById('grid-align-items')  as HTMLSelectElement;
+  const gColTemplate  = document.getElementById('grid-col-template') as HTMLSelectElement;
+  const gRowTemplate  = document.getElementById('grid-row-template') as HTMLSelectElement;
+  const gItemCount    = document.getElementById('grid-item-count')   as HTMLInputElement;
+  const gItemCountVal = document.getElementById('grid-item-count-val')!;
+
+  // ── Helpers ────────────────────────────────────────────────────
+  function templateVal(tmpl: string, n: number): string {
+    return tmpl.replace(/\{n\}/g, n.toString());
+  }
+
+  function makeItems(count: number, varySize: boolean): HTMLElement[] {
+    return Array.from({ length: count }, (_, i) => {
+      const el = document.createElement('div');
+      el.className = 'preview-item';
+      el.style.background = ITEM_COLORS[i % ITEM_COLORS.length];
+      el.textContent = String(i + 1);
+      if (varySize) {
+        const sizes = [1, 1.5, 2, 1, 1.2, 1.8, 1, 1.3];
+        const s = sizes[i % sizes.length];
+        el.style.flexGrow = s.toString();
+        el.style.minWidth = `${40 * s}px`;
+        el.style.minHeight = `${36 * s}px`;
+      } else {
+        el.style.minWidth = '48px';
+        el.style.minHeight = '40px';
+      }
+      return el;
+    });
+  }
+
+  // ── Render ─────────────────────────────────────────────────────
+  function render() {
+    previewBox.innerHTML = '';
+
+    if (mode === 'flex') {
+      const gap       = parseInt(fGap.value);
+      const itemCount = parseInt(fItemCount.value);
+
+      previewBox.style.cssText = `
+        display: flex;
+        flex-direction: ${fDirection.value};
+        flex-wrap: ${fWrap.value};
+        justify-content: ${fJustify.value};
+        align-items: ${fAlignItems.value};
+        align-content: ${fAlignContent.value};
+        gap: ${gap}px;
+        min-height: 160px;
+        padding: 4px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        overflow: hidden;
+      `;
+
+      makeItems(itemCount, fVarySize.checked).forEach(el => previewBox.appendChild(el));
+
+      cssOutput.textContent =
+`.container {
+  display: flex;
+  flex-direction: ${fDirection.value};
+  flex-wrap: ${fWrap.value};
+  justify-content: ${fJustify.value};
+  align-items: ${fAlignItems.value};${fAlignContent.value !== 'normal' ? `\n  align-content: ${fAlignContent.value};` : ''}
+  gap: ${gap}px;
+}
+
+.container > * {
+  /* Add item-specific styles here */
+}`;
+
+    } else {
+      const cols        = parseInt(gCols.value);
+      const rows        = parseInt(gRows.value);
+      const colGap      = parseInt(gColGap.value);
+      const rowGap      = parseInt(gRowGap.value);
+      const itemCount   = parseInt(gItemCount.value);
+      const colTmpl     = templateVal(gColTemplate.value, cols);
+      const rowTmpl     = templateVal(gRowTemplate.value, rows);
+
+      previewBox.style.cssText = `
+        display: grid;
+        grid-template-columns: ${colTmpl};
+        grid-template-rows: ${rowTmpl};
+        column-gap: ${colGap}px;
+        row-gap: ${rowGap}px;
+        justify-items: ${gJustifyItems.value};
+        align-items: ${gAlignItems.value};
+        min-height: 160px;
+        padding: 4px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        overflow: hidden;
+      `;
+
+      makeItems(itemCount, false).forEach(el => previewBox.appendChild(el));
+
+      cssOutput.textContent =
+`.container {
+  display: grid;
+  grid-template-columns: ${colTmpl};
+  grid-template-rows: ${rowTmpl};
+  column-gap: ${colGap}px;
+  row-gap: ${rowGap}px;${gJustifyItems.value !== 'stretch' ? `\n  justify-items: ${gJustifyItems.value};` : ''}${gAlignItems.value !== 'stretch' ? `\n  align-items: ${gAlignItems.value};` : ''}
+}
+
+.container > * {
+  /* Add item-specific styles here */
+}`;
+    }
+  }
+
+  // ── Mode switching ─────────────────────────────────────────────
+  function setMode(m: 'flex' | 'grid') {
+    mode = m;
+    const isFlex = m === 'flex';
+
+    flexCtrl.style.display = isFlex ? 'block' : 'none';
+    gridCtrl.style.display = isFlex ? 'none'  : 'block';
+
+    modeFlex.style.background   = isFlex ? '#EFF6FF' : 'var(--bg-surface-2)';
+    modeFlex.style.color        = isFlex ? '#1D4ED8' : 'var(--text-secondary)';
+    modeFlex.style.borderColor  = isFlex ? '#1D4ED8' : 'var(--border)';
+    modeGrid.style.background   = !isFlex ? '#EFF6FF' : 'var(--bg-surface-2)';
+    modeGrid.style.color        = !isFlex ? '#1D4ED8' : 'var(--text-secondary)';
+    modeGrid.style.borderColor  = !isFlex ? '#1D4ED8' : 'var(--border)';
+
+    render();
+  }
+
+  modeFlex.addEventListener('click', () => setMode('flex'));
+  modeGrid.addEventListener('click', () => setMode('grid'));
+
+  // ── Slider label sync ──────────────────────────────────────────
+  fGap.addEventListener('input',       () => { fGapVal.textContent = `${fGap.value}px`; render(); });
+  fItemCount.addEventListener('input', () => { fItemCountVal.textContent = fItemCount.value; render(); });
+  gCols.addEventListener('input',      () => { gColsVal.textContent = gCols.value; render(); });
+  gRows.addEventListener('input',      () => { gRowsVal.textContent = gRows.value; render(); });
+  gColGap.addEventListener('input',    () => { gColGapVal.textContent = `${gColGap.value}px`; render(); });
+  gRowGap.addEventListener('input',    () => { gRowGapVal.textContent = `${gRowGap.value}px`; render(); });
+  gItemCount.addEventListener('input', () => { gItemCountVal.textContent = gItemCount.value; render(); });
+
+  // ── Select + checkbox changes ──────────────────────────────────
+  [fDirection, fWrap, fJustify, fAlignItems, fAlignContent,
+   gJustifyItems, gAlignItems, gColTemplate, gRowTemplate,
+   fVarySize].forEach(el => el.addEventListener('change', render));
+
+  // ── Copy CSS ───────────────────────────────────────────────────
+  copyCssBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(cssOutput.textContent || '').then(() => {
+      copyCssBtn.textContent = '✓ Copied!';
+      copyCssBtn.style.color       = '#16A34A';
+      copyCssBtn.style.background  = '#F0FDF4';
+      copyCssBtn.style.borderColor = '#BBF7D0';
+      setTimeout(() => {
+        copyCssBtn.textContent = 'Copy CSS';
+        copyCssBtn.style.color       = 'var(--text-secondary)';
+        copyCssBtn.style.background  = 'var(--bg-surface-2)';
+        copyCssBtn.style.borderColor = 'var(--border)';
+      }, 2000);
+    });
+  });
+
+  // ── Reset ──────────────────────────────────────────────────────
+  resetBtn.addEventListener('click', () => {
+    fDirection.value    = 'row';
+    fWrap.value         = 'nowrap';
+    fJustify.value      = 'flex-start';
+    fAlignItems.value   = 'stretch';
+    fAlignContent.value = 'normal';
+    fGap.value          = '8';
+    fGapVal.textContent = '8px';
+    fItemCount.value    = '4';
+    fItemCountVal.textContent = '4';
+    fVarySize.checked   = false;
+    gCols.value         = '3';
+    gColsVal.textContent = '3';
+    gRows.value         = '2';
+    gRowsVal.textContent = '2';
+    gColGap.value       = '12';
+    gColGapVal.textContent = '12px';
+    gRowGap.value       = '12';
+    gRowGapVal.textContent = '12px';
+    gJustifyItems.value = 'stretch';
+    gAlignItems.value   = 'stretch';
+    gColTemplate.value  = 'repeat({n}, 1fr)';
+    gRowTemplate.value  = 'repeat({n}, 1fr)';
+    gItemCount.value    = '6';
+    gItemCountVal.textContent = '6';
+    render();
+  });
+
+  // ── Initial render ─────────────────────────────────────────────
+  render();
+</script>

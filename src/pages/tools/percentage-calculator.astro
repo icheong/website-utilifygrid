@@ -1,0 +1,421 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'percentage-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ═══ THE TOOL ═══ -->
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.5rem;">
+      Choose a calculation
+    </h2>
+
+    <!-- Mode selector -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.75rem;" role="tablist" aria-label="Calculation mode">
+      {[
+        ['basic',    'What is X% of Y?'],
+        ['of-what',  'X is what % of Y?'],
+        ['change',   '% change from X to Y'],
+        ['adjust',   'Increase / decrease by %'],
+      ].map(([mode, label], i) => (
+        <button
+          class="mode-btn"
+          data-mode={mode}
+          role="tab"
+          aria-selected={i === 0 ? 'true' : 'false'}
+          style={`padding:0.45rem 1rem; border-radius:0.5rem; font-size:0.85rem; font-weight:500; border:1.5px solid ${i === 0 ? '#1D4ED8' : '#E2E8F0'}; background:${i === 0 ? '#EFF6FF' : '#fff'}; color:${i === 0 ? '#1D4ED8' : '#475569'}; cursor:pointer; transition:all 0.15s;`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+
+    <!-- ── MODE: basic — What is X% of Y? ── -->
+    <div class="calc-panel" id="panel-basic">
+      <div style="display:grid; grid-template-columns:1fr auto 1fr auto; align-items:end; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.25rem;" class="calc-row">
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:#475569; margin-bottom:0.35rem;" for="basic-pct">Percentage (%)</label>
+          <input id="basic-pct" type="number" min="0" placeholder="e.g. 20"
+            style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:1rem; color:#0F172A; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
+            onfocus="this.style.borderColor='#1D4ED8';" onblur="this.style.borderColor='#E2E8F0';" />
+        </div>
+        <span style="font-size:1.1rem; color:#94A3B8; padding-bottom:0.7rem; white-space:nowrap;">% of</span>
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:#475569; margin-bottom:0.35rem;" for="basic-val">Value</label>
+          <input id="basic-val" type="number" min="0" placeholder="e.g. 150"
+            style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:1rem; color:#0F172A; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
+            onfocus="this.style.borderColor='#1D4ED8';" onblur="this.style.borderColor='#E2E8F0';" />
+        </div>
+        <span style="font-size:1.1rem; color:#94A3B8; padding-bottom:0.7rem;">=</span>
+      </div>
+      <button class="calc-btn" data-panel="basic"
+        style="padding:0.7rem 1.75rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.625rem; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
+        onmouseover="this.style.background='#1E3A8A';" onmouseout="this.style.background='#1D4ED8';">
+        Calculate
+      </button>
+      <div class="result-box" id="result-basic" style="display:none; margin-top:1.25rem; background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem 1.25rem;">
+        <div style="font-size:0.8rem; color:#166534; font-weight:600; margin-bottom:0.2rem;">Result</div>
+        <div style="font-size:1.75rem; font-weight:700; color:#15803D; font-family:'Sora',sans-serif;" id="result-basic-val">—</div>
+        <div style="font-size:0.8rem; color:#4ADE80; margin-top:0.2rem;" id="result-basic-expr"></div>
+      </div>
+      <div class="error-box" id="error-basic" style="display:none; margin-top:0.75rem; color:#DC2626; font-size:0.85rem;"></div>
+    </div>
+
+    <!-- ── MODE: of-what — X is what % of Y? ── -->
+    <div class="calc-panel" id="panel-of-what" style="display:none;">
+      <div style="display:grid; grid-template-columns:1fr auto 1fr auto; align-items:end; gap:0.75rem; margin-bottom:1.25rem;" class="calc-row">
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:#475569; margin-bottom:0.35rem;" for="ofwhat-part">Value (part)</label>
+          <input id="ofwhat-part" type="number" placeholder="e.g. 30"
+            style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:1rem; color:#0F172A; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
+            onfocus="this.style.borderColor='#1D4ED8';" onblur="this.style.borderColor='#E2E8F0';" />
+        </div>
+        <span style="font-size:0.9rem; color:#94A3B8; padding-bottom:0.7rem; white-space:nowrap;">is what % of</span>
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:#475569; margin-bottom:0.35rem;" for="ofwhat-total">Total</label>
+          <input id="ofwhat-total" type="number" placeholder="e.g. 150"
+            style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:1rem; color:#0F172A; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
+            onfocus="this.style.borderColor='#1D4ED8';" onblur="this.style.borderColor='#E2E8F0';" />
+        </div>
+        <span style="font-size:1.1rem; color:#94A3B8; padding-bottom:0.7rem;">?</span>
+      </div>
+      <button class="calc-btn" data-panel="of-what"
+        style="padding:0.7rem 1.75rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.625rem; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
+        onmouseover="this.style.background='#1E3A8A';" onmouseout="this.style.background='#1D4ED8';">
+        Calculate
+      </button>
+      <div class="result-box" id="result-of-what" style="display:none; margin-top:1.25rem; background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem 1.25rem;">
+        <div style="font-size:0.8rem; color:#166534; font-weight:600; margin-bottom:0.2rem;">Result</div>
+        <div style="font-size:1.75rem; font-weight:700; color:#15803D; font-family:'Sora',sans-serif;" id="result-of-what-val">—</div>
+        <div style="font-size:0.8rem; color:#4ADE80; margin-top:0.2rem;" id="result-of-what-expr"></div>
+      </div>
+      <div class="error-box" id="error-of-what" style="display:none; margin-top:0.75rem; color:#DC2626; font-size:0.85rem;"></div>
+    </div>
+
+    <!-- ── MODE: change — % change from X to Y ── -->
+    <div class="calc-panel" id="panel-change" style="display:none;">
+      <div style="display:grid; grid-template-columns:1fr auto 1fr auto; align-items:end; gap:0.75rem; margin-bottom:1.25rem;" class="calc-row">
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:#475569; margin-bottom:0.35rem;" for="change-from">Original value</label>
+          <input id="change-from" type="number" placeholder="e.g. 80"
+            style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:1rem; color:#0F172A; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
+            onfocus="this.style.borderColor='#1D4ED8';" onblur="this.style.borderColor='#E2E8F0';" />
+        </div>
+        <span style="font-size:0.9rem; color:#94A3B8; padding-bottom:0.7rem; white-space:nowrap;">to</span>
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:#475569; margin-bottom:0.35rem;" for="change-to">New value</label>
+          <input id="change-to" type="number" placeholder="e.g. 100"
+            style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:1rem; color:#0F172A; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
+            onfocus="this.style.borderColor='#1D4ED8';" onblur="this.style.borderColor='#E2E8F0';" />
+        </div>
+        <span style="font-size:1.1rem; color:#94A3B8; padding-bottom:0.7rem;">?</span>
+      </div>
+      <button class="calc-btn" data-panel="change"
+        style="padding:0.7rem 1.75rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.625rem; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
+        onmouseover="this.style.background='#1E3A8A';" onmouseout="this.style.background='#1D4ED8';">
+        Calculate
+      </button>
+      <div class="result-box" id="result-change" style="display:none; margin-top:1.25rem; border-radius:0.75rem; padding:1rem 1.25rem;">
+        <div style="font-size:0.8rem; font-weight:600; margin-bottom:0.2rem;" id="result-change-label">Result</div>
+        <div style="font-size:1.75rem; font-weight:700; font-family:'Sora',sans-serif;" id="result-change-val">—</div>
+        <div style="font-size:0.8rem; margin-top:0.2rem;" id="result-change-expr"></div>
+      </div>
+      <div class="error-box" id="error-change" style="display:none; margin-top:0.75rem; color:#DC2626; font-size:0.85rem;"></div>
+    </div>
+
+    <!-- ── MODE: adjust — Increase / decrease by % ── -->
+    <div class="calc-panel" id="panel-adjust" style="display:none;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:#475569; margin-bottom:0.35rem;" for="adjust-val">Starting value</label>
+          <input id="adjust-val" type="number" placeholder="e.g. 200"
+            style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:1rem; color:#0F172A; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
+            onfocus="this.style.borderColor='#1D4ED8';" onblur="this.style.borderColor='#E2E8F0';" />
+        </div>
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:#475569; margin-bottom:0.35rem;" for="adjust-pct">Percentage (%)</label>
+          <input id="adjust-pct" type="number" min="0" placeholder="e.g. 15"
+            style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:1rem; color:#0F172A; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
+            onfocus="this.style.borderColor='#1D4ED8';" onblur="this.style.borderColor='#E2E8F0';" />
+        </div>
+      </div>
+      <!-- Increase / Decrease toggle -->
+      <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem;">
+        <button id="adj-increase" data-dir="increase"
+          style="padding:0.4rem 1rem; border-radius:0.5rem; font-size:0.85rem; font-weight:500; border:1.5px solid #1D4ED8; background:#EFF6FF; color:#1D4ED8; cursor:pointer; transition:all 0.15s;">
+          ▲ Increase
+        </button>
+        <button id="adj-decrease" data-dir="decrease"
+          style="padding:0.4rem 1rem; border-radius:0.5rem; font-size:0.85rem; font-weight:500; border:1.5px solid #E2E8F0; background:#fff; color:#475569; cursor:pointer; transition:all 0.15s;">
+          ▼ Decrease
+        </button>
+      </div>
+      <button class="calc-btn" data-panel="adjust"
+        style="padding:0.7rem 1.75rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.625rem; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
+        onmouseover="this.style.background='#1E3A8A';" onmouseout="this.style.background='#1D4ED8';">
+        Calculate
+      </button>
+      <div class="result-box" id="result-adjust" style="display:none; margin-top:1.25rem; background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem 1.25rem;">
+        <div style="font-size:0.8rem; color:#166534; font-weight:600; margin-bottom:0.2rem;">Result</div>
+        <div style="font-size:1.75rem; font-weight:700; color:#15803D; font-family:'Sora',sans-serif;" id="result-adjust-val">—</div>
+        <div style="font-size:0.8rem; color:#4ADE80; margin-top:0.2rem;" id="result-adjust-expr"></div>
+      </div>
+      <div class="error-box" id="error-adjust" style="display:none; margin-top:0.75rem; color:#DC2626; font-size:0.85rem;"></div>
+    </div>
+
+  </div>
+
+  <!-- ═══ HOW TO USE ═══ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
+      How to use the Percentage Calculator
+    </h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Select the type of percentage calculation you need using the buttons at the top of the tool. There are four modes, each covering a different common scenario.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong style="color:#0F172A;">What is X% of Y?</strong> — Enter a percentage and a value to find the portion. For example, to find 20% of 150, enter 20 and 150 to get 30.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong style="color:#0F172A;">X is what % of Y?</strong> — Enter two numbers to find what percentage the first is of the second. Useful for calculating test scores, completion rates, or proportions.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong style="color:#0F172A;">Percentage change</strong> — Enter an original value and a new value to find how much it increased or decreased as a percentage. Useful for comparing prices, statistics, or measurements over time.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">
+      <strong style="color:#0F172A;">Increase / decrease by %</strong> — Enter a starting value and a percentage, then choose whether to increase or decrease. Useful for applying discounts, calculating tax-inclusive prices, or adjusting quantities.
+    </p>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
+      Percentage formulas used
+    </h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:1rem;">
+      All four calculation modes use standard arithmetic. No approximations or rounding are applied until the final display, which shows up to 6 significant figures.
+    </p>
+
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['What is X% of Y?',           'Result = (X ÷ 100) × Y'],
+        ['X is what % of Y?',          'Result = (X ÷ Y) × 100'],
+        ['% change from X to Y',       'Result = ((Y − X) ÷ |X|) × 100'],
+        ['Increase a value by X%',     'Result = Value × (1 + X ÷ 100)'],
+        ['Decrease a value by X%',     'Result = Value × (1 − X ÷ 100)'],
+      ].map(([label, formula]) => (
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:0.75rem; padding:0.75rem 1rem; background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem;">
+          <span style="font-size:0.82rem; font-weight:600; color:#475569; min-width:180px;">{label}</span>
+          <code style="font-size:0.875rem; color:#1D4ED8; background:#EFF6FF; padding:0.2rem 0.6rem; border-radius:0.375rem;">{formula}</code>
+        </div>
+      ))}
+    </div>
+
+    <p style="color:#64748B; font-size:0.82rem; line-height:1.6; margin-top:1rem;">
+      The percentage change formula uses the absolute value of the original number in the denominator so it handles negative starting values correctly — for example, a change from −50 to −25 is reported as a 50% increase, not a decrease.
+    </p>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+      Frequently asked questions
+    </h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+
+      {[
+        {
+          q: 'How do I calculate a percentage of a number?',
+          a: 'Multiply the number by the percentage and divide by 100. For example, 20% of 150 is (20 ÷ 100) × 150 = 30. You can also move the decimal point two places left on the percentage: 20% becomes 0.20, then multiply: 0.20 × 150 = 30.',
+        },
+        {
+          q: 'How do I calculate percentage increase?',
+          a: 'Subtract the original value from the new value, divide by the original value, then multiply by 100. For example, if a price rises from £80 to £100: ((100 − 80) ÷ 80) × 100 = 25% increase.',
+        },
+        {
+          q: 'How do I calculate a percentage decrease?',
+          a: 'The formula is the same as percentage increase — subtract the original from the new value (which gives a negative number), divide by the original, and multiply by 100. A negative result means a decrease. For example, from 100 to 75: ((75 − 100) ÷ 100) × 100 = −25%, meaning a 25% decrease.',
+        },
+        {
+          q: 'How do I work out a discount percentage?',
+          a: 'Divide the discount amount by the original price, then multiply by 100. For example, if an item costs £120 and is discounted to £90, the discount is £30: (30 ÷ 120) × 100 = 25% off. Alternatively, use the "X is what % of Y?" mode with the discount amount and original price.',
+        },
+        {
+          q: 'What is 20% of 150?',
+          a: '20% of 150 is 30. Calculated as (20 ÷ 100) × 150 = 0.20 × 150 = 30.',
+        },
+        {
+          q: 'How do I add a percentage to a number?',
+          a: 'Multiply the number by (1 + percentage ÷ 100). To add 15% to 200: 200 × (1 + 15 ÷ 100) = 200 × 1.15 = 230. Use the "Increase / decrease" mode in this calculator to do this automatically.',
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  // ── Mode switching ──────────────────────────────────────────────
+  const modeBtns = document.querySelectorAll<HTMLButtonElement>('.mode-btn');
+  const panels   = document.querySelectorAll<HTMLElement>('.calc-panel');
+
+  modeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.mode!;
+
+      modeBtns.forEach(b => {
+        b.style.background    = '#fff';
+        b.style.color         = '#475569';
+        b.style.borderColor   = '#E2E8F0';
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.style.background  = '#EFF6FF';
+      btn.style.color       = '#1D4ED8';
+      btn.style.borderColor = '#1D4ED8';
+      btn.setAttribute('aria-selected', 'true');
+
+      panels.forEach(p => p.style.display = 'none');
+      const panel = document.getElementById(`panel-${target}`);
+      if (panel) panel.style.display = 'block';
+    });
+  });
+
+  // ── Increase / Decrease toggle ──────────────────────────────────
+  let adjustDir: 'increase' | 'decrease' = 'increase';
+
+  const adjInc = document.getElementById('adj-increase')!;
+  const adjDec = document.getElementById('adj-decrease')!;
+
+  function setAdjDir(dir: 'increase' | 'decrease') {
+    adjustDir = dir;
+    const activeStyle   = { bg: '#EFF6FF', color: '#1D4ED8', border: '#1D4ED8' };
+    const inactiveStyle = { bg: '#fff',    color: '#475569', border: '#E2E8F0' };
+    const incStyle = dir === 'increase' ? activeStyle : inactiveStyle;
+    const decStyle = dir === 'decrease' ? activeStyle : inactiveStyle;
+    adjInc.style.background   = incStyle.bg;
+    adjInc.style.color        = incStyle.color;
+    adjInc.style.borderColor  = incStyle.border;
+    adjDec.style.background   = decStyle.bg;
+    adjDec.style.color        = decStyle.color;
+    adjDec.style.borderColor  = decStyle.border;
+  }
+
+  adjInc.addEventListener('click', () => setAdjDir('increase'));
+  adjDec.addEventListener('click', () => setAdjDir('decrease'));
+
+  // ── Helpers ─────────────────────────────────────────────────────
+  function fmt(n: number): string {
+    // Up to 6 sig figs, strip trailing zeros
+    const s = parseFloat(n.toPrecision(6)).toString();
+    return s;
+  }
+
+  function showResult(id: string, value: string, expr: string) {
+    const box  = document.getElementById(`result-${id}`)!;
+    const val  = document.getElementById(`result-${id}-val`)!;
+    const exprEl = document.getElementById(`result-${id}-expr`);
+    val.textContent = value;
+    if (exprEl) exprEl.textContent = expr;
+    box.style.display = 'block';
+    hideError(id);
+  }
+
+  function showError(id: string, msg: string) {
+    const el = document.getElementById(`error-${id}`)!;
+    el.textContent = msg;
+    el.style.display = 'block';
+    const box = document.getElementById(`result-${id}`)!;
+    box.style.display = 'none';
+  }
+
+  function hideError(id: string) {
+    const el = document.getElementById(`error-${id}`)!;
+    if (el) el.style.display = 'none';
+  }
+
+  function getVal(id: string): number | null {
+    const el = document.getElementById(id) as HTMLInputElement;
+    const v = parseFloat(el.value);
+    return isNaN(v) ? null : v;
+  }
+
+  // ── Calculate buttons ───────────────────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.calc-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = btn.dataset.panel!;
+
+      if (panel === 'basic') {
+        const pct = getVal('basic-pct');
+        const val = getVal('basic-val');
+        if (pct === null || val === null) return showError('basic', 'Please enter both values.');
+        const result = (pct / 100) * val;
+        showResult('basic', fmt(result), `${pct}% of ${val} = ${fmt(result)}`);
+      }
+
+      else if (panel === 'of-what') {
+        const part  = getVal('ofwhat-part');
+        const total = getVal('ofwhat-total');
+        if (part === null || total === null) return showError('of-what', 'Please enter both values.');
+        if (total === 0) return showError('of-what', 'Total cannot be zero.');
+        const result = (part / total) * 100;
+        showResult('of-what', `${fmt(result)}%`, `${part} is ${fmt(result)}% of ${total}`);
+      }
+
+      else if (panel === 'change') {
+        const from = getVal('change-from');
+        const to   = getVal('change-to');
+        if (from === null || to === null) return showError('change', 'Please enter both values.');
+        if (from === 0) return showError('change', 'Original value cannot be zero.');
+        const result = ((to - from) / Math.abs(from)) * 100;
+        const isIncrease = result >= 0;
+        const label = document.getElementById('result-change-label')!;
+        const valEl = document.getElementById('result-change-val')!;
+        const expr  = document.getElementById('result-change-expr')!;
+        const box   = document.getElementById('result-change')!;
+        label.textContent = isIncrease ? 'Percentage increase' : 'Percentage decrease';
+        valEl.textContent = `${isIncrease ? '+' : ''}${fmt(result)}%`;
+        valEl.style.color = isIncrease ? '#15803D' : '#DC2626';
+        expr.textContent  = `From ${from} to ${to}`;
+        expr.style.color  = isIncrease ? '#4ADE80' : '#FCA5A5';
+        box.style.background   = isIncrease ? '#F0FDF4' : '#FEF2F2';
+        box.style.borderColor  = isIncrease ? '#BBF7D0' : '#FECACA';
+        box.style.display      = 'block';
+        hideError('change');
+      }
+
+      else if (panel === 'adjust') {
+        const val = getVal('adjust-val');
+        const pct = getVal('adjust-pct');
+        if (val === null || pct === null) return showError('adjust', 'Please enter both values.');
+        if (pct < 0) return showError('adjust', 'Percentage cannot be negative.');
+        const result = adjustDir === 'increase'
+          ? val * (1 + pct / 100)
+          : val * (1 - pct / 100);
+        const dir = adjustDir === 'increase' ? 'increased' : 'decreased';
+        showResult('adjust', fmt(result), `${val} ${dir} by ${pct}% = ${fmt(result)}`);
+      }
+    });
+  });
+
+  // ── Allow Enter key to trigger calculate ───────────────────────
+  document.querySelectorAll<HTMLInputElement>('input[type="number"]').forEach(input => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const panel = input.closest('.calc-panel');
+        panel?.querySelector<HTMLButtonElement>('.calc-btn')?.click();
+      }
+    });
+  });
+</script>
