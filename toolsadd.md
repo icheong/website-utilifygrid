@@ -132,3 +132,27 @@ Here is a curated list of 20 highly specific, friction-free utility tools for ea
 5. **Context Window "Weight" Analyzer**  Create a single-file "Prompt Weight Analyzer." The user pastes a long prompt. The script should calculate the token count (using a 1 token ≈ 4 characters approximation) and use a visual heat-map effect to show which paragraphs are the longest. Provide a "Cost Estimator" where the user can input a price-per-1k-tokens to see the price of a single call for that prompt.
 6. **System Prompt Safety Stress-Tester** Create a self-contained "AI Prompt Red-Teamer." Provide an input for a "System Prompt." Provide a "Stress Test" button that runs a local JS loop comparing the prompt against a library of 10 common "jailbreak" strategies (like the DAN method or Persona Adoption). It should flag if the user's prompt contains enough "Strong Constraints" to resist these common exploits.
 7. **AI Brand Voice Alignment Gauge** Create a single-file HTML/CSS/JS "AI Voice Matcher." Provide two text areas: "Reference Text" (The original brand voice) and "AI Output." The script should compare word frequency, average sentence length, and the use of "Power Words" between both blocks. Output a "Match Percentage" score and a list of stylistic discrepancies (e.g., "AI is too formal" or "Sentences are too long").
+
+
+
+
+password hash & security evaluator needs to be a password generator instead with the same or more metrics
+anagram tool in the text processing
+
+
+
+1. **Smart Log Cleaner & Filter:** Paste massive server logs and use toggle checkboxes to instantly strip out specific HTTP status codes, timestamps, or health checks.
+2. **Bulk String Case Mutator:** Instantly converts lists of text between camelCase, snake_case, PascalCase, kebab-case, or UPPERCASE.
+3. **Delimiter Swapper:** Paste a column of data from Excel and instantly swap the formatting into a comma-separated list, SQL `IN ('')` clause, or JSON array.
+4. **Duplicate Line Remover & Alphabetizer:** Paste a messy list to instantly sort it, strip out duplicate entries, and remove trailing white spaces.
+5. **Markdown Sanitizer & Formatter:** Paste messy text or broken lists to instantly fix indentation, uniform bullet styles, and repair broken link syntax.
+7. **Regex Bulk Find-and-Replace:** A text editor that runs complex regex replacement rules with real-time, color-coded highlighting of target tokens.
+9. **HTML-to-Markdown Converter:** Paste rich text, a web snippet, or raw HTML; outputs clean, readable Markdown syntax.
+10. **White Space & Line Break Trimmer:** Strips empty lines, converts double spaces to single spaces, or flattens a multi-line paragraph into a single continuous string.
+11. **Text Column Extractor:** Paste delimited text (like CSV or log strings) and choose which column number to isolate and extract as a clean list.
+12. **Slug Generator:** Converts article or page titles into clean, URL-safe, lowercase slugs (e.g., stripping punctuation and swapping spaces for hyphens).
+13. **Lorem Ipsum & Dummy Text Customizer:** Sliders to generate exact numbers of paragraphs, sentences, or words of placeholder text.
+14. **JSON String Un-escaper:** Takes a JSON string that has been heavily escaped with backslashes (`{\"key\": \"value\"}`) and transforms it into a beautifully formatted JSON object.
+16. **Anagram & Word Puzzle Finder:** Input letters to find all possible matching words, filtered by length—perfect for quick word game brainstorming.
+17. **List Randomizer / Digital Hat Shuffler:** Paste a list of options or names and click to instantly randomize the order or draw a single winner.
+18. **Text Diff / Plagiarism Compare Checker:** Compares two text documents side-by-side to highlight exactly which sentences match or have minor alterations.

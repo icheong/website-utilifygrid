@@ -1,0 +1,157 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'freelance-project-scope-estimator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Freelance Project Scope Estimator</h2>
+
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Your Hourly Rate ($)</label>
+      <input id="hourly-rate" type="number" value="100" min="1" step="5"
+        style="width:200px; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+        onfocus="this.style.borderColor='#4F46E5'" onblur="this.style.borderColor='#E2E8F0'"/>
+    </div>
+
+    <div id="scope-list" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.25rem;"></div>
+
+    <button id="add-item" style="width:100%; padding:0.625rem; border:1.5px dashed #C7D2FE; border-radius:0.625rem; background:#F8F7FF; color:#4F46E5; font-size:0.875rem; font-weight:600; cursor:pointer;">+ Add Scope Item</button>
+
+    <div style="background:linear-gradient(135deg,#4F46E5,#6366F1); border-radius:0.875rem; padding:1.25rem; color:#fff; margin-top:1.25rem; text-align:center;">
+      <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; opacity:0.85; margin-bottom:0.25rem;">Total Estimate Range</div>
+      <div style="font-family:'Sora',sans-serif; font-size:2.25rem; font-weight:700; letter-spacing:-0.02em;">
+        $<span id="out-low">0</span> – $<span id="out-high">0</span>
+      </div>
+      <div style="font-size:0.82rem; opacity:0.75; margin-top:0.35rem;"><span id="out-hours">0</span> hrs estimated</div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this estimator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your hourly rate, then review the pre-loaded scope items. Toggle each item on or off, adjust the estimated hours range for each deliverable, and add any custom items specific to your project. The total estimate updates live.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The range (low–high) uses the minimum and maximum hours you specify, multiplied by your hourly rate. This is ideal for providing clients with a scoped estimate while preserving flexibility.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">Scope item structure</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Each scope item has a name, a minimum hours estimate, and a maximum hours estimate. The total low = sum of all enabled item mins × rate. The total high = sum of all enabled item maxes × rate. Include a 10–20% buffer in your max hours for unknowns and client revisions.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Should I quote fixed price or hourly?', a: 'Fixed-price projects provide clients with budget certainty and let you earn more if you are efficient. Hourly works better for ongoing or poorly-defined work where scope changes are frequent. Many freelancers use a fixed price for discovery/design phases and hourly for development, with a monthly retainer for maintenance.' },
+        { q: 'How do I handle scope creep?', a: 'Include a clear scope document with your quote, specify what is excluded, define how many revision rounds are included, and use a change order process for additions. Scope creep is best prevented at the contract stage, not mid-project.' },
+        { q: 'What contingency should I add to estimates?', a: 'A common rule is to add 20–30% to your initial estimate for client communication overhead, unexpected technical issues, and revision rounds. Less experienced freelancers should add 40–50% until they have calibrated their estimation accuracy.' },
+        { q: 'How should I present this estimate to a client?', a: 'Present a range (e.g., $4,500–$6,000) rather than a single figure, with a clear breakdown by deliverable. Explain that the range depends on final scope decisions and revision rounds. This sets honest expectations and makes the lower end feel like a win for the client.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  interface ScopeItem { id: number; label: string; min: number; max: number; enabled: boolean; }
+
+  let nextId = 0;
+  let items: ScopeItem[] = [
+    { id: nextId++, label: 'Discovery & requirements',      min: 4,  max: 8,  enabled: true },
+    { id: nextId++, label: 'UI / UX design (wireframes)',   min: 8,  max: 16, enabled: true },
+    { id: nextId++, label: 'Frontend development',          min: 16, max: 40, enabled: true },
+    { id: nextId++, label: 'Backend / API development',     min: 12, max: 30, enabled: false },
+    { id: nextId++, label: 'Database design & migrations',  min: 4,  max: 10, enabled: false },
+    { id: nextId++, label: 'QA & testing',                  min: 6,  max: 12, enabled: true },
+    { id: nextId++, label: 'DevOps / deployment setup',     min: 4,  max: 10, enabled: false },
+    { id: nextId++, label: 'Third-party integrations',      min: 6,  max: 16, enabled: false },
+    { id: nextId++, label: 'Client revisions (2 rounds)',   min: 4,  max: 8,  enabled: true },
+    { id: nextId++, label: 'Project management & comms',    min: 4,  max: 8,  enabled: true },
+  ];
+
+  function getRate(): number {
+    return parseFloat((document.getElementById('hourly-rate') as HTMLInputElement)?.value) || 100;
+  }
+
+  function updateTotals() {
+    const rate   = getRate();
+    const active = items.filter(i => i.enabled);
+    const minHrs = active.reduce((s, i) => s + i.min, 0);
+    const maxHrs = active.reduce((s, i) => s + i.max, 0);
+    (document.getElementById('out-low') as HTMLElement).textContent   = (minHrs * rate).toLocaleString();
+    (document.getElementById('out-high') as HTMLElement).textContent  = (maxHrs * rate).toLocaleString();
+    (document.getElementById('out-hours') as HTMLElement).textContent = minHrs === maxHrs ? String(minHrs) : `${minHrs}–${maxHrs}`;
+  }
+
+  function renderList() {
+    const list = document.getElementById('scope-list')!;
+    list.innerHTML = '';
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;background:#fff;border:1.5px solid #E2E8F0;border-radius:0.625rem;padding:0.5rem 0.75rem;';
+      row.innerHTML = `
+        <input type="checkbox" ${item.enabled ? 'checked' : ''} data-id="${item.id}" style="accent-color:#4F46E5;width:16px;height:16px;cursor:pointer;flex-shrink:0;"/>
+        <input type="text" value="${item.label}" data-id="${item.id}" data-field="label"
+          style="flex:1;border:none;outline:none;font-size:0.85rem;color:#0F172A;background:transparent;min-width:0;"/>
+        <input type="number" value="${item.min}" min="0" data-id="${item.id}" data-field="min"
+          style="width:52px;padding:0.2rem 0.4rem;border:1px solid #E2E8F0;border-radius:0.35rem;font-size:0.78rem;text-align:center;color:#475569;outline:none;"/>
+        <span style="font-size:0.72rem;color:#94A3B8;">–</span>
+        <input type="number" value="${item.max}" min="0" data-id="${item.id}" data-field="max"
+          style="width:52px;padding:0.2rem 0.4rem;border:1px solid #E2E8F0;border-radius:0.35rem;font-size:0.78rem;text-align:center;color:#475569;outline:none;"/>
+        <span style="font-size:0.72rem;color:#94A3B8;">hrs</span>
+        <button data-id="${item.id}" data-action="remove" style="background:none;border:none;cursor:pointer;color:#CBD5E1;font-size:1.1rem;padding:0;line-height:1;flex-shrink:0;">×</button>
+      `;
+      list.appendChild(row);
+    });
+
+    list.querySelectorAll('input[type="checkbox"]').forEach(el => {
+      el.addEventListener('change', (e) => {
+        const id = parseInt((e.target as HTMLInputElement).dataset.id!);
+        const i  = items.find(x => x.id === id)!;
+        i.enabled = (e.target as HTMLInputElement).checked;
+        updateTotals();
+      });
+    });
+
+    list.querySelectorAll('input[type="text"], input[type="number"]').forEach(el => {
+      el.addEventListener('input', (e) => {
+        const inp   = e.target as HTMLInputElement;
+        const id    = parseInt(inp.dataset.id!);
+        const field = inp.dataset.field!;
+        const item  = items.find(x => x.id === id)!;
+        if (field === 'label') item.label = inp.value;
+        else (item as any)[field] = parseInt(inp.value) || 0;
+        updateTotals();
+      });
+    });
+
+    list.querySelectorAll('[data-action="remove"]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const id = parseInt((e.currentTarget as HTMLElement).dataset.id!);
+        items = items.filter(x => x.id !== id);
+        renderList(); updateTotals();
+      });
+    });
+  }
+
+  document.getElementById('add-item')?.addEventListener('click', () => {
+    items.push({ id: nextId++, label: 'New scope item', min: 4, max: 8, enabled: true });
+    renderList(); updateTotals();
+  });
+
+  document.getElementById('hourly-rate')?.addEventListener('input', updateTotals);
+
+  renderList();
+  updateTotals();
+</script>

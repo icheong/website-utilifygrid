@@ -1,0 +1,160 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'structured-data-ai-formatter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Structured Data AI Formatter</h2>
+
+    <textarea id="raw-text" placeholder="Paste raw AI-generated text here. Include product details, FAQ pairs, or recipe steps…"
+      style="width:100%; height:180px; padding:0.875rem; border:1.5px solid #E9D5FF; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit;"
+      onfocus="this.style.borderColor='#9333EA'" onblur="this.style.borderColor='#E9D5FF'"></textarea>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+      <button class="schema-btn" data-type="Product"
+        style="padding:0.5rem 1rem; background:#7C3AED; color:#fff; border:none; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Product</button>
+      <button class="schema-btn" data-type="FAQPage"
+        style="padding:0.5rem 1rem; background:#F8FAFC; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">FAQ</button>
+      <button class="schema-btn" data-type="Recipe"
+        style="padding:0.5rem 1rem; background:#F8FAFC; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Recipe</button>
+      <button id="copy-ld" style="margin-left:auto; padding:0.5rem 1rem; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; color:#475569; background:#F8FAFC; cursor:pointer;">Copy JSON-LD</button>
+    </div>
+
+    <div id="preview-tag" style="font-size:0.7rem; font-family:'Fira Code',monospace; color:#9333EA; margin-bottom:0.25rem;">&lt;script type="application/ld+json"&gt;</div>
+    <pre id="ld-output" style="margin:0; background:#1E1E2E; border-radius:0.875rem; padding:1rem; font-family:'Fira Code',monospace; font-size:0.75rem; color:#E2E8F0; white-space:pre-wrap; word-break:break-all; max-height:320px; overflow-y:auto; line-height:1.7;"></pre>
+    <div style="font-size:0.7rem; font-family:'Fira Code',monospace; color:#9333EA; margin-top:0.25rem;">&lt;/script&gt;</div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to format structured data</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste AI-generated text and select a schema type. The tool parses the text to extract relevant fields and generates valid JSON-LD markup. Copy the output and paste it into the <code style="background:#F1F5F9;padding:0.1rem 0.3rem;border-radius:0.25rem;">&lt;head&gt;</code> or body of your HTML page.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">For best results: Product — include a product name, price, and description. FAQ — write Q&amp;A pairs with "Q:" and "A:" prefixes. Recipe — include ingredients on separate lines and a title.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">What is JSON-LD structured data?</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">JSON-LD (JSON for Linked Data) is the Google-recommended format for embedding structured data in web pages. It uses Schema.org vocabulary to describe page content in a machine-readable way. Search engines use it to generate rich results (FAQ accordions, product pricing, recipe cards) in search result pages.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The formatter uses heuristics (line structure, Q:/A: prefixes, price patterns) to extract fields from unstructured text. Always review and edit the output — it is a starting scaffold, not a definitive parse.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Does structured data directly improve SEO rankings?', a: 'Structured data does not directly boost rankings, but it enables rich results in Google Search (FAQ dropdowns, star ratings, recipe cards, price panels) which significantly increase click-through rates. Google also uses structured data to understand page content better, which can improve indexing accuracy and Featured Snippet eligibility.' },
+        { q: 'Where should I place the JSON-LD script tag?', a: 'Google supports JSON-LD anywhere in the HTML document, but the recommended placement is in the <head> section. For dynamic content (e.g., React, Vue, Astro), it can be injected into the document head programmatically. Avoid injecting it after page load with JavaScript — Google prefers server-rendered structured data.' },
+        { q: 'How do I validate my structured data?', a: 'Use Google\'s Rich Results Test (search.google.com/test/rich-results) to validate JSON-LD and see which rich result types it qualifies for. The Schema Markup Validator (validator.schema.org) checks conformance to the Schema.org specification. Both tools are free and accept URL or code input.' },
+        { q: 'Can I include multiple schema types on one page?', a: 'Yes — a page can contain multiple JSON-LD blocks, each with a different @type. For example, a product page might have both a Product schema (for the main product) and a BreadcrumbList schema (for navigation). Each block should be a separate <script type="application/ld+json"> tag.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  let currentType = 'Product';
+
+  function extractProduct(text: string): object {
+    const nameMatch  = text.match(/^(.+)/m);
+    const priceMatch = text.match(/\$?\s*(\d[\d,]*(?:\.\d{1,2})?)/);
+    const lines      = text.split('\n').filter(Boolean);
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: nameMatch?.[1]?.trim() || 'Product Name',
+      description: lines.slice(1, 3).join(' ').trim() || 'Product description',
+      offers: {
+        '@type': 'Offer',
+        price: priceMatch?.[1]?.replace(',','') || '0.00',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock'
+      }
+    };
+  }
+
+  function extractFAQ(text: string): object {
+    const qaPairs: { q: string; a: string }[] = [];
+    const qRe = /[Qq]:\s*(.+)/g;
+    const aRe = /[Aa]:\s*(.+)/g;
+    const qs: string[] = [], as: string[] = [];
+    let m: RegExpExecArray | null;
+    while ((m = qRe.exec(text)) !== null) qs.push(m[1].trim());
+    while ((m = aRe.exec(text)) !== null) as.push(m[1].trim());
+    const count = Math.max(qs.length, as.length, 1);
+    for (let i = 0; i < count; i++) {
+      qaPairs.push({ q: qs[i] || `Question ${i+1}`, a: as[i] || 'Answer not detected — please fill in.' });
+    }
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: qaPairs.map(p => ({
+        '@type': 'Question', name: p.q,
+        acceptedAnswer: { '@type': 'Answer', text: p.a }
+      }))
+    };
+  }
+
+  function extractRecipe(text: string): object {
+    const lines       = text.split('\n').filter(Boolean);
+    const title       = lines[0]?.trim() || 'Recipe';
+    const ingredients = lines.filter(l => /^\s*[-•*]|\d+\s+(cup|tbsp|tsp|g|oz|ml)/i.test(l)).map(l => l.replace(/^\s*[-•*]\s*/,'').trim());
+    const steps       = lines.filter(l => /^\d+[.)]\s/.test(l)).map(l => l.replace(/^\d+[.)]\s*/,'').trim());
+    const timeMatch   = text.match(/(\d+)\s*min/i);
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Recipe',
+      name: title,
+      totalTime: timeMatch ? `PT${timeMatch[1]}M` : 'PT30M',
+      recipeIngredient: ingredients.length ? ingredients : ['Ingredient list not detected — please edit'],
+      recipeInstructions: steps.length
+        ? steps.map((s, i) => ({ '@type': 'HowToStep', text: s, position: i + 1 }))
+        : [{ '@type': 'HowToStep', text: 'Instructions not detected — please edit', position: 1 }]
+    };
+  }
+
+  function generate() {
+    const text = (document.getElementById('raw-text') as HTMLTextAreaElement).value.trim();
+    let schema: object;
+    if (currentType === 'Product')  schema = extractProduct(text);
+    else if (currentType === 'FAQPage') schema = extractFAQ(text);
+    else schema = extractRecipe(text);
+    (document.getElementById('ld-output') as HTMLElement).textContent = JSON.stringify(schema, null, 2);
+  }
+
+  document.querySelectorAll('.schema-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentType = (btn as HTMLElement).dataset.type!;
+      document.querySelectorAll('.schema-btn').forEach(b => {
+        (b as HTMLButtonElement).style.background = b === btn ? '#7C3AED' : '#F8FAFC';
+        (b as HTMLButtonElement).style.color      = b === btn ? '#fff' : '#475569';
+        (b as HTMLButtonElement).style.border     = b === btn ? 'none' : '1.5px solid #E2E8F0';
+      });
+      generate();
+    });
+  });
+
+  document.getElementById('copy-ld')?.addEventListener('click', () => {
+    const inner = (document.getElementById('ld-output') as HTMLElement).textContent || '';
+    navigator.clipboard.writeText(`<script type="application/ld+json">\n${inner}\n<\/script>`);
+    const btn = document.getElementById('copy-ld')!;
+    btn.textContent = '✓ Copied'; setTimeout(() => { btn.textContent = 'Copy JSON-LD'; }, 1500);
+  });
+
+  document.getElementById('raw-text')?.addEventListener('input', generate);
+
+  (document.getElementById('raw-text') as HTMLTextAreaElement).value =
+    'Blue Wireless Noise-Cancelling Headphones\nPremium sound quality with 30-hour battery life. Foldable design for easy travel. $129.99. Available in black and blue.';
+  generate();
+</script>

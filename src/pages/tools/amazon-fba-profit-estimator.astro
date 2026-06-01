@@ -1,0 +1,166 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'amazon-fba-profit-estimator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Amazon FBA Profit Estimator</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:1rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Sale Price ($)</label>
+        <input id="price" type="number" value="29.99" min="0.01" step="0.01"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Cost of Goods ($)</label>
+        <input id="cogs" type="number" value="8" min="0" step="0.01"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Product Weight (kg)</label>
+        <input id="weight" type="number" value="0.5" min="0.01" step="0.01"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Product Category</label>
+        <select id="category"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; box-sizing:border-box; outline:none; background:#fff;"
+          onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#E2E8F0'">
+          <option value="8">Home &amp; Kitchen (8%)</option>
+          <option value="8">Sports &amp; Outdoors (8%)</option>
+          <option value="15" selected>Electronics (15%)</option>
+          <option value="15">Toys &amp; Games (15%)</option>
+          <option value="15">Health &amp; Beauty (15%)</option>
+          <option value="17">Clothing &amp; Accessories (17%)</option>
+          <option value="6">Grocery &amp; Gourmet (6%)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Fee breakdown -->
+    <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.875rem; padding:1rem; margin-bottom:1rem;">
+      <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.75rem;">Fee Breakdown</div>
+      <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
+        {[
+          ['Sale Price','out-price-lbl','#0F172A'],
+          ['Cost of Goods','out-cogs-lbl','#DC2626'],
+          ['Referral Fee','out-ref-fee','#DC2626'],
+          ['FBA Fulfillment Fee','out-fba-fee','#DC2626'],
+        ].map(([label, id, col]) => (
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:#475569;">{label}</span>
+            <span id={id} style={`font-weight:600; color:${col};`}>—</span>
+          </div>
+        ))}
+        <div style="border-top:1px solid #E2E8F0; padding-top:0.5rem; display:flex; justify-content:space-between; font-weight:700; font-size:0.95rem;">
+          <span style="color:#0F172A;">Net Profit</span>
+          <span id="out-profit" style="color:#16A34A;">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI cards -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+      <div style="background:#FFF7ED; border:1.5px solid #FED7AA; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-roi" style="font-family:'Sora',sans-serif; font-size:1.75rem; font-weight:700; color:#F97316;">—%</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#FB923C; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">ROI</div>
+      </div>
+      <div style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-margin" style="font-family:'Sora',sans-serif; font-size:1.75rem; font-weight:700; color:#16A34A;">—%</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#4ADE80; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Net Margin</div>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this estimator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your expected sale price, landed cost of goods (including manufacturing + freight to Amazon warehouse), product weight, and category. The tool applies Amazon's referral fee percentage and estimates the FBA fulfillment fee based on weight tiers.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Use this as a pre-launch sanity check. Always verify current fees in Amazon Seller Central's Revenue Calculator as rates change regularly.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How fees are calculated</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Referral Fee', 'A percentage of the sale price charged by Amazon per transaction. Rates range from 6% (grocery) to 17% (clothing). Minimum referral fees of $0.30–$1.00 apply for most categories.'],
+        ['FBA Fulfillment Fee', 'Charged per unit shipped by Amazon. Based on weight tiers: under 250g ≈ $3.22, 250g–500g ≈ $4.75, 500g–1kg ≈ $5.40, 1kg–2kg ≈ $6.10, over 2kg ≈ $6.50 + $0.38/100g. Dimensional weight may apply.'],
+        ['ROI vs Margin', 'ROI = Net Profit / COGS × 100. Margin = Net Profit / Sale Price × 100. FBA sellers typically target ROI above 50% and margin above 20% to account for PPC advertising, returns, and storage fees.'],
+      ].map(([label, desc]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What other costs should I factor in?', a: 'Beyond referral and FBA fees, common costs include: Amazon PPC advertising (typically 5–20% of revenue for new products), monthly storage fees ($0.75–$2.40/cubic foot depending on season), product photography, listing translation, return processing, and the $39.99/month Professional selling plan fee.' },
+        { q: 'What is a healthy ROI for Amazon FBA?', a: 'Most experienced FBA sellers target a minimum 30% ROI on cost of goods before advertising. After PPC spend, profitable products typically return 20–50% ROI. Products below 20% ROI are usually difficult to scale profitably once advertising costs are factored in.' },
+        { q: 'Does Amazon charge VAT or GST on fees?', a: 'Yes — Amazon charges GST on fees for Australian sellers and VAT for EU marketplace fees. These are separate from the referral and fulfillment fees shown here and should be factored into your pricing, particularly if you are not GST-registered.' },
+        { q: 'When do FBA fees increase?', a: 'Amazon typically increases FBA fees annually, with the January–February period being most common. Peak season surcharges (October–December) also apply for storage. Always check the current fee schedule in Seller Central before committing to sourcing decisions.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  function getFbaFee(weightKg: number): number {
+    if (weightKg <= 0.25) return 3.22;
+    if (weightKg <= 0.50) return 4.75;
+    if (weightKg <= 1.00) return 5.40;
+    if (weightKg <= 2.00) return 6.10;
+    return 6.50 + Math.ceil((weightKg - 2) * 10) * 0.38;
+  }
+
+  function fmt(n: number, dec = 2) { return '$' + n.toFixed(dec); }
+
+  function calc() {
+    const price    = parseFloat((document.getElementById('price') as HTMLInputElement).value)    || 0;
+    const cogs     = parseFloat((document.getElementById('cogs') as HTMLInputElement).value)     || 0;
+    const weight   = parseFloat((document.getElementById('weight') as HTMLInputElement).value)   || 0;
+    const refPct   = parseFloat((document.getElementById('category') as HTMLSelectElement).value) || 15;
+
+    const refFee   = price * refPct / 100;
+    const fbaFee   = getFbaFee(weight);
+    const profit   = price - cogs - refFee - fbaFee;
+    const roi      = cogs > 0 ? profit / cogs * 100 : 0;
+    const margin   = price > 0 ? profit / price * 100 : 0;
+
+    (document.getElementById('out-price-lbl') as HTMLElement).textContent = fmt(price);
+    (document.getElementById('out-cogs-lbl') as HTMLElement).textContent  = '−' + fmt(cogs);
+    (document.getElementById('out-ref-fee') as HTMLElement).textContent   = '−' + fmt(refFee);
+    (document.getElementById('out-fba-fee') as HTMLElement).textContent   = '−' + fmt(fbaFee);
+    const profitEl = document.getElementById('out-profit') as HTMLElement;
+    profitEl.textContent = fmt(profit);
+    profitEl.style.color = profit >= 0 ? '#16A34A' : '#DC2626';
+
+    (document.getElementById('out-roi') as HTMLElement).textContent    = roi.toFixed(1) + '%';
+    (document.getElementById('out-roi') as HTMLElement).style.color    = roi >= 30 ? '#16A34A' : roi >= 0 ? '#F97316' : '#DC2626';
+    (document.getElementById('out-margin') as HTMLElement).textContent = margin.toFixed(1) + '%';
+    (document.getElementById('out-margin') as HTMLElement).style.color = margin >= 20 ? '#16A34A' : margin >= 0 ? '#F97316' : '#DC2626';
+  }
+
+  ['price','cogs','weight','category'].forEach(id => document.getElementById(id)?.addEventListener('input', calc));
+  calc();
+</script>

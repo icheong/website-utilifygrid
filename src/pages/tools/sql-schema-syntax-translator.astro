@@ -1,0 +1,181 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">SQL Schema Translator</h2>
+
+    <div style="display:flex; gap:1rem; margin-bottom:1rem; align-items:flex-end;">
+      <div style="flex:1;">
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">From</label>
+        <select id="from-db" style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.9rem; color:#0F172A; background:#fff; outline:none; box-sizing:border-box;">
+          <option value="mysql">MySQL</option>
+          <option value="postgres">PostgreSQL</option>
+          <option value="sqlite">SQLite</option>
+        </select>
+      </div>
+      <div style="font-size:1.25rem; color:#94A3B8; padding-bottom:0.6rem;">→</div>
+      <div style="flex:1;">
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">To</label>
+        <select id="to-db" style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.9rem; color:#0F172A; background:#fff; outline:none; box-sizing:border-box;">
+          <option value="mysql">MySQL</option>
+          <option value="postgres" selected>PostgreSQL</option>
+          <option value="sqlite">SQLite</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem;">
+      <div>
+        <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Input SQL</div>
+        <textarea id="sql-input"
+          placeholder="CREATE TABLE users (&#10;  id INT AUTO_INCREMENT PRIMARY KEY,&#10;  name VARCHAR(255) NOT NULL,&#10;  created_at DATETIME DEFAULT CURRENT_TIMESTAMP&#10;);"
+          style="width:100%; height:240px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.8rem; font-family:'Fira Code',monospace; color:#0F172A; resize:none; box-sizing:border-box; outline:none; line-height:1.7;"
+          onfocus="this.style.borderColor='#4F46E5'" onblur="this.style.borderColor='#E2E8F0'"></textarea>
+      </div>
+      <div>
+        <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Translated SQL</div>
+        <textarea id="sql-output" readonly
+          style="width:100%; height:240px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.8rem; font-family:'Fira Code',monospace; color:#0F172A; background:#F8FAFC; resize:none; box-sizing:border-box; outline:none; line-height:1.7;"></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top:0.875rem; display:flex; gap:0.75rem;">
+      <button id="copy-btn" style="flex:1; padding:0.625rem; background:#4F46E5; color:#fff; border:none; border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
+        onmouseover="this.style.background='#4338CA'" onmouseout="this.style.background='#4F46E5'">Copy Output</button>
+    </div>
+
+    <div id="notes" style="margin-top:0.75rem; display:none;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the SQL Translator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste your CREATE TABLE SQL statement into the left panel, select the source database dialect and target dialect, and the translated schema appears instantly in the right panel. Supports MySQL, PostgreSQL, and SQLite.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Translation notes appear below the editor when a conversion requires a compatibility decision (for example, AUTO_INCREMENT to SERIAL in PostgreSQL).</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">What gets translated</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Auto Increment', 'MySQL AUTO_INCREMENT → PostgreSQL SERIAL or BIGSERIAL; SQLite INTEGER PRIMARY KEY (implicit autoincrement).'],
+        ['Data Types', 'VARCHAR → TEXT/VARCHAR; INT → INTEGER; DATETIME → TIMESTAMP; TINYINT(1) → BOOLEAN. Type synonyms are normalised per dialect.'],
+        ['String Quoting', 'Identifier quoting is adjusted: MySQL uses backticks (`), PostgreSQL uses double quotes (""), SQLite accepts both.'],
+        ['NULL Handling', 'DEFAULT NULL and NOT NULL constraints are preserved across all dialects.'],
+        ['Current Timestamp', 'NOW(), CURRENT_TIMESTAMP, and GETDATE() are normalised to the appropriate default expression for the target dialect.'],
+      ].map(([label, desc]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Does this translate stored procedures and views?', a: 'No. This tool focuses on CREATE TABLE schema definitions. Stored procedures, views, triggers, and query DML (SELECT, INSERT, UPDATE, DELETE) have significantly more dialect-specific syntax and are not currently supported.' },
+        { q: 'Will the output run without modification?', a: 'For simple tables with standard column types, the output should be production-ready. For complex schemas using dialect-specific features (e.g., MySQL ENUMs, PostgreSQL arrays, JSON columns), review the output carefully and test before deploying.' },
+        { q: 'What are the key differences between MySQL and PostgreSQL syntax?', a: 'Key differences: MySQL uses backtick identifiers; PostgreSQL uses double quotes. MySQL uses AUTO_INCREMENT; PostgreSQL uses SERIAL or GENERATED ALWAYS AS IDENTITY. MySQL TINYINT(1) is often used as boolean; PostgreSQL has a native BOOLEAN type. String functions differ significantly in queries.' },
+        { q: 'How does SQLite differ from MySQL and PostgreSQL?', a: 'SQLite uses dynamic typing — column type declarations are advisory only. There is no native auto-increment; instead, a column declared as INTEGER PRIMARY KEY is implicitly a rowid alias. SQLite has limited ALTER TABLE support and no stored procedures.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  // Type maps: [mysql, postgres, sqlite]
+  const TYPE_MAP: [RegExp, string, string, string][] = [
+    [/\bINT\s+AUTO_INCREMENT/gi,         'SERIAL',             'INTEGER',       'INTEGER'],
+    [/\bBIGINT\s+AUTO_INCREMENT/gi,      'BIGSERIAL',          'BIGINT',        'INTEGER'],
+    [/\bAUTO_INCREMENT/gi,               '',                   '',              ''],
+    [/\bTINYINT\s*\(\s*1\s*\)/gi,       'TINYINT(1)',         'BOOLEAN',       'INTEGER'],
+    [/\bDATETIME/gi,                     'DATETIME',           'TIMESTAMP',     'TEXT'],
+    [/\bDOUBLE\s+PRECISION/gi,           'DOUBLE PRECISION',   'DOUBLE PRECISION','REAL'],
+    [/\bFLOAT/gi,                        'FLOAT',              'REAL',          'REAL'],
+    [/\bMEDIUMINT/gi,                    'INT',                'INTEGER',       'INTEGER'],
+    [/\bTINYINT/gi,                      'TINYINT',            'SMALLINT',      'INTEGER'],
+    [/\bNOW\(\)|CURRENT_TIMESTAMP/gi,    'CURRENT_TIMESTAMP',  'NOW()',         'CURRENT_TIMESTAMP'],
+  ];
+
+  const BACKTICK_RE = /`([^`]+)`/g;
+  const DQUOTE_RE   = /"([^"]+)"/g;
+
+  function translate(sql: string, from: string, to: string): { out: string; notes: string[] } {
+    if (from === to) return { out: sql, notes: [] };
+    let out   = sql;
+    const notes: string[] = [];
+
+    // Normalise identifier quoting to plain first
+    if (from === 'mysql')    out = out.replace(BACKTICK_RE, '$1');
+    if (from === 'postgres') out = out.replace(DQUOTE_RE, '$1');
+
+    // Apply type transformations
+    for (const [re, mysql, postgres, sqlite] of TYPE_MAP) {
+      const replacement = to === 'mysql' ? mysql : to === 'postgres' ? postgres : sqlite;
+      if (replacement !== undefined && out.match(re)) {
+        out = out.replace(re, replacement);
+      }
+    }
+
+    // Handle AUTO_INCREMENT → SERIAL cleanup for postgres (if not already handled)
+    if (to === 'postgres' && from !== 'postgres') {
+      out = out.replace(/\bINT\b(?!\s*\()/gi, 'INTEGER');
+    }
+
+    // Re-quote identifiers for target
+    if (to === 'mysql') {
+      out = out.replace(/\b([a-z_][a-z0-9_]*)\b(?=\s*(INT|VARCHAR|TEXT|SERIAL|BOOLEAN|TIMESTAMP|REAL|FLOAT|DOUBLE|BIGINT|SMALLINT|INTEGER|CHAR|BLOB|NUMERIC|DECIMAL))/gi,
+        (m, id) => ['CREATE','TABLE','NOT','NULL','DEFAULT','PRIMARY','KEY','UNIQUE','REFERENCES','CHECK','INDEX','CONSTRAINT'].includes(id.toUpperCase()) ? m : '`' + id + '`');
+    }
+
+    if (notes.length === 0 && from !== to) {
+      notes.push('Review carefully: complex constraints, indexes, and dialect-specific features may require manual adjustment.');
+    }
+
+    return { out: out.trim(), notes };
+  }
+
+  function update() {
+    const sql   = (document.getElementById('sql-input') as HTMLTextAreaElement).value;
+    const from  = (document.getElementById('from-db') as HTMLSelectElement).value;
+    const to    = (document.getElementById('to-db') as HTMLSelectElement).value;
+    const { out, notes } = translate(sql, from, to);
+    (document.getElementById('sql-output') as HTMLTextAreaElement).value = out;
+    const notesEl = document.getElementById('notes')!;
+    if (notes.length > 0 && sql.trim()) {
+      notesEl.style.display = 'block';
+      notesEl.innerHTML = notes.map(n => `<div style="padding:0.5rem 0.875rem; background:#FFFBEB; border:1px solid #FDE68A; border-radius:0.5rem; font-size:0.8rem; color:#92400E; margin-bottom:0.375rem;">⚠️ ${n}</div>`).join('');
+    } else {
+      notesEl.style.display = 'none';
+    }
+  }
+
+  document.getElementById('sql-input')?.addEventListener('input', update);
+  document.getElementById('from-db')?.addEventListener('change', update);
+  document.getElementById('to-db')?.addEventListener('change', update);
+  document.getElementById('copy-btn')?.addEventListener('click', () => {
+    const out = (document.getElementById('sql-output') as HTMLTextAreaElement).value;
+    navigator.clipboard.writeText(out).then(() => {
+      const btn = document.getElementById('copy-btn')!;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = 'Copy Output'; }, 2000);
+    });
+  });
+</script>

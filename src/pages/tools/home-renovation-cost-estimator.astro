@@ -1,0 +1,143 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'home-renovation-cost-estimator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Home Renovation Cost Estimator</h2>
+
+    <div style="display:flex; flex-direction:column; gap:0.875rem; margin-bottom:1.25rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Room / Space Type</label>
+        <select id="room-type"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; box-sizing:border-box; outline:none; background:#fff;"
+          onfocus="this.style.borderColor='#D97706'" onblur="this.style.borderColor='#E2E8F0'">
+          <option value="kitchen">Kitchen</option>
+          <option value="bathroom">Bathroom</option>
+          <option value="bedroom">Bedroom</option>
+          <option value="living">Living Room</option>
+          <option value="laundry">Laundry</option>
+          <option value="outdoor">Outdoor / Deck</option>
+          <option value="basement">Basement</option>
+        </select>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem;">
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Floor Area (m²)</label>
+          <input id="area" type="number" value="15" min="1" max="500" step="0.5"
+            style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+            onfocus="this.style.borderColor='#D97706'" onblur="this.style.borderColor='#E2E8F0'"/>
+        </div>
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Quality Tier</label>
+          <select id="quality"
+            style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; box-sizing:border-box; outline:none; background:#fff;"
+            onfocus="this.style.borderColor='#D97706'" onblur="this.style.borderColor='#E2E8F0'">
+            <option value="budget">Budget</option>
+            <option value="mid" selected>Mid-range</option>
+            <option value="premium">Premium</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost estimate -->
+    <div style="background:linear-gradient(135deg,#D97706,#92400E); border-radius:0.875rem; padding:1.25rem; color:#fff; text-align:center; margin-bottom:1rem;">
+      <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; opacity:0.85; margin-bottom:0.25rem;">Estimated Total Cost Range</div>
+      <div style="font-family:'Sora',sans-serif; font-size:2rem; font-weight:700; letter-spacing:-0.02em;">
+        $<span id="out-low">—</span> – $<span id="out-high">—</span>
+      </div>
+      <div style="font-size:0.8rem; opacity:0.75; margin-top:0.25rem;"><span id="out-area"></span> m² × <span id="out-rate"></span>/m²</div>
+    </div>
+
+    <!-- Breakdown cards -->
+    <div id="breakdown" style="display:grid; grid-template-columns:1fr 1fr; gap:0.625rem;"></div>
+
+    <div style="margin-top:0.875rem; padding:0.625rem 0.875rem; background:#FFFBEB; border:1px solid #FDE68A; border-radius:0.5rem; font-size:0.75rem; color:#92400E;">
+      💡 Estimates are indicative only and based on Australian market averages. Prices vary significantly by location, contractor, and site conditions. Always obtain 3+ quotes.
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this estimator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Select the room type you are renovating, enter the approximate floor area in square metres, and choose a quality tier. Budget covers basic finishes and standard fixtures. Mid-range includes quality fixtures and professional installation. Premium covers high-end materials, custom joinery, and top-tier finishes.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The breakdown shows approximate cost allocations for major trades. Use this as a starting point before obtaining formal quotes from licensed contractors.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How estimates are calculated</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Each room type has a cost-per-square-metre range based on industry averages. The quality tier multiplies this range (budget 0.7×, mid 1.0×, premium 1.7×). The breakdown percentages represent typical trade cost allocations (e.g., kitchens: 40% cabinetry, 20% labour, 15% appliances, etc.).</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Why is kitchen renovation so expensive per m²?', a: 'Kitchens have the highest density of trades: plumbing, electrical, gas, cabinetry, tiling, and appliances all converge. The cost per m² is therefore high even for small kitchens, as most costs are fixed (connection charges, appliance pricing) regardless of room size.' },
+        { q: 'What contingency should I budget for?', a: 'The industry rule of thumb is a 10–20% contingency on top of quoted prices. Renovations in older homes frequently uncover hidden issues (asbestos, outdated wiring, substandard plumbing) that add cost. A 15% contingency is a reasonable starting point for most projects.' },
+        { q: 'Should I go owner-builder or use a licensed contractor?', a: 'Owner-builder permits save on margin but require significant time, coordination, and knowledge. Licensing requirements vary by state. Most lenders and insurers treat owner-built properties differently, which can affect future resale or financing. For complex multi-trade renovations, a licensed builder typically offers better risk management.' },
+        { q: 'Do renovations add value to property?', a: 'Kitchen and bathroom renovations typically return 50–80% of their cost in increased property value, according to real estate industry surveys. However, over-capitalising (spending more than the suburb ceiling) reduces return on investment. Cosmetic improvements (paint, flooring, landscaping) often provide the best ROI relative to cost.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  type RoomData = { low: number; high: number; breakdown: [string, number][] };
+  const ROOMS: Record<string, RoomData> = {
+    kitchen:  { low: 1800, high: 4000, breakdown: [['Cabinetry & benchtops',40],['Appliances',20],['Labour & install',25],['Plumbing & electrical',15]] },
+    bathroom: { low: 1500, high: 3500, breakdown: [['Tiles & waterproofing',30],['Fixtures & fittings',25],['Labour',30],['Plumbing',15]] },
+    bedroom:  { low: 400,  high: 1200, breakdown: [['Flooring',35],['Painting',20],['Built-in wardrobes',30],['Electrical & lighting',15]] },
+    living:   { low: 500,  high: 1400, breakdown: [['Flooring',40],['Painting',20],['Feature wall',20],['Electrical & AV',20]] },
+    laundry:  { low: 1200, high: 2800, breakdown: [['Cabinetry',30],['Appliances',25],['Tiling',20],['Plumbing & electrical',25]] },
+    outdoor:  { low: 700,  high: 2200, breakdown: [['Decking materials',45],['Structural framing',25],['Landscaping',20],['Electrical & lighting',10]] },
+    basement: { low: 800,  high: 2500, breakdown: [['Waterproofing',25],['Framing & insulation',25],['Flooring & walls',30],['Electrical & HVAC',20]] },
+  };
+  const QUALITY_MULT: Record<string, number> = { budget: 0.70, mid: 1.0, premium: 1.70 };
+  const COLORS = ['#D97706','#B45309','#92400E','#78350F'];
+
+  function calc() {
+    const room    = (document.getElementById('room-type') as HTMLSelectElement).value;
+    const area    = parseFloat((document.getElementById('area') as HTMLInputElement).value) || 1;
+    const quality = (document.getElementById('quality') as HTMLSelectElement).value;
+    const mult    = QUALITY_MULT[quality];
+    const r       = ROOMS[room];
+
+    const low  = Math.round(r.low  * mult * area);
+    const high = Math.round(r.high * mult * area);
+    const rateLow  = Math.round(r.low  * mult);
+    const rateHigh = Math.round(r.high * mult);
+
+    (document.getElementById('out-low') as HTMLElement).textContent   = low.toLocaleString();
+    (document.getElementById('out-high') as HTMLElement).textContent  = high.toLocaleString();
+    (document.getElementById('out-area') as HTMLElement).textContent  = area.toString();
+    (document.getElementById('out-rate') as HTMLElement).textContent  = `$${rateLow}–$${rateHigh}`;
+
+    const midCost = (low + high) / 2;
+    const bd = document.getElementById('breakdown')!;
+    bd.innerHTML = r.breakdown.map(([label, pct], i) => `
+      <div style="background:#FFFBEB; border:1.5px solid #FDE68A; border-radius:0.75rem; padding:0.875rem;">
+        <div style="font-size:0.72rem; font-weight:600; color:${COLORS[i]}; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:0.3rem;">${label}</div>
+        <div style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:#0F172A;">$${Math.round(midCost * pct / 100).toLocaleString()}</div>
+        <div style="font-size:0.72rem; color:#92400E; margin-top:0.15rem;">${pct}% of total</div>
+      </div>
+    `).join('');
+  }
+
+  ['room-type','area','quality'].forEach(id => document.getElementById(id)?.addEventListener('input', calc));
+  calc();
+</script>

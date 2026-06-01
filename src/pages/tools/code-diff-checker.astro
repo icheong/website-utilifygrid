@@ -1,0 +1,127 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'code-diff-checker')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Code Diff Checker</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:1rem;">
+      <div>
+        <label style="font-size:0.75rem; font-weight:600; color:#DC2626; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.35rem;">Original (A)</label>
+        <textarea id="diff-a" placeholder="Paste original text or code here…"
+          style="width:100%; height:180px; padding:0.75rem; border:1.5px solid #FECACA; border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.5;"
+          onfocus="this.style.borderColor='#DC2626'" onblur="this.style.borderColor='#FECACA'"></textarea>
+      </div>
+      <div>
+        <label style="font-size:0.75rem; font-weight:600; color:#16A34A; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.35rem;">Modified (B)</label>
+        <textarea id="diff-b" placeholder="Paste modified text or code here…"
+          style="width:100%; height:180px; padding:0.75rem; border:1.5px solid #BBF7D0; border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.5;"
+          onfocus="this.style.borderColor='#16A34A'" onblur="this.style.borderColor='#BBF7D0'"></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <button id="run-diff" style="padding:0.5rem 1.25rem; background:#0F172A; color:#fff; border:none; border-radius:0.5rem; font-size:0.875rem; font-weight:600; cursor:pointer;">Compare</button>
+      <div id="diff-stats" style="display:flex; align-items:center; gap:0.75rem; font-size:0.82rem;"></div>
+    </div>
+
+    <div id="diff-output" style="background:#0F172A; border-radius:0.875rem; padding:1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.75; max-height:400px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; display:none;"></div>
+    <div id="diff-placeholder" style="text-align:center; padding:2rem; color:#94A3B8; font-size:0.875rem; background:#F8FAFC; border:1px dashed #E2E8F0; border-radius:0.875rem;">Paste text in both panels and click Compare.</div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Diff Checker</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste the original version of your text or code into the left panel (A), and the modified version into the right panel (B). Click Compare to see a line-by-line diff. Green lines were added, red lines were removed, and grey lines are unchanged.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Useful for reviewing code changes before a pull request, comparing configuration files, or spotting differences in documents.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How the diff algorithm works</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The tool implements a Myers-style line-level diff algorithm. Both inputs are split into lines. A longest common subsequence (LCS) is found between the two line arrays. Lines in A but not LCS are marked removed (red). Lines in B but not LCS are marked added (green). Shared lines are marked unchanged (grey).</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Can I diff binary files?', a: 'This tool works on text content only. Binary files (images, PDFs, executables) cannot be meaningfully diffed as text. For binary comparison, use tools like BeyondCompare, or use git diff --binary for version-controlled repositories.' },
+        { q: 'Is whitespace significant in the comparison?', a: 'Yes — this tool performs exact line-by-line comparison. A line that differs only in trailing whitespace or indentation will be marked as changed. This is intentional for code diffs where indentation is meaningful (e.g., Python, YAML). Strip trailing whitespace in your editor before comparing if you want to ignore it.' },
+        { q: 'How do I use this for a code review?', a: 'Copy the old version of a function or file, paste it into panel A. Copy the new version and paste it into panel B. The diff output shows exactly what changed, helping reviewers focus on additions and removals rather than scanning the entire file.' },
+        { q: 'What is a unified diff format?', a: 'The unified diff format (used by git diff) shows removed lines prefixed with − and added lines with +, with a few lines of context. This tool shows a similar view but colour-coded in a dark terminal style for readability.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  function lcs(a: string[], b: string[]): boolean[][] {
+    const m = a.length, n = b.length;
+    const dp: number[][] = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+    for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);
+    const inLcs = new Array(m).fill(false);
+    let i = m, j = n;
+    while (i > 0 && j > 0) {
+      if (a[i-1] === b[j-1]) { inLcs[i-1] = true; i--; j--; }
+      else if (dp[i-1][j] > dp[i][j-1]) i--;
+      else j--;
+    }
+    return [inLcs as any];
+  }
+
+  function diff(a: string[], b: string[]): {type: 'add'|'remove'|'same'; line: string}[] {
+    const m = a.length, n = b.length;
+    const dp: number[][] = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+    for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);
+
+    const result: {type: 'add'|'remove'|'same'; line: string}[] = [];
+    let i = m, j = n;
+    while (i > 0 || j > 0) {
+      if (i > 0 && j > 0 && a[i-1] === b[j-1]) { result.unshift({type:'same',line:a[i-1]}); i--; j--; }
+      else if (j > 0 && (i === 0 || dp[i][j-1] >= dp[i-1][j])) { result.unshift({type:'add',line:b[j-1]}); j--; }
+      else { result.unshift({type:'remove',line:a[i-1]}); i--; }
+    }
+    return result;
+  }
+
+  function esc(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  document.getElementById('run-diff')?.addEventListener('click', () => {
+    const aLines = ((document.getElementById('diff-a') as HTMLTextAreaElement).value).split('\n');
+    const bLines = ((document.getElementById('diff-b') as HTMLTextAreaElement).value).split('\n');
+    const result = diff(aLines, bLines);
+
+    let added = 0, removed = 0;
+    const html = result.map(r => {
+      if (r.type === 'add')    { added++;   return `<span style="background:#14532D;color:#86EFAC;display:block;">+ ${esc(r.line)}</span>`; }
+      if (r.type === 'remove') { removed++; return `<span style="background:#7F1D1D;color:#FCA5A5;display:block;">- ${esc(r.line)}</span>`; }
+      return `<span style="color:#94A3B8;display:block;">  ${esc(r.line)}</span>`;
+    }).join('');
+
+    const out = document.getElementById('diff-output')!;
+    out.innerHTML = html;
+    out.style.display = 'block';
+    (document.getElementById('diff-placeholder') as HTMLElement).style.display = 'none';
+
+    const stats = document.getElementById('diff-stats')!;
+    stats.innerHTML = `
+      <span style="color:#16A34A;font-weight:600;">+${added} added</span>
+      <span style="color:#DC2626;font-weight:600;">-${removed} removed</span>
+    `;
+  });
+</script>

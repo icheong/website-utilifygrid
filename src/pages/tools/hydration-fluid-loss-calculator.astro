@@ -1,0 +1,144 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'hydration-fluid-loss-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Hydration &amp; Fluid Loss Calculator</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Pre-workout Weight (kg)</label>
+        <input id="pre-wt" type="number" value="75" min="30" max="300" step="0.1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0284C7'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Post-workout Weight (kg)</label>
+        <input id="post-wt" type="number" value="74.2" min="30" max="300" step="0.1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0284C7'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Exercise Duration (min)</label>
+        <input id="duration" type="number" value="60" min="5" max="600" step="5"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0284C7'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Fluids Consumed (ml)</label>
+        <input id="consumed" type="number" value="500" min="0" max="5000" step="50"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0284C7'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1.25rem;">
+      <div style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-lost" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#1D4ED8;">—</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#60A5FA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.04em;">Total Fluid Lost (L)</div>
+      </div>
+      <div style="background:#F0F9FF; border:1.5px solid #BAE6FD; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-rate" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#0284C7;">—</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#38BDF8; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.04em;">Sweat Rate (L/hr)</div>
+      </div>
+      <div style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-replace" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#16A34A;">—</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#4ADE80; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.04em;">Replace / hr (ml)</div>
+      </div>
+    </div>
+
+    <div id="dehydration-bar" style="margin-bottom:0.875rem;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:0.35rem;">
+        <span style="font-size:0.78rem; font-weight:600; color:#475569;">Dehydration Level</span>
+        <span id="dehy-pct" style="font-size:0.78rem; font-weight:700; color:#0F172A;"></span>
+      </div>
+      <div style="height:10px; background:#F1F5F9; border-radius:999px; overflow:hidden;">
+        <div id="dehy-fill" style="height:100%; width:0%; background:#0284C7; border-radius:999px; transition:width 0.3s, background 0.3s;"></div>
+      </div>
+      <div style="font-size:0.72rem; color:#94A3B8; margin-top:0.3rem; text-align:right;">Under 2% = optimal; 2–4% = impaired; 5%+ = serious</div>
+    </div>
+
+    <div id="tip-box" style="padding:0.75rem 1rem; border-radius:0.625rem; font-size:0.82rem; line-height:1.6; border:1px solid #E2E8F0; color:#475569;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this calculator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Weigh yourself (without clothing) immediately before and after exercise. Note how long you exercised and how much fluid you drank during the session. The calculator will tell you your total fluid loss, hourly sweat rate, and recommended replacement volume.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Tracking sweat rate across multiple sessions in different conditions helps you build a personalised hydration protocol for races or long training blocks.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How fluid loss is calculated</h2>
+    <div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:#0F172A; line-height:1.8; margin-bottom:0.875rem;">
+      Total Lost (L) = (Pre-wt − Post-wt) + Consumed(ml)/1000<br/>
+      Sweat Rate (L/hr) = Total Lost / (Duration / 60)<br/>
+      Replace (ml/hr) = Sweat Rate × 1000
+    </div>
+    <p style="color:#475569; font-size:0.875rem; line-height:1.7;">The 1:1 rule (1 ml replacement per 1 ml lost) is generally recommended during exercise, though some sports scientists suggest replacing only 80% during activity to avoid over-hydration (hyponatraemia risk).</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Should I drink to thirst or to a schedule?', a: 'For most recreational exercise under 60 minutes, drinking to thirst is sufficient and safe. For prolonged exercise (over 60–90 minutes) in heat, a planned hydration schedule prevents you from falling behind — thirst typically kicks in only when you are already 1–2% dehydrated.' },
+        { q: 'Do I need electrolytes, or is water enough?', a: 'For sessions under 60 minutes, water is usually sufficient. For sessions over 90 minutes, especially in heat, sodium replacement is important to prevent hyponatraemia (low blood sodium). Sports drinks, electrolyte tablets, or salty snacks can provide this.' },
+        { q: 'How much should I drink after exercise to rehydrate?', a: 'The standard recommendation is to consume 1.25–1.5 L of fluid for every kilogram of body weight lost. This accounts for ongoing urine losses during recovery. Spreading consumption over 2–4 hours rather than drinking it all at once improves absorption.' },
+        { q: 'What is a normal sweat rate?', a: 'Sweat rates vary enormously: 0.5–1.5 L/hr is typical for moderate exercise in mild conditions. Elite athletes in hot, humid conditions can sweat 2–3+ L/hr. Heat acclimatisation increases sweat rate (good for cooling), but also increases fluid and electrolyte requirements.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  function calc() {
+    const pre  = parseFloat((document.getElementById('pre-wt') as HTMLInputElement).value)   || 0;
+    const post = parseFloat((document.getElementById('post-wt') as HTMLInputElement).value)  || 0;
+    const dur  = parseFloat((document.getElementById('duration') as HTMLInputElement).value) || 0;
+    const cons = parseFloat((document.getElementById('consumed') as HTMLInputElement).value) || 0;
+
+    const totalLost = Math.max((pre - post) + cons / 1000, 0);
+    const sweatRate = dur > 0 ? totalLost / (dur / 60) : 0;
+    const replaceML = sweatRate * 1000;
+    const dehyPct   = pre > 0 ? (totalLost / pre * 100) : 0;
+
+    (document.getElementById('out-lost') as HTMLElement).textContent    = totalLost.toFixed(2) + ' L';
+    (document.getElementById('out-rate') as HTMLElement).textContent    = sweatRate.toFixed(2) + ' L/hr';
+    (document.getElementById('out-replace') as HTMLElement).textContent = Math.round(replaceML) + ' ml';
+    (document.getElementById('dehy-pct') as HTMLElement).textContent    = dehyPct.toFixed(1) + '%';
+
+    const fill  = document.getElementById('dehy-fill') as HTMLElement;
+    const pct   = Math.min(dehyPct * 10, 100);
+    fill.style.width      = pct + '%';
+    fill.style.background = dehyPct < 2 ? '#0284C7' : dehyPct < 4 ? '#F59E0B' : '#DC2626';
+
+    const tip = document.getElementById('tip-box')!;
+    if (dehyPct < 2) {
+      tip.style.background = '#F0F9FF'; tip.style.borderColor = '#BAE6FD'; tip.style.color = '#0369A1';
+      tip.textContent = '✅ Excellent hydration. You replaced fluids effectively during this session.';
+    } else if (dehyPct < 4) {
+      tip.style.background = '#FFFBEB'; tip.style.borderColor = '#FDE68A'; tip.style.color = '#92400E';
+      tip.textContent = '⚠️ Mild dehydration detected. Increase fluid intake during your next session by approximately ' + Math.round(totalLost * 500) + ' ml.';
+    } else {
+      tip.style.background = '#FEF2F2'; tip.style.borderColor = '#FECACA'; tip.style.color = '#991B1B';
+      tip.textContent = '🚨 Significant dehydration. Consider a structured hydration plan and discuss with a sports dietitian if this level is regular.';
+    }
+  }
+
+  ['pre-wt','post-wt','duration','consumed'].forEach(id => document.getElementById(id)?.addEventListener('input', calc));
+  calc();
+</script>

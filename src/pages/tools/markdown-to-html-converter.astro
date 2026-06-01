@@ -1,0 +1,181 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'markdown-to-html-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Markdown → HTML Converter</h2>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
+      {[['markdown','Markdown Input'],['html','HTML Output'],['preview','Live Preview']].map(([tab, label]) => (
+        <button class="tab-btn" data-tab={tab}
+          style={`padding:0.4rem 0.875rem; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer; border:1.5px solid; transition:all 0.15s; ${tab === 'markdown' ? 'background:#7C3AED;color:#fff;border-color:#7C3AED;' : 'background:#F8FAFC;color:#64748B;border-color:#E2E8F0;'}`}>
+          {label}
+        </button>
+      ))}
+      <button id="copy-html" style="margin-left:auto; padding:0.4rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; color:#475569; background:#F8FAFC; cursor:pointer;">Copy HTML</button>
+    </div>
+
+    <textarea id="md-input" placeholder="# Hello World&#10;&#10;Type **markdown** here…&#10;&#10;- Item one&#10;- Item two&#10;&#10;[Link](https://example.com)"
+      style="width:100%; height:260px; padding:0.875rem; border:1.5px solid #DDD6FE; border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.85rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.6;"
+      onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor='#DDD6FE'"></textarea>
+
+    <div id="html-panel" style="display:none;">
+      <pre id="html-output" style="margin:0; background:#F8F7FF; border:1.5px solid #DDD6FE; border-radius:0.625rem; padding:0.875rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:#0F172A; white-space:pre-wrap; word-break:break-all; max-height:260px; overflow-y:auto; line-height:1.7;"></pre>
+    </div>
+
+    <div id="preview-panel" style="display:none; background:#fff; border:1.5px solid #DDD6FE; border-radius:0.625rem; padding:1rem; min-height:200px; max-height:320px; overflow-y:auto;">
+      <div id="preview-content" style="font-size:0.9rem; line-height:1.75; color:#0F172A;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Markdown Converter</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Type or paste Markdown into the input area. Switch between the HTML Output tab to see the generated code, or the Live Preview tab to see the rendered result. Click Copy HTML to copy the output to your clipboard.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Supports headings (# through ######), bold (**text**), italic (*text*), inline code (&#96;code&#96;), fenced code blocks (&#96;&#96;&#96;), blockquotes (&gt;), unordered lists (- or *), ordered lists (1.), links ([text](url)), and horizontal rules (---).</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How conversion is handled</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The converter processes Markdown line-by-line and applies regex transformations. Block-level elements (headings, lists, blockquotes, code fences, paragraphs) are detected by line prefix patterns. Inline elements (bold, italic, code, links) are then applied within each block. No external libraries are used — everything runs client-side in your browser.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What Markdown flavour does this support?', a: 'This tool supports CommonMark-style syntax with basic GFM (GitHub Flavored Markdown) elements: headings, emphasis, code, links, lists, blockquotes, and horizontal rules. It does not support GFM tables, task lists, strikethrough, or HTML pass-through. For full GFM support, use a server-side library like markdown-it or remark.' },
+        { q: 'Why should I convert Markdown to HTML?', a: 'Markdown is excellent for authoring content quickly, but most email clients, CMSs, and web pages require HTML. Converting lets you paste formatted content into rich text editors, email platforms like Mailchimp, or directly into HTML templates.' },
+        { q: 'How do I render Markdown in a React or Astro project?', a: 'Use the react-markdown package for React (it supports remark and rehype plugins). Astro supports Markdown natively in .md and .mdx files. Both provide full CommonMark + GFM support including tables, footnotes, and syntax highlighting.' },
+        { q: 'Is the generated HTML safe to render?', a: 'The output from this tool should be sanitised before rendering in a production application if the source Markdown comes from untrusted users (e.g., user-submitted content). Raw HTML tags in Markdown are stripped by this tool. For production use, combine your Markdown renderer with a sanitisation library like DOMPurify.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  function mdToHtml(md: string): string {
+    const lines = md.split('\n');
+    const out: string[] = [];
+    let inCode = false; let inUl = false; let inOl = false;
+
+    function closeList() {
+      if (inUl) { out.push('</ul>'); inUl = false; }
+      if (inOl) { out.push('</ol>'); inOl = false; }
+    }
+
+    function inline(s: string): string {
+      return s
+        .replace(/`([^`]+)`/g, '<code style="background:#F1F5F9;padding:0.1em 0.3em;border-radius:3px;font-family:monospace;font-size:0.9em;">$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/__([^_]+)__/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+        .replace(/_([^_]+)_/g, '<em>$1</em>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:#7C3AED;">$1</a>');
+    }
+
+    for (const line of lines) {
+      if (line.startsWith('```')) { if (inCode) { out.push('</code></pre>'); inCode = false; } else { closeList(); out.push('<pre style="background:#F8F7FF;padding:0.75rem;border-radius:0.5rem;overflow-x:auto;"><code style="font-size:0.85em;">'); inCode = true; } continue; }
+      if (inCode) { out.push(line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '\n'); continue; }
+      if (line.startsWith('###### ')) { closeList(); out.push(`<h6 style="font-size:0.85rem;font-weight:700;">${inline(line.slice(7))}</h6>`); continue; }
+      if (line.startsWith('##### '))  { closeList(); out.push(`<h5 style="font-size:0.9rem;font-weight:700;">${inline(line.slice(6))}</h5>`); continue; }
+      if (line.startsWith('#### '))   { closeList(); out.push(`<h4 style="font-size:1rem;font-weight:700;">${inline(line.slice(5))}</h4>`); continue; }
+      if (line.startsWith('### '))    { closeList(); out.push(`<h3 style="font-size:1.1rem;font-weight:700;">${inline(line.slice(4))}</h3>`); continue; }
+      if (line.startsWith('## '))     { closeList(); out.push(`<h2 style="font-size:1.25rem;font-weight:700;">${inline(line.slice(3))}</h2>`); continue; }
+      if (line.startsWith('# '))      { closeList(); out.push(`<h1 style="font-size:1.5rem;font-weight:700;">${inline(line.slice(2))}</h1>`); continue; }
+      if (/^(-|\*) /.test(line)) {
+        if (!inUl) { closeList(); out.push('<ul style="padding-left:1.5rem;">'); inUl = true; }
+        out.push(`<li>${inline(line.slice(2))}</li>`);
+        continue;
+      }
+      if (/^\d+\. /.test(line)) {
+        if (!inOl) { closeList(); out.push('<ol style="padding-left:1.5rem;">'); inOl = true; }
+        out.push(`<li>${inline(line.replace(/^\d+\. /,''))}</li>`);
+        continue;
+      }
+      if (line.startsWith('> ')) { closeList(); out.push(`<blockquote style="border-left:3px solid #DDD6FE;padding-left:1rem;color:#6B7280;">${inline(line.slice(2))}</blockquote>`); continue; }
+      if (/^---+$/.test(line)) { closeList(); out.push('<hr style="border:none;border-top:1.5px solid #E2E8F0;margin:1rem 0;">'); continue; }
+      closeList();
+      if (line.trim() === '') { out.push('<br>'); } else { out.push(`<p style="margin:0.5em 0;">${inline(line)}</p>`); }
+    }
+    closeList();
+    return out.join('\n');
+  }
+
+  let activeTab = 'markdown';
+
+  function updatePanels() {
+    const md   = (document.getElementById('md-input') as HTMLTextAreaElement).value;
+    const html = mdToHtml(md);
+    (document.getElementById('html-output') as HTMLElement).textContent  = html;
+    (document.getElementById('preview-content') as HTMLElement).innerHTML = html;
+  }
+
+  function showTab(tab: string) {
+    activeTab = tab;
+    (document.getElementById('md-input') as HTMLElement).style.display      = tab === 'markdown' ? 'block' : 'none';
+    (document.getElementById('html-panel') as HTMLElement).style.display    = tab === 'html'     ? 'block' : 'none';
+    (document.getElementById('preview-panel') as HTMLElement).style.display = tab === 'preview'  ? 'block' : 'none';
+
+    document.querySelectorAll('.tab-btn').forEach((b: Element) => {
+      const el = b as HTMLElement;
+      const isActive = el.dataset.tab === tab;
+      el.style.background   = isActive ? '#7C3AED' : '#F8FAFC';
+      el.style.color        = isActive ? '#fff'    : '#64748B';
+      el.style.borderColor  = isActive ? '#7C3AED' : '#E2E8F0';
+    });
+    if (tab !== 'markdown') updatePanels();
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => showTab((btn as HTMLElement).dataset.tab!));
+  });
+
+  document.getElementById('md-input')?.addEventListener('input', () => {
+    if (activeTab !== 'markdown') updatePanels();
+  });
+
+  document.getElementById('copy-html')?.addEventListener('click', () => {
+    updatePanels();
+    const html = (document.getElementById('html-output') as HTMLElement).textContent || '';
+    navigator.clipboard.writeText(html);
+    const btn = document.getElementById('copy-html')!;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = 'Copy HTML'; }, 2000);
+  });
+
+  // default sample
+  (document.getElementById('md-input') as HTMLTextAreaElement).value =
+`# Welcome to the Converter
+
+This **Markdown** to HTML converter supports *most* common syntax.
+
+## Features
+
+- Headings (H1–H6)
+- Bold and italic text
+- \`Inline code\` and fenced code blocks
+- [Hyperlinks](https://example.com)
+- Ordered and unordered lists
+
+> Blockquotes work too.
+
+---
+
+1. First item
+2. Second item
+3. Third item`;
+</script>

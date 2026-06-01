@@ -1,0 +1,171 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'car-loan-amortization-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Car Loan Calculator</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Vehicle Price ($)</label>
+        <input id="price" type="number" value="35000" min="0" step="500"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0369A1'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Down Payment ($)</label>
+        <input id="down" type="number" value="5000" min="0" step="500"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0369A1'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Annual Interest Rate (%)</label>
+        <input id="rate" type="number" value="6.9" min="0.1" max="40" step="0.1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0369A1'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Loan Term (months)</label>
+        <select id="term"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none; background:#fff;"
+          onfocus="this.style.borderColor='#0369A1'" onblur="this.style.borderColor='#E2E8F0'">
+          <option value="24">24 months (2 yrs)</option>
+          <option value="36">36 months (3 yrs)</option>
+          <option value="48">48 months (4 yrs)</option>
+          <option value="60" selected>60 months (5 yrs)</option>
+          <option value="72">72 months (6 yrs)</option>
+          <option value="84">84 months (7 yrs)</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1.25rem;">
+      <div style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-monthly" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#0369A1;">$0</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#60A5FA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Monthly Payment</div>
+      </div>
+      <div style="background:#FFF7ED; border:1.5px solid #FED7AA; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-interest" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#EA580C;">$0</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#FB923C; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Total Interest</div>
+      </div>
+      <div style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-total" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#16A34A;">$0</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#4ADE80; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Total Cost</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid #E2E8F0; border-radius:0.75rem; overflow:hidden;">
+      <div style="background:#F8FAFC; padding:0.75rem 1rem; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em;">Amortization Schedule</span>
+        <button id="toggle-table" style="font-size:0.75rem; color:#0369A1; background:none; border:none; cursor:pointer; font-weight:600;">Show all</button>
+      </div>
+      <div style="overflow-x:auto; max-height:280px; overflow-y:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+          <thead style="position:sticky; top:0; background:#F8FAFC;">
+            <tr>
+              {['Mo','Payment','Principal','Interest','Balance'].map(h => (
+                <th style="padding:0.5rem 0.75rem; text-align:right; color:#475569; font-weight:600; white-space:nowrap; border-bottom:1px solid #E2E8F0;">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Car Loan Calculator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter the full vehicle purchase price, your down payment amount, the annual interest rate from your lender, and select the loan term. The calculator instantly shows your monthly payment, total interest paid, and complete amortization schedule.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Try adjusting the loan term to see how shorter or longer terms affect both monthly payments and total interest paid. A shorter term means higher payments but significantly less interest over the life of the loan.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How the calculation works</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The monthly payment uses the standard loan amortization formula: <strong>P × r(1+r)^n / ((1+r)^n − 1)</strong>, where P is the principal (price minus down payment), r is the monthly interest rate (annual ÷ 12), and n is the number of months.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Each row in the amortization table shows how much of that month's payment goes to interest versus reducing the principal. Early payments are interest-heavy; as the balance falls, more goes to principal.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is a good car loan interest rate?', a: 'Interest rates vary by credit score, lender, and whether the vehicle is new or used. In 2024–2025, rates for borrowers with excellent credit typically range from 5–8% for new cars and 7–12% for used cars. Rates above 15% are generally considered high and warrant negotiation or credit improvement before purchasing.' },
+        { q: 'Should I make a larger down payment?', a: 'A larger down payment reduces your loan principal, lowering both monthly payments and total interest paid. It also reduces the risk of being "upside down" on the loan (owing more than the car is worth). A 20% down payment is a common recommendation, though any amount helps.' },
+        { q: 'Is a longer loan term better?', a: 'A longer term lowers monthly payments but significantly increases total interest paid. A 72-month loan on a $30,000 vehicle at 7% costs roughly $3,500 more in interest than a 48-month loan. Longer terms also risk negative equity as cars depreciate faster than the loan is paid down.' },
+        { q: 'Can I pay off my car loan early?', a: 'Most car loans allow early repayment without penalty, but check your loan agreement first. Making extra principal payments reduces the outstanding balance faster, saving significant interest. Even one extra payment per year can shorten a 5-year loan by several months.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  let showAll = false;
+  let schedule: { mo: number; payment: number; principal: number; interest: number; balance: number }[] = [];
+
+  function fmt(n: number) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  function calc() {
+    const price = parseFloat((document.getElementById('price') as HTMLInputElement).value) || 0;
+    const down  = parseFloat((document.getElementById('down') as HTMLInputElement).value)  || 0;
+    const rate  = parseFloat((document.getElementById('rate') as HTMLInputElement).value)  || 0;
+    const term  = parseInt((document.getElementById('term') as HTMLSelectElement).value)   || 60;
+
+    const principal  = Math.max(price - down, 0);
+    const monthlyRate = rate / 100 / 12;
+    const payment    = monthlyRate > 0
+      ? principal * (monthlyRate * Math.pow(1 + monthlyRate, term)) / (Math.pow(1 + monthlyRate, term) - 1)
+      : principal / term;
+
+    schedule = [];
+    let balance = principal;
+    for (let m = 1; m <= term; m++) {
+      const interestPart  = balance * monthlyRate;
+      const principalPart = payment - interestPart;
+      balance             = Math.max(balance - principalPart, 0);
+      schedule.push({ mo: m, payment, principal: principalPart, interest: interestPart, balance });
+    }
+
+    const totalPaid     = payment * term;
+    const totalInterest = totalPaid - principal;
+
+    document.getElementById('out-monthly')!.textContent  = fmt(payment);
+    document.getElementById('out-interest')!.textContent = fmt(totalInterest);
+    document.getElementById('out-total')!.textContent    = fmt(totalPaid + down);
+    renderTable();
+  }
+
+  function renderTable() {
+    const body    = document.getElementById('table-body')!;
+    const display = showAll ? schedule : schedule.slice(0, 12);
+    body.innerHTML = display.map((r, i) => `
+      <tr style="border-bottom:1px solid #F1F5F9; background:${i % 2 === 0 ? '#fff' : '#F8FAFC'};">
+        <td style="padding:0.4rem 0.75rem; text-align:right; color:#64748B;">${r.mo}</td>
+        <td style="padding:0.4rem 0.75rem; text-align:right; color:#0F172A;">${fmt(r.payment)}</td>
+        <td style="padding:0.4rem 0.75rem; text-align:right; color:#0369A1;">${fmt(r.principal)}</td>
+        <td style="padding:0.4rem 0.75rem; text-align:right; color:#EA580C;">${fmt(r.interest)}</td>
+        <td style="padding:0.4rem 0.75rem; text-align:right; color:#64748B;">${fmt(r.balance)}</td>
+      </tr>`).join('');
+    const btn = document.getElementById('toggle-table')!;
+    btn.textContent   = showAll ? 'Show less' : `Show all ${schedule.length} months`;
+    btn.style.display = schedule.length <= 12 ? 'none' : 'inline';
+  }
+
+  document.getElementById('toggle-table')?.addEventListener('click', () => { showAll = !showAll; renderTable(); });
+  ['price','down','rate','term'].forEach(id => document.getElementById(id)?.addEventListener('input', calc));
+  calc();
+</script>

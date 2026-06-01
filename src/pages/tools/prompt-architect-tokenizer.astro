@@ -1,0 +1,149 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Prompt Architect &amp; Tokenizer</h2>
+
+    <textarea id="prompt-input" placeholder="Type or paste your AI prompt here…"
+      style="width:100%; height:160px; padding:0.875rem; border:1.5px solid #DDD6FE; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit;"
+      onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor='#DDD6FE'"></textarea>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+      {[['claude','Claude XML','#1E1E2E','#A78BFA'],['gpt','GPT JSON','#10A37F','#fff'],['gemini','Gemini Structured','#4285F4','#fff']].map(([id, label, bg, col]) => (
+        <button class="fmt-btn" data-fmt={id}
+          style={`padding:0.4rem 0.875rem; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer; border:none; background:${bg}; color:${col};`}>
+          {label}
+        </button>
+      ))}
+      <button id="copy-formatted" style="margin-left:auto; padding:0.4rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; color:#475569; background:#F8FAFC; cursor:pointer;">Copy</button>
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; margin-bottom:1rem;">
+      {[['out-tokens','Tokens','#7C3AED','#F5F3FF','#DDD6FE'],['out-chars','Characters','#0284C7','#F0F9FF','#BAE6FD'],['out-words','Words','#059669','#F0FDF4','#BBF7D0'],['out-cost','Est. Cost','#D97706','#FFFBEB','#FDE68A']].map(([id,label,fg,bg,border]) => (
+        <div style={`background:${bg};border:1.5px solid ${border};border-radius:0.625rem;padding:0.625rem;text-align:center;`}>
+          <div id={id} style={`font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:${fg};`}>0</div>
+          <div style={`font-size:0.68rem;font-weight:600;color:${fg};margin-top:0.15rem;text-transform:uppercase;letter-spacing:0.04em;opacity:0.7;`}>{label}</div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Cost inputs -->
+    <div style="display:flex; gap:0.75rem; align-items:center; margin-bottom:0.875rem; flex-wrap:wrap;">
+      <label style="font-size:0.78rem; font-weight:600; color:#475569;">$/1K tokens:</label>
+      <input id="cost-rate" type="number" value="0.003" min="0" step="0.001"
+        style="width:90px; padding:0.35rem 0.625rem; border:1px solid #E2E8F0; border-radius:0.375rem; font-size:0.82rem; outline:none;"/>
+    </div>
+
+    <!-- Formatted output -->
+    <pre id="formatted-output" style="margin:0; background:#1E1E2E; border-radius:0.875rem; padding:1rem; font-family:'Fira Code',monospace; font-size:0.75rem; color:#E2E8F0; white-space:pre-wrap; word-break:break-all; max-height:300px; overflow-y:auto; line-height:1.7;"></pre>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Prompt Architect</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Type or paste your prompt text, then click a format button to see it structured for Claude (XML tags), GPT (JSON messages array), or Gemini (plain structured). The token count, word count, and estimated API cost update live based on your $/1K tokens setting.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Use this to compare prompt structures across models and estimate costs before running large-scale inference.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">Format structures explained</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Claude XML', 'Anthropic recommends wrapping context, instructions, and data in XML tags like <instructions>, <context>, and <task>. This helps Claude understand structure and reduces prompt injection risk.'],
+        ['GPT JSON', 'OpenAI API expects a messages array with role/content objects: [{role:"system",content:"..."},{role:"user",content:"..."}]. System prompts set behaviour; user messages contain the task.'],
+        ['Gemini Structured', 'Google Gemini works best with clearly delineated sections using markdown-style headers and plain structured prose. Context, role, and task are clearly separated as labelled paragraphs.'],
+        ['Token Count', 'Estimated as total characters / 4 (a common approximation). Actual token counts depend on the model\'s tokeniser. Use the model\'s native tokenisation API for precision pricing.'],
+      ].map(([label, desc]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'How accurate is the token count?', a: 'The chars/4 estimate is within 10–15% for most English text. Code, non-Latin scripts, and special characters may tokenise differently. For pricing accuracy, use tiktoken (OpenAI) or the Anthropic/Google SDKs which count tokens precisely using the model\'s actual tokeniser.' },
+        { q: 'Should I use a system prompt or a user prompt for instructions?', a: 'For GPT models, system messages are more authoritative for persistent instructions, persona, and constraints. User messages represent the actual request. For Claude, Anthropic recommends placing instructions in a human turn wrapped in XML tags when using the API, as Claude\'s training optimises for this pattern.' },
+        { q: 'What is prompt injection and how do I prevent it?', a: 'Prompt injection occurs when user-supplied text contains instructions that override your system prompt (e.g., "Ignore all previous instructions…"). Mitigations: use XML delimiters to separate instructions from data, sanitise user input, use model-specific safety features, and avoid placing sensitive instructions in easily-overridable positions.' },
+        { q: 'How can I reduce token costs?', a: 'Shorten prompts by removing verbose explanations and using concise phrasing. Use few-shot examples only when necessary. Cache system prompts using provider prompt caching features. For high-volume tasks, batch API calls. Consider smaller/cheaper models for simple classification tasks where quality is sufficient.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  let currentFmt = 'claude';
+
+  function formatClaude(text: string): string {
+    return `<instructions>\n  You are a helpful assistant.\n</instructions>\n\n<context>\n  [Add relevant context here]\n</context>\n\n<task>\n  ${text.trim()}\n</task>`;
+  }
+
+  function formatGPT(text: string): string {
+    return JSON.stringify([
+      { role: 'system', content: 'You are a helpful assistant.' },
+      { role: 'user',   content: text.trim() }
+    ], null, 2);
+  }
+
+  function formatGemini(text: string): string {
+    return `ROLE:\nYou are a helpful assistant.\n\nCONTEXT:\n[Add relevant context here]\n\nTASK:\n${text.trim()}\n\nRESPONSE FORMAT:\n[Specify expected output format]`;
+  }
+
+  function update() {
+    const text   = (document.getElementById('prompt-input') as HTMLTextAreaElement).value;
+    const rate   = parseFloat((document.getElementById('cost-rate') as HTMLInputElement).value) || 0;
+    const chars  = text.length;
+    const words  = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const tokens = Math.round(chars / 4);
+    const cost   = (tokens / 1000) * rate;
+
+    (document.getElementById('out-tokens') as HTMLElement).textContent = tokens.toLocaleString();
+    (document.getElementById('out-chars') as HTMLElement).textContent  = chars.toLocaleString();
+    (document.getElementById('out-words') as HTMLElement).textContent  = words.toLocaleString();
+    (document.getElementById('out-cost') as HTMLElement).textContent   = '$' + cost.toFixed(4);
+
+    const fmt = currentFmt === 'claude' ? formatClaude(text) : currentFmt === 'gpt' ? formatGPT(text) : formatGemini(text);
+    (document.getElementById('formatted-output') as HTMLElement).textContent = fmt;
+  }
+
+  document.querySelectorAll('.fmt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentFmt = (btn as HTMLElement).dataset.fmt!;
+      document.querySelectorAll('.fmt-btn').forEach((b: Element) => {
+        (b as HTMLElement).style.opacity = b === btn ? '1' : '0.5';
+      });
+      update();
+    });
+  });
+
+  document.getElementById('copy-formatted')?.addEventListener('click', () => {
+    const txt = (document.getElementById('formatted-output') as HTMLElement).textContent || '';
+    navigator.clipboard.writeText(txt);
+    const btn = document.getElementById('copy-formatted')!;
+    btn.textContent = '✓ Copied';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+  });
+
+  document.getElementById('prompt-input')?.addEventListener('input', update);
+  document.getElementById('cost-rate')?.addEventListener('input', update);
+  update();
+</script>

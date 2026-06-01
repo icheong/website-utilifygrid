@@ -1,0 +1,129 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'solar-panel-roi-estimator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Solar Panel ROI Estimator</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:1.25rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Monthly Electricity Bill ($)</label>
+        <input id="monthly-bill" type="number" value="200" min="10" step="5"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#EAB308'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Electricity Rate ($/kWh)</label>
+        <input id="rate" type="number" value="0.28" min="0.05" step="0.01"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#EAB308'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Available Roof Area (m²)</label>
+        <input id="roof-area" type="number" value="30" min="5" step="1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#EAB308'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Peak Sun Hours / Day</label>
+        <input id="sun-hours" type="number" value="5" min="2" max="8" step="0.5"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#EAB308'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:0.75rem; margin-bottom:1rem;">
+      <div style="background:#FEFCE8; border:1.5px solid #FEF08A; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-size" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#CA8A04;">—</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#EAB308; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">System Size (kW)</div>
+      </div>
+      <div style="background:#FFF7ED; border:1.5px solid #FED7AA; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-system-cost" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#D97706;">—</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#FB923C; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Est. System Cost</div>
+      </div>
+      <div style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-savings" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#16A34A;">—</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#4ADE80; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Monthly Savings</div>
+      </div>
+      <div style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-payback" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#1D4ED8;">—</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#60A5FA; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Payback Period</div>
+      </div>
+    </div>
+
+    <div style="background:#FEFCE8; border:1px solid #FDE68A; border-radius:0.5rem; padding:0.625rem 0.875rem; font-size:0.75rem; color:#854D0E;">
+      💡 Peak sun hours for Australian cities: Darwin 6.0, Brisbane 5.2, Perth 5.0, Adelaide 4.8, Sydney 4.5, Melbourne 4.0, Hobart 3.5. International: Phoenix USA 6.5, London 2.5, Dubai 6.0.
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this estimator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your average monthly electricity bill, your electricity rate (check your bill), the usable north-facing roof area, and your local peak sun hours per day. The tool estimates recommended system size, cost, and payback period.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">This is a planning tool for initial feasibility assessment. Actual system sizing requires a professional site assessment to account for roof pitch, shading, orientation, and specific panel efficiency ratings.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">Calculation methodology</h2>
+    <div style="background:#FEFCE8; border:1px solid #FEF08A; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:#0F172A; line-height:1.9;">
+      Daily usage (kWh) = Monthly bill / Rate / 30<br/>
+      System size (kW) = Daily usage / Peak sun hours / 0.8 (system losses)<br/>
+      Panel count ≈ Area / 1.8 m² per panel (typical 400W panel)<br/>
+      Max kW from roof = Panel count × 0.4 kW<br/>
+      System cost = System kW × $1,000/kW (installed est.)<br/>
+      Monthly savings = min(bill, Daily usage × Rate × 30)
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What system size do I actually need?', a: 'A common rule of thumb is 1kW of solar for every $200–$250 of quarterly electricity bills. For Australian residential homes, 6.6kW systems are now the most popular as they qualify for maximum government incentives (STCs). Always have a qualified solar installer assess your specific situation.' },
+        { q: 'How do solar feed-in tariffs affect ROI?', a: 'If you export surplus power to the grid, you receive a feed-in tariff (FIT). In Australia, FITs currently range from 2–10 cents/kWh depending on the state and retailer. Higher self-consumption during daylight hours (via timers or battery) is typically more valuable than exporting at FIT rates.' },
+        { q: 'Should I add a battery?', a: 'Battery storage typically adds $8,000–$15,000 for a home system (e.g., 10kWh Tesla Powerwall). Payback periods for batteries alone are currently 12–20 years in most Australian states. Batteries make financial sense if you have high evening usage, frequent blackouts, or very low FIT rates.' },
+        { q: 'How long do solar panels last?', a: 'Quality panels from tier-1 manufacturers (LG, SunPower, REC, Jinko) typically degrade less than 0.5% per year and carry 25–30 year performance warranties. After 25 years, panels typically still produce 80–85% of original capacity. Inverters typically need replacement every 10–15 years at $1,500–$3,000.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  function calc() {
+    const bill     = parseFloat((document.getElementById('monthly-bill') as HTMLInputElement).value)  || 0;
+    const rate     = parseFloat((document.getElementById('rate') as HTMLInputElement).value)          || 0.28;
+    const roofArea = parseFloat((document.getElementById('roof-area') as HTMLInputElement).value)     || 0;
+    const sunHrs   = parseFloat((document.getElementById('sun-hours') as HTMLInputElement).value)     || 5;
+
+    const dailyUsage    = bill / rate / 30;
+    const sizeByUsage   = dailyUsage / (sunHrs * 0.8);
+    const panelCount    = Math.floor(roofArea / 1.8);
+    const sizeByRoof    = panelCount * 0.4;
+    const systemKw      = Math.min(sizeByUsage, sizeByRoof);
+    const systemCost    = systemKw * 1000;
+    const dailyGen      = systemKw * sunHrs * 0.8;
+    const monthlySavings = Math.min(bill, dailyGen * rate * 30);
+    const paybackYears  = monthlySavings > 0 ? systemCost / (monthlySavings * 12) : 0;
+
+    (document.getElementById('out-size') as HTMLElement).textContent        = systemKw.toFixed(1) + ' kW';
+    (document.getElementById('out-system-cost') as HTMLElement).textContent = '$' + Math.round(systemCost).toLocaleString();
+    (document.getElementById('out-savings') as HTMLElement).textContent     = '$' + Math.round(monthlySavings) + '/mo';
+    (document.getElementById('out-payback') as HTMLElement).textContent     = paybackYears > 0 ? paybackYears.toFixed(1) + ' yrs' : '—';
+  }
+
+  ['monthly-bill','rate','roof-area','sun-hours'].forEach(id => document.getElementById(id)?.addEventListener('input', calc));
+  calc();
+</script>

@@ -1,0 +1,195 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'strata-sinking-fund-estimator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Strata Sinking Fund Estimator</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:1rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Number of Units</label>
+        <input id="units" type="number" value="12" min="1" max="500"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#64748B'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Current Fund Balance ($)</label>
+        <input id="current-fund" type="number" value="80000" min="0" step="1000"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#64748B'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Building Age (years)</label>
+        <input id="building-age" type="number" value="10" min="0" max="100"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#64748B'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Planning Horizon (years)</label>
+        <input id="horizon" type="number" value="10" min="1" max="30"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#64748B'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+    </div>
+
+    <div id="assets-list" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.875rem;"></div>
+    <button id="add-asset" style="width:100%; padding:0.5rem; border:1.5px dashed #CBD5E1; border-radius:0.5rem; background:#F8FAFC; color:#475569; font-size:0.82rem; font-weight:600; cursor:pointer; margin-bottom:1.25rem;">+ Add Asset</button>
+
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1rem;">
+      <div style="background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-required" style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A;">—</div>
+        <div style="font-size:0.68rem; font-weight:600; color:#94A3B8; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Required Fund</div>
+      </div>
+      <div style="background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-adequacy" style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A;">—%</div>
+        <div style="font-size:0.68rem; font-weight:600; color:#94A3B8; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Adequacy</div>
+      </div>
+      <div style="background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-levy" style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A;">—</div>
+        <div style="font-size:0.68rem; font-weight:600; color:#94A3B8; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Annual Levy/Unit</div>
+      </div>
+    </div>
+
+    <div id="adequacy-bar-wrap" style="margin-bottom:0.5rem;">
+      <div style="height:10px; background:#F1F5F9; border-radius:999px; overflow:hidden;">
+        <div id="adequacy-bar" style="height:100%; width:0%; background:#64748B; border-radius:999px; transition:width 0.4s ease, background 0.3s;"></div>
+      </div>
+    </div>
+    <div id="adequacy-msg" style="font-size:0.78rem; color:#475569; text-align:right;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this estimator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your building's unit count, current sinking fund balance, building age, and planning horizon. Review the pre-loaded asset list (roof, lifts, etc.), update replacement costs to your building's specifics, and adjust lifespans. The tool calculates what portion of each asset's replacement cost should be accumulated over the planning horizon.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">This is a planning aid only. Australian strata legislation requires a formal 10-year capital works fund plan prepared by a qualified quantity surveyor or engineer every 5 years.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How the required fund is calculated</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">For each asset, the tool calculates the replacement cost attributable to the planning horizon based on the asset's age and lifespan. The sum of these contributions is the total required fund. Adequacy = Current Balance / Required Fund × 100. The annual levy is the shortfall divided by the horizon divided by the number of units.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is a sinking fund?', a: 'A sinking fund (also called a capital works fund) is money collected from owners in advance to fund major repairs and replacement of common property assets (roofs, lifts, pools, driveways, façades). It differs from the administrative fund, which covers ongoing running costs like insurance and cleaning.' },
+        { q: 'What happens if the sinking fund is inadequate?', a: 'Inadequate sinking funds lead to special levies — large one-off charges to owners when major works are needed. Special levies can be thousands of dollars per unit and are a common source of strata disputes. They also negatively impact property values and sales.' },
+        { q: 'Is there a legal minimum for sinking funds?', a: 'Australian strata legislation requires that contributions be sufficient to fund anticipated capital works. NSW requires a 10-year capital works fund plan. Victoria requires a maintenance plan. Queensland requires a sinking fund forecast. Exact requirements and penalties vary by state.' },
+        { q: 'How often should a capital works plan be reviewed?', a: 'Most states require a review every 5 years. However, the plan should also be reviewed after any major unexpected expenditure, significant changes to the building, or when asset lifespans are revised based on new inspections or engineering reports.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  interface Asset { id: number; label: string; cost: number; lifespan: number; }
+
+  let nextId = 0;
+  let assets: Asset[] = [
+    { id: nextId++, label: 'Roof replacement',        cost: 120000, lifespan: 30 },
+    { id: nextId++, label: 'Lift / elevator',         cost: 80000,  lifespan: 25 },
+    { id: nextId++, label: 'Driveway & car park',     cost: 40000,  lifespan: 20 },
+    { id: nextId++, label: 'Exterior painting',       cost: 60000,  lifespan: 10 },
+    { id: nextId++, label: 'Plumbing & drainage',     cost: 30000,  lifespan: 30 },
+    { id: nextId++, label: 'Common area flooring',    cost: 20000,  lifespan: 15 },
+    { id: nextId++, label: 'Pool / spa equipment',    cost: 25000,  lifespan: 15 },
+  ];
+
+  function getN(id: string): number { return parseFloat((document.getElementById(id) as HTMLInputElement)?.value) || 0; }
+
+  function updateTotals() {
+    const units   = getN('units')        || 1;
+    const fund    = getN('current-fund');
+    const age     = getN('building-age');
+    const horizon = getN('horizon')      || 10;
+
+    let required = 0;
+    assets.forEach(a => {
+      const ageAtEnd   = age + horizon;
+      const portion    = Math.min(horizon, a.lifespan) / a.lifespan;
+      const contribution = a.cost * portion;
+      required += contribution;
+    });
+
+    const adequacy = required > 0 ? fund / required * 100 : 100;
+    const shortfall = Math.max(required - fund, 0);
+    const annualLevy = shortfall > 0 ? shortfall / horizon / units : 0;
+
+    (document.getElementById('out-required') as HTMLElement).textContent  = '$' + Math.round(required).toLocaleString();
+    (document.getElementById('out-adequacy') as HTMLElement).textContent  = adequacy.toFixed(0) + '%';
+    const color = adequacy >= 90 ? '#16A34A' : adequacy >= 60 ? '#F97316' : '#DC2626';
+    (document.getElementById('out-adequacy') as HTMLElement).style.color = color;
+    (document.getElementById('out-levy') as HTMLElement).textContent      = '$' + Math.round(annualLevy).toLocaleString() + '/yr';
+    (document.getElementById('adequacy-bar') as HTMLElement).style.width  = Math.min(adequacy, 100) + '%';
+    (document.getElementById('adequacy-bar') as HTMLElement).style.background = color;
+    (document.getElementById('adequacy-msg') as HTMLElement).textContent  =
+      adequacy >= 90 ? 'Fund is well-funded ✓' : adequacy >= 60 ? 'Moderately funded — consider increasing contributions' : 'Under-funded — special levies may be required';
+  }
+
+  function renderAssets() {
+    const list = document.getElementById('assets-list')!;
+    list.innerHTML = '';
+    assets.forEach(a => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;background:#fff;border:1px solid #E2E8F0;border-radius:0.5rem;padding:0.45rem 0.625rem;';
+      row.innerHTML = `
+        <input type="text" value="${a.label}" data-id="${a.id}" data-field="label"
+          style="flex:1;border:none;outline:none;font-size:0.82rem;color:#0F172A;background:transparent;min-width:0;"/>
+        <span style="font-size:0.72rem;color:#94A3B8;white-space:nowrap;">Cost $</span>
+        <input type="number" value="${a.cost}" min="0" step="1000" data-id="${a.id}" data-field="cost"
+          style="width:80px;padding:0.2rem 0.35rem;border:1px solid #E2E8F0;border-radius:0.35rem;font-size:0.78rem;text-align:right;outline:none;"/>
+        <span style="font-size:0.72rem;color:#94A3B8;">Life</span>
+        <input type="number" value="${a.lifespan}" min="1" max="100" data-id="${a.id}" data-field="lifespan"
+          style="width:46px;padding:0.2rem 0.35rem;border:1px solid #E2E8F0;border-radius:0.35rem;font-size:0.78rem;text-align:center;outline:none;"/>
+        <span style="font-size:0.72rem;color:#94A3B8;">yr</span>
+        <button data-id="${a.id}" style="background:none;border:none;cursor:pointer;color:#CBD5E1;font-size:1.1rem;padding:0;">×</button>
+      `;
+      list.appendChild(row);
+    });
+
+    list.querySelectorAll('input').forEach(el => {
+      el.addEventListener('input', (e) => {
+        const inp   = e.target as HTMLInputElement;
+        const id    = parseInt(inp.dataset.id!);
+        const field = inp.dataset.field!;
+        const asset = assets.find(x => x.id === id)!;
+        if (field === 'label') asset.label = inp.value;
+        else (asset as any)[field] = parseFloat(inp.value) || 0;
+        updateTotals();
+      });
+    });
+
+    list.querySelectorAll('button').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const id = parseInt((e.currentTarget as HTMLElement).dataset.id!);
+        assets = assets.filter(x => x.id !== id);
+        renderAssets(); updateTotals();
+      });
+    });
+  }
+
+  document.getElementById('add-asset')?.addEventListener('click', () => {
+    assets.push({ id: nextId++, label: 'New asset', cost: 20000, lifespan: 20 });
+    renderAssets(); updateTotals();
+  });
+
+  ['units','current-fund','building-age','horizon'].forEach(id => document.getElementById(id)?.addEventListener('input', updateTotals));
+
+  renderAssets();
+  updateTotals();
+</script>

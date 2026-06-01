@@ -1,0 +1,169 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'meta-tag-og-previewer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Meta Tag &amp; Social Card Previewer</h2>
+
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.25rem;">
+      {[
+        ['Page Title', 'og-title', 'text', 'My Awesome Page — Site Name'],
+        ['Meta Description', 'og-desc', 'text', '150–160 character description for search results and social shares.'],
+        ['Canonical URL', 'og-url', 'url', 'https://yoursite.com/page'],
+        ['OG Image URL', 'og-image', 'url', 'https://yoursite.com/og-image.png (1200×630px recommended)'],
+        ['Site Name', 'og-site', 'text', 'My Site Name'],
+      ].map(([label, id, type, placeholder]) => (
+        <div>
+          <label style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.3rem;">{label}</label>
+          <input id={id} type={type} placeholder={placeholder as string}
+            style="width:100%; padding:0.6rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; box-sizing:border-box; outline:none;"
+            onfocus="this.style.borderColor='#0284C7'" onblur="this.style.borderColor='#E2E8F0'"/>
+        </div>
+      ))}
+    </div>
+
+    <!-- Social previews -->
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.25rem;">
+      <!-- Google preview -->
+      <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.75rem; padding:1rem;">
+        <div style="font-size:0.72rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.625rem;">Google Search Preview</div>
+        <div id="google-title" style="font-size:1rem; color:#1A0DAB; margin-bottom:0.25rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Page Title</div>
+        <div id="google-url" style="font-size:0.78rem; color:#006621; margin-bottom:0.25rem;">https://yoursite.com/page</div>
+        <div id="google-desc" style="font-size:0.875rem; color:#545454; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">Meta description appears here.</div>
+      </div>
+
+      <!-- Twitter/X card -->
+      <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.875rem; overflow:hidden;">
+        <div style="height:120px; background:#F1F5F9; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <img id="twitter-img" src="" alt="" style="width:100%; height:100%; object-fit:cover; display:none;"/>
+          <span id="twitter-img-placeholder" style="font-size:2rem; color:#CBD5E1;">🖼️</span>
+        </div>
+        <div style="padding:0.75rem 1rem;">
+          <div style="font-size:0.72rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.35rem;">𝕏 / Twitter Card</div>
+          <div id="twitter-title" style="font-size:0.9rem; font-weight:700; color:#0F172A; margin-bottom:0.2rem;">Page Title</div>
+          <div id="twitter-desc" style="font-size:0.8rem; color:#475569; line-height:1.4; margin-bottom:0.2rem;">Description here.</div>
+          <div id="twitter-url" style="font-size:0.75rem; color:#94A3B8;">yoursite.com</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generated code -->
+    <div style="border:1.5px solid #BAE6FD; border-radius:0.875rem; overflow:hidden;">
+      <div style="background:#F0F9FF; padding:0.625rem 1rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #BAE6FD;">
+        <span style="font-size:0.75rem; font-weight:600; color:#0284C7;">Generated Meta Tags</span>
+        <button id="copy-tags" style="font-size:0.75rem; color:#0284C7; background:none; border:none; cursor:pointer; font-weight:600;">Copy HTML</button>
+      </div>
+      <pre id="meta-output" style="margin:0; padding:1rem; font-family:'Fira Code',monospace; font-size:0.75rem; color:#0F172A; background:#F8FAFC; white-space:pre-wrap; word-break:break-all; line-height:1.7; max-height:260px; overflow-y:auto;"></pre>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Meta Tag Previewer</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Fill in the fields above and watch the Google search snippet and Twitter card preview update live. Once you are happy with how the page will appear when shared, copy the generated HTML and paste it inside the <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">&lt;head&gt;</code> of your page.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The OG image should be 1200×630 pixels for best results across platforms. Use an absolute URL including <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">https://</code>.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">What tags are generated</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Standard Meta Tags', '<title> and <meta name="description"> for search engines. These are the primary signals Google uses for search snippets.'],
+        ['Open Graph (OG)', 'og:title, og:description, og:url, og:image, og:site_name, og:type. Used by Facebook, LinkedIn, Slack, and most social platforms when generating link previews.'],
+        ['Twitter Card', 'twitter:card, twitter:title, twitter:description, twitter:image. Allows Twitter/X to display rich media cards when your link is shared.'],
+        ['Canonical URL', 'rel="canonical" tells search engines which URL is the authoritative version of the page, preventing duplicate content issues.'],
+      ].map(([label, desc]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'How long should a meta description be?', a: 'Google displays up to about 155–160 characters on desktop. Aim for 120–155 characters to ensure it displays fully on both desktop and mobile. Include your primary keyword naturally and write it as a human-readable summary, not a keyword list.' },
+        { q: 'What size should my OG image be?', a: '1200×630 pixels is the standard recommended size for Open Graph images. This ratio (1.91:1) ensures correct display on Facebook, Twitter, and LinkedIn. Images smaller than 300×200 pixels may not display as rich cards.' },
+        { q: 'Do I need both OG and Twitter tags?', a: 'Twitter will fall back to OG tags if Twitter-specific tags are absent, but explicitly setting twitter:card ensures consistent rendering. Adding both takes only a few lines and guarantees correct display across platforms.' },
+        { q: 'Why isn\'t my social card updating after I changed the tags?', a: 'Social platforms aggressively cache link previews. To force a refresh: Facebook has a Sharing Debugger tool at developers.facebook.com/tools/debug; Twitter has a Card Validator at cards-dev.twitter.com/validator; LinkedIn has a Post Inspector at linkedin.com/post-inspector.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  function esc(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function getVal(id: string) { return (document.getElementById(id) as HTMLInputElement)?.value || ''; }
+
+  function update() {
+    const title = getVal('og-title'); const desc = getVal('og-desc');
+    const url   = getVal('og-url');   const image = getVal('og-image');
+    const site  = getVal('og-site');
+
+    // Google preview
+    (document.getElementById('google-title') as HTMLElement).textContent = title || 'Page Title';
+    (document.getElementById('google-url') as HTMLElement).textContent   = url || 'https://yoursite.com/page';
+    (document.getElementById('google-desc') as HTMLElement).textContent  = desc || 'Meta description appears here.';
+
+    // Twitter card
+    (document.getElementById('twitter-title') as HTMLElement).textContent = title || 'Page Title';
+    (document.getElementById('twitter-desc') as HTMLElement).textContent  = desc || 'Description here.';
+    const domain = url ? (new URL(url.startsWith('http') ? url : 'https://' + url).hostname) : 'yoursite.com';
+    (document.getElementById('twitter-url') as HTMLElement).textContent = domain;
+    const img    = document.getElementById('twitter-img') as HTMLImageElement;
+    const ph     = document.getElementById('twitter-img-placeholder')!;
+    if (image) { img.src = image; img.style.display = 'block'; ph.style.display = 'none'; }
+    else        { img.style.display = 'none'; ph.style.display = 'block'; }
+
+    // Generated code
+    const lines = [
+      `<!-- Primary Meta Tags -->`,
+      `<title>${esc(title)}</title>`,
+      `<meta name="description" content="${esc(desc)}">`,
+      url ? `<link rel="canonical" href="${esc(url)}">` : '',
+      ``,`<!-- Open Graph / Facebook -->`,
+      `<meta property="og:type" content="website">`,
+      title ? `<meta property="og:title" content="${esc(title)}">` : '',
+      desc  ? `<meta property="og:description" content="${esc(desc)}">` : '',
+      url   ? `<meta property="og:url" content="${esc(url)}">` : '',
+      image ? `<meta property="og:image" content="${esc(image)}">` : '',
+      site  ? `<meta property="og:site_name" content="${esc(site)}">` : '',
+      ``,`<!-- Twitter Card -->`,
+      `<meta name="twitter:card" content="summary_large_image">`,
+      title ? `<meta name="twitter:title" content="${esc(title)}">` : '',
+      desc  ? `<meta name="twitter:description" content="${esc(desc)}">` : '',
+      image ? `<meta name="twitter:image" content="${esc(image)}">` : '',
+    ].filter(Boolean);
+
+    (document.getElementById('meta-output') as HTMLElement).textContent = lines.join('\n');
+  }
+
+  ['og-title','og-desc','og-url','og-image','og-site'].forEach(id => document.getElementById(id)?.addEventListener('input', update));
+
+  document.getElementById('copy-tags')?.addEventListener('click', () => {
+    const txt = (document.getElementById('meta-output') as HTMLElement).textContent || '';
+    navigator.clipboard.writeText(txt).then(() => {
+      const btn = document.getElementById('copy-tags')!;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = 'Copy HTML'; }, 2000);
+    });
+  });
+
+  update();
+</script>

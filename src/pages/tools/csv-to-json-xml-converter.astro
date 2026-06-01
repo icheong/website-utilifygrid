@@ -1,0 +1,166 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'csv-to-json-xml-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">CSV Data Converter</h2>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:0.875rem;">
+      <button id="btn-json" onclick="setMode('json')" style="padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F97316; color:#fff; border:none;">JSON</button>
+      <button id="btn-xml"  onclick="setMode('xml')"  style="padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F1F5F9; color:#64748B; border:1px solid #E2E8F0;">XML</button>
+      <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; color:#475569; margin-left:auto; cursor:pointer;">
+        <input id="has-header" type="checkbox" checked style="accent-color:#F97316;"/> First row is header
+      </label>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem;">
+      <div>
+        <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">CSV Input</div>
+        <textarea id="csv-input" placeholder="name,age,city&#10;Alice,30,Sydney&#10;Bob,25,Melbourne"
+          style="width:100%; height:260px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; resize:none; box-sizing:border-box; outline:none; line-height:1.6;"
+          onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#E2E8F0'"></textarea>
+      </div>
+      <div>
+        <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Output</div>
+        <textarea id="csv-output" readonly placeholder="Output appears here…"
+          style="width:100%; height:260px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; background:#F8FAFC; resize:none; box-sizing:border-box; outline:none; line-height:1.6;"></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:0.75rem; margin-top:0.875rem;">
+      <button id="copy-btn" style="flex:1; padding:0.625rem; background:#F97316; color:#fff; border:none; border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
+        onmouseover="this.style.background='#EA580C'" onmouseout="this.style.background='#F97316'">Copy Output</button>
+      <button id="clear-btn" style="padding:0.625rem 1.25rem; background:#F1F5F9; color:#475569; border:1px solid #E2E8F0; border-radius:0.625rem; font-size:0.875rem; font-weight:600; cursor:pointer;">Clear</button>
+    </div>
+
+    <div id="error-msg" style="display:none; margin-top:0.75rem; padding:0.75rem 1rem; background:#FEF2F2; border:1px solid #FECACA; border-radius:0.625rem; font-size:0.82rem; color:#DC2626;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the CSV Converter</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste your CSV data into the left panel. If your CSV includes a header row, keep "First row is header" checked — headers become JSON keys or XML tag names. Toggle between JSON and XML output using the buttons above. The output updates as you type.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">For best results, ensure values containing commas are wrapped in double quotes. Empty cells are preserved as empty strings in the output.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How the conversion works</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The parser splits the input on newlines, then splits each row on commas while respecting quoted values. If a header row is present, its values become keys; otherwise keys default to field_0, field_1, etc.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">For JSON, each row becomes an object in an array. For XML, each row becomes an <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">&lt;row&gt;</code> element with child tags named after the headers. All processing happens locally in your browser.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What CSV formats are supported?', a: 'Standard comma-separated values with an optional header row. Values containing commas must be wrapped in double quotes. Quoted values containing double quotes should escape them as two consecutive double quotes ("").' },
+        { q: 'Are tabs and semicolons supported as delimiters?', a: 'This tool uses comma as the delimiter. For tab-separated (TSV) or semicolon-separated files, manually find and replace the delimiter with commas before pasting, or use a spreadsheet application to re-export as standard CSV.' },
+        { q: 'What happens to numbers and booleans in JSON output?', a: 'Currently all values are output as strings. If you need typed JSON (numbers as integers, booleans as true/false), you can post-process the JSON with a simple script or use a tool like jq to apply type coercion.' },
+        { q: 'How large a file can I convert?', a: 'Since everything runs in your browser, performance depends on your device. Files up to a few hundred thousand rows typically process in under a second. For very large datasets, consider using a server-side tool or command-line utilities like jq or csvtojson.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  let mode = 'json';
+  function setMode(m: string) {
+    mode = m;
+    (document.getElementById('btn-json') as HTMLElement).style.cssText = m === 'json'
+      ? 'padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F97316; color:#fff; border:none;'
+      : 'padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F1F5F9; color:#64748B; border:1px solid #E2E8F0;';
+    (document.getElementById('btn-xml') as HTMLElement).style.cssText = m === 'xml'
+      ? 'padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F97316; color:#fff; border:none;'
+      : 'padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F1F5F9; color:#64748B; border:1px solid #E2E8F0;';
+    convert();
+  }
+  (window as any).setMode = setMode;
+
+  function parseCSV(text: string): string[][] {
+    const rows: string[][] = [];
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    for (const line of lines) {
+      const cells: string[] = [];
+      let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') { inQ = !inQ; }
+        else if (c === ',' && !inQ) { cells.push(cur); cur = ''; }
+        else cur += c;
+      }
+      cells.push(cur);
+      rows.push(cells);
+    }
+    return rows;
+  }
+
+  function toSafeKey(s: string) { return s.trim().replace(/[^a-zA-Z0-9_]/g, '_') || 'field'; }
+
+  function convert() {
+    const raw    = (document.getElementById('csv-input') as HTMLTextAreaElement).value;
+    const hasHdr = (document.getElementById('has-header') as HTMLInputElement).checked;
+    const errEl  = document.getElementById('error-msg')!;
+    const outEl  = document.getElementById('csv-output') as HTMLTextAreaElement;
+    errEl.style.display = 'none';
+
+    if (!raw.trim()) { outEl.value = ''; return; }
+    try {
+      const rows = parseCSV(raw);
+      let keys: string[];
+      let dataRows: string[][];
+      if (hasHdr && rows.length > 0) { keys = rows[0].map(toSafeKey); dataRows = rows.slice(1); }
+      else { keys = rows[0]?.map((_, i) => 'field_' + i) || []; dataRows = rows; }
+
+      if (mode === 'json') {
+        const arr = dataRows.map(row => {
+          const obj: Record<string, string> = {};
+          keys.forEach((k, i) => { obj[k] = row[i] ?? ''; });
+          return obj;
+        });
+        outEl.value = JSON.stringify(arr, null, 2);
+      } else {
+        const lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<data>'];
+        dataRows.forEach(row => {
+          lines.push('  <row>');
+          keys.forEach((k, i) => { lines.push(`    <${k}>${(row[i] ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</${k}>`); });
+          lines.push('  </row>');
+        });
+        lines.push('</data>');
+        outEl.value = lines.join('\n');
+      }
+    } catch (e) {
+      errEl.textContent = 'Parse error: ' + (e as Error).message;
+      errEl.style.display = 'block';
+      outEl.value = '';
+    }
+  }
+
+  document.getElementById('csv-input')?.addEventListener('input', convert);
+  document.getElementById('has-header')?.addEventListener('change', convert);
+  document.getElementById('copy-btn')?.addEventListener('click', () => {
+    const out = (document.getElementById('csv-output') as HTMLTextAreaElement).value;
+    if (!out) return;
+    navigator.clipboard.writeText(out).then(() => {
+      const btn = document.getElementById('copy-btn')!;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = 'Copy Output'; }, 2000);
+    });
+  });
+  document.getElementById('clear-btn')?.addEventListener('click', () => {
+    (document.getElementById('csv-input') as HTMLTextAreaElement).value = '';
+    (document.getElementById('csv-output') as HTMLTextAreaElement).value = '';
+  });
+</script>

@@ -92,15 +92,17 @@ test baz</textarea>
 
   <!-- ── HOW TO USE ────────────────────────────────────────────────── -->
   <div slot="how-to-use">
-    <p>Type or paste a regular expression into the pattern field — the delimiters <code>/</code> are shown for clarity but don't need to be included. Toggle the <strong>flags</strong> on the right of the input: <code>g</code> (find all matches), <code>i</code> (case-insensitive), <code>m</code> (multiline anchors), <code>s</code> (dot matches newlines).</p>
-    <p>The <strong>Token Breakdown</strong> strip below the input parses your regex into labelled, colour-coded nodes — anchors, literals, character classes, quantifiers, alternations, and capture groups each get a distinct style so you can spot structural issues at a glance.</p>
-    <p>Paste any test string into the <strong>Test String</strong> box. Matches are highlighted in the output area in real time. If your pattern contains capture groups, the <strong>Capture Groups</strong> table shows what each group matched across the first three matches, so you can verify sub-expression behaviour without running code.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the RegEx Visual Explainer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Type or paste a regular expression into the pattern field — the delimiters <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">/</code> are shown for clarity but don't need to be included. Toggle the <strong style="color:var(--text-primary);">flags</strong> on the right of the input: <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">g</code> (find all matches), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">i</code> (case-insensitive), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">m</code> (multiline anchors), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">s</code> (dot matches newlines).</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The <strong style="color:var(--text-primary);">Token Breakdown</strong> strip parses your regex into labelled, colour-coded nodes — anchors, literals, character classes, quantifiers, alternations, and capture groups each get a distinct style so you can spot structural issues at a glance.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Paste any test string into the <strong style="color:var(--text-primary);">Test String</strong> box. Matches are highlighted in the output area in real time. If your pattern contains capture groups, the <strong style="color:var(--text-primary);">Capture Groups</strong> table shows what each group matched across the first three matches, so you can verify sub-expression behaviour without running code.</p>
   </div>
 
   <!-- ── HOW IT WORKS ──────────────────────────────────────────────── -->
   <div slot="how-it-works">
-    <p>The parser walks the regex string character-by-character, tracking bracket depth, escape sequences, and lookahead context to classify each component into a token type. It does not use an external library — the tokeniser is a hand-written finite state machine running entirely in your browser.</p>
-    <p>Match highlighting uses the browser's native <code>RegExp</code> object with the flags you select. The test string is scanned with <code>matchAll()</code> (global flag) or <code>exec()</code>, and the result indices are used to splice <code>&lt;mark&gt;</code> elements into the output. Capture group extraction iterates over each <code>MatchResult</code> object, pulling numbered sub-groups directly. No data leaves your browser at any point.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the regex explainer works</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The parser walks the regex string character-by-character, tracking bracket depth, escape sequences, and lookahead context to classify each component into a token type. It does not use an external library — the tokeniser is a hand-written finite state machine running entirely in your browser.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Match highlighting uses the browser's native <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">RegExp</code> object with the flags you select. The test string is scanned with <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">matchAll()</code> (global flag) or <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">exec()</code>, and the result indices are used to splice <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">&lt;mark&gt;</code> elements into the output. Capture group extraction iterates over each <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">MatchResult</code> object, pulling numbered sub-groups directly. No data leaves your browser at any point.</p>
   </div>
 
   <!-- ── FAQ ──────────────────────────────────────────────────────── -->
@@ -144,30 +146,43 @@ test baz</textarea>
     }
     </script>
 
-    <details open>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What regex flavour does this tool use?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">JavaScript's ECMAScript regex engine — the same one in Chrome, Firefox, and Safari. Supports lookaheads, lookbehinds, named capture groups, and Unicode property escapes. PCRE-specific syntax like <code>(?P&lt;name&gt;)</code> is not supported.</p>
-    </details>
-    <details>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What does the <code>s</code> (dot-all) flag do?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">By default, <code>.</code> matches any character except newline. With <code>s</code> enabled, dot matches every character including <code>\n</code> — essential for patterns that span multiple lines.</p>
-    </details>
-    <details>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What is a capture group?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">Parentheses <code>(...)</code> group a sub-pattern and capture the matched text. The Capture Groups table shows what each group matched across the first three matches.</p>
-    </details>
-    <details>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What is a non-capturing group?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;"><code>(?:...)</code> groups tokens for quantifier or alternation purposes without capturing the matched text. It won't appear in the capture groups table.</p>
-    </details>
-    <details>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">Why does my regex show "Invalid regular expression"?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">Common causes: unmatched parentheses or brackets, an unescaped special character used as a literal, an invalid escape sequence, or a variable-length lookbehind in older engines. The red banner shows the exact engine error.</p>
-    </details>
-    <details>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">Does this support named capture groups?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">Yes. Use <code>(?&lt;name&gt;...)</code>. The token breakdown labels them as Named Group and the capture groups table shows the name alongside matched values.</p>
-    </details>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: 'What regex flavour does this tool use?',
+          a: "JavaScript's ECMAScript regex engine — the same one in Chrome, Firefox, and Safari. Supports lookaheads, lookbehinds, named capture groups, and Unicode property escapes. PCRE-specific syntax like (?P<name>) is not supported.",
+        },
+        {
+          q: "What does the s (dot-all) flag do?",
+          a: "By default, . matches any character except newline. With s enabled, dot matches every character including \\n — essential for patterns that span multiple lines.",
+        },
+        {
+          q: 'What is a capture group?',
+          a: 'Parentheses (...) group a sub-pattern and capture the matched text so you can extract it programmatically. The Capture Groups table shows what each group matched across the first three matches.',
+        },
+        {
+          q: 'What is a non-capturing group?',
+          a: '(?:...) groups tokens for quantifier or alternation purposes without capturing the matched text. It won\'t appear in the capture groups table. Use it when you need grouping but don\'t need the extracted value.',
+        },
+        {
+          q: 'Why does my regex show "Invalid regular expression"?',
+          a: 'Common causes: unmatched parentheses or brackets, an unescaped special character used as a literal, an invalid escape sequence, or a variable-length lookbehind in older engines. The red banner shows the exact engine error.',
+        },
+        {
+          q: 'Does this support named capture groups?',
+          a: 'Yes. Use (?<name>...). The token breakdown labels them as Named Group and the capture groups table shows the name alongside matched values.',
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
   </div>
 
 </ToolLayout>
@@ -247,12 +262,6 @@ test baz</textarea>
     border-radius: 2px;
     outline: 1px solid #6366f1;
   }
-
-  /* FAQ */
-  details { border-top: 1px solid var(--border); }
-  details:last-child { border-bottom: 1px solid var(--border); }
-  details summary { list-style: none; }
-  details summary::-webkit-details-marker { display: none; }
 
   /* groups table cells */
   #groups-table td {

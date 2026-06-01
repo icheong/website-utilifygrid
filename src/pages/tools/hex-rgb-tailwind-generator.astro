@@ -1,0 +1,166 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'hex-rgb-tailwind-generator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Tailwind Color Finder</h2>
+
+    <div style="display:flex; gap:0.75rem; margin-bottom:1.25rem; align-items:center;">
+      <input id="color-picker" type="color" value="#3B82F6"
+        style="width:52px; height:44px; border:none; border-radius:0.625rem; cursor:pointer; padding:2px;"/>
+      <input id="color-text" type="text" value="#3B82F6" placeholder="#hex or rgb(r,g,b)"
+        style="flex:1; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; font-family:'Fira Code',monospace; color:#0F172A; box-sizing:border-box; outline:none;"
+        onfocus="this.style.borderColor='#3B82F6'" onblur="this.style.borderColor='#E2E8F0'"/>
+    </div>
+
+    <div id="matches" style="display:flex; flex-direction:column; gap:0.625rem;"></div>
+
+    <div style="margin-top:1.25rem; padding:0.875rem 1rem; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.75rem;">
+      <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;">Your colour</div>
+      <div style="display:flex; align-items:center; gap:0.875rem;">
+        <div id="swatch-preview" style="width:48px; height:48px; border-radius:0.5rem; border:1px solid #E2E8F0;"></div>
+        <div>
+          <div id="preview-hex" style="font-family:'Fira Code',monospace; font-size:0.9rem; font-weight:600; color:#0F172A;"></div>
+          <div id="preview-rgb" style="font-family:'Fira Code',monospace; font-size:0.82rem; color:#64748B; margin-top:0.2rem;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Tailwind Color Finder</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Click the colour swatch to open the native colour picker, or type a hex code (e.g. #FF5733) or RGB value (e.g. rgb(255, 87, 51)) directly into the text field. The five closest Tailwind CSS colour matches appear instantly, ordered by visual similarity.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Click any match to copy its Tailwind class name (e.g. <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">blue-500</code>) to your clipboard.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How matching works</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The tool converts your colour to the CIELAB (L*a*b*) colour space, which models human colour perception more accurately than RGB. It then calculates the ΔE (Delta-E) distance between your colour and every entry in the Tailwind CSS palette.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The five colours with the smallest ΔE are shown as matches, with a distance score. Lower scores mean more visually similar. A score under 2 is perceptually indistinguishable to most people; under 5 is a close match.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Why doesn\'t my colour match exactly?', a: 'Tailwind CSS includes a finite set of predefined colours across 22 colour families, each with 11 shades (50 through 950). If your brand colour falls between two Tailwind shades, the closest available match will have some visible difference. Consider using Tailwind\'s theme extension to add your exact brand colour.' },
+        { q: 'How do I extend Tailwind with a custom colour?', a: 'In your tailwind.config.js, add your custom colour under theme.extend.colors: { brand: { DEFAULT: "#yourHex", light: "#lighter", dark: "#darker" } }. You can then use text-brand, bg-brand, etc. in your markup.' },
+        { q: 'What is the Tailwind colour naming system?', a: 'Tailwind colours follow a name-weight pattern: e.g. blue-500. Lighter shades have lower numbers (50, 100, 200) and darker shades have higher numbers (700, 800, 900, 950). The mid-range 400–600 shades are most commonly used for primary interactive elements.' },
+        { q: 'Does this support Tailwind v4 colours?', a: 'The palette included is based on Tailwind CSS v3\'s default colour palette, which is also the foundation for v4. Tailwind v4 allows more flexible colour customisation via CSS variables, but the core named colours remain the same.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  // Tailwind v3 colour palette (sample of all named colours)
+  const PALETTE: Record<string, string> = {
+    'slate-50':'#f8fafc','slate-100':'#f1f5f9','slate-200':'#e2e8f0','slate-300':'#cbd5e1','slate-400':'#94a3b8','slate-500':'#64748b','slate-600':'#475569','slate-700':'#334155','slate-800':'#1e293b','slate-900':'#0f172a','slate-950':'#020617',
+    'gray-50':'#f9fafb','gray-100':'#f3f4f6','gray-200':'#e5e7eb','gray-300':'#d1d5db','gray-400':'#9ca3af','gray-500':'#6b7280','gray-600':'#4b5563','gray-700':'#374151','gray-800':'#1f2937','gray-900':'#111827','gray-950':'#030712',
+    'red-50':'#fef2f2','red-100':'#fee2e2','red-200':'#fecaca','red-300':'#fca5a5','red-400':'#f87171','red-500':'#ef4444','red-600':'#dc2626','red-700':'#b91c1c','red-800':'#991b1b','red-900':'#7f1d1d','red-950':'#450a0a',
+    'orange-50':'#fff7ed','orange-100':'#ffedd5','orange-200':'#fed7aa','orange-300':'#fdba74','orange-400':'#fb923c','orange-500':'#f97316','orange-600':'#ea580c','orange-700':'#c2410c','orange-800':'#9a3412','orange-900':'#7c2d12','orange-950':'#431407',
+    'yellow-50':'#fefce8','yellow-100':'#fef9c3','yellow-200':'#fef08a','yellow-300':'#fde047','yellow-400':'#facc15','yellow-500':'#eab308','yellow-600':'#ca8a04','yellow-700':'#a16207','yellow-800':'#854d0e','yellow-900':'#713f12','yellow-950':'#422006',
+    'green-50':'#f0fdf4','green-100':'#dcfce7','green-200':'#bbf7d0','green-300':'#86efac','green-400':'#4ade80','green-500':'#22c55e','green-600':'#16a34a','green-700':'#15803d','green-800':'#166534','green-900':'#14532d','green-950':'#052e16',
+    'teal-50':'#f0fdfa','teal-100':'#ccfbf1','teal-200':'#99f6e4','teal-300':'#5eead4','teal-400':'#2dd4bf','teal-500':'#14b8a6','teal-600':'#0d9488','teal-700':'#0f766e','teal-800':'#115e59','teal-900':'#134e4a','teal-950':'#042f2e',
+    'blue-50':'#eff6ff','blue-100':'#dbeafe','blue-200':'#bfdbfe','blue-300':'#93c5fd','blue-400':'#60a5fa','blue-500':'#3b82f6','blue-600':'#2563eb','blue-700':'#1d4ed8','blue-800':'#1e40af','blue-900':'#1e3a8a','blue-950':'#172554',
+    'indigo-50':'#eef2ff','indigo-100':'#e0e7ff','indigo-200':'#c7d2fe','indigo-300':'#a5b4fc','indigo-400':'#818cf8','indigo-500':'#6366f1','indigo-600':'#4f46e5','indigo-700':'#4338ca','indigo-800':'#3730a3','indigo-900':'#312e81','indigo-950':'#1e1b4b',
+    'violet-50':'#f5f3ff','violet-100':'#ede9fe','violet-200':'#ddd6fe','violet-300':'#c4b5fd','violet-400':'#a78bfa','violet-500':'#8b5cf6','violet-600':'#7c3aed','violet-700':'#6d28d9','violet-800':'#5b21b6','violet-900':'#4c1d95','violet-950':'#2e1065',
+    'purple-50':'#faf5ff','purple-100':'#f3e8ff','purple-200':'#e9d5ff','purple-300':'#d8b4fe','purple-400':'#c084fc','purple-500':'#a855f7','purple-600':'#9333ea','purple-700':'#7e22ce','purple-800':'#6b21a8','purple-900':'#581c87','purple-950':'#3b0764',
+    'pink-50':'#fdf2f8','pink-100':'#fce7f3','pink-200':'#fbcfe8','pink-300':'#f9a8d4','pink-400':'#f472b6','pink-500':'#ec4899','pink-600':'#db2777','pink-700':'#be185d','pink-800':'#9d174d','pink-900':'#831843','pink-950':'#500724',
+    'rose-50':'#fff1f2','rose-100':'#ffe4e6','rose-200':'#fecdd3','rose-300':'#fda4af','rose-400':'#fb7185','rose-500':'#f43f5e','rose-600':'#e11d48','rose-700':'#be123c','rose-800':'#9f1239','rose-900':'#881337','rose-950':'#4c0519',
+    'cyan-50':'#ecfeff','cyan-100':'#cffafe','cyan-200':'#a5f3fc','cyan-300':'#67e8f9','cyan-400':'#22d3ee','cyan-500':'#06b6d4','cyan-600':'#0891b2','cyan-700':'#0e7490','cyan-800':'#155e75','cyan-900':'#164e63','cyan-950':'#083344',
+    'sky-50':'#f0f9ff','sky-100':'#e0f2fe','sky-200':'#bae6fd','sky-300':'#7dd3fc','sky-400':'#38bdf8','sky-500':'#0ea5e9','sky-600':'#0284c7','sky-700':'#0369a1','sky-800':'#075985','sky-900':'#0c4a6e','sky-950':'#082f49',
+    'emerald-50':'#ecfdf5','emerald-100':'#d1fae5','emerald-200':'#a7f3d0','emerald-300':'#6ee7b7','emerald-400':'#34d399','emerald-500':'#10b981','emerald-600':'#059669','emerald-700':'#047857','emerald-800':'#065f46','emerald-900':'#064e3b','emerald-950':'#022c22',
+    'lime-50':'#f7fee7','lime-100':'#ecfccb','lime-200':'#d9f99d','lime-300':'#bef264','lime-400':'#a3e635','lime-500':'#84cc16','lime-600':'#65a30d','lime-700':'#4d7c0f','lime-800':'#3f6212','lime-900':'#365314','lime-950':'#1a2e05',
+    'amber-50':'#fffbeb','amber-100':'#fef3c7','amber-200':'#fde68a','amber-300':'#fcd34d','amber-400':'#fbbf24','amber-500':'#f59e0b','amber-600':'#d97706','amber-700':'#b45309','amber-800':'#92400e','amber-900':'#78350f','amber-950':'#451a03',
+    'zinc-50':'#fafafa','zinc-100':'#f4f4f5','zinc-200':'#e4e4e7','zinc-300':'#d4d4d8','zinc-400':'#a1a1aa','zinc-500':'#71717a','zinc-600':'#52525b','zinc-700':'#3f3f46','zinc-800':'#27272a','zinc-900':'#18181b','zinc-950':'#09090b',
+    'neutral-50':'#fafafa','neutral-100':'#f5f5f5','neutral-200':'#e5e5e5','neutral-300':'#d4d4d4','neutral-400':'#a3a3a3','neutral-500':'#737373','neutral-600':'#525252','neutral-700':'#404040','neutral-800':'#262626','neutral-900':'#171717','neutral-950':'#0a0a0a',
+    'stone-50':'#fafaf9','stone-100':'#f5f5f4','stone-200':'#e7e5e4','stone-300':'#d6d3d1','stone-400':'#a8a29e','stone-500':'#78716c','stone-600':'#57534e','stone-700':'#44403c','stone-800':'#292524','stone-900':'#1c1917','stone-950':'#0c0a09',
+  };
+
+  function hexToRgb(hex: string): [number,number,number] | null {
+    const m = hex.replace('#','').match(/^([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+    if (!m) return null;
+    return [parseInt(m[1],16), parseInt(m[2],16), parseInt(m[3],16)];
+  }
+
+  function rgbToLab(r: number, g: number, b: number): [number,number,number] {
+    const lin = (c: number) => { const s = c/255; return s > 0.04045 ? Math.pow((s+0.055)/1.055,2.4) : s/12.92; };
+    const rl = lin(r), gl = lin(g), bl = lin(b);
+    const X = rl*0.4124+gl*0.3576+bl*0.1805;
+    const Y = rl*0.2126+gl*0.7152+bl*0.0722;
+    const Z = rl*0.0193+gl*0.1192+bl*0.9505;
+    const f = (t: number) => t > 0.008856 ? Math.cbrt(t) : 7.787*t+16/116;
+    const fx = f(X/0.95047), fy = f(Y), fz = f(Z/1.08883);
+    return [116*fy-16, 500*(fx-fy), 200*(fy-fz)];
+  }
+
+  function deltaE(lab1: [number,number,number], lab2: [number,number,number]): number {
+    return Math.sqrt(Math.pow(lab1[0]-lab2[0],2)+Math.pow(lab1[1]-lab2[1],2)+Math.pow(lab1[2]-lab2[2],2));
+  }
+
+  function parseInput(val: string): [number,number,number] | null {
+    val = val.trim();
+    if (val.startsWith('#')) return hexToRgb(val);
+    const m = val.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
+    if (m) return [parseInt(m[1]),parseInt(m[2]),parseInt(m[3])];
+    return hexToRgb('#' + val);
+  }
+
+  function rgbToHex(r: number, g: number, b: number) {
+    return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+  }
+
+  function update(hexOrInput: string) {
+    const rgb = parseInput(hexOrInput);
+    if (!rgb) return;
+    const [r,g,b] = rgb;
+    const lab = rgbToLab(r,g,b);
+
+    const scores = Object.entries(PALETTE).map(([name, hex]) => {
+      const pRgb = hexToRgb(hex)!;
+      return { name, hex, score: deltaE(lab, rgbToLab(...pRgb)) };
+    }).sort((a,b) => a.score - b.score).slice(0,5);
+
+    const hex = rgbToHex(r,g,b);
+    (document.getElementById('swatch-preview') as HTMLElement).style.background = hex;
+    (document.getElementById('preview-hex') as HTMLElement).textContent = hex.toUpperCase();
+    (document.getElementById('preview-rgb') as HTMLElement).textContent = `rgb(${r}, ${g}, ${b})`;
+
+    const matchesEl = document.getElementById('matches')!;
+    matchesEl.innerHTML = scores.map(s => `
+      <div onclick="navigator.clipboard.writeText('${s.name}')" style="display:flex; align-items:center; gap:0.875rem; background:#fff; border:1.5px solid #E2E8F0; border-radius:0.75rem; padding:0.75rem 1rem; cursor:pointer; transition:border-color 0.15s;" onmouseover="this.style.borderColor='#94A3B8'" onmouseout="this.style.borderColor='#E2E8F0'">
+        <div style="width:36px; height:36px; border-radius:0.4rem; background:${s.hex}; flex-shrink:0; border:1px solid rgba(0,0,0,0.08);"></div>
+        <div style="flex:1;">
+          <div style="font-family:'Fira Code',monospace; font-size:0.875rem; font-weight:600; color:#0F172A;">${s.name}</div>
+          <div style="font-size:0.75rem; color:#94A3B8; margin-top:0.1rem;">${s.hex.toUpperCase()} · ΔE ${s.score.toFixed(1)}</div>
+        </div>
+        <div style="font-size:0.75rem; color:#94A3B8;">click to copy</div>
+      </div>`).join('');
+  }
+
+  const picker = document.getElementById('color-picker') as HTMLInputElement;
+  const text   = document.getElementById('color-text') as HTMLInputElement;
+
+  picker.addEventListener('input', () => { text.value = picker.value; update(picker.value); });
+  text.addEventListener('input', () => {
+    const rgb = parseInput(text.value);
+    if (rgb) { const h = rgbToHex(...rgb); picker.value = h; update(h); }
+  });
+
+  update(picker.value);
+</script>

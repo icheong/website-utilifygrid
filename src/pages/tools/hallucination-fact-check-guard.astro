@@ -1,0 +1,143 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Hallucination Fact-Check Guard</h2>
+
+    <textarea id="ai-text" placeholder="Paste AI-generated text here to scan for claims that need fact-checking…"
+      style="width:100%; height:180px; padding:0.875rem; border:1.5px solid #FED7AA; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit;"
+      onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#FED7AA'"></textarea>
+
+    <button id="scan-btn" style="padding:0.625rem 1.5rem; background:#EA580C; color:#fff; border:none; border-radius:0.5rem; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:1.25rem;">Scan for Claims</button>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+      <div>
+        <div style="font-size:0.78rem; font-weight:700; color:#EA580C; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;">Highlighted Text</div>
+        <div id="highlighted-output" style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem; font-size:0.85rem; color:#475569; line-height:1.75; min-height:120px; word-break:break-word;"></div>
+      </div>
+      <div>
+        <div style="font-size:0.78rem; font-weight:700; color:#EA580C; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;">Verification Checklist</div>
+        <div id="checklist" style="display:flex; flex-direction:column; gap:0.375rem;"></div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:1rem; font-size:0.72rem;">
+      {[['#FEF9C3','#CA8A04','years'],['#FEF2F2','#DC2626','$$ amounts'],['#F0FDF4','#16A34A','proper nouns'],['#EFF6FF','#1D4ED8','statistics']].map(([bg,c,label]) => (
+        <span style={`background:${bg};color:${c};padding:0.2rem 0.5rem;border-radius:0.25rem;font-weight:600;`}>{label}</span>
+      ))}
+      <span style="color:#94A3B8; margin-left:0.25rem; align-self:center;">= highlight legend</span>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Fact-Check Guard</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste any AI-generated text into the box and click Scan. The tool highlights four categories of claims that are most likely to be hallucinated: years and dates, monetary figures, proper nouns (people, places, organisations), and statistics. Each match appears as a checklist item on the right for you to verify.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Use this as a first-pass review before publishing AI-generated content. High-risk claims are those with specific numbers, named entities, or recent events.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">Detection patterns used</h2>
+    <div style="display:flex; flex-direction:column; gap:0.625rem;">
+      {[
+        ['Years (1900–2099)', 'Regex: /\\b(19|20)\\d{2}\\b/ — matches any 4-digit year in the 20th–21st century. AI models frequently hallucinate dates, publication years, and event timelines.'],
+        ['Dollar amounts', 'Regex: /\\$[\\d,]+(\\.\\d{1,2})?[KMBkm]?\\b/ — captures currency figures with optional millions/billions suffix. Revenue, salary, and funding figures are commonly fabricated.'],
+        ['Proper nouns', 'Regex: /\\b[A-Z][a-z]{2,}(?:\\s[A-Z][a-z]+)*\\b/ — heuristically matches Title Case words (2+ chars) as potential named entities. Has false positives (sentence starts), so review contextually.'],
+        ['Statistics', 'Regex: /\\d+(?:\\.\\d+)?\\s?%/ — catches percentage figures. AI frequently invents plausible-sounding statistics that do not appear in its training data.'],
+      ].map(([label, desc]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.75rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is an AI hallucination?', a: 'Hallucination refers to when a large language model generates text that is factually incorrect but presented with confidence. Models predict likely word sequences based on patterns — they do not look up facts. This means they can generate plausible-sounding but wrong citations, statistics, dates, and names, especially for obscure or recent topics.' },
+        { q: 'Does this tool verify facts automatically?', a: 'No. This tool flags claims as candidates for verification — it does not connect to the internet or any knowledge base. It uses regex patterns to identify the types of claims most commonly hallucinated. You must verify each flagged claim yourself using reliable sources.' },
+        { q: 'Why are proper nouns highlighted? Some are clearly correct.', a: 'Title Case matching is a heuristic that produces false positives (e.g., sentence-starting words). Review proper noun matches contextually — high-priority ones are specific people, organisations, or places that you cannot immediately verify from memory. Named entity recognition would be more precise but requires a language model.' },
+        { q: 'Which AI models hallucinate the most?', a: 'All current LLMs hallucinate to varying degrees. Smaller models, models with older training cutoffs, and models used outside their knowledge domain hallucinate more. Retrieval-Augmented Generation (RAG) significantly reduces hallucination by grounding responses in verified source documents. Always verify AI output on high-stakes claims.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  interface ClaimPattern { label: string; regex: RegExp; bg: string; color: string; }
+
+  const PATTERNS: ClaimPattern[] = [
+    { label: 'Year',         regex: /\b(19|20)\d{2}\b/g,                           bg: '#FEF9C3', color: '#CA8A04' },
+    { label: 'Amount',       regex: /\$[\d,]+(\.\d{1,2})?[KMBkmb]?\b/g,           bg: '#FEF2F2', color: '#DC2626' },
+    { label: 'Proper noun',  regex: /\b[A-Z][a-z]{2,}(?:\s[A-Z][a-z]+){0,3}\b/g,  bg: '#F0FDF4', color: '#16A34A' },
+    { label: 'Statistic',    regex: /\d+(?:\.\d+)?\s?%/g,                          bg: '#EFF6FF', color: '#1D4ED8' },
+  ];
+
+  function escapeHtml(t: string): string {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function scan() {
+    const text   = (document.getElementById('ai-text') as HTMLTextAreaElement).value;
+    const claims: { label: string; match: string; bg: string; color: string }[] = [];
+
+    // Build replacement map with positions
+    type Span = { start: number; end: number; bg: string; color: string; label: string; };
+    const spans: Span[] = [];
+
+    PATTERNS.forEach(p => {
+      const re = new RegExp(p.regex.source, p.regex.flags);
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(text)) !== null) {
+        spans.push({ start: m.index, end: m.index + m[0].length, bg: p.bg, color: p.color, label: p.label });
+        claims.push({ label: p.label, match: m[0], bg: p.bg, color: p.color });
+      }
+    });
+
+    // Sort by start, resolve overlaps
+    spans.sort((a, b) => a.start - b.start);
+    let html  = '';
+    let pos   = 0;
+    for (const span of spans) {
+      if (span.start < pos) continue;
+      html += escapeHtml(text.slice(pos, span.start));
+      html += `<mark style="background:${span.bg};color:${span.color};border-radius:0.2rem;padding:0 0.15rem;">${escapeHtml(text.slice(span.start, span.end))}</mark>`;
+      pos   = span.end;
+    }
+    html += escapeHtml(text.slice(pos));
+
+    (document.getElementById('highlighted-output') as HTMLElement).innerHTML = html || '<span style="color:#94A3B8;font-size:0.82rem;">No text scanned yet.</span>';
+
+    const cl = document.getElementById('checklist')!;
+    if (claims.length === 0) {
+      cl.innerHTML = '<span style="color:#94A3B8;font-size:0.82rem;">No claims flagged.</span>';
+    } else {
+      cl.innerHTML = claims.slice(0, 30).map(c =>
+        `<div style="display:flex;align-items:flex-start;gap:0.4rem;padding:0.375rem 0.5rem;background:${c.bg};border-radius:0.375rem;">
+          <input type="checkbox" style="margin-top:0.15rem;flex-shrink:0;accent-color:${c.color};"/>
+          <span style="font-size:0.78rem;color:${c.color};font-weight:600;">${c.label}:</span>
+          <span style="font-size:0.78rem;color:#0F172A;word-break:break-word;">${escapeHtml(c.match)}</span>
+        </div>`
+      ).join('');
+    }
+  }
+
+  document.getElementById('scan-btn')?.addEventListener('click', scan);
+</script>

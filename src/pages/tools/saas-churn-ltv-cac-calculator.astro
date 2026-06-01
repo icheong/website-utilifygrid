@@ -1,0 +1,144 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'saas-churn-ltv-cac-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">SaaS Business Health Metrics</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">ARPU ($/month)</label>
+        <input id="arpu" type="number" value="79" min="0.01" step="1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Monthly Churn Rate (%)</label>
+        <input id="churn" type="number" value="2.5" min="0.01" max="100" step="0.1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Gross Margin (%)</label>
+        <input id="margin" type="number" value="75" min="1" max="100" step="1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">CAC ($)</label>
+        <input id="cac" type="number" value="420" min="0" step="10"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:0.75rem; margin-bottom:1rem;">
+      <div style="background:#FDF4FF; border:1.5px solid #E9D5FF; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-ltv" style="font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:700; color:#7C3AED;">$0</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#A78BFA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Customer LTV</div>
+      </div>
+      <div style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-ratio" style="font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:700; color:#16A34A;">0x</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#4ADE80; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">LTV : CAC Ratio</div>
+      </div>
+      <div style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-payback" style="font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:700; color:#1D4ED8;">0 mo</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#60A5FA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">CAC Payback Period</div>
+      </div>
+      <div style="background:#FFF1F2; border:1.5px solid #FECDD3; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-annual-churn" style="font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:700; color:#E11D48;">0%</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#FB7185; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Annual Churn Rate</div>
+      </div>
+    </div>
+
+    <div id="health-bar-wrap" style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.75rem; padding:1rem;">
+      <div style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;">LTV:CAC Health</div>
+      <div style="height:8px; background:#E2E8F0; border-radius:999px; overflow:hidden; margin-bottom:0.5rem;">
+        <div id="health-fill" style="height:100%; width:0%; background:#7C3AED; border-radius:999px; transition:width 0.3s ease;"></div>
+      </div>
+      <div id="health-label" style="font-size:0.82rem; color:#64748B;">Enter values above</div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this calculator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your Average Revenue Per User (the monthly subscription amount), your monthly churn rate, gross margin percentage, and Customer Acquisition Cost. The four SaaS health metrics update instantly.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The LTV:CAC health bar provides a quick visual benchmark. A ratio above 3x is generally considered healthy for a growing SaaS business.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How each metric is calculated</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Customer LTV', 'LTV = (ARPU × Gross Margin %) ÷ Monthly Churn Rate. This represents the average total gross profit you earn from a single customer over their lifetime.'],
+        ['LTV : CAC Ratio', 'LTV divided by your Customer Acquisition Cost. This is the fundamental efficiency metric for SaaS. Investors typically look for ratios above 3x.'],
+        ['CAC Payback Period', 'CAC ÷ (ARPU × Gross Margin % ÷ 100). The number of months required to recover the cost of acquiring one customer. Best-in-class SaaS targets under 12 months.'],
+        ['Annual Churn Rate', 'Calculated as 1 − (1 − monthly churn)^12. This converts monthly churn to annual churn, which gives a clearer picture of year-over-year customer retention.'],
+      ].map(([label, desc]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is a good LTV:CAC ratio for SaaS?', a: 'A ratio of 3:1 or higher is generally considered healthy. Below 1:1 means you are spending more to acquire customers than they are worth — unsustainable without significant funding. Above 5:1 may indicate under-investment in growth.' },
+        { q: 'What is a good monthly churn rate?', a: 'For SMB-focused SaaS, monthly churn of 2–5% is typical. Enterprise SaaS with longer contracts often sees under 1% monthly churn. World-class SaaS products achieve negative net revenue churn — meaning expansion revenue from existing customers outpaces losses.' },
+        { q: 'How do I reduce CAC?', a: 'Improve conversion rates through better onboarding and free trials, invest in content marketing and SEO (lower-CAC channels), build a referral program, and optimise your sales funnel. Product-led growth models often achieve the lowest CAC by letting the product itself drive acquisition.' },
+        { q: 'What should I include in CAC?', a: 'CAC should include all sales and marketing expenses: salaries, ad spend, tooling, events, and agency fees. Divide the total period cost by the number of new customers acquired in that period. Some companies calculate blended CAC (all channels) and paid CAC (paid channels only) separately.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  function calc() {
+    const arpu   = parseFloat((document.getElementById('arpu') as HTMLInputElement).value)   || 0;
+    const churn  = parseFloat((document.getElementById('churn') as HTMLInputElement).value)  || 0;
+    const margin = parseFloat((document.getElementById('margin') as HTMLInputElement).value) || 0;
+    const cac    = parseFloat((document.getElementById('cac') as HTMLInputElement).value)    || 0;
+
+    const ltv         = churn > 0 ? (arpu * margin / 100) / (churn / 100) : 0;
+    const ratio       = cac > 0 && ltv > 0 ? ltv / cac : 0;
+    const payback     = (arpu * margin / 100) > 0 ? cac / (arpu * margin / 100) : 0;
+    const annualChurn = (1 - Math.pow(1 - churn / 100, 12)) * 100;
+
+    document.getElementById('out-ltv')!.textContent          = '$' + Math.round(ltv).toLocaleString('en-US');
+    document.getElementById('out-ratio')!.textContent        = ratio.toFixed(1) + 'x';
+    document.getElementById('out-payback')!.textContent      = Math.ceil(payback) + ' mo';
+    document.getElementById('out-annual-churn')!.textContent = annualChurn.toFixed(1) + '%';
+
+    const pct  = Math.min((ratio / 5) * 100, 100);
+    const fill = document.getElementById('health-fill')!;
+    fill.style.width    = pct + '%';
+    fill.style.background = ratio >= 3 ? '#16A34A' : ratio >= 1 ? '#F59E0B' : '#E11D48';
+
+    const lbl = document.getElementById('health-label')!;
+    if (ratio >= 5)      lbl.textContent = '🚀 Excellent — highly efficient growth engine';
+    else if (ratio >= 3) lbl.textContent = '✅ Healthy — benchmark LTV:CAC range';
+    else if (ratio >= 1) lbl.textContent = '⚠️ Marginal — needs improvement';
+    else                 lbl.textContent = '🔴 Unsustainable — spending exceeds customer value';
+  }
+
+  ['arpu','churn','margin','cac'].forEach(id => document.getElementById(id)?.addEventListener('input', calc));
+  calc();
+</script>

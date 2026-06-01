@@ -1,0 +1,157 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'freelance-invoice-tax-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Freelance Net Pay Calculator</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Hourly Rate ($)</label>
+        <input id="rate" type="number" value="120" min="0" step="5"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0D9488'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Hours Worked</label>
+        <input id="hours" type="number" value="40" min="0" step="0.5"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0D9488'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Billable Expenses ($)</label>
+        <input id="expenses" type="number" value="0" min="0" step="10"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0D9488'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Tax Withholding (%)</label>
+        <input id="tax" type="number" value="28" min="0" max="100" step="1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#0D9488'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+    </div>
+
+    <!-- Receipt -->
+    <div id="receipt" style="background:#F0FDFA; border:2px solid #99F6E4; border-radius:0.875rem; padding:1.25rem; font-family:'Inter',monospace; font-size:0.875rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px dashed #99F6E4;">
+        <span style="font-family:'Sora',sans-serif; font-weight:700; color:#0D9488; font-size:1rem;">INVOICE SUMMARY</span>
+        <span id="receipt-date" style="color:#64748B; font-size:0.78rem;"></span>
+      </div>
+      {[
+        ['Hours', '', 'receipt-hours'],
+        ['Hourly Rate', '', 'receipt-rate'],
+        ['Labour Total', '', 'receipt-labour'],
+        ['Expenses', '', 'receipt-expenses'],
+        ['GROSS TOTAL', 'font-weight:700; color:#0F172A;', 'receipt-gross'],
+        ['Tax Withheld', 'color:#E11D48;', 'receipt-tax'],
+        ['NET TAKE-HOME', 'font-weight:700; font-size:1rem; color:#0D9488;', 'receipt-net'],
+      ].map(([label, style, id]) => (
+        <div style={`display:flex; justify-content:space-between; padding:0.375rem 0; border-bottom:1px solid #CCFBF1; ${style}`}>
+          <span style="color:#475569;">{label}</span>
+          <span id={id} style="font-weight:600; color:#0F172A;"></span>
+        </div>
+      ))}
+    </div>
+
+    <button id="copy-btn" style="margin-top:0.875rem; width:100%; padding:0.75rem; background:#0D9488; color:#fff; border:none; border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
+      onmouseover="this.style.background='#0F766E'" onmouseout="this.style.background='#0D9488'">
+      Copy Receipt to Clipboard
+    </button>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this calculator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your hourly rate, total hours worked on the project, any expenses you are passing through to the client, and your estimated tax withholding percentage. The receipt updates live with your gross total, tax amount, and final net pay.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Tax is calculated on the labour portion only (not expenses, which are pass-through). Click "Copy Receipt" to copy the summary to your clipboard for pasting into an email or invoice.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How each figure is calculated</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Labour Total', 'Hourly Rate × Hours Worked. The billable portion of your invoice for time spent.'],
+        ['Gross Total', 'Labour Total + Expenses. The full amount to invoice the client.'],
+        ['Tax Withheld', 'Labour Total × (Tax Rate ÷ 100). Tax applies to earned income only, not expense reimbursements.'],
+        ['Net Take-Home', 'Gross Total − Tax Withheld. The amount you actually keep after setting aside tax.'],
+      ].map(([label, desc]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What tax rate should I use as a freelancer?', a: 'As a self-employed contractor, you are typically responsible for both income tax and self-employment tax (Social Security + Medicare in the US). A common rule of thumb is to set aside 25–30% for federal taxes. Your actual rate depends on your total income, deductions, and country. Consult a tax professional for personalised advice.' },
+        { q: 'Should I charge tax on expense reimbursements?', a: 'Generally no — expense reimbursements are pass-through costs and not considered income. This calculator reflects that by applying tax only to the labour total. However, some jurisdictions and contract types treat expenses differently, so check your specific arrangement.' },
+        { q: 'How do I set my hourly rate as a freelancer?', a: 'A common starting point: take your desired annual salary, divide by 1,000 to get your baseline hourly rate. Then add 30–50% for overhead (taxes, benefits, non-billable time, equipment). A $80k equivalent salary suggests charging approximately $80–120 per hour depending on your market and overheads.' },
+        { q: 'What should I include in billable expenses?', a: 'Only pass-through expenses the client agreed to reimburse: software licences for the project, stock images, travel, printing, subcontractors. Do not include your ongoing overhead (your laptop, home office) — those costs should already be factored into your hourly rate.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  function fmt(n: number) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  function calc() {
+    const rate     = parseFloat((document.getElementById('rate') as HTMLInputElement).value)     || 0;
+    const hours    = parseFloat((document.getElementById('hours') as HTMLInputElement).value)    || 0;
+    const expenses = parseFloat((document.getElementById('expenses') as HTMLInputElement).value) || 0;
+    const tax      = parseFloat((document.getElementById('tax') as HTMLInputElement).value)      || 0;
+
+    const labour   = rate * hours;
+    const gross    = labour + expenses;
+    const taxAmt   = labour * (tax / 100);
+    const net      = gross - taxAmt;
+
+    const d = new Date();
+    (document.getElementById('receipt-date') as HTMLElement).textContent = d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+    (document.getElementById('receipt-hours') as HTMLElement).textContent    = hours + ' hrs';
+    (document.getElementById('receipt-rate') as HTMLElement).textContent     = fmt(rate) + '/hr';
+    (document.getElementById('receipt-labour') as HTMLElement).textContent   = fmt(labour);
+    (document.getElementById('receipt-expenses') as HTMLElement).textContent = fmt(expenses);
+    (document.getElementById('receipt-gross') as HTMLElement).textContent    = fmt(gross);
+    (document.getElementById('receipt-tax') as HTMLElement).textContent      = '−' + fmt(taxAmt);
+    (document.getElementById('receipt-net') as HTMLElement).textContent      = fmt(net);
+  }
+
+  document.getElementById('copy-btn')?.addEventListener('click', () => {
+    const rate     = (document.getElementById('rate') as HTMLInputElement).value;
+    const hours    = (document.getElementById('hours') as HTMLInputElement).value;
+    const expenses = (document.getElementById('expenses') as HTMLInputElement).value;
+    const tax      = (document.getElementById('tax') as HTMLInputElement).value;
+    const labour   = parseFloat(rate) * parseFloat(hours);
+    const gross    = labour + parseFloat(expenses);
+    const taxAmt   = labour * (parseFloat(tax) / 100);
+    const net      = gross - taxAmt;
+    const txt = `INVOICE SUMMARY\n---\nHours: ${hours}\nRate: $${rate}/hr\nLabour: ${fmt(labour)}\nExpenses: ${fmt(parseFloat(expenses))}\nGross Total: ${fmt(gross)}\nTax (${tax}%): -${fmt(taxAmt)}\nNet Take-Home: ${fmt(net)}`;
+    navigator.clipboard.writeText(txt).then(() => {
+      const btn = document.getElementById('copy-btn')!;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = 'Copy Receipt to Clipboard'; }, 2000);
+    });
+  });
+
+  ['rate','hours','expenses','tax'].forEach(id => document.getElementById(id)?.addEventListener('input', calc));
+  calc();
+</script>

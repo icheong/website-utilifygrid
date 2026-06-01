@@ -1,0 +1,161 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'compound-interest-wealth-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+      Wealth Growth Projector
+    </h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Initial Investment ($)</label>
+        <input id="principal" type="number" value="10000" min="0" step="1000"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#16A34A'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Monthly Contribution ($)</label>
+        <input id="monthly" type="number" value="500" min="0" step="50"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#16A34A'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Annual Interest Rate (%)</label>
+        <input id="rate" type="number" value="7" min="0" max="100" step="0.5"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#16A34A'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Investment Period (Years)</label>
+        <input id="years" type="number" value="20" min="1" max="50" step="1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#16A34A'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1.25rem;">
+      <div style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-final" style="font-family:'Sora',sans-serif; font-size:1.4rem; font-weight:700; color:#16A34A;">$0</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#4ADE80; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Final Balance</div>
+      </div>
+      <div style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-contributed" style="font-family:'Sora',sans-serif; font-size:1.4rem; font-weight:700; color:#1D4ED8;">$0</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#60A5FA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Total Contributed</div>
+      </div>
+      <div style="background:#FFF7ED; border:1.5px solid #FED7AA; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-interest" style="font-family:'Sora',sans-serif; font-size:1.4rem; font-weight:700; color:#EA580C;">$0</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#FB923C; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Interest Earned</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid #E2E8F0; border-radius:0.75rem; overflow:hidden;">
+      <div style="background:#F8FAFC; padding:0.75rem 1rem; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em;">Year-by-Year Breakdown</span>
+        <button id="toggle-table" style="font-size:0.75rem; color:#1D4ED8; background:none; border:none; cursor:pointer; font-weight:600;">Show all</button>
+      </div>
+      <div style="overflow-x:auto; max-height:320px; overflow-y:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+          <thead style="position:sticky; top:0; background:#F8FAFC;">
+            <tr>
+              {['Year','Balance','Contributed','Interest'].map(h => (
+                <th style="padding:0.6rem 1rem; text-align:right; color:#475569; font-weight:600; white-space:nowrap; border-bottom:1px solid #E2E8F0;">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this calculator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your starting amount, the amount you plan to add each month, your expected annual return, and how many years you want to invest for. The table updates instantly to show you the year-by-year balance.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Use the 7% default rate as a conservative estimate for a diversified index fund over a long period. Adjust upward for higher-risk assets or downward for bonds and savings accounts.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">The compound interest formula</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Each month, the current balance grows by <strong>(annual rate ÷ 12)</strong>, then the monthly contribution is added. This is repeated for every month across the investment period. This models monthly compounding, which is more accurate than simple annual compounding for regular contribution scenarios.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The calculation does not account for taxes, inflation, or variable returns. Real-world results will differ, but the tool illustrates the exponential growth principle: the longer money compounds, the greater the proportion that comes from interest rather than contributions.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is compound interest?', a: 'Compound interest is interest calculated on the initial principal plus all previously accumulated interest. Unlike simple interest which only applies to the principal, compounding means you earn interest on your interest, leading to exponential growth over time.' },
+        { q: 'What annual return rate should I use?', a: 'For long-term stock market investments, 7% is a commonly used real return (after inflation) based on historical S&P 500 averages. For high-yield savings accounts, use 4–5%. For bonds, 2–4%. These are estimates only — past performance does not guarantee future results.' },
+        { q: 'How much should I invest per month?', a: 'A common guideline is to save 15–20% of your gross income for retirement. Even small amounts benefit enormously from time due to compounding. Starting 10 years earlier can roughly double the final balance even with the same total contributions.' },
+        { q: 'Does this account for inflation?', a: 'No. The calculator shows nominal returns. To see inflation-adjusted (real) returns, subtract your expected inflation rate from your interest rate input. A 7% nominal return with 3% inflation equates to roughly 4% real growth.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  let showAll = false;
+  let rows: { year: number; balance: number; contributed: number; interest: number }[] = [];
+
+  function fmt(n: number) { return '$' + Math.round(n).toLocaleString('en-US'); }
+
+  function calc() {
+    const principal = parseFloat((document.getElementById('principal') as HTMLInputElement).value) || 0;
+    const monthly   = parseFloat((document.getElementById('monthly') as HTMLInputElement).value)   || 0;
+    const rate      = parseFloat((document.getElementById('rate') as HTMLInputElement).value)      || 0;
+    const years     = Math.min(Math.max(Math.round(parseFloat((document.getElementById('years') as HTMLInputElement).value) || 1), 1), 50);
+
+    const monthlyRate = rate / 100 / 12;
+    rows = [];
+    let balance = principal;
+    let totalContributed = principal;
+
+    for (let y = 1; y <= years; y++) {
+      for (let m = 0; m < 12; m++) {
+        balance = balance * (1 + monthlyRate) + monthly;
+        totalContributed += monthly;
+      }
+      rows.push({ year: y, balance, contributed: totalContributed, interest: balance - totalContributed });
+    }
+
+    const last = rows[rows.length - 1] || { balance: 0, contributed: principal, interest: 0 };
+    document.getElementById('out-final')!.textContent       = fmt(last.balance);
+    document.getElementById('out-contributed')!.textContent = fmt(last.contributed);
+    document.getElementById('out-interest')!.textContent    = fmt(last.interest);
+    renderTable();
+  }
+
+  function renderTable() {
+    const body = document.getElementById('table-body')!;
+    const display = showAll ? rows : rows.slice(0, 10);
+    body.innerHTML = display.map((r, i) => `
+      <tr style="border-bottom:1px solid #F1F5F9; background:${i % 2 === 0 ? '#fff' : '#F8FAFC'};">
+        <td style="padding:0.5rem 1rem; text-align:right; color:#64748B; font-weight:600;">Year ${r.year}</td>
+        <td style="padding:0.5rem 1rem; text-align:right; color:#16A34A; font-weight:700;">${fmt(r.balance)}</td>
+        <td style="padding:0.5rem 1rem; text-align:right; color:#1D4ED8;">${fmt(r.contributed)}</td>
+        <td style="padding:0.5rem 1rem; text-align:right; color:#EA580C;">${fmt(r.interest)}</td>
+      </tr>`).join('');
+    const btn = document.getElementById('toggle-table')!;
+    btn.textContent = showAll ? 'Show less' : (rows.length > 10 ? `Show all ${rows.length} years` : '');
+    btn.style.display = rows.length <= 10 ? 'none' : 'inline';
+  }
+
+  document.getElementById('toggle-table')?.addEventListener('click', () => { showAll = !showAll; renderTable(); });
+  ['principal','monthly','rate','years'].forEach(id => document.getElementById(id)?.addEventListener('input', calc));
+  calc();
+</script>

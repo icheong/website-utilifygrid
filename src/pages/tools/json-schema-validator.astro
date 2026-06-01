@@ -1,0 +1,149 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-schema-validator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">JSON Schema Validator &amp; Formatter</h2>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:0.875rem;">
+      <button id="btn-validate" style="padding:0.5rem 1rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Validate &amp; Format</button>
+      <button id="btn-minify" style="padding:0.5rem 1rem; background:#F8FAFC; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Minify</button>
+      <button id="btn-clear" style="padding:0.5rem 1rem; background:#F8FAFC; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Clear</button>
+      <div id="status-badge" style="margin-left:auto; display:flex; align-items:center; padding:0.35rem 0.75rem; border-radius:0.5rem; font-size:0.8rem; font-weight:700; background:#F1F5F9; color:#94A3B8;">Awaiting input</div>
+    </div>
+
+    <textarea id="json-input" spellcheck="false"
+      style="width:100%; height:240px; padding:0.875rem; border:1.5px solid #BFDBFE; border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.6; tab-size:2;"
+      onfocus="this.style.borderColor='#1D4ED8'" onblur="this.style.borderColor='#BFDBFE'"></textarea>
+
+    <div id="error-box" style="display:none; margin-top:0.625rem; background:#FEF2F2; border:1px solid #FECACA; border-radius:0.5rem; padding:0.75rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#DC2626; line-height:1.6;"></div>
+
+    <div id="stats-row" style="display:none; margin-top:0.625rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+      {[['out-keys','Keys'],['out-depth','Depth'],['out-size','Size']].map(([id, label]) => (
+        <div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:0.5rem; padding:0.375rem 0.75rem; font-size:0.78rem; display:flex; gap:0.375rem; align-items:center;">
+          <span id={id} style="font-weight:700; color:#1D4ED8; font-family:'Sora',sans-serif;">—</span>
+          <span style="color:#64748B;">{label}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the JSON Validator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste your JSON into the text area and click Validate &amp; Format to check validity and pretty-print with 2-space indentation. Errors are shown with the approximate line and column position. Use Minify to compact the JSON for copying into a payload or config file.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The stats row shows the total key count (including nested), maximum nesting depth, and byte size — useful for understanding large API responses.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How validation works</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Parsing uses the native <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">JSON.parse()</code>. When it throws, the error message is parsed to extract the position offset, which is converted to a line and column number. The parsed object is then walked recursively to count total keys and measure depth.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Why does JSON not allow trailing commas?', a: 'JSON is based on the RFC 8259 specification which strictly prohibits trailing commas after the last array element or object property. Many parsers and languages accept "JSON5" or "JSONC" (JSON with Comments) which do allow trailing commas, but standard JSON.parse() will reject them.' },
+        { q: 'What is the difference between JSON and JSONP?', a: 'JSON is a pure data format. JSONP (JSON with Padding) was a technique to work around browser same-origin policy by wrapping JSON in a callback function call. It is largely obsolete — modern APIs use CORS headers instead. JSONP has security implications and should not be used in new applications.' },
+        { q: 'How do I fix "Unexpected token" errors?', a: 'Common causes: unquoted property names (must use double quotes), single quotes instead of double quotes, trailing commas, undefined or NaN values (not valid JSON), JavaScript comments (// or /* */), missing commas between elements, and extra commas. Check the line and column shown in the error box.' },
+        { q: 'What is JSON Schema validation?', a: 'JSON Schema is a specification for defining the structure and constraints of JSON data (like a type system). This tool validates that the input is syntactically valid JSON. For schema validation (validating against a JSON Schema document), use libraries like Ajv (JavaScript) or jsonschema (Python).' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  const input = document.getElementById('json-input') as HTMLTextAreaElement;
+
+  function countKeys(obj: any): number {
+    if (typeof obj !== 'object' || obj === null) return 0;
+    let count = 0;
+    for (const k in obj) { count++; count += countKeys(obj[k]); }
+    return count;
+  }
+
+  function maxDepth(obj: any, d = 0): number {
+    if (typeof obj !== 'object' || obj === null) return d;
+    let max = d;
+    for (const k in obj) max = Math.max(max, maxDepth(obj[k], d + 1));
+    return max;
+  }
+
+  function offsetToLineCol(text: string, offset: number): { line: number; col: number } {
+    const before = text.slice(0, offset);
+    const lines  = before.split('\n');
+    return { line: lines.length, col: lines[lines.length - 1].length + 1 };
+  }
+
+  function setStatus(ok: boolean | null) {
+    const badge = document.getElementById('status-badge')!;
+    if (ok === true)  { badge.style.background = '#F0FDF4'; badge.style.color = '#16A34A'; badge.textContent = '✓ Valid JSON'; }
+    else if (ok === false) { badge.style.background = '#FEF2F2'; badge.style.color = '#DC2626'; badge.textContent = '✗ Invalid'; }
+    else { badge.style.background = '#F1F5F9'; badge.style.color = '#94A3B8'; badge.textContent = 'Awaiting input'; }
+  }
+
+  function validate(format = true) {
+    const text = input.value.trim();
+    const errBox = document.getElementById('error-box') as HTMLElement;
+    const statsRow = document.getElementById('stats-row') as HTMLElement;
+
+    if (!text) { setStatus(null); errBox.style.display = 'none'; statsRow.style.display = 'none'; return; }
+
+    try {
+      const parsed = JSON.parse(text);
+      errBox.style.display = 'none';
+      setStatus(true);
+      if (format) input.value = JSON.stringify(parsed, null, 2);
+
+      const keys  = countKeys(parsed);
+      const depth = maxDepth(parsed);
+      const size  = new TextEncoder().encode(text).byteLength;
+      (document.getElementById('out-keys') as HTMLElement).textContent  = String(keys);
+      (document.getElementById('out-depth') as HTMLElement).textContent = String(depth);
+      (document.getElementById('out-size') as HTMLElement).textContent  = size < 1024 ? size + ' B' : (size / 1024).toFixed(1) + ' KB';
+      statsRow.style.display = 'flex';
+    } catch (e: any) {
+      setStatus(false);
+      statsRow.style.display = 'none';
+      const match = e.message.match(/position (\d+)/);
+      if (match) {
+        const { line, col } = offsetToLineCol(text, parseInt(match[1]));
+        errBox.innerHTML = `<strong>Parse error at line ${line}, col ${col}:</strong><br>${e.message}`;
+      } else {
+        errBox.textContent = e.message;
+      }
+      errBox.style.display = 'block';
+    }
+  }
+
+  document.getElementById('btn-validate')?.addEventListener('click', () => validate(true));
+  document.getElementById('btn-minify')?.addEventListener('click', () => {
+    const text = input.value.trim();
+    try { input.value = JSON.stringify(JSON.parse(text)); setStatus(true); } catch { validate(false); }
+  });
+  document.getElementById('btn-clear')?.addEventListener('click', () => {
+    input.value = ''; setStatus(null);
+    (document.getElementById('error-box') as HTMLElement).style.display = 'none';
+    (document.getElementById('stats-row') as HTMLElement).style.display = 'none';
+  });
+
+  input.value = JSON.stringify({
+    name: "Example Response", version: 2, enabled: true,
+    tags: ["json","validator","tool"],
+    nested: { level: 1, deeper: { level: 2, value: null } }
+  }, null, 2);
+</script>

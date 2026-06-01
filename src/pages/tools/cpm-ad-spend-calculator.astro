@@ -1,0 +1,142 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'cpm-ad-spend-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+      Ad Campaign ROI Calculator
+    </h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Total Budget ($)</label>
+        <input id="budget" type="number" value="5000" min="1" step="100"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; font-family:'Inter',sans-serif; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#1D4ED8'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">CPM Rate ($)</label>
+        <input id="cpm" type="number" value="8.50" min="0.01" step="0.5"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; font-family:'Inter',sans-serif; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#1D4ED8'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Expected CTR (%)</label>
+        <input id="ctr" type="number" value="2.5" min="0.01" max="100" step="0.1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; font-family:'Inter',sans-serif; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#1D4ED8'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Conversion Rate (%)</label>
+        <input id="convRate" type="number" value="3" min="0.01" max="100" step="0.1"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; font-family:'Inter',sans-serif; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#1D4ED8'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:0.75rem; margin-bottom:1rem;">
+      <div style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-impressions" style="font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:700; color:#1D4ED8;">588,235</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#60A5FA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Impressions</div>
+      </div>
+      <div style="background:#FFF7ED; border:1.5px solid #FED7AA; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-clicks" style="font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:700; color:#EA580C;">14,706</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#FB923C; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Expected Clicks</div>
+      </div>
+      <div style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-cpc" style="font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:700; color:#16A34A;">$0.34</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#4ADE80; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Cost Per Click</div>
+      </div>
+      <div style="background:#FDF4FF; border:1.5px solid #E9D5FF; border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-conversions" style="font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:700; color:#7C3AED;">441</div>
+        <div style="font-size:0.72rem; font-weight:600; color:#A78BFA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Conversions</div>
+      </div>
+    </div>
+
+    <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.75rem; padding:1rem;">
+      <div style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem;">Cost Per Acquisition</div>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-size:0.9rem; color:#64748B;">Budget ÷ Conversions</span>
+        <span id="out-cpa" style="font-family:'Sora',sans-serif; font-size:1.4rem; font-weight:700; color:#0F172A;">$11.34</span>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the CPM Calculator</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your total advertising budget, the CPM rate quoted by your ad network, your expected click-through rate, and your historical or estimated conversion rate. All output metrics update instantly.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The calculator is useful when planning paid campaigns on Google Display, Meta, LinkedIn, or programmatic networks where you're buying on a CPM basis.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How the calculations work</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Impressions', 'Budget ÷ CPM × 1,000. The total number of times your ad will be shown.'],
+        ['Expected Clicks', 'Impressions × (CTR ÷ 100). The number of clicks you should receive at the given CTR.'],
+        ['Cost Per Click (CPC)', 'Budget ÷ Clicks. How much each click costs you on average.'],
+        ['Conversions', 'Clicks × (Conversion Rate ÷ 100). Estimated actions completed (purchases, sign-ups, etc.).'],
+        ['Cost Per Acquisition (CPA)', 'Budget ÷ Conversions. Your effective cost for each conversion.'],
+      ].map(([label, desc]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is CPM in advertising?', a: 'CPM stands for Cost Per Mille, meaning cost per thousand impressions. It is the standard pricing model for display, video, and programmatic advertising. A $10 CPM means you pay $10 for every 1,000 times your ad is shown.' },
+        { q: 'What is a good CPM rate?', a: 'A good CPM varies by channel and audience. Display ads typically range from $2–$10. Social media CPMs range from $5–$30. LinkedIn can exceed $50 due to its professional audience. Lower CPMs are not always better — a targeted audience with a higher CPM often yields better ROI than a cheap, untargeted one.' },
+        { q: 'What is a typical CTR for display ads?', a: 'The average CTR for display advertising is around 0.1%–0.5%. Rich media and retargeting campaigns can reach 1%–3%. If you are seeing CTRs above 5%, check for accidental clicks or bot traffic.' },
+        { q: 'How do I improve my CPA?', a: 'To reduce cost per acquisition: improve landing page conversion rates, tighten your audience targeting, test multiple ad creatives, and pause low-performing placements. A 1% improvement in conversion rate can halve your CPA.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  function calc() {
+    const budget = parseFloat((document.getElementById('budget') as HTMLInputElement).value) || 0;
+    const cpm    = parseFloat((document.getElementById('cpm') as HTMLInputElement).value)    || 0;
+    const ctr    = parseFloat((document.getElementById('ctr') as HTMLInputElement).value)    || 0;
+    const conv   = parseFloat((document.getElementById('convRate') as HTMLInputElement).value) || 0;
+
+    const impressions  = cpm > 0 ? (budget / cpm) * 1000 : 0;
+    const clicks       = impressions * (ctr / 100);
+    const cpc          = clicks > 0 ? budget / clicks : 0;
+    const conversions  = clicks * (conv / 100);
+    const cpa          = conversions > 0 ? budget / conversions : 0;
+
+    const fmt = (n: number) => n >= 1000 ? n.toLocaleString('en-US', { maximumFractionDigits: 0 }) : n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+    document.getElementById('out-impressions')!.textContent = fmt(impressions);
+    document.getElementById('out-clicks')!.textContent      = fmt(clicks);
+    document.getElementById('out-cpc')!.textContent         = '$' + cpc.toFixed(2);
+    document.getElementById('out-conversions')!.textContent = fmt(conversions);
+    document.getElementById('out-cpa')!.textContent         = '$' + cpa.toFixed(2);
+  }
+
+  ['budget','cpm','ctr','convRate'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', calc);
+  });
+  calc();
+</script>

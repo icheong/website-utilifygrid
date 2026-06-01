@@ -1,0 +1,159 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'prompt-chain-builder')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Prompt Chain Builder</h2>
+
+    <div id="chain-list" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.875rem;"></div>
+
+    <button id="add-step" style="width:100%; padding:0.625rem; border:1.5px dashed #C4B5FD; border-radius:0.625rem; background:#F5F3FF; color:#7C3AED; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:1.25rem;">+ Add Step</button>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:0.875rem;">
+      <button id="export-json" style="padding:0.5rem 1rem; background:#7C3AED; color:#fff; border:none; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Export JSON</button>
+      <button id="export-text" style="padding:0.5rem 1rem; background:#F8FAFC; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Export Text</button>
+      <button id="copy-export" style="margin-left:auto; padding:0.5rem 1rem; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; color:#475569; background:#F8FAFC; cursor:pointer;">Copy</button>
+    </div>
+
+    <pre id="export-output" style="margin:0; background:#1E1E2E; border-radius:0.875rem; padding:1rem; font-family:'Fira Code',monospace; font-size:0.75rem; color:#E2E8F0; white-space:pre-wrap; word-break:break-all; max-height:280px; overflow-y:auto; line-height:1.7;"></pre>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to build a prompt chain</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Add steps to your chain using the button below. Each step has a role (system, user, or assistant) and a content field. Reorder steps using the up/down arrows. Export as JSON (for direct API use) or as a readable text preview. Use the chain to design multi-turn conversations or iterative refinement workflows.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">A typical chain: system → user (task) → assistant (expected response template) → user (refinement instruction).</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">What is a prompt chain?</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">A prompt chain is a structured sequence of messages passed to an LLM API as the messages array. Rather than a single prompt, multi-turn chains let you pre-fill the conversation history to guide the model's reasoning, set up personas, provide worked examples, and build iterative refinement loops. The exported JSON can be pasted directly into the OpenAI or Anthropic API playground.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is the "system" role used for?', a: 'The system message sets the context, persona, and constraints for the model. It is processed before any user messages and is most effective for defining tone, output format requirements, and what the model should and should not do. In GPT models it is passed as {role:"system"}; in Claude it can be a separate system parameter.' },
+        { q: 'What is the "assistant" role used for?', a: 'Pre-filling an assistant message primes the model to continue from a specific starting point. This is useful for: constraining output format (start the assistant message with "["), chain-of-thought reasoning where you show worked steps, or few-shot examples where you demonstrate the expected pattern.' },
+        { q: 'How many steps should a prompt chain have?', a: 'There is no hard limit, but longer chains consume more tokens and cost more. Typical effective chains are 2–6 messages. Beyond that, consider whether the task should be broken into separate API calls with the output of one passed as context to the next (true chaining).' },
+        { q: 'Can I use this chain with Claude as well as GPT?', a: 'Yes with adaptation. The JSON messages format exports in OpenAI format. For Anthropic Claude API, the system message should be passed as a separate system parameter, and the remaining messages array contains only user/assistant alternating turns. The text export works as a human-readable reference for both.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  interface Step { id: number; role: 'system'|'user'|'assistant'; content: string; }
+
+  let nextId = 0;
+  let steps: Step[] = [
+    { id: nextId++, role: 'system',    content: 'You are a helpful expert assistant. Be concise and accurate.' },
+    { id: nextId++, role: 'user',      content: 'Summarise the key principles of prompt engineering in 3 bullet points.' },
+    { id: nextId++, role: 'assistant', content: '' },
+  ];
+  let exportMode = 'json';
+
+  const ROLE_COLORS: Record<string, [string, string, string]> = {
+    system:    ['#1E1E2E','#A78BFA','#EDE9FE'],
+    user:      ['#0F172A','#38BDF8','#F0F9FF'],
+    assistant: ['#064E3B','#34D399','#F0FDF4'],
+  };
+
+  function renderList() {
+    const list = document.getElementById('chain-list')!;
+    list.innerHTML = '';
+    steps.forEach((step, idx) => {
+      const [_dark, fg, bg] = ROLE_COLORS[step.role];
+      const row = document.createElement('div');
+      row.style.cssText = `background:${bg};border:1.5px solid ${fg};border-radius:0.75rem;padding:0.75rem;`;
+      row.innerHTML = `
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+          <select data-id="${step.id}" data-field="role"
+            style="padding:0.25rem 0.5rem;border:none;border-radius:0.375rem;font-size:0.78rem;font-weight:700;color:${fg};background:transparent;outline:none;cursor:pointer;">
+            <option ${step.role==='system'?'selected':''}>system</option>
+            <option ${step.role==='user'?'selected':''}>user</option>
+            <option ${step.role==='assistant'?'selected':''}>assistant</option>
+          </select>
+          <span style="font-size:0.72rem;color:${fg};opacity:0.6;">Step ${idx + 1}</span>
+          <div style="margin-left:auto;display:flex;gap:0.25rem;">
+            <button data-id="${step.id}" data-action="up"
+              style="background:none;border:none;cursor:pointer;color:${fg};font-size:0.9rem;padding:0 2px;" ${idx===0?'disabled':''}title="Move up">↑</button>
+            <button data-id="${step.id}" data-action="down"
+              style="background:none;border:none;cursor:pointer;color:${fg};font-size:0.9rem;padding:0 2px;" ${idx===steps.length-1?'disabled':''}title="Move down">↓</button>
+            <button data-id="${step.id}" data-action="remove"
+              style="background:none;border:none;cursor:pointer;color:${fg};font-size:1rem;padding:0 4px;">×</button>
+          </div>
+        </div>
+        <textarea data-id="${step.id}" data-field="content" rows="3"
+          placeholder="${step.role === 'assistant' ? 'Leave empty to let the model respond, or pre-fill to guide output…' : 'Enter message content…'}"
+          style="width:100%;border:none;outline:none;background:transparent;font-size:0.82rem;color:#0F172A;resize:vertical;line-height:1.55;box-sizing:border-box;">${step.content}</textarea>
+      `;
+      list.appendChild(row);
+    });
+
+    list.querySelectorAll('select,textarea').forEach(el => {
+      el.addEventListener('input', (e) => {
+        const target = e.target as HTMLSelectElement | HTMLTextAreaElement;
+        const id     = parseInt(target.dataset.id!);
+        const field  = target.dataset.field!;
+        const step   = steps.find(s => s.id === id)!;
+        (step as any)[field] = target.value;
+        if (field === 'role') { renderList(); }
+        updateExport();
+      });
+    });
+
+    list.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const el     = e.currentTarget as HTMLElement;
+        const id     = parseInt(el.dataset.id!);
+        const action = el.dataset.action!;
+        const idx    = steps.findIndex(s => s.id === id);
+        if (action === 'remove') { steps.splice(idx, 1); }
+        else if (action === 'up' && idx > 0) { [steps[idx-1], steps[idx]] = [steps[idx], steps[idx-1]]; }
+        else if (action === 'down' && idx < steps.length-1) { [steps[idx], steps[idx+1]] = [steps[idx+1], steps[idx]]; }
+        renderList(); updateExport();
+      });
+    });
+  }
+
+  function updateExport() {
+    const out = document.getElementById('export-output')!;
+    if (exportMode === 'json') {
+      out.textContent = JSON.stringify(steps.map(s => ({ role: s.role, content: s.content })), null, 2);
+    } else {
+      out.textContent = steps.map((s, i) => `--- Step ${i+1}: ${s.role.toUpperCase()} ---\n${s.content || '(empty)'}`).join('\n\n');
+    }
+  }
+
+  document.getElementById('add-step')?.addEventListener('click', () => {
+    steps.push({ id: nextId++, role: 'user', content: '' });
+    renderList(); updateExport();
+  });
+
+  document.getElementById('export-json')?.addEventListener('click', () => { exportMode = 'json'; updateExport(); });
+  document.getElementById('export-text')?.addEventListener('click', () => { exportMode = 'text'; updateExport(); });
+
+  document.getElementById('copy-export')?.addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('export-output')!.textContent || '');
+    const btn = document.getElementById('copy-export')!;
+    btn.textContent = '✓ Copied'; setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+  });
+
+  renderList();
+  updateExport();
+</script>

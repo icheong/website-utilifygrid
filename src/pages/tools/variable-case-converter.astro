@@ -1,0 +1,109 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'variable-case-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Variable Case Converter</h2>
+
+    <input id="case-input" type="text" placeholder="Type any phrase or variable name…" value="my example variable name"
+      style="width:100%; padding:0.75rem 1rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:1rem; font-family:'Fira Code',monospace; color:#0F172A; box-sizing:border-box; outline:none; margin-bottom:1.25rem;"
+      onfocus="this.style.borderColor='#8B5CF6'" onblur="this.style.borderColor='#E2E8F0'"/>
+
+    <div id="cases-grid" style="display:flex; flex-direction:column; gap:0.625rem;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Case Converter</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Type or paste any phrase, sentence, or existing variable name into the input. All five case formats update in real time. Click the copy button next to any format to copy it to your clipboard.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The converter handles mixed inputs: it works whether you enter "myVariableName", "my-variable-name", "MY_VARIABLE_NAME", or "my variable name".</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How conversion works</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The input is normalised by splitting on any combination of spaces, hyphens, underscores, and camelCase boundaries (transitions from lowercase to uppercase). This produces an array of lowercase words that is then recombined in the target format for each case style.</p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Which case should I use for JavaScript variables?', a: 'camelCase is the standard for variable and function names in JavaScript and TypeScript. PascalCase (UpperCamelCase) is the convention for class names, React components, and TypeScript interface/type names. CONSTANT_CASE (SCREAMING_SNAKE_CASE) is used for module-level constants.' },
+        { q: 'When should I use kebab-case?', a: 'kebab-case is the standard for HTML attributes, CSS class names, URL slugs, and npm package names. It is human-readable and URL-safe. JavaScript/TypeScript cannot use kebab-case directly as variable names (the hyphen is parsed as subtraction), so it is limited to string contexts like CSS and URLs.' },
+        { q: 'What is the difference between snake_case and CONSTANT_CASE?', a: 'Both use underscores as separators. snake_case uses all lowercase letters (common in Python variables, Ruby methods, SQL column names). CONSTANT_CASE (SCREAMING_SNAKE_CASE) uses all uppercase letters (constants in JavaScript, C macros, environment variable names).' },
+        { q: 'Does PascalCase have an alternative name?', a: 'Yes — PascalCase is also called UpperCamelCase or StudlyCase. It is camelCase with the first letter capitalised. In .NET and C# naming conventions, it is referred to as Pascal casing and is the standard for public members, classes, methods, and namespaces.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  function toWords(s: string): string[] {
+    return s
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+      .split(/[\s\-_]+/)
+      .filter(Boolean)
+      .map(w => w.toLowerCase());
+  }
+
+  const CASES: { id: string; label: string; bg: string; border: string; fg: string; fn: (w: string[]) => string }[] = [
+    { id:'camel',    label:'camelCase',     bg:'#EFF6FF', border:'#BFDBFE', fg:'#1D4ED8',
+      fn: w => w.map((x,i) => i === 0 ? x : x[0].toUpperCase() + x.slice(1)).join('') },
+    { id:'snake',    label:'snake_case',    bg:'#F0FDF4', border:'#BBF7D0', fg:'#16A34A',
+      fn: w => w.join('_') },
+    { id:'pascal',   label:'PascalCase',    bg:'#FDF4FF', border:'#E9D5FF', fg:'#7C3AED',
+      fn: w => w.map(x => x[0].toUpperCase() + x.slice(1)).join('') },
+    { id:'kebab',    label:'kebab-case',    bg:'#FFF7ED', border:'#FED7AA', fg:'#D97706',
+      fn: w => w.join('-') },
+    { id:'constant', label:'CONSTANT_CASE', bg:'#FEF2F2', border:'#FECACA', fg:'#DC2626',
+      fn: w => w.join('_').toUpperCase() },
+  ];
+
+  function render(input: string) {
+    const words = toWords(input || 'my variable');
+    const grid  = document.getElementById('cases-grid')!;
+    grid.innerHTML = '';
+
+    CASES.forEach(c => {
+      const value = c.fn(words);
+      const row   = document.createElement('div');
+      row.style.cssText = `background:${c.bg};border:1.5px solid ${c.border};border-radius:0.625rem;padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:0.75rem;`;
+      row.innerHTML = `
+        <div>
+          <div style="font-size:0.68rem;font-weight:600;color:${c.fg};text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.2rem;">${c.label}</div>
+          <code id="val-${c.id}" style="font-family:'Fira Code',monospace;font-size:0.95rem;color:#0F172A;font-weight:600;word-break:break-all;">${value}</code>
+        </div>
+        <button data-case="${c.id}" style="flex-shrink:0;padding:0.3rem 0.75rem;background:${c.fg};color:#fff;border:none;border-radius:0.375rem;font-size:0.75rem;font-weight:600;cursor:pointer;white-space:nowrap;">Copy</button>
+      `;
+      grid.appendChild(row);
+    });
+
+    grid.querySelectorAll('button[data-case]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id    = (e.currentTarget as HTMLElement).dataset.case!;
+        const text  = document.getElementById('val-' + id)!.textContent || '';
+        navigator.clipboard.writeText(text);
+        const b     = e.currentTarget as HTMLButtonElement;
+        b.textContent = '✓ Copied';
+        setTimeout(() => { b.textContent = 'Copy'; }, 1500);
+      });
+    });
+  }
+
+  document.getElementById('case-input')?.addEventListener('input', e => render((e.target as HTMLInputElement).value));
+  render((document.getElementById('case-input') as HTMLInputElement).value);
+</script>

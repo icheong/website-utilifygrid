@@ -1,0 +1,158 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'macro-calorie-deficit-allocator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Macro Nutrient Allocator</h2>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Daily Calorie Target</label>
+        <input id="calories" type="number" value="2000" min="800" max="6000" step="50"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+      <div>
+        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Body Weight (kg)</label>
+        <input id="weight" type="number" value="75" min="30" max="300" step="0.5"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#E2E8F0'"/>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1.25rem;">
+      <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.5rem;">Goal</label>
+      <div style="display:flex; gap:0.5rem;">
+        {[['cut','Cut (deficit)','#3B82F6'],['maintain','Maintain','#059669'],['bulk','Bulk (surplus)','#F97316']].map(([val, label, color]) => (
+          <button
+            class="goal-btn"
+            data-val={val}
+            style={`flex:1; padding:0.5rem; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer; border:1.5px solid; transition:all 0.15s; background:${val === 'maintain' ? color : '#F8FAFC'}; color:${val === 'maintain' ? '#fff' : '#64748B'}; border-color:${val === 'maintain' ? color : '#E2E8F0'};`}>
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Protein', 'out-protein', '#3B82F6', '#EFF6FF', '#BFDBFE'],
+        ['Carbohydrates', 'out-carbs', '#F97316', '#FFF7ED', '#FED7AA'],
+        ['Fat', 'out-fat', '#EAB308', '#FEFCE8', '#FEF08A'],
+      ].map(([label, id, fg, bg, border]) => (
+        <div style={`background:${bg}; border:1.5px solid ${border}; border-radius:0.75rem; padding:0.875rem 1rem;`}>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+            <span style={`font-size:0.82rem; font-weight:700; color:${fg};`}>{label}</span>
+            <span id={id + '-kcal'} style="font-size:0.78rem; color:#64748B;"></span>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.875rem;">
+            <div id={id + '-bar-wrap'} style="flex:1; height:8px; background:rgba(0,0,0,0.08); border-radius:999px; overflow:hidden;">
+              <div id={id + '-bar'} style={`height:100%; background:${fg}; border-radius:999px; transition:width 0.3s ease; width:0%;`}></div>
+            </div>
+            <span id={id} style={`font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:${fg}; min-width:60px; text-align:right;`}>— g</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this tool</h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your target daily calorie intake and your body weight. Select your goal: Cut (calorie deficit for fat loss), Maintain, or Bulk (calorie surplus for muscle gain). The macro distribution updates instantly.</p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Protein is allocated first based on body weight (a standard recommendation for muscle preservation), then remaining calories are split between carbohydrates and fat according to goal-specific ratios.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How macros are calculated</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Protein', 'Cut: 2.2g per kg bodyweight. Maintain: 1.8g/kg. Bulk: 2.0g/kg. Each gram of protein provides 4 kcal.'],
+        ['Carbohydrates', 'Cut: 30% of remaining calories. Maintain: 50%. Bulk: 55%. Each gram provides 4 kcal. Higher carbs support workout performance.'],
+        ['Fat', 'Fills remaining calorie allocation. Each gram provides 9 kcal. Fat is kept at a minimum of 20% of total calories for hormonal health.'],
+        ['Caloric Density', '1g Protein = 4 kcal. 1g Carbohydrate = 4 kcal. 1g Fat = 9 kcal. These are the standard values used by all major dietary tracking applications.'],
+      ].map(([label, desc]) => (
+        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'How do I know my daily calorie target?', a: 'Calculate your Total Daily Energy Expenditure (TDEE) using the BMR Katch-McArdle Calculator tool. Your TDEE is your maintenance calories. Subtract 300–500 kcal for a cut; add 200–300 kcal for a lean bulk.' },
+        { q: 'How much protein do I actually need?', a: 'For general health, 0.8g/kg is the minimum RDA. For athletes and those resistance training, 1.6–2.2g/kg is recommended to support muscle protein synthesis. Going above 2.2g/kg shows diminishing returns for most people.' },
+        { q: 'Are carbs or fats more important?', a: 'Both serve essential functions. Carbohydrates are the preferred fuel for high-intensity exercise and brain function. Fats are critical for hormone production, fat-soluble vitamin absorption, and cell membrane integrity. Neither should be eliminated; optimal ratios depend on your goal and activity type.' },
+        { q: 'Should I use net carbs or total carbs?', a: 'Net carbs (total carbs minus dietary fibre) are used by those following a ketogenic or low-carb diet, as fibre has minimal impact on blood sugar. For general fitness goals, tracking total carbohydrates is standard practice.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  let goal = 'maintain';
+  const RATIOS: Record<string, { protein_per_kg: number; carb_pct: number }> = {
+    cut:      { protein_per_kg: 2.2, carb_pct: 0.30 },
+    maintain: { protein_per_kg: 1.8, carb_pct: 0.50 },
+    bulk:     { protein_per_kg: 2.0, carb_pct: 0.55 },
+  };
+  const GOAL_COLORS: Record<string, string> = { cut:'#3B82F6', maintain:'#059669', bulk:'#F97316' };
+
+  document.querySelectorAll('.goal-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      goal = (btn as HTMLElement).dataset.val!;
+      document.querySelectorAll('.goal-btn').forEach((b: Element) => {
+        const el = b as HTMLElement; const v = el.dataset.val!;
+        el.style.background   = v === goal ? GOAL_COLORS[v] : '#F8FAFC';
+        el.style.color        = v === goal ? '#fff' : '#64748B';
+        el.style.borderColor  = v === goal ? GOAL_COLORS[v] : '#E2E8F0';
+      });
+      calc();
+    });
+  });
+
+  function calc() {
+    const cals   = parseFloat((document.getElementById('calories') as HTMLInputElement).value) || 0;
+    const weight = parseFloat((document.getElementById('weight') as HTMLInputElement).value)   || 0;
+    const r      = RATIOS[goal];
+
+    const proteinG = weight * r.protein_per_kg;
+    const proteinKcal = proteinG * 4;
+    const remaining   = Math.max(cals - proteinKcal, 0);
+    const carbsKcal   = remaining * r.carb_pct;
+    const fatKcal     = remaining * (1 - r.carb_pct);
+    const carbsG      = carbsKcal / 4;
+    const fatG        = fatKcal / 9;
+
+    const maxG = Math.max(proteinG, carbsG, fatG, 1);
+    [
+      ['out-protein', proteinG, proteinKcal],
+      ['out-carbs',   carbsG,   carbsKcal],
+      ['out-fat',     fatG,     fatKcal],
+    ].forEach(([id, grams, kcal]) => {
+      (document.getElementById(id as string) as HTMLElement).textContent          = Math.round(grams as number) + 'g';
+      (document.getElementById(id + '-kcal') as HTMLElement).textContent          = Math.round(kcal as number) + ' kcal';
+      (document.getElementById(id + '-bar') as HTMLElement).style.width           = ((grams as number) / maxG * 100) + '%';
+    });
+  }
+
+  ['calories','weight'].forEach(id => document.getElementById(id)?.addEventListener('input', calc));
+  calc();
+</script>
