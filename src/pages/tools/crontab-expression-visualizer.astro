@@ -53,9 +53,13 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
           </div>
           <!-- every: no controls -->
           <div class="mode-pane" id="minute-pane-every"></div>
-          <!-- specific: checkboxes 0–59 -->
+          <!-- specific: single-value slider -->
           <div class="mode-pane" id="minute-pane-specific" style="display:none;">
-            <div class="checkbox-grid" id="minute-checkboxes"></div>
+            <div class="range-row">
+              <label class="range-label">Minute</label>
+              <input type="range" class="cron-range" id="minute-specific" min="0" max="59" value="0" />
+              <span class="range-val" id="minute-specific-val">0</span>
+            </div>
           </div>
           <!-- range: from / to sliders -->
           <div class="mode-pane" id="minute-pane-range" style="display:none;">
@@ -96,7 +100,11 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
           </div>
           <div class="mode-pane" id="hour-pane-every"></div>
           <div class="mode-pane" id="hour-pane-specific" style="display:none;">
-            <div class="checkbox-grid" id="hour-checkboxes"></div>
+            <div class="range-row">
+              <label class="range-label">Hour</label>
+              <input type="range" class="cron-range" id="hour-specific" min="0" max="23" value="9" />
+              <span class="range-val" id="hour-specific-val">9</span>
+            </div>
           </div>
           <div class="mode-pane" id="hour-pane-range" style="display:none;">
             <div class="range-row">
@@ -133,7 +141,11 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
           </div>
           <div class="mode-pane" id="dom-pane-every"></div>
           <div class="mode-pane" id="dom-pane-specific" style="display:none;">
-            <div class="checkbox-grid" id="dom-checkboxes"></div>
+            <div class="range-row">
+              <label class="range-label">Day</label>
+              <input type="range" class="cron-range" id="dom-specific" min="1" max="31" value="1" />
+              <span class="range-val" id="dom-specific-val">1</span>
+            </div>
           </div>
           <div class="mode-pane" id="dom-pane-range" style="display:none;">
             <div class="range-row">
@@ -162,7 +174,11 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
           </div>
           <div class="mode-pane" id="month-pane-every"></div>
           <div class="mode-pane" id="month-pane-specific" style="display:none;">
-            <div class="checkbox-grid month-names" id="month-checkboxes"></div>
+            <div class="range-row">
+              <label class="range-label">Month</label>
+              <input type="range" class="cron-range" id="month-specific" min="1" max="12" value="1" />
+              <span class="range-val" id="month-specific-val">Jan</span>
+            </div>
           </div>
           <div class="mode-pane" id="month-pane-range" style="display:none;">
             <div class="range-row">
@@ -203,7 +219,11 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
           </div>
           <div class="mode-pane" id="dow-pane-every"></div>
           <div class="mode-pane" id="dow-pane-specific" style="display:none;">
-            <div class="checkbox-grid dow-names" id="dow-checkboxes"></div>
+            <div class="range-row">
+              <label class="range-label">Day</label>
+              <input type="range" class="cron-range" id="dow-specific" min="0" max="6" value="1" />
+              <span class="range-val" id="dow-specific-val">Mon</span>
+            </div>
           </div>
           <div class="mode-pane" id="dow-pane-range" style="display:none;">
             <div class="range-row">
@@ -529,38 +549,16 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
 
   // ── State ──────────────────────────────────────────────────────────
   const state = {
-    minute: { mode: 'every', specific: new Set<number>(), from: 0, to: 30, n: 5 },
-    hour:   { mode: 'every', specific: new Set<number>(), from: 9, to: 17, n: 2 },
-    dom:    { mode: 'every', specific: new Set<number>(), from: 1, to: 15 },
-    month:  { mode: 'every', specific: new Set<number>(), from: 1, to: 12 },
-    dow:    { mode: 'every', specific: new Set<number>(), from: 1, to: 5 },
+    minute: { mode: 'every', specific: 0,  from: 0, to: 30, n: 5 },
+    hour:   { mode: 'every', specific: 9,  from: 9, to: 17, n: 2 },
+    dom:    { mode: 'every', specific: 1,  from: 1, to: 15 },
+    month:  { mode: 'every', specific: 1,  from: 1, to: 12 },
+    dow:    { mode: 'every', specific: 1,  from: 1, to: 5  },
   };
 
   const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const DOW_NAMES   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-  // ── Build checkbox grids ──────────────────────────────────────────
-  function buildCheckboxes(containerId: string, min: number, max: number, labels?: string[]) {
-    const el = document.getElementById(containerId)!;
-    el.innerHTML = '';
-    for (let i = min; i <= max; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'cb-btn';
-      btn.dataset.val = String(i);
-      btn.textContent = labels ? labels[i - min] : String(i);
-      btn.addEventListener('click', () => {
-        btn.classList.toggle('on');
-        updateAll();
-      });
-      el.appendChild(btn);
-    }
-  }
-
-  buildCheckboxes('minute-checkboxes', 0, 59);
-  buildCheckboxes('hour-checkboxes',   0, 23);
-  buildCheckboxes('dom-checkboxes',    1, 31);
-  buildCheckboxes('month-checkboxes',  1, 12, MONTH_NAMES);
-  buildCheckboxes('dow-checkboxes',    0,  6, DOW_NAMES);
 
   // ── Wire mode buttons ─────────────────────────────────────────────
   document.querySelectorAll<HTMLButtonElement>('.fmode').forEach(btn => {
@@ -622,6 +620,37 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
     updateAll();
   });
 
+  // ── Wire specific sliders ─────────────────────────────────────────
+  wireSlider('minute-specific', 'minute-specific-val', v => { state.minute.specific = v; updateAll(); });
+  wireSlider('hour-specific',   'hour-specific-val',   v => { state.hour.specific   = v; updateAll(); });
+  wireSlider('dom-specific',    'dom-specific-val',    v => { state.dom.specific    = v; updateAll(); });
+
+  // Month specific slider — show name label
+  (function() {
+    const el  = document.getElementById('month-specific') as HTMLInputElement;
+    const val = document.getElementById('month-specific-val')!;
+    if (!el) return;
+    el.addEventListener('input', () => {
+      const v = parseInt(el.value);
+      state.month.specific = v;
+      val.textContent = MONTH_NAMES[v - 1];
+      updateAll();
+    });
+  })();
+
+  // DOW specific slider — show name label
+  (function() {
+    const el  = document.getElementById('dow-specific') as HTMLInputElement;
+    const val = document.getElementById('dow-specific-val')!;
+    if (!el) return;
+    el.addEventListener('input', () => {
+      const v = parseInt(el.value);
+      state.dow.specific = v;
+      val.textContent = DOW_NAMES[v];
+      updateAll();
+    });
+  })();
+
   // ── Field → cron token ────────────────────────────────────────────
   function fieldToken(field: string): string {
     const s = (state as any)[field];
@@ -629,10 +658,7 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
     if (s.mode === 'every') return '*';
 
     if (s.mode === 'specific') {
-      const checked = Array.from(document.querySelectorAll<HTMLButtonElement>(`#${field}-checkboxes .cb-btn.on`))
-        .map(b => parseInt(b.dataset.val!))
-        .sort((a, b) => a - b);
-      return checked.length > 0 ? checked.join(',') : '*';
+      return String(s.specific);
     }
 
     if (s.mode === 'range') {
@@ -657,13 +683,8 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
     if (s.mode === 'every') return `every ${unitSingular}`;
 
     if (s.mode === 'specific') {
-      const checked = Array.from(document.querySelectorAll<HTMLButtonElement>(`#${field}-checkboxes .cb-btn.on`))
-        .map(b => parseInt(b.dataset.val!))
-        .sort((a, b) => a - b);
-      if (!checked.length) return `every ${unitSingular}`;
-      const names = checked.map(v => labels ? labels[v - offset] : String(v));
-      if (names.length === 1) return names[0];
-      return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+      const v = s.specific;
+      return labels ? labels[v - offset] : String(v);
     }
 
     if (s.mode === 'range') {
@@ -690,24 +711,12 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
       parts.push('every minute');
     } else if (hState.mode === 'every' && mState.mode === 'every-n') {
       parts.push(`every ${mState.n} minutes`);
-    } else if (hState.mode === 'every' && mState.mode === 'specific') {
-      const checked = Array.from(document.querySelectorAll<HTMLButtonElement>(`#minute-checkboxes .cb-btn.on`))
-        .map(b => parseInt(b.dataset.val!)).sort((a,b)=>a-b);
-      parts.push(`at minute ${checked.join(', ')} of every hour`);
     } else if (hState.mode === 'specific' && mState.mode === 'specific') {
-      const mins = Array.from(document.querySelectorAll<HTMLButtonElement>(`#minute-checkboxes .cb-btn.on`))
-        .map(b => b.dataset.val!).sort();
-      const hrs  = Array.from(document.querySelectorAll<HTMLButtonElement>(`#hour-checkboxes .cb-btn.on`))
-        .map(b => parseInt(b.dataset.val!)).map(h => `${h}:${(mins[0]||'0').padStart(2,'0')}`).sort();
-      if (mins.length && hrs.length) {
-        parts.push(`at ${hrs.join(', ')}`);
-      } else {
-        parts.push(`at ${humanField('minute','minute','minutes')} past ${humanField('hour','hour','hours')}`);
-      }
+      const h = hState.specific;
+      const m = String(mState.specific).padStart(2,'0');
+      parts.push(`at ${h}:${m}`);
     } else if (mState.mode === 'specific' && hState.mode === 'every') {
-      const mins = Array.from(document.querySelectorAll<HTMLButtonElement>(`#minute-checkboxes .cb-btn.on`))
-        .map(b => b.dataset.val!).join(', ');
-      parts.push(`at minute ${mins || '*'} of every hour`);
+      parts.push(`at minute ${mState.specific} of every hour`);
     } else {
       parts.push(`at ${humanField('minute','minute','minutes')} past ${humanField('hour','hour','hours')}`);
     }
@@ -875,12 +884,18 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
       setFieldMode(field, 'range');
       return;
     }
-    if (/^\d+$/.test(token) || token.includes(',')) {
-      const vals = token.split(',').map(Number);
-      document.querySelectorAll<HTMLButtonElement>(`#${field}-checkboxes .cb-btn`).forEach(b => {
-        const v = parseInt(b.dataset.val!);
-        b.classList.toggle('on', vals.includes(v));
-      });
+    if (/^\d+$/.test(token)) {
+      const v = parseInt(token);
+      const s = (state as any)[field];
+      s.specific = v;
+      const slEl  = document.getElementById(`${field}-specific`) as HTMLInputElement;
+      const valEl = document.getElementById(`${field}-specific-val`);
+      if (slEl) slEl.value = String(v);
+      if (valEl) {
+        if (field === 'month') valEl.textContent = MONTH_NAMES[v - 1];
+        else if (field === 'dow') valEl.textContent = DOW_NAMES[v];
+        else valEl.textContent = String(v);
+      }
       setFieldMode(field, 'specific');
       return;
     }
