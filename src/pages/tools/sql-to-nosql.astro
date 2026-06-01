@@ -1,0 +1,1024 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'sql-to-nosql')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ═══ THE TOOL ═══ -->
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+      Paste your SQL query
+    </h2>
+
+    <!-- Output format toggle -->
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+      {[
+        ['shell',    '🐚 MongoDB Shell'],
+        ['nodejs',   '🟢 Node.js Driver'],
+        ['mongoose', '🍃 Mongoose'],
+      ].map(([mode, label], i) => (
+        <button
+          class="format-btn"
+          data-format={mode}
+          style={`padding:0.45rem 1rem; border-radius:0.5rem; font-size:0.85rem; font-weight:500; border:1.5px solid ${i === 0 ? '#1D4ED8' : '#E2E8F0'}; background:${i === 0 ? '#EFF6FF' : '#fff'}; color:${i === 0 ? '#1D4ED8' : '#475569'}; cursor:pointer; transition:all 0.15s;`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Two-panel workspace -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;" id="panels-grid">
+
+      <!-- Input -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <span style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em;">SQL Input</span>
+          <button id="load-sample-btn"
+            style="font-size:0.75rem; color:#1D4ED8; background:none; border:none; cursor:pointer; font-weight:500; padding:0; text-decoration:underline;">
+            Load sample
+          </button>
+        </div>
+        <textarea
+          id="sql-input"
+          spellcheck="false"
+          placeholder={`Paste your SQL query here…\n\nSELECT name, email\nFROM users\nWHERE age > 25\nORDER BY name ASC\nLIMIT 10`}
+          style="width:100%; height:280px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; line-height:1.6; resize:vertical; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='#1D4ED8';"
+          onblur="this.style.borderColor='#E2E8F0';"
+        ></textarea>
+        <div id="sql-error" style="display:none; margin-top:0.5rem; color:#DC2626; font-size:0.8rem; background:#FEF2F2; border:1px solid #FECACA; border-radius:0.5rem; padding:0.5rem 0.75rem;"></div>
+      </div>
+
+      <!-- Output -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <span style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em;" id="output-label">MongoDB Shell Output</span>
+          <button id="copy-output-btn"
+            style="font-size:0.75rem; color:#475569; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.4rem; cursor:pointer; font-weight:500; padding:0.2rem 0.65rem; transition:all 0.15s;"
+            onmouseover="this.style.background='#EFF6FF'; this.style.color='#1D4ED8'; this.style.borderColor='#BFDBFE';"
+            onmouseout="this.style.background='#F8FAFC'; this.style.color='#475569'; this.style.borderColor='#E2E8F0';"
+          >
+            Copy
+          </button>
+        </div>
+        <textarea
+          id="nosql-output"
+          readonly
+          placeholder="Converted NoSQL query will appear here…"
+          style="width:100%; height:280px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; line-height:1.6; resize:vertical; outline:none; box-sizing:border-box; background:#F8FAFC;"
+        ></textarea>
+      </div>
+
+    </div>
+
+    <!-- Pipeline stage breakdown -->
+    <div id="pipeline-breakdown" style="display:none; margin-top:1rem; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.75rem; padding:1rem 1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <span style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em;">Pipeline Stages</span>
+      </div>
+      <div id="stages-list" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+    </div>
+
+    <!-- Buttons -->
+    <div style="margin-top:1rem; display:flex; gap:0.75rem; align-items:center;">
+      <button
+        id="convert-btn"
+        style="padding:0.7rem 1.75rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.625rem; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
+        onmouseover="this.style.background='#1E3A8A';"
+        onmouseout="this.style.background='#1D4ED8';"
+      >
+        Convert
+      </button>
+      <button
+        id="clear-btn"
+        style="padding:0.7rem 1.25rem; background:#fff; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.9rem; font-weight:500; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.background='#F8FAFC';"
+        onmouseout="this.style.background='#fff';"
+      >
+        Clear
+      </button>
+      <span id="success-msg" style="display:none; font-size:0.82rem; color:#16A34A; font-weight:500;">✓ Converted successfully</span>
+    </div>
+
+  </div>
+
+  <!-- ═══ HOW TO USE ═══ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
+      How to use the SQL to NoSQL Converter
+    </h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste a SQL <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">SELECT</code> query into the left panel. The converter supports standard clauses including <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">WHERE</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">ORDER BY</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">LIMIT</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">JOIN</code>, and <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">GROUP BY</code> with aggregate functions.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Choose your preferred <strong style="color:#0F172A;">output format</strong> — MongoDB Shell syntax (for the <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">mongosh</code> console), Node.js driver code, or Mongoose model queries — using the toggle buttons at the top. Click <strong style="color:#0F172A;">Convert</strong> or simply start typing and the output updates live.
+    </p>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">
+      The <strong style="color:#0F172A;">Pipeline Stages</strong> panel below the output breaks down each aggregation stage with a colour-coded label, making it easy to understand the transformation step by step. Click <strong style="color:#0F172A;">Load sample</strong> to try a pre-built query with a JOIN.
+    </p>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
+      How the converter works
+    </h2>
+    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:1rem;">
+      The converter parses your SQL query into an abstract syntax tree and maps each clause to the equivalent MongoDB aggregation pipeline stage.
+    </p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:1rem;">
+      {[
+        ['SELECT col1, col2',    '$project',  'Projects only the specified fields'],
+        ['SELECT *',             '(no $project)', 'Returns all fields by default'],
+        ['WHERE col > 10',       '$match',    'Filters documents matching the condition'],
+        ['ORDER BY col ASC',     '$sort',     'Sorts by one or more fields'],
+        ['LIMIT n',              '$limit',    'Caps the number of returned documents'],
+        ['JOIN / LEFT JOIN',     '$lookup',   'Performs a left outer join with another collection'],
+        ['GROUP BY col',         '$group',    'Groups documents and applies aggregates'],
+        ['COUNT / SUM / AVG',    '$group accumulators', 'Maps to $sum, $avg, etc.'],
+      ].map(([sql, mongo, desc]) => (
+        <div style="display:grid; grid-template-columns:1fr 1fr 1.5fr; gap:0.5rem; background:#fff; border:1px solid #E2E8F0; border-radius:0.5rem; padding:0.6rem 0.875rem; font-size:0.8rem; align-items:center;">
+          <code style="color:#1D4ED8; background:#EFF6FF; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.78rem;">{sql}</code>
+          <code style="color:#16A34A; background:#F0FDF4; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.78rem;">{mongo}</code>
+          <span style="color:#475569;">{desc}</span>
+        </div>
+      ))}
+    </div>
+    <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.5rem; padding:0.5rem 0.875rem; margin-bottom:0.75rem;">
+      <div style="display:grid; grid-template-columns:1fr 1fr 1.5fr; font-size:0.72rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.05em; padding:0.25rem 0.4rem;">
+        <span>SQL Clause</span><span>MongoDB Stage</span><span>Description</span>
+      </div>
+    </div>
+    <p style="color:#64748B; font-size:0.82rem; line-height:1.6;">
+      WHERE conditions map SQL operators (<code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">=</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">&gt;</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">&lt;</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">LIKE</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">IN</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">BETWEEN</code>) to their MongoDB equivalents (<code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$eq</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$gt</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$lt</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$regex</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$in</code>, and combined <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$gte/$lte</code>). All conversion runs entirely in your browser — no SQL is ever sent to a server.
+    </p>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+      Frequently asked questions
+    </h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+
+      {[
+        {
+          q: 'What SQL statements does this tool support?',
+          a: 'The converter handles SELECT queries including WHERE conditions (with AND/OR), ORDER BY, LIMIT, GROUP BY with aggregate functions (COUNT, SUM, AVG, MIN, MAX), and JOIN / LEFT JOIN clauses. INSERT, UPDATE, DELETE, and DDL statements are not currently supported — the focus is on read queries, which are the most common use case when migrating from SQL to MongoDB.',
+        },
+        {
+          q: 'What is a MongoDB aggregation pipeline?',
+          a: 'An aggregation pipeline is MongoDB\'s framework for data processing. It works like a Unix pipe: documents enter the pipeline and pass through a sequence of stages — such as $match (filter), $project (reshape), $sort, $group, and $lookup (join) — with each stage transforming the data before passing it to the next. Pipelines are more powerful than simple find() queries and are the closest equivalent to complex SQL SELECT statements.',
+        },
+        {
+          q: 'How are SQL JOINs translated?',
+          a: 'SQL JOINs are converted to the $lookup aggregation stage, which performs a left outer join between two collections. The converter maps the JOIN\'s ON clause to the $lookup fields: "from" (the foreign collection), "localField", "foreignField", and "as" (the output array field name). Note that MongoDB\'s $lookup always produces a left outer join — results from the joined collection appear as an array, even for INNER JOIN syntax.',
+        },
+        {
+          q: 'Does the converter handle subqueries or nested SELECTs?',
+          a: 'Not currently. The parser handles single-level SELECT queries. Subqueries and correlated subqueries would require a much more complex AST and are beyond the scope of a quick-conversion utility. For complex queries, the tool gives you a solid starting point that you can extend manually in your MongoDB code.',
+        },
+        {
+          q: 'What is the difference between the three output formats?',
+          a: 'MongoDB Shell produces the mongosh syntax (db.collection.aggregate([…])) you\'d paste directly into a terminal. Node.js Driver outputs JavaScript code using the official mongodb package with proper async/await patterns. Mongoose generates code using the Mongoose ODM\'s Model.aggregate() method. All three produce the same pipeline — only the wrapper syntax differs.',
+        },
+        {
+          q: 'Is my SQL query sent to any server?',
+          a: 'No. The entire parsing and conversion runs locally in your browser using JavaScript. Your SQL queries never leave your device — there is no backend, no API call, and no data stored anywhere.',
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  @media (max-width: 768px) {
+    #panels-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+<script>
+  // ── DOM refs ───────────────────────────────────────────────────
+  const sqlInput      = document.getElementById('sql-input')       as HTMLTextAreaElement;
+  const nosqlOutput   = document.getElementById('nosql-output')    as HTMLTextAreaElement;
+  const sqlError      = document.getElementById('sql-error')!;
+  const convertBtn    = document.getElementById('convert-btn')     as HTMLButtonElement;
+  const clearBtn      = document.getElementById('clear-btn')       as HTMLButtonElement;
+  const copyBtn       = document.getElementById('copy-output-btn') as HTMLButtonElement;
+  const loadSampleBtn = document.getElementById('load-sample-btn') as HTMLButtonElement;
+  const successMsg    = document.getElementById('success-msg')!;
+  const outputLabel   = document.getElementById('output-label')!;
+  const formatBtns    = document.querySelectorAll<HTMLButtonElement>('.format-btn');
+  const pipelineBreakdown = document.getElementById('pipeline-breakdown')!;
+  const stagesList    = document.getElementById('stages-list')!;
+
+  let activeFormat: 'shell' | 'nodejs' | 'mongoose' = 'shell';
+
+  // ── Sample SQL queries ────────────────────────────────────────
+  const SAMPLES = [
+    `SELECT u.name, u.email, o.total, o.created_at
+FROM users u
+JOIN orders o ON u.id = o.user_id
+WHERE o.total > 50 AND u.status = 'active'
+ORDER BY o.created_at DESC
+LIMIT 20`,
+    `SELECT category, COUNT(*) as total, AVG(price) as avg_price
+FROM products
+WHERE price > 10
+GROUP BY category
+ORDER BY total DESC`,
+    `SELECT name, email, age
+FROM users
+WHERE age BETWEEN 18 AND 35 AND name LIKE 'J%'
+ORDER BY age ASC
+LIMIT 100`,
+  ];
+
+  let sampleIndex = 0;
+
+  // ── SQL Parser Types ──────────────────────────────────────────
+  interface ParsedQuery {
+    select: SelectField[];
+    from: TableRef;
+    joins: JoinClause[];
+    where: WhereCondition[];
+    whereLogic: string;
+    orderBy: OrderField[];
+    limit: number | null;
+    groupBy: string[];
+    hasAggregate: boolean;
+  }
+
+  interface SelectField {
+    expression: string;
+    alias: string | null;
+    aggregate: string | null;   // COUNT, SUM, AVG, MIN, MAX
+    field: string;              // inner field for aggregates, or column name
+    table: string | null;       // table alias prefix
+  }
+
+  interface TableRef {
+    table: string;
+    alias: string | null;
+  }
+
+  interface JoinClause {
+    type: string;    // JOIN, LEFT JOIN, etc.
+    table: string;
+    alias: string | null;
+    localField: string;
+    foreignField: string;
+  }
+
+  interface WhereCondition {
+    field: string;
+    operator: string;
+    value: any;
+    logic: string;   // AND / OR
+    table: string | null;
+  }
+
+  interface OrderField {
+    field: string;
+    direction: 1 | -1;
+    table: string | null;
+  }
+
+  interface PipelineStage {
+    name: string;
+    stage: Record<string, any>;
+  }
+
+  // ── Tokeniser ─────────────────────────────────────────────────
+  function tokenize(sql: string): string[] {
+    // Preserve strings, split on whitespace/punctuation while keeping operators
+    const tokens: string[] = [];
+    const regex = /('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|\d+\.?\d*|[a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)*|[<>!=]+|\*|\(|\)|,)/g;
+    let match;
+    while ((match = regex.exec(sql)) !== null) {
+      tokens.push(match[0]);
+    }
+    return tokens;
+  }
+
+  // ── SQL Parser ────────────────────────────────────────────────
+  function parseSQL(sql: string): ParsedQuery {
+    const cleaned = sql.replace(/;[\s]*$/, '').trim();
+    const upper = cleaned.toUpperCase();
+
+    if (!upper.startsWith('SELECT')) {
+      throw new Error('Only SELECT queries are supported.');
+    }
+
+    const result: ParsedQuery = {
+      select: [],
+      from: { table: '', alias: null },
+      joins: [],
+      where: [],
+      whereLogic: 'AND',
+      orderBy: [],
+      limit: null,
+      groupBy: [],
+      hasAggregate: false,
+    };
+
+    // Split into major clause blocks using regex
+    // We need to find the positions of FROM, WHERE, JOIN, ORDER BY, GROUP BY, LIMIT
+    const clauseRegex = /\b(SELECT|FROM|(?:LEFT\s+|RIGHT\s+|INNER\s+|OUTER\s+|CROSS\s+)?JOIN|WHERE|GROUP\s+BY|ORDER\s+BY|LIMIT)\b/gi;
+    const clauses: { keyword: string; start: number; }[] = [];
+    let m;
+    while ((m = clauseRegex.exec(cleaned)) !== null) {
+      clauses.push({ keyword: m[1].toUpperCase().replace(/\s+/g, ' '), start: m.index });
+    }
+
+    function getClauseBody(idx: number): string {
+      const start = clauses[idx].start + clauses[idx].keyword.length;
+      const end = idx + 1 < clauses.length ? clauses[idx + 1].start : cleaned.length;
+      return cleaned.substring(start, end).trim();
+    }
+
+    for (let i = 0; i < clauses.length; i++) {
+      const kw = clauses[i].keyword;
+      const body = getClauseBody(i);
+
+      if (kw === 'SELECT') {
+        result.select = parseSelectFields(body);
+        result.hasAggregate = result.select.some(f => f.aggregate !== null);
+      } else if (kw === 'FROM') {
+        result.from = parseTableRef(body);
+      } else if (kw.includes('JOIN')) {
+        result.joins.push(parseJoin(kw, body));
+      } else if (kw === 'WHERE') {
+        const parsed = parseWhere(body);
+        result.where = parsed.conditions;
+        result.whereLogic = parsed.logic;
+      } else if (kw === 'ORDER BY') {
+        result.orderBy = parseOrderBy(body);
+      } else if (kw === 'GROUP BY') {
+        result.groupBy = parseGroupBy(body);
+      } else if (kw === 'LIMIT') {
+        result.limit = parseInt(body, 10) || null;
+      }
+    }
+
+    if (!result.from.table) {
+      throw new Error('Could not parse FROM clause. Make sure your query has a valid FROM table.');
+    }
+
+    return result;
+  }
+
+  function parseSelectFields(body: string): SelectField[] {
+    if (body.trim() === '*') {
+      return [{ expression: '*', alias: null, aggregate: null, field: '*', table: null }];
+    }
+
+    // Split by commas, respecting parentheses
+    const fields = splitRespectingParens(body);
+    return fields.map(f => {
+      const trimmed = f.trim();
+
+      // Check for aggregate: COUNT(*), SUM(col), AVG(col), MIN(col), MAX(col)
+      const aggMatch = trimmed.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[\w.]+)\s*\)(?:\s+(?:AS\s+)?(\w+))?$/i);
+      if (aggMatch) {
+        return {
+          expression: trimmed,
+          alias: aggMatch[3] || null,
+          aggregate: aggMatch[1].toUpperCase(),
+          field: aggMatch[2],
+          table: null,
+        };
+      }
+
+      // Check for alias: col AS alias or col alias
+      const aliasMatch = trimmed.match(/^([\w.]+)\s+(?:AS\s+)?(\w+)$/i);
+      if (aliasMatch) {
+        const parts = aliasMatch[1].split('.');
+        return {
+          expression: trimmed,
+          alias: aliasMatch[2],
+          aggregate: null,
+          field: parts.length > 1 ? parts[1] : parts[0],
+          table: parts.length > 1 ? parts[0] : null,
+        };
+      }
+
+      // Simple column, possibly with table prefix
+      const parts = trimmed.split('.');
+      return {
+        expression: trimmed,
+        alias: null,
+        aggregate: null,
+        field: parts.length > 1 ? parts[1] : parts[0],
+        table: parts.length > 1 ? parts[0] : null,
+      };
+    });
+  }
+
+  function splitRespectingParens(str: string): string[] {
+    const result: string[] = [];
+    let depth = 0;
+    let current = '';
+    for (const ch of str) {
+      if (ch === '(') depth++;
+      else if (ch === ')') depth--;
+      if (ch === ',' && depth === 0) {
+        result.push(current);
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    if (current.trim()) result.push(current);
+    return result;
+  }
+
+  function parseTableRef(body: string): TableRef {
+    const parts = body.trim().split(/\s+/);
+    // Filter out any trailing keywords that might be misinterpreted
+    return {
+      table: parts[0],
+      alias: parts.length > 1 && !['JOIN','LEFT','RIGHT','INNER','WHERE','ORDER','GROUP','LIMIT'].includes(parts[1].toUpperCase()) ? parts[1] : null,
+    };
+  }
+
+  function parseJoin(type: string, body: string): JoinClause {
+    // body: "orders o ON u.id = o.user_id"
+    const onIdx = body.toUpperCase().indexOf(' ON ');
+    if (onIdx === -1) throw new Error(`JOIN clause missing ON condition: ${body}`);
+
+    const tablePart = body.substring(0, onIdx).trim();
+    const onPart = body.substring(onIdx + 4).trim();
+
+    const tableParts = tablePart.split(/\s+/);
+    const table = tableParts[0];
+    const alias = tableParts.length > 1 ? tableParts[1] : null;
+
+    // Parse ON condition: a.field = b.field
+    const onMatch = onPart.match(/^([\w.]+)\s*=\s*([\w.]+)$/);
+    if (!onMatch) throw new Error(`Could not parse JOIN ON condition: ${onPart}`);
+
+    const leftParts = onMatch[1].split('.');
+    const rightParts = onMatch[2].split('.');
+
+    return {
+      type: type.replace(/\s+/g, ' ').toUpperCase(),
+      table,
+      alias,
+      localField: leftParts.length > 1 ? leftParts[1] : leftParts[0],
+      foreignField: rightParts.length > 1 ? rightParts[1] : rightParts[0],
+    };
+  }
+
+  function parseWhere(body: string): { conditions: WhereCondition[]; logic: string } {
+    // Split by AND/OR while tracking the logic operator
+    const conditions: WhereCondition[] = [];
+    let mainLogic = 'AND';
+
+    // Simple split: handle AND / OR at top level
+    const parts = body.split(/\b(AND|OR)\b/i);
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i].trim();
+      if (!part) continue;
+      if (part.toUpperCase() === 'AND' || part.toUpperCase() === 'OR') {
+        mainLogic = part.toUpperCase();
+        continue;
+      }
+
+      const cond = parseCondition(part);
+      if (cond) conditions.push(cond);
+    }
+
+    return { conditions, logic: mainLogic };
+  }
+
+  function parseCondition(expr: string): WhereCondition | null {
+    const trimmed = expr.trim();
+
+    // BETWEEN: field BETWEEN val1 AND val2
+    const betweenMatch = trimmed.match(/^([\w.]+)\s+BETWEEN\s+(.+?)\s+AND\s+(.+)$/i);
+    if (betweenMatch) {
+      const parts = betweenMatch[1].split('.');
+      return {
+        field: parts.length > 1 ? parts[1] : parts[0],
+        operator: 'BETWEEN',
+        value: [parseValue(betweenMatch[2].trim()), parseValue(betweenMatch[3].trim())],
+        logic: 'AND',
+        table: parts.length > 1 ? parts[0] : null,
+      };
+    }
+
+    // IN: field IN (val1, val2, ...)
+    const inMatch = trimmed.match(/^([\w.]+)\s+(NOT\s+)?IN\s*\((.+)\)$/i);
+    if (inMatch) {
+      const parts = inMatch[1].split('.');
+      const values = inMatch[3].split(',').map(v => parseValue(v.trim()));
+      return {
+        field: parts.length > 1 ? parts[1] : parts[0],
+        operator: inMatch[2] ? 'NOT IN' : 'IN',
+        value: values,
+        logic: 'AND',
+        table: parts.length > 1 ? parts[0] : null,
+      };
+    }
+
+    // LIKE: field LIKE 'pattern'
+    const likeMatch = trimmed.match(/^([\w.]+)\s+(NOT\s+)?LIKE\s+'(.+)'$/i);
+    if (likeMatch) {
+      const parts = likeMatch[1].split('.');
+      return {
+        field: parts.length > 1 ? parts[1] : parts[0],
+        operator: likeMatch[2] ? 'NOT LIKE' : 'LIKE',
+        value: likeMatch[3],
+        logic: 'AND',
+        table: parts.length > 1 ? parts[0] : null,
+      };
+    }
+
+    // IS NULL / IS NOT NULL
+    const nullMatch = trimmed.match(/^([\w.]+)\s+IS\s+(NOT\s+)?NULL$/i);
+    if (nullMatch) {
+      const parts = nullMatch[1].split('.');
+      return {
+        field: parts.length > 1 ? parts[1] : parts[0],
+        operator: nullMatch[2] ? 'IS NOT NULL' : 'IS NULL',
+        value: null,
+        logic: 'AND',
+        table: parts.length > 1 ? parts[0] : null,
+      };
+    }
+
+    // Standard comparison: field OP value
+    const compMatch = trimmed.match(/^([\w.]+)\s*(!=|<>|>=|<=|>|<|=)\s*(.+)$/);
+    if (compMatch) {
+      const parts = compMatch[1].split('.');
+      return {
+        field: parts.length > 1 ? parts[1] : parts[0],
+        operator: compMatch[2],
+        value: parseValue(compMatch[3].trim()),
+        logic: 'AND',
+        table: parts.length > 1 ? parts[0] : null,
+      };
+    }
+
+    return null;
+  }
+
+  function parseValue(val: string): any {
+    // String literal
+    if ((val.startsWith("'") && val.endsWith("'")) || (val.startsWith('"') && val.endsWith('"'))) {
+      return val.slice(1, -1);
+    }
+    // Number
+    const num = Number(val);
+    if (!isNaN(num)) return num;
+    // Boolean
+    if (val.toUpperCase() === 'TRUE') return true;
+    if (val.toUpperCase() === 'FALSE') return false;
+    if (val.toUpperCase() === 'NULL') return null;
+    return val;
+  }
+
+  function parseOrderBy(body: string): OrderField[] {
+    return body.split(',').map(part => {
+      const tokens = part.trim().split(/\s+/);
+      const fieldParts = tokens[0].split('.');
+      const dir = tokens.length > 1 && tokens[1].toUpperCase() === 'DESC' ? -1 : 1;
+      return {
+        field: fieldParts.length > 1 ? fieldParts[1] : fieldParts[0],
+        direction: dir as 1 | -1,
+        table: fieldParts.length > 1 ? fieldParts[0] : null,
+      };
+    });
+  }
+
+  function parseGroupBy(body: string): string[] {
+    return body.split(',').map(col => {
+      const parts = col.trim().split('.');
+      return parts.length > 1 ? parts[1] : parts[0];
+    });
+  }
+
+  // ── Pipeline Builder ──────────────────────────────────────────
+  function buildPipeline(parsed: ParsedQuery): PipelineStage[] {
+    const stages: PipelineStage[] = [];
+
+    // 1. $lookup for JOINs
+    for (const join of parsed.joins) {
+      stages.push({
+        name: '$lookup',
+        stage: {
+          $lookup: {
+            from: join.table,
+            localField: join.localField,
+            foreignField: join.foreignField,
+            as: join.alias || join.table,
+          }
+        }
+      });
+
+      // Unwind the joined array for INNER/regular JOINs
+      const asField = join.alias || join.table;
+      if (!join.type.includes('LEFT')) {
+        stages.push({
+          name: '$unwind',
+          stage: { $unwind: `$${asField}` }
+        });
+      } else {
+        stages.push({
+          name: '$unwind',
+          stage: {
+            $unwind: {
+              path: `$${asField}`,
+              preserveNullAndEmptyArrays: true,
+            }
+          }
+        });
+      }
+    }
+
+    // 2. $match for WHERE
+    if (parsed.where.length > 0) {
+      const matchConditions = parsed.where.map(cond => buildMatchCondition(cond));
+
+      let matchStage: Record<string, any>;
+      if (matchConditions.length === 1) {
+        matchStage = matchConditions[0];
+      } else if (parsed.whereLogic === 'OR') {
+        matchStage = { $or: matchConditions };
+      } else {
+        // For AND, merge if possible, otherwise use $and
+        const canMerge = matchConditions.every(c => Object.keys(c).length === 1);
+        const hasOverlap = new Set(matchConditions.flatMap(c => Object.keys(c))).size < matchConditions.reduce((s, c) => s + Object.keys(c).length, 0);
+        if (canMerge && !hasOverlap) {
+          matchStage = Object.assign({}, ...matchConditions);
+        } else {
+          matchStage = { $and: matchConditions };
+        }
+      }
+
+      stages.push({ name: '$match', stage: { $match: matchStage } });
+    }
+
+    // 3. $group for GROUP BY
+    if (parsed.groupBy.length > 0 || parsed.hasAggregate) {
+      const groupId: Record<string, any> = {};
+      if (parsed.groupBy.length === 1) {
+        // Single group key
+      }
+      const groupStage: Record<string, any> = { _id: null as any };
+
+      if (parsed.groupBy.length === 1) {
+        groupStage._id = `$${parsed.groupBy[0]}`;
+      } else if (parsed.groupBy.length > 1) {
+        const id: Record<string, string> = {};
+        for (const col of parsed.groupBy) {
+          id[col] = `$${col}`;
+        }
+        groupStage._id = id;
+      }
+
+      // Add aggregate accumulators
+      for (const sel of parsed.select) {
+        if (sel.aggregate) {
+          const outputName = sel.alias || `${sel.aggregate.toLowerCase()}_${sel.field}`.replace('*', 'all');
+          switch (sel.aggregate) {
+            case 'COUNT':
+              groupStage[outputName] = { $sum: 1 };
+              break;
+            case 'SUM':
+              groupStage[outputName] = { $sum: `$${sel.field}` };
+              break;
+            case 'AVG':
+              groupStage[outputName] = { $avg: `$${sel.field}` };
+              break;
+            case 'MIN':
+              groupStage[outputName] = { $min: `$${sel.field}` };
+              break;
+            case 'MAX':
+              groupStage[outputName] = { $max: `$${sel.field}` };
+              break;
+          }
+        }
+      }
+
+      stages.push({ name: '$group', stage: { $group: groupStage } });
+    }
+
+    // 4. $sort for ORDER BY
+    if (parsed.orderBy.length > 0) {
+      const sortObj: Record<string, number> = {};
+      for (const ord of parsed.orderBy) {
+        // If we have a GROUP BY, the field might be an alias
+        const matchingSelect = parsed.select.find(s => s.alias === ord.field);
+        const key = matchingSelect ? (matchingSelect.alias || ord.field) : ord.field;
+        sortObj[key] = ord.direction;
+      }
+      stages.push({ name: '$sort', stage: { $sort: sortObj } });
+    }
+
+    // 5. $limit
+    if (parsed.limit !== null) {
+      stages.push({ name: '$limit', stage: { $limit: parsed.limit } });
+    }
+
+    // 6. $project for SELECT (only if specific fields, not *)
+    if (!parsed.hasAggregate && !parsed.select.some(s => s.field === '*')) {
+      const projectObj: Record<string, any> = { _id: 0 };
+      for (const sel of parsed.select) {
+        const fieldName = sel.alias || sel.field;
+        // If field comes from a joined table, use dot notation
+        if (sel.table) {
+          const joinMatch = parsed.joins.find(j => j.alias === sel.table || j.table === sel.table);
+          if (joinMatch) {
+            const joinAs = joinMatch.alias || joinMatch.table;
+            projectObj[fieldName] = `$${joinAs}.${sel.field}`;
+          } else if (sel.table === parsed.from.alias || sel.table === parsed.from.table) {
+            projectObj[fieldName] = 1;
+          } else {
+            projectObj[fieldName] = 1;
+          }
+        } else {
+          projectObj[fieldName] = 1;
+        }
+      }
+      stages.push({ name: '$project', stage: { $project: projectObj } });
+    }
+
+    return stages;
+  }
+
+  function buildMatchCondition(cond: WhereCondition): Record<string, any> {
+    const field = cond.field;
+
+    switch (cond.operator) {
+      case '=':
+        return { [field]: cond.value };
+      case '!=':
+      case '<>':
+        return { [field]: { $ne: cond.value } };
+      case '>':
+        return { [field]: { $gt: cond.value } };
+      case '>=':
+        return { [field]: { $gte: cond.value } };
+      case '<':
+        return { [field]: { $lt: cond.value } };
+      case '<=':
+        return { [field]: { $lte: cond.value } };
+      case 'LIKE': {
+        // Convert SQL LIKE to MongoDB regex
+        const regex = cond.value
+          .replace(/%/g, '.*')
+          .replace(/_/g, '.');
+        return { [field]: { $regex: `^${regex}$`, $options: 'i' } };
+      }
+      case 'NOT LIKE': {
+        const regex = cond.value
+          .replace(/%/g, '.*')
+          .replace(/_/g, '.');
+        return { [field]: { $not: { $regex: `^${regex}$`, $options: 'i' } } };
+      }
+      case 'IN':
+        return { [field]: { $in: cond.value } };
+      case 'NOT IN':
+        return { [field]: { $nin: cond.value } };
+      case 'BETWEEN':
+        return { [field]: { $gte: cond.value[0], $lte: cond.value[1] } };
+      case 'IS NULL':
+        return { [field]: null };
+      case 'IS NOT NULL':
+        return { [field]: { $ne: null } };
+      default:
+        return { [field]: cond.value };
+    }
+  }
+
+  // ── Output Formatters ─────────────────────────────────────────
+  function formatShell(collection: string, stages: PipelineStage[]): string {
+    const pipeline = stages.map(s => s.stage);
+    const pipelineStr = JSON.stringify(pipeline, null, 2);
+    return `db.${collection}.aggregate(${pipelineStr})`;
+  }
+
+  function formatNodeJS(collection: string, stages: PipelineStage[]): string {
+    const pipeline = stages.map(s => s.stage);
+    const pipelineStr = JSON.stringify(pipeline, null, 2);
+    return `const { MongoClient } = require('mongodb');
+
+async function runQuery() {
+  const client = new MongoClient('mongodb://localhost:27017');
+  try {
+    await client.connect();
+    const db = client.db('your_database');
+
+    const pipeline = ${pipelineStr.split('\n').map((line, i) => i === 0 ? line : '    ' + line).join('\n')};
+
+    const results = await db
+      .collection('${collection}')
+      .aggregate(pipeline)
+      .toArray();
+
+    console.log(results);
+    return results;
+  } finally {
+    await client.close();
+  }
+}
+
+runQuery();`;
+  }
+
+  function formatMongoose(collection: string, stages: PipelineStage[]): string {
+    const pipeline = stages.map(s => s.stage);
+    const pipelineStr = JSON.stringify(pipeline, null, 2);
+    // Capitalize first letter for model name
+    const modelName = collection.charAt(0).toUpperCase() + collection.slice(1);
+
+    return `const mongoose = require('mongoose');
+const ${modelName} = require('./models/${modelName}');
+
+async function runQuery() {
+  await mongoose.connect('mongodb://localhost:27017/your_database');
+
+  const pipeline = ${pipelineStr.split('\n').map((line, i) => i === 0 ? line : '  ' + line).join('\n')};
+
+  const results = await ${modelName}.aggregate(pipeline);
+  console.log(results);
+  return results;
+}
+
+runQuery();`;
+  }
+
+  // ── Stage Breakdown UI ────────────────────────────────────────
+  const stageColors: Record<string, { bg: string; text: string; border: string }> = {
+    '$match':   { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' },
+    '$project': { bg: '#DBEAFE', text: '#1E40AF', border: '#BFDBFE' },
+    '$sort':    { bg: '#E0E7FF', text: '#3730A3', border: '#C7D2FE' },
+    '$limit':   { bg: '#FCE7F3', text: '#9D174D', border: '#FBCFE8' },
+    '$lookup':  { bg: '#D1FAE5', text: '#065F46', border: '#A7F3D0' },
+    '$unwind':  { bg: '#F0FDF4', text: '#166534', border: '#BBF7D0' },
+    '$group':   { bg: '#FFF7ED', text: '#9A3412', border: '#FED7AA' },
+  };
+
+  function renderStages(stages: PipelineStage[]) {
+    stagesList.innerHTML = '';
+    if (stages.length === 0) {
+      pipelineBreakdown.style.display = 'none';
+      return;
+    }
+
+    pipelineBreakdown.style.display = 'block';
+
+    stages.forEach((s, i) => {
+      const colors = stageColors[s.name] || { bg: '#F1F5F9', text: '#475569', border: '#E2E8F0' };
+      const stageDiv = document.createElement('div');
+      stageDiv.style.cssText = `display:flex; align-items:flex-start; gap:0.75rem; padding:0.65rem 0.875rem; background:${colors.bg}; border:1px solid ${colors.border}; border-radius:0.5rem;`;
+
+      const badge = document.createElement('span');
+      badge.style.cssText = `display:inline-flex; align-items:center; padding:0.2rem 0.6rem; background:${colors.text}; color:#fff; border-radius:0.35rem; font-size:0.72rem; font-weight:700; font-family:'Fira Code',monospace; white-space:nowrap; flex-shrink:0;`;
+      badge.textContent = `${i + 1}. ${s.name}`;
+
+      const code = document.createElement('code');
+      code.style.cssText = `font-size:0.78rem; font-family:'Fira Code',monospace; color:${colors.text}; line-height:1.5; word-break:break-all;`;
+      code.textContent = JSON.stringify(s.stage[s.name], null, 2);
+
+      stageDiv.appendChild(badge);
+      stageDiv.appendChild(code);
+      stagesList.appendChild(stageDiv);
+    });
+  }
+
+  // ── Main convert ──────────────────────────────────────────────
+  function convert() {
+    sqlError.style.display = 'none';
+    successMsg.style.display = 'none';
+    nosqlOutput.value = '';
+    pipelineBreakdown.style.display = 'none';
+
+    const raw = sqlInput.value.trim();
+    if (!raw) {
+      showError('Please paste a SQL query to convert.');
+      return;
+    }
+
+    let parsed: ParsedQuery;
+    try {
+      parsed = parseSQL(raw);
+    } catch (e: any) {
+      showError(`Parse error: ${e.message}`);
+      return;
+    }
+
+    let stages: PipelineStage[];
+    try {
+      stages = buildPipeline(parsed);
+    } catch (e: any) {
+      showError(`Conversion error: ${e.message}`);
+      return;
+    }
+
+    const collection = parsed.from.table;
+
+    switch (activeFormat) {
+      case 'shell':
+        nosqlOutput.value = formatShell(collection, stages);
+        break;
+      case 'nodejs':
+        nosqlOutput.value = formatNodeJS(collection, stages);
+        break;
+      case 'mongoose':
+        nosqlOutput.value = formatMongoose(collection, stages);
+        break;
+    }
+
+    renderStages(stages);
+
+    successMsg.style.display = 'inline';
+    setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+  }
+
+  function showError(msg: string) {
+    sqlError.textContent = msg;
+    sqlError.style.display = 'block';
+  }
+
+  // ── Format switching ──────────────────────────────────────────
+  const formatLabels: Record<string, string> = {
+    shell:    'MongoDB Shell Output',
+    nodejs:   'Node.js Driver Output',
+    mongoose: 'Mongoose Output',
+  };
+
+  formatBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFormat = btn.dataset.format as typeof activeFormat;
+      formatBtns.forEach(b => {
+        b.style.background  = '#fff';
+        b.style.color       = '#475569';
+        b.style.borderColor = '#E2E8F0';
+      });
+      btn.style.background  = '#EFF6FF';
+      btn.style.color       = '#1D4ED8';
+      btn.style.borderColor = '#1D4ED8';
+      outputLabel.textContent = formatLabels[activeFormat];
+      if (sqlInput.value.trim()) convert();
+    });
+  });
+
+  // ── Buttons ───────────────────────────────────────────────────
+  convertBtn.addEventListener('click', convert);
+
+  clearBtn.addEventListener('click', () => {
+    sqlInput.value    = '';
+    nosqlOutput.value = '';
+    sqlError.style.display  = 'none';
+    successMsg.style.display = 'none';
+    pipelineBreakdown.style.display = 'none';
+  });
+
+  copyBtn.addEventListener('click', () => {
+    if (!nosqlOutput.value) return;
+    navigator.clipboard.writeText(nosqlOutput.value).then(() => {
+      copyBtn.textContent = '✓ Copied!';
+      copyBtn.style.background   = '#F0FDF4';
+      copyBtn.style.color        = '#16A34A';
+      copyBtn.style.borderColor  = '#BBF7D0';
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy';
+        copyBtn.style.background  = '#F8FAFC';
+        copyBtn.style.color       = '#475569';
+        copyBtn.style.borderColor = '#E2E8F0';
+      }, 2000);
+    });
+  });
+
+  loadSampleBtn.addEventListener('click', () => {
+    sqlInput.value = SAMPLES[sampleIndex % SAMPLES.length];
+    sampleIndex++;
+    convert();
+  });
+
+  // ── Live conversion on input ──────────────────────────────────
+  let debounceTimer: ReturnType<typeof setTimeout>;
+  sqlInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(convert, 400);
+  });
+</script>

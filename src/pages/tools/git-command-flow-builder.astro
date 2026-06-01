@@ -1,0 +1,980 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'git-command-flow-builder')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ═══ THE TOOL ═══ -->
+  <div slot="tool">
+
+    <!-- Step selector grid -->
+    <div style="margin-bottom:1.75rem;">
+      <p style="font-size:0.875rem; color:var(--text-secondary); margin-bottom:1rem; line-height:1.6;">
+        Choose your situation — the tool will output the exact Git commands you need.
+      </p>
+
+      <div id="scenario-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:0.625rem;">
+
+        <!-- Category: Undo / Fix -->
+        <div class="scenario-card" data-scenario="undo-last-commit">
+          <span class="scenario-icon">↩️</span>
+          <div>
+            <div class="scenario-title">Undo my last commit</div>
+            <div class="scenario-sub">Keep changes staged or discard them</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="amend-commit">
+          <span class="scenario-icon">✏️</span>
+          <div>
+            <div class="scenario-title">Fix / amend last commit</div>
+            <div class="scenario-sub">Change message or add forgotten files</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="discard-local">
+          <span class="scenario-icon">🗑️</span>
+          <div>
+            <div class="scenario-title">Discard local changes</div>
+            <div class="scenario-sub">Throw away uncommitted edits</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="squash-commits">
+          <span class="scenario-icon">🗜️</span>
+          <div>
+            <div class="scenario-title">Squash commits</div>
+            <div class="scenario-sub">Combine multiple commits into one</div>
+          </div>
+        </div>
+
+        <!-- Category: Branches -->
+        <div class="scenario-card" data-scenario="rename-branch">
+          <span class="scenario-icon">🏷️</span>
+          <div>
+            <div class="scenario-title">Rename a branch</div>
+            <div class="scenario-sub">Locally and on the remote</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="delete-branch">
+          <span class="scenario-icon">🌿</span>
+          <div>
+            <div class="scenario-title">Delete a branch</div>
+            <div class="scenario-sub">Local and/or remote</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="merge-to-main">
+          <span class="scenario-icon">🔀</span>
+          <div>
+            <div class="scenario-title">Merge branch into main</div>
+            <div class="scenario-sub">Fast-forward or merge commit</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="rebase-branch">
+          <span class="scenario-icon">📐</span>
+          <div>
+            <div class="scenario-title">Rebase onto main</div>
+            <div class="scenario-sub">Replay commits on updated base</div>
+          </div>
+        </div>
+
+        <!-- Category: Remote -->
+        <div class="scenario-card" data-scenario="push-force">
+          <span class="scenario-icon">🚀</span>
+          <div>
+            <div class="scenario-title">Force push safely</div>
+            <div class="scenario-sub">After rebase / history rewrite</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="pull-rebase">
+          <span class="scenario-icon">⬇️</span>
+          <div>
+            <div class="scenario-title">Pull with rebase</div>
+            <div class="scenario-sub">Avoid a merge commit on pull</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="cherry-pick">
+          <span class="scenario-icon">🍒</span>
+          <div>
+            <div class="scenario-title">Cherry-pick a commit</div>
+            <div class="scenario-sub">Apply one commit to another branch</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="stash-work">
+          <span class="scenario-icon">📦</span>
+          <div>
+            <div class="scenario-title">Stash and restore work</div>
+            <div class="scenario-sub">Save changes to work on later</div>
+          </div>
+        </div>
+
+        <!-- Category: Recovery -->
+        <div class="scenario-card" data-scenario="recover-deleted">
+          <span class="scenario-icon">🔍</span>
+          <div>
+            <div class="scenario-title">Recover deleted branch</div>
+            <div class="scenario-sub">Find and restore with reflog</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="reset-to-remote">
+          <span class="scenario-icon">🔄</span>
+          <div>
+            <div class="scenario-title">Reset to remote state</div>
+            <div class="scenario-sub">Discard all local divergence</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="tag-release">
+          <span class="scenario-icon">🏷</span>
+          <div>
+            <div class="scenario-title">Tag a release</div>
+            <div class="scenario-sub">Create and push a version tag</div>
+          </div>
+        </div>
+
+        <div class="scenario-card" data-scenario="submodule-update">
+          <span class="scenario-icon">📎</span>
+          <div>
+            <div class="scenario-title">Update submodules</div>
+            <div class="scenario-sub">Init and pull nested repos</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Output panel (hidden until a scenario is picked) -->
+    <div id="output-panel" style="display:none;">
+
+      <!-- Sub-options (shown for scenarios that need refinement) -->
+      <div id="sub-options" style="display:none; margin-bottom:1.25rem;">
+        <div style="font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.625rem;">Refine your choice</div>
+        <div id="sub-options-row" style="display:flex; flex-wrap:wrap; gap:0.5rem;"></div>
+      </div>
+
+      <!-- Variable inputs (shown for scenarios needing branch names etc.) -->
+      <div id="var-inputs" style="display:none; margin-bottom:1.25rem;">
+        <div id="var-inputs-row" style="display:flex; flex-wrap:wrap; gap:0.75rem;"></div>
+      </div>
+
+      <!-- Command output -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <div>
+          <span id="output-title" style="font-size:0.875rem; font-weight:700; color:var(--text-primary);"></span>
+          <span id="output-badge" style="margin-left:0.5rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:0.15rem 0.5rem; border-radius:999px;"></span>
+        </div>
+        <button id="copy-all-btn"
+          style="font-size:0.75rem; padding:0.3rem 0.875rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.4rem; cursor:pointer; font-weight:600; transition:background 0.15s;"
+          onmouseover="this.style.background='#1E3A8A';" onmouseout="this.style.background='#1D4ED8';">
+          Copy all
+        </button>
+      </div>
+
+      <div id="command-blocks" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+
+      <!-- Warning / note block -->
+      <div id="warning-block" style="display:none; margin-top:1rem; padding:0.75rem 1rem; border-radius:0.625rem; font-size:0.82rem; line-height:1.6;"></div>
+
+      <!-- Back button -->
+      <button id="back-btn"
+        style="margin-top:1.25rem; font-size:0.8rem; color:var(--text-secondary); background:none; border:none; cursor:pointer; padding:0; display:flex; align-items:center; gap:0.35rem; transition:color 0.15s;"
+        onmouseover="this.style.color='#1D4ED8';" onmouseout="this.style.color='var(--text-secondary)';">
+        ← Back to scenarios
+      </button>
+
+    </div>
+
+  </div><!-- /tool -->
+
+
+  <!-- ═══ HOW TO USE ═══ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Git Command Flow Builder</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Click the card that describes your current situation — "Undo my last commit", "Squash commits", "Delete a branch", and so on. For scenarios with multiple approaches, a refinement row appears so you can pick the exact variant (for example, keeping changes staged vs. discarding them entirely after an undo).
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Some scenarios show inline text inputs for variable values like branch names, commit counts, or tag names. Fill those in and the commands update in real time with your exact values substituted in.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Each command line has its own <strong style="color:var(--text-primary);">Copy</strong> button, or use <strong style="color:var(--text-primary);">Copy all</strong> to grab the entire sequence at once. Danger commands are clearly flagged in red with a warning note before you run them.
+    </p>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Git fundamentals behind each scenario</h2>
+    <div style="display:flex; flex-direction:column; gap:0.625rem;">
+      {[
+        ['git reset',     'Moves the HEAD pointer and optionally the index/working tree. --soft keeps changes staged; --mixed unstages them; --hard discards them entirely.'],
+        ['git commit --amend', 'Replaces the last commit with a new one incorporating staged changes or a new message. Rewrites history — avoid on shared branches.'],
+        ['git rebase -i', 'Interactive rebase opens an editor listing commits. Change "pick" to "squash" or "fixup" to fold commits together. Rewrites commit SHAs.'],
+        ['git stash',     'Saves uncommitted work to a stack so you can switch contexts. stash pop restores and removes; stash apply restores and keeps it on the stack.'],
+        ['git reflog',    'Records every position HEAD has been. Even after a hard reset or branch deletion, reflog lets you find the lost SHA and recover it.'],
+        ['git cherry-pick', 'Applies the diff introduced by a specific commit onto the current branch, creating a new commit with a new SHA.'],
+      ].map(([cmd, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <code style="font-family:'Fira Code',monospace; font-size:0.82rem; color:#1D4ED8; background:#EFF6FF; padding:0.15rem 0.5rem; border-radius:0.25rem; display:inline-block; margin-bottom:0.35rem;">{cmd}</code>
+          <p style="font-size:0.82rem; color:var(--text-secondary); margin:0; line-height:1.6;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: 'What is the difference between git reset --soft and --hard?',
+          a: '--soft moves HEAD back to the previous commit but keeps all your changes staged in the index, ready to be re-committed. --hard moves HEAD back AND discards all changes in the index and working tree permanently. --mixed (the default) moves HEAD back and unstages changes but leaves the files modified on disk.',
+        },
+        {
+          q: 'Is it safe to force push to a shared branch?',
+          a: 'No — force pushing rewrites the remote history, which causes problems for anyone else who has based work on those commits. The safer alternative is git push --force-with-lease, which only force pushes if nobody else has pushed to the branch since you last fetched. Never force push to main or master unless you own the repository and know no one else is working off it.',
+        },
+        {
+          q: 'What is git rebase and when should I use it?',
+          a: 'Rebase replays your branch\'s commits on top of another commit (usually the tip of main). This keeps a linear history without merge commits. Use it before merging a feature branch to incorporate recent changes from main, or interactively with -i to clean up commit history before code review. Avoid rebasing commits that have already been pushed to a shared branch.',
+        },
+        {
+          q: 'How do I recover a commit I accidentally reset away?',
+          a: 'Use git reflog to find the commit SHA from before the reset. Reflog records every position HEAD has been, even when commits are no longer reachable from any branch. Once you find the SHA, run git checkout -b recovery-branch <sha> to create a new branch pointing to it.',
+        },
+        {
+          q: 'What is the difference between git merge and git rebase?',
+          a: 'Both integrate changes from one branch into another. Merge creates a new "merge commit" that joins the histories, preserving the full branching context. Rebase rewrites the feature branch commits as if they were created on top of the latest main, producing a linear history. Teams often use rebase for cleaner PR history and merge for long-lived branch integrations.',
+        },
+        {
+          q: 'What does git stash actually save?',
+          a: 'By default, git stash saves modifications to tracked files and staged changes, then reverts the working tree to match HEAD. Untracked files (new files not yet added) are NOT stashed unless you use git stash -u or --include-untracked. Ignored files require git stash -a or --all.',
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+
+<style>
+  /* ── Scenario cards ─────────────────────────────────────────── */
+  .scenario-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    border-radius: 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+    user-select: none;
+  }
+  .scenario-card:hover {
+    border-color: #1D4ED8;
+    box-shadow: 0 4px 16px rgba(29,78,216,0.12);
+    transform: translateY(-1px);
+  }
+  .scenario-card.active {
+    border-color: #1D4ED8;
+    background: #EFF6FF;
+  }
+  :root.dark .scenario-card.active {
+    background: rgba(29,78,216,0.15);
+  }
+  .scenario-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 0.1rem;
+  }
+  .scenario-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    margin-bottom: 0.2rem;
+  }
+  .scenario-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* ── Sub-option pills ───────────────────────────────────────── */
+  .sub-btn {
+    padding: 0.35rem 0.875rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1.5px solid var(--border);
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sub-btn.active {
+    background: #EFF6FF;
+    border-color: #1D4ED8;
+    color: #1D4ED8;
+  }
+  :root.dark .sub-btn.active {
+    background: rgba(29,78,216,0.2);
+    color: #93C5FD;
+    border-color: #3B82F6;
+  }
+
+  /* ── Command block ──────────────────────────────────────────── */
+  .cmd-block {
+    background: var(--bg-surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: border-color 0.12s;
+  }
+  .cmd-block:hover {
+    border-color: #1D4ED8;
+  }
+  .cmd-block.danger {
+    border-color: #FECACA;
+    background: #FFF5F5;
+  }
+  :root.dark .cmd-block.danger {
+    border-color: rgba(220,38,38,0.35);
+    background: rgba(220,38,38,0.08);
+  }
+  .cmd-text {
+    flex: 1;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    word-break: break-all;
+    line-height: 1.5;
+  }
+  .cmd-comment {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+    font-family: 'Inter', sans-serif;
+  }
+  .cmd-copy-btn {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+  .cmd-copy-btn:hover {
+    border-color: #1D4ED8;
+    color: #1D4ED8;
+    background: #EFF6FF;
+  }
+
+  /* ── Var input ──────────────────────────────────────────────── */
+  .var-input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .var-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .var-input {
+    padding: 0.45rem 0.75rem;
+    border: 1.5px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--bg-surface-2);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: 'Fira Code', monospace;
+    outline: none;
+    transition: border-color 0.15s;
+    min-width: 140px;
+  }
+  .var-input:focus {
+    border-color: #1D4ED8;
+  }
+</style>
+
+
+<script>
+(function () {
+
+  // ── Types ─────────────────────────────────────────────────────────
+  interface SubOption {
+    id:    string;
+    label: string;
+  }
+  interface VarField {
+    id:          string;
+    label:       string;
+    placeholder: string;
+    default:     string;
+  }
+  interface CommandStep {
+    cmd:      string;   // may contain {varName} tokens
+    comment?: string;
+    danger?:  boolean;
+  }
+  interface Scenario {
+    title:       string;
+    badge?:      string;
+    badgeColor?: string; // hex
+    subOptions?: SubOption[];
+    vars?:       VarField[];
+    // steps keyed by subOption id, or 'default'
+    steps:       Record<string, CommandStep[]>;
+    warning?:    string;   // shown for any sub-option
+    warnings?:   Record<string, string>; // per sub-option warnings
+  }
+
+  // ── Scenario data ─────────────────────────────────────────────────
+  const SCENARIOS: Record<string, Scenario> = {
+
+    'undo-last-commit': {
+      title: 'Undo last commit',
+      badge: 'Rewrites history',
+      badgeColor: '#F59E0B',
+      subOptions: [
+        { id: 'soft',   label: 'Keep changes staged (--soft)' },
+        { id: 'mixed',  label: 'Keep changes unstaged (--mixed)' },
+        { id: 'hard',   label: 'Discard all changes (--hard)' },
+      ],
+      steps: {
+        soft:  [{ cmd: 'git reset --soft HEAD~1', comment: 'Moves HEAD back one commit; changes stay staged' }],
+        mixed: [{ cmd: 'git reset HEAD~1',         comment: 'Moves HEAD back; changes go to working tree' }],
+        hard:  [{ cmd: 'git reset --hard HEAD~1',  comment: 'Moves HEAD back AND deletes all changes', danger: true }],
+      },
+      warnings: {
+        hard: '⚠️ --hard permanently discards your changes. Make sure you have a backup or the changes are not needed.',
+      },
+    },
+
+    'amend-commit': {
+      title: 'Amend last commit',
+      badge: 'Rewrites history',
+      badgeColor: '#F59E0B',
+      subOptions: [
+        { id: 'message', label: 'Change message only' },
+        { id: 'files',   label: 'Add forgotten files' },
+        { id: 'both',    label: 'Change message + add files' },
+      ],
+      steps: {
+        message: [
+          { cmd: 'git commit --amend -m "Your new message"', comment: 'Replaces the last commit with a new message' },
+        ],
+        files: [
+          { cmd: 'git add <forgotten-file>', comment: 'Stage the file(s) you forgot' },
+          { cmd: 'git commit --amend --no-edit', comment: 'Folds staged changes into the last commit without changing the message' },
+        ],
+        both: [
+          { cmd: 'git add <forgotten-file>', comment: 'Stage the file(s) you forgot' },
+          { cmd: 'git commit --amend -m "Your new message"', comment: 'Folds staged changes in and updates the message' },
+        ],
+      },
+      warning: '⚠️ Amend rewrites the commit SHA. If you have already pushed, you will need to force push.',
+    },
+
+    'discard-local': {
+      title: 'Discard local changes',
+      subOptions: [
+        { id: 'one-file',    label: 'One file' },
+        { id: 'all-tracked', label: 'All tracked files' },
+        { id: 'everything',  label: 'Everything incl. untracked', },
+      ],
+      vars: [
+        { id: 'filepath', label: 'File path', placeholder: 'src/main.js', default: 'src/main.js' },
+      ],
+      steps: {
+        'one-file':    [{ cmd: 'git checkout -- {filepath}', comment: 'Restores the file to its last committed state' }],
+        'all-tracked': [{ cmd: 'git checkout -- .', comment: 'Restores all tracked files; leaves untracked files alone' }],
+        'everything':  [
+          { cmd: 'git reset --hard HEAD', comment: 'Discards all staged and unstaged changes', danger: true },
+          { cmd: 'git clean -fd',          comment: 'Removes all untracked files and directories', danger: true },
+        ],
+      },
+      warnings: {
+        'everything': '⚠️ git clean -fd is irreversible. Untracked files will be permanently deleted.',
+      },
+    },
+
+    'squash-commits': {
+      title: 'Squash commits',
+      badge: 'Rewrites history',
+      badgeColor: '#F59E0B',
+      vars: [
+        { id: 'count', label: 'How many commits to squash', placeholder: '3', default: '3' },
+      ],
+      steps: {
+        default: [
+          { cmd: 'git rebase -i HEAD~{count}',           comment: 'Opens interactive rebase for the last {count} commits' },
+          { cmd: '# In the editor: change "pick" → "squash" (or "s") for all commits except the first', comment: '' },
+          { cmd: '# Save and close the editor, then update the commit message in the next editor' },
+        ],
+      },
+      warning: '⚠️ Squashing rewrites commit SHAs. If already pushed, a force push will be required.',
+    },
+
+    'rename-branch': {
+      title: 'Rename a branch',
+      vars: [
+        { id: 'old', label: 'Current branch name', placeholder: 'feature/old-name', default: 'feature/old-name' },
+        { id: 'new', label: 'New branch name',     placeholder: 'feature/new-name', default: 'feature/new-name' },
+      ],
+      steps: {
+        default: [
+          { cmd: 'git branch -m {old} {new}',                     comment: 'Renames the branch locally' },
+          { cmd: 'git push origin --delete {old}',                comment: 'Deletes the old remote branch' },
+          { cmd: 'git push origin {new}',                         comment: 'Pushes the new branch name to remote' },
+          { cmd: 'git push origin -u {new}',                      comment: 'Sets the upstream tracking for the new name' },
+        ],
+      },
+    },
+
+    'delete-branch': {
+      title: 'Delete a branch',
+      subOptions: [
+        { id: 'local',      label: 'Local only' },
+        { id: 'remote',     label: 'Remote only' },
+        { id: 'both',       label: 'Local + remote' },
+      ],
+      vars: [
+        { id: 'branch', label: 'Branch name', placeholder: 'feature/my-feature', default: 'feature/my-feature' },
+      ],
+      steps: {
+        local:  [{ cmd: 'git branch -d {branch}', comment: 'Safe delete — only works if branch is fully merged' }],
+        remote: [{ cmd: 'git push origin --delete {branch}', comment: 'Removes the branch from the remote' }],
+        both: [
+          { cmd: 'git branch -d {branch}',              comment: 'Delete locally (safe — merged branches only)' },
+          { cmd: 'git push origin --delete {branch}',   comment: 'Delete on remote' },
+        ],
+      },
+    },
+
+    'merge-to-main': {
+      title: 'Merge branch into main',
+      subOptions: [
+        { id: 'ff',      label: 'Fast-forward (no merge commit)' },
+        { id: 'no-ff',   label: 'Always create merge commit' },
+        { id: 'squash',  label: 'Squash into one commit' },
+      ],
+      vars: [
+        { id: 'branch', label: 'Feature branch name', placeholder: 'feature/my-feature', default: 'feature/my-feature' },
+      ],
+      steps: {
+        ff: [
+          { cmd: 'git checkout main',                comment: 'Switch to main' },
+          { cmd: 'git pull origin main',             comment: 'Make sure main is up to date' },
+          { cmd: 'git merge {branch}',               comment: 'Fast-forward merge if possible' },
+          { cmd: 'git push origin main',             comment: 'Push the updated main' },
+        ],
+        'no-ff': [
+          { cmd: 'git checkout main',                comment: 'Switch to main' },
+          { cmd: 'git pull origin main',             comment: 'Make sure main is up to date' },
+          { cmd: 'git merge --no-ff {branch} -m "Merge branch \'{branch}\'"', comment: 'Always creates a merge commit' },
+          { cmd: 'git push origin main',             comment: 'Push the updated main' },
+        ],
+        squash: [
+          { cmd: 'git checkout main',                comment: 'Switch to main' },
+          { cmd: 'git merge --squash {branch}',      comment: 'Stages all branch changes as a single change set' },
+          { cmd: 'git commit -m "feat: merge {branch}"', comment: 'Commit the squashed changes' },
+          { cmd: 'git push origin main',             comment: 'Push the updated main' },
+        ],
+      },
+    },
+
+    'rebase-branch': {
+      title: 'Rebase onto main',
+      badge: 'Rewrites history',
+      badgeColor: '#F59E0B',
+      vars: [
+        { id: 'branch', label: 'Your branch name', placeholder: 'feature/my-feature', default: 'feature/my-feature' },
+      ],
+      steps: {
+        default: [
+          { cmd: 'git checkout main',            comment: 'Switch to main' },
+          { cmd: 'git pull origin main',         comment: 'Get the latest main' },
+          { cmd: 'git checkout {branch}',        comment: 'Switch back to your feature branch' },
+          { cmd: 'git rebase main',              comment: 'Replay your commits on top of updated main' },
+          { cmd: '# Resolve any conflicts, then:', comment: '' },
+          { cmd: 'git rebase --continue',        comment: 'Continue after resolving each conflict' },
+        ],
+      },
+      warning: '⚠️ Rebase rewrites commit SHAs. If you have already pushed this branch, use --force-with-lease to push afterwards.',
+    },
+
+    'push-force': {
+      title: 'Force push safely',
+      badge: 'Caution',
+      badgeColor: '#EF4444',
+      vars: [
+        { id: 'branch', label: 'Branch name', placeholder: 'feature/my-feature', default: 'feature/my-feature' },
+      ],
+      steps: {
+        default: [
+          { cmd: 'git push origin {branch} --force-with-lease', comment: 'Only force pushes if no one else has pushed since your last fetch', danger: true },
+        ],
+      },
+      warning: '⚠️ --force-with-lease is safer than --force but still rewrites remote history. Never force push to a shared branch like main without team agreement.',
+    },
+
+    'pull-rebase': {
+      title: 'Pull with rebase',
+      steps: {
+        default: [
+          { cmd: 'git pull --rebase origin main', comment: 'Fetches and replays your local commits on top of the fetched commits' },
+          { cmd: '# To make this the default pull behaviour:', comment: '' },
+          { cmd: 'git config --global pull.rebase true', comment: 'Sets pull.rebase=true globally' },
+        ],
+      },
+    },
+
+    'cherry-pick': {
+      title: 'Cherry-pick a commit',
+      vars: [
+        { id: 'sha', label: 'Commit SHA (short or full)', placeholder: 'a1b2c3d', default: 'a1b2c3d' },
+      ],
+      steps: {
+        default: [
+          { cmd: 'git log --oneline',           comment: 'Find the SHA of the commit you want to copy' },
+          { cmd: 'git cherry-pick {sha}',       comment: 'Applies the diff from that commit onto the current branch' },
+          { cmd: '# If conflicts occur:', comment: '' },
+          { cmd: 'git cherry-pick --continue',  comment: 'After resolving conflicts' },
+          { cmd: 'git cherry-pick --abort',     comment: 'To cancel the cherry-pick entirely' },
+        ],
+      },
+    },
+
+    'stash-work': {
+      title: 'Stash and restore work',
+      subOptions: [
+        { id: 'save',         label: 'Save changes to stash' },
+        { id: 'list',         label: 'List stashed items' },
+        { id: 'pop',          label: 'Restore latest stash' },
+        { id: 'apply-named',  label: 'Apply a specific stash' },
+        { id: 'drop',         label: 'Delete a stash entry' },
+      ],
+      steps: {
+        save: [
+          { cmd: 'git stash',                   comment: 'Stashes tracked modified files and staged changes' },
+          { cmd: 'git stash -u',                comment: 'Also stash untracked (new) files' },
+          { cmd: 'git stash -m "WIP: my description"', comment: 'Save with a descriptive message' },
+        ],
+        list: [
+          { cmd: 'git stash list',              comment: 'Shows all stash entries with index numbers' },
+        ],
+        pop: [
+          { cmd: 'git stash pop',               comment: 'Applies the most recent stash and removes it from the stack' },
+        ],
+        'apply-named': [
+          { cmd: 'git stash list',              comment: 'Find the stash index (e.g. stash@{2})' },
+          { cmd: 'git stash apply stash@{1}',   comment: 'Applies a specific stash (keeps it on the stack)' },
+        ],
+        drop: [
+          { cmd: 'git stash list',              comment: 'Find the stash index' },
+          { cmd: 'git stash drop stash@{0}',    comment: 'Removes a specific stash entry' },
+        ],
+      },
+    },
+
+    'recover-deleted': {
+      title: 'Recover deleted branch',
+      steps: {
+        default: [
+          { cmd: 'git reflog',                               comment: 'Shows all recent HEAD positions — find the SHA of the last commit on the deleted branch' },
+          { cmd: 'git checkout -b recovered-branch <sha>',   comment: 'Creates a new branch pointing to that SHA' },
+          { cmd: '# Or if you remember the branch name:', comment: '' },
+          { cmd: 'git reflog | grep <branch-name>',          comment: 'Search reflog for entries mentioning the branch' },
+        ],
+      },
+    },
+
+    'reset-to-remote': {
+      title: 'Reset to remote state',
+      badge: 'Destructive',
+      badgeColor: '#EF4444',
+      vars: [
+        { id: 'branch', label: 'Branch name', placeholder: 'main', default: 'main' },
+      ],
+      steps: {
+        default: [
+          { cmd: 'git fetch origin',                        comment: 'Get the latest remote state' },
+          { cmd: 'git reset --hard origin/{branch}',        comment: 'Resets local branch to exactly match remote', danger: true },
+          { cmd: 'git clean -fd',                           comment: 'Optional: remove untracked files too', danger: true },
+        ],
+      },
+      warning: '⚠️ This permanently discards all local commits and changes not present on the remote. There is no undo.',
+    },
+
+    'tag-release': {
+      title: 'Tag a release',
+      subOptions: [
+        { id: 'lightweight', label: 'Lightweight tag' },
+        { id: 'annotated',   label: 'Annotated tag (recommended)' },
+      ],
+      vars: [
+        { id: 'version', label: 'Tag / version name', placeholder: 'v1.0.0', default: 'v1.0.0' },
+      ],
+      steps: {
+        lightweight: [
+          { cmd: 'git tag {version}',               comment: 'Creates a lightweight tag at current HEAD' },
+          { cmd: 'git push origin {version}',       comment: 'Push the tag to remote' },
+        ],
+        annotated: [
+          { cmd: 'git tag -a {version} -m "Release {version}"', comment: 'Creates an annotated tag with a message' },
+          { cmd: 'git push origin {version}',                    comment: 'Push the tag to remote' },
+        ],
+      },
+    },
+
+    'submodule-update': {
+      title: 'Update submodules',
+      subOptions: [
+        { id: 'init',    label: 'First-time setup' },
+        { id: 'update',  label: 'Pull latest for all submodules' },
+        { id: 'foreach', label: 'Run command in each submodule' },
+      ],
+      steps: {
+        init: [
+          { cmd: 'git submodule init',               comment: 'Initialises submodule config from .gitmodules' },
+          { cmd: 'git submodule update',             comment: 'Clones and checks out each submodule' },
+          { cmd: '# Or in one command:', comment: '' },
+          { cmd: 'git submodule update --init --recursive', comment: 'Handles nested submodules too' },
+        ],
+        update: [
+          { cmd: 'git submodule update --remote --merge', comment: 'Fetches latest from each submodule\'s remote tracking branch' },
+        ],
+        foreach: [
+          { cmd: 'git submodule foreach git pull origin main', comment: 'Runs "git pull origin main" inside every submodule' },
+        ],
+      },
+    },
+
+  };
+
+  // ── State ──────────────────────────────────────────────────────────
+  let activeScenario: string | null = null;
+  let activeSubOption: string       = 'default';
+  const varValues: Record<string, string> = {};
+
+  // ── DOM refs ──────────────────────────────────────────────────────
+  const scenarioGrid  = document.getElementById('scenario-grid')!;
+  const outputPanel   = document.getElementById('output-panel')!;
+  const subOptionsEl  = document.getElementById('sub-options')!;
+  const subOptsRow    = document.getElementById('sub-options-row')!;
+  const varInputsEl   = document.getElementById('var-inputs')!;
+  const varInputsRow  = document.getElementById('var-inputs-row')!;
+  const outputTitle   = document.getElementById('output-title')!;
+  const outputBadge   = document.getElementById('output-badge')!;
+  const cmdBlocks     = document.getElementById('command-blocks')!;
+  const warningBlock  = document.getElementById('warning-block')!;
+  const copyAllBtn    = document.getElementById('copy-all-btn') as HTMLButtonElement;
+  const backBtn       = document.getElementById('back-btn') as HTMLButtonElement;
+
+  // ── Scenario card click ───────────────────────────────────────────
+  scenarioGrid.querySelectorAll<HTMLElement>('.scenario-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.dataset.scenario!;
+      openScenario(id);
+    });
+  });
+
+  function openScenario(id: string) {
+    const scenario = SCENARIOS[id];
+    if (!scenario) return;
+
+    activeScenario  = id;
+    activeSubOption = scenario.subOptions ? scenario.subOptions[0].id : 'default';
+
+    // Reset var values
+    (scenario.vars || []).forEach(v => { varValues[v.id] = v.default; });
+
+    // Title + badge
+    outputTitle.textContent = scenario.title;
+    if (scenario.badge) {
+      outputBadge.textContent = scenario.badge;
+      outputBadge.style.cssText = `margin-left:.5rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.15rem .5rem;border-radius:999px;background:${lightenHex(scenario.badgeColor || '#1D4ED8')};color:${scenario.badgeColor || '#1D4ED8'};`;
+    } else {
+      outputBadge.textContent = '';
+    }
+
+    // Sub-options
+    if (scenario.subOptions && scenario.subOptions.length) {
+      subOptsRow.innerHTML = '';
+      scenario.subOptions.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = `sub-btn${opt.id === activeSubOption ? ' active' : ''}`;
+        btn.textContent = opt.label;
+        btn.addEventListener('click', () => {
+          activeSubOption = opt.id;
+          subOptsRow.querySelectorAll<HTMLButtonElement>('.sub-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderCommands();
+        });
+        subOptsRow.appendChild(btn);
+      });
+      subOptionsEl.style.display = 'block';
+    } else {
+      subOptionsEl.style.display = 'none';
+    }
+
+    // Var inputs
+    if (scenario.vars && scenario.vars.length) {
+      varInputsRow.innerHTML = '';
+      scenario.vars.forEach(v => {
+        const wrap = document.createElement('div');
+        wrap.className = 'var-input-wrap';
+        wrap.innerHTML = `<label class="var-label">${v.label}</label><input class="var-input" type="text" placeholder="${v.placeholder}" value="${v.default}" data-var="${v.id}" />`;
+        const input = wrap.querySelector('input')!;
+        input.addEventListener('input', () => {
+          varValues[v.id] = input.value || v.default;
+          renderCommands();
+        });
+        varInputsRow.appendChild(wrap);
+      });
+      varInputsEl.style.display = 'block';
+    } else {
+      varInputsEl.style.display = 'none';
+    }
+
+    // Show output panel, hide grid
+    scenarioGrid.style.display = 'none';
+    outputPanel.style.display  = 'block';
+
+    renderCommands();
+  }
+
+  function renderCommands() {
+    if (!activeScenario) return;
+    const scenario = SCENARIOS[activeScenario];
+    const key   = scenario.steps[activeSubOption] ? activeSubOption : 'default';
+    const steps = scenario.steps[key] || [];
+
+    cmdBlocks.innerHTML = '';
+    const allCmds: string[] = [];
+
+    steps.forEach(step => {
+      if (!step.cmd.trim()) return;
+      const rendered = interpolate(step.cmd);
+      allCmds.push(rendered);
+
+      const block = document.createElement('div');
+      block.className = `cmd-block${step.danger ? ' danger' : ''}`;
+
+      const text = document.createElement('span');
+      text.className = 'cmd-text';
+      if (step.cmd.startsWith('#')) {
+        text.style.color = 'var(--text-muted)';
+        text.style.fontStyle = 'italic';
+      }
+      text.textContent = rendered;
+      if (step.comment && !step.cmd.startsWith('#')) {
+        const comment = document.createElement('span');
+        comment.className = 'cmd-comment';
+        comment.textContent = '# ' + step.comment;
+        text.appendChild(comment);
+      }
+      block.appendChild(text);
+
+      if (!step.cmd.startsWith('#')) {
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'cmd-copy-btn';
+        copyBtn.textContent = 'Copy';
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(rendered).then(() => {
+            copyBtn.textContent = '✓';
+            copyBtn.style.color = '#16A34A';
+            copyBtn.style.borderColor = '#BBF7D0';
+            setTimeout(() => {
+              copyBtn.textContent = 'Copy';
+              copyBtn.style.color = '';
+              copyBtn.style.borderColor = '';
+            }, 1800);
+          });
+        });
+        block.appendChild(copyBtn);
+      }
+
+      cmdBlocks.appendChild(block);
+    });
+
+    // Warning
+    const warningText =
+      (scenario.warnings && scenario.warnings[activeSubOption]) ||
+      scenario.warning || '';
+    if (warningText) {
+      warningBlock.style.display   = 'block';
+      warningBlock.style.background = '#FFF7ED';
+      warningBlock.style.border     = '1.5px solid #FED7AA';
+      warningBlock.style.color      = '#92400E';
+      warningBlock.textContent      = warningText;
+    } else {
+      warningBlock.style.display = 'none';
+    }
+
+    // Copy all
+    copyAllBtn.dataset.cmds = allCmds.filter(c => !c.startsWith('#')).join('\n');
+  }
+
+  function interpolate(cmd: string): string {
+    return cmd.replace(/\{(\w+)\}/g, (_, key) => varValues[key] || `<${key}>`);
+  }
+
+  function lightenHex(hex: string): string {
+    // Returns a very light version of the badge color for background
+    return hex + '18';
+  }
+
+  // ── Copy all ──────────────────────────────────────────────────────
+  copyAllBtn.addEventListener('click', () => {
+    const cmds = copyAllBtn.dataset.cmds || '';
+    navigator.clipboard.writeText(cmds).then(() => {
+      copyAllBtn.textContent = '✓ Copied!';
+      copyAllBtn.style.background = '#16A34A';
+      setTimeout(() => {
+        copyAllBtn.textContent = 'Copy all';
+        copyAllBtn.style.background = '#1D4ED8';
+      }, 2000);
+    });
+  });
+
+  // ── Back button ───────────────────────────────────────────────────
+  backBtn.addEventListener('click', () => {
+    activeScenario  = null;
+    activeSubOption = 'default';
+    outputPanel.style.display  = 'none';
+    scenarioGrid.style.display = 'grid';
+  });
+
+})();
+</script>
