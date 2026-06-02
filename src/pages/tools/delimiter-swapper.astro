@@ -1,0 +1,486 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'delimiter-swapper')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">
+      Delimiter Swapper
+    </h2>
+    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.375rem;">Paste a column of values — one per line — and instantly reformat it.</p>
+
+    <!-- ── Format selector cards ── -->
+    <div style="margin-bottom:1.25rem;">
+      <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.625rem;">Output Format</div>
+      <div id="format-cards" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(148px, 1fr)); gap:0.5rem;">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- ── Options row ── -->
+    <div id="options-row" style="display:flex; flex-wrap:wrap; gap:0.625rem; margin-bottom:1.25rem; padding:0.75rem 1rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; align-items:center;">
+      <!-- Options injected by JS per format -->
+    </div>
+
+    <!-- ── Input / Output ── -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.875rem;" class="ds-panels">
+
+      <!-- Input -->
+      <div style="display:flex; flex-direction:column; gap:0.375rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <label style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">Input <span id="input-count" style="font-weight:400; color:var(--text-muted);">(0 values)</span></label>
+          <button id="btn-sample" style="font-size:0.72rem; color:#4F46E5; background:none; border:none; cursor:pointer; font-weight:600; padding:0;"
+            onmouseover="this.style.color='#1D4ED8';" onmouseout="this.style.color='#4F46E5';">Load Sample</button>
+        </div>
+        <textarea id="ds-input"
+          placeholder="Paste values here, one per line…&#10;&#10;apple&#10;banana&#10;cherry"
+          style="width:100%; height:220px; padding:0.75rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-primary); resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='#D97706';" onblur="this.style.borderColor='var(--border)';"
+          spellcheck="false"></textarea>
+      </div>
+
+      <!-- Output -->
+      <div style="display:flex; flex-direction:column; gap:0.375rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <label style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">Output</label>
+          <button id="btn-copy" style="font-size:0.72rem; color:#4F46E5; background:none; border:none; cursor:pointer; font-weight:600; padding:0;"
+            onmouseover="this.style.color='#1D4ED8';" onmouseout="this.style.color='#4F46E5';">Copy</button>
+        </div>
+        <textarea id="ds-output" readonly
+          style="width:100%; height:220px; padding:0.75rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-primary); resize:vertical; box-sizing:border-box; outline:none; line-height:1.65;"
+          spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <!-- ── Stats bar ── -->
+    <div id="stats-bar" style="display:flex; flex-wrap:wrap; gap:0.625rem; align-items:center; font-size:0.75rem; color:var(--text-muted);">
+      <span id="stat-values">0 values</span>
+      <span style="color:var(--border);">·</span>
+      <span id="stat-empty">0 empty skipped</span>
+      <span style="color:var(--border);">·</span>
+      <span id="stat-dupes"></span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW TO USE
+  ══════════════════════════════════════════════ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Delimiter Swapper</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Copy a column from Excel, Google Sheets, or any list — one value per line — and paste it into the input panel. Select your target format from the cards above the panels. The output updates instantly as you type or change format options.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Use the options that appear below the format cards to customise quoting style, casing, deduplication, and more. Click Copy to grab the result and paste it directly into your SQL query, code, or document.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the conversion works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Input parsing', 'The input is split on newlines. Each line is trimmed of leading and trailing whitespace. Empty lines are counted and skipped — they never appear in the output. This matches how Excel column copies typically include trailing blank cells.'],
+        ['SQL IN() clause', "Values are individually wrapped in single quotes and joined with a comma and space. The result is wrapped in IN ('…'). Use the options to switch to double quotes for databases like MySQL in ANSI mode, or to skip quoting for numeric-only columns."],
+        ['Comma-separated list (CSV)', 'Values are joined with your chosen separator — comma, semicolon, pipe, or tab. Quoting wraps each value in the selected quote style. The wrap option folds long lists to a configurable column width, useful for pasting into code comments.'],
+        ['JSON array', 'Values are JSON-serialised — strings get double-quote wrapping with internal quotes escaped. Numbers and booleans are detected and emitted as native JSON types if the "smart types" option is enabled. Output is formatted with one value per line for readability.'],
+        ['Markdown list & table', 'List format prefixes each value with a - bullet. Table format wraps values in a two-column Markdown table with a header row and alignment dashes, ready to paste into GitHub, Notion, or any Markdown renderer.'],
+        ['Deduplication', 'When enabled, duplicate values (case-insensitively) are removed and the count of duplicates stripped is shown in the stats bar. The first occurrence is kept; subsequent ones are dropped.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════════ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'How do I copy a column from Excel?', a: 'Click the column header to select the entire column, or click the first cell and Shift+Click the last cell to select a range. Press Ctrl+C (or Cmd+C on Mac) to copy. Paste directly into the input panel here — Excel copies each cell as a newline-separated value, which is exactly what this tool expects.' },
+        { q: 'What if my values contain single quotes (apostrophes)?', a: "For SQL output, values containing single quotes are automatically escaped by doubling them — e.g. O'Brien becomes O''Brien — which is the standard SQL escaping method compatible with all major databases including PostgreSQL, MySQL, and SQL Server." },
+        { q: 'Can I use this for numeric IDs in SQL?', a: "Yes. Enable the 'No quotes (numeric)' option in the SQL format options. This outputs IN (1, 2, 3) without any quote wrapping, which is correct for integer and bigint columns. Using quoted numbers in SQL is technically valid but may prevent index usage on strictly-typed columns in some databases." },
+        { q: 'What is the difference between CSV and TSV?', a: 'CSV (comma-separated values) uses a comma as the delimiter. TSV (tab-separated values) uses a tab character. TSV is often preferred when values themselves might contain commas — e.g. addresses or descriptions. Both formats are accepted by Excel, Google Sheets, and most data tools.' },
+        { q: 'Why would I use the Markdown table format?', a: 'Markdown tables are useful for pasting structured data into GitHub pull request descriptions, Notion pages, Confluence documents, or README files. The tool generates a two-column table with an index column and a value column, giving it immediate context when viewed rendered.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  @media (max-width: 640px) {
+    .ds-panels { grid-template-columns: 1fr !important; }
+  }
+
+  /* Format card active state */
+  .fmt-card.active {
+    border-color: #D97706 !important;
+    background: rgba(217,119,6,0.09) !important;
+  }
+  .fmt-card.active .fmt-card-label {
+    color: #D97706 !important;
+  }
+  .fmt-card.active .fmt-card-preview {
+    color: #D97706 !important;
+    opacity: 0.85;
+  }
+
+  /* Option toggle active */
+  .opt-toggle.active {
+    background: rgba(217,119,6,0.1) !important;
+    border-color: #D97706 !important;
+    color: #D97706 !important;
+  }
+
+  /* Option select */
+  .opt-select {
+    padding: 0.3rem 0.6rem;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    border-radius: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-family: 'Fira Code', monospace;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .opt-select:focus { border-color: #D97706; }
+</style>
+
+<script>
+  // ── Format definitions ────────────────────────────────────
+
+  type FormatId = 'sql-in' | 'csv' | 'json' | 'md-list' | 'md-table' | 'powershell';
+
+  interface Format {
+    id: FormatId;
+    label: string;
+    preview: string;
+    description: string;
+  }
+
+  const FORMATS: Format[] = [
+    { id: 'sql-in',     label: 'SQL IN()',       preview: "IN ('a','b')",    description: 'SQL WHERE IN clause'    },
+    { id: 'csv',        label: 'CSV / List',     preview: 'a, b, c',         description: 'Comma-separated values' },
+    { id: 'json',       label: 'JSON Array',     preview: '["a","b"]',       description: 'JSON array literal'     },
+    { id: 'md-list',    label: 'Markdown List',  preview: '- a\n- b',        description: 'Bulleted list'          },
+    { id: 'md-table',   label: 'Markdown Table', preview: '| # | val |',     description: 'Two-column table'       },
+    { id: 'powershell', label: 'PowerShell',     preview: "@('a','b')",      description: 'PS array literal'       },
+  ];
+
+  // ── State ─────────────────────────────────────────────────
+  let activeFormat: FormatId = 'sql-in';
+  let opts = {
+    sqlQuote:    'single' as 'single' | 'double' | 'none',
+    csvSep:      ',' as string,
+    csvQuote:    'none' as 'none' | 'single' | 'double',
+    csvWrap:     false,
+    jsonSmart:   false,
+    jsonPretty:  true,
+    dedupe:      false,
+    trimValues:  true,
+    caseMode:    'none' as 'none' | 'upper' | 'lower',
+  };
+
+  // ── Build format cards ────────────────────────────────────
+  const cardContainer = document.getElementById('format-cards')!;
+
+  FORMATS.forEach(f => {
+    const card = document.createElement('button');
+    card.className = 'fmt-card' + (f.id === activeFormat ? ' active' : '');
+    card.dataset.id = f.id;
+    card.style.cssText = `
+      display:flex; flex-direction:column; align-items:flex-start; gap:0.3rem;
+      padding:0.625rem 0.75rem;
+      background:var(--bg-surface-2);
+      border:1.5px solid var(--border);
+      border-radius:0.625rem;
+      cursor:pointer;
+      text-align:left;
+      transition:all 0.15s;
+    `;
+    card.innerHTML = `
+      <span class="fmt-card-label" style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); font-family:'Sora',sans-serif;">${f.label}</span>
+      <code class="fmt-card-preview" style="font-family:'Fira Code',monospace; font-size:0.68rem; color:var(--text-muted); white-space:pre; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${f.preview}</code>
+    `;
+    card.addEventListener('click', () => {
+      activeFormat = f.id as FormatId;
+      document.querySelectorAll('.fmt-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      renderOptions();
+      transform();
+    });
+    cardContainer.appendChild(card);
+  });
+
+  // ── Options renderer ──────────────────────────────────────
+  function renderOptions() {
+    const row = document.getElementById('options-row')!;
+    row.innerHTML = '';
+
+    const addLabel = (text: string) => {
+      const el = document.createElement('span');
+      el.style.cssText = 'font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; white-space:nowrap;';
+      el.textContent = text;
+      row.appendChild(el);
+    };
+
+    const addSelect = (label: string, key: keyof typeof opts, choices: {value: string; label: string}[]) => {
+      addLabel(label);
+      const sel = document.createElement('select');
+      sel.className = 'opt-select';
+      choices.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.value;
+        o.textContent = c.label;
+        if ((opts as any)[key] === c.value) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', () => { (opts as any)[key] = sel.value; transform(); });
+      row.appendChild(sel);
+    };
+
+    const addToggle = (label: string, key: keyof typeof opts) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-toggle' + ((opts as any)[key] ? ' active' : '');
+      btn.style.cssText = `
+        padding:0.28rem 0.65rem;
+        font-size:0.75rem; font-weight:600;
+        border:1.5px solid var(--border);
+        border-radius:0.4rem;
+        background:var(--bg-surface);
+        color:var(--text-secondary);
+        cursor:pointer;
+        transition:all 0.15s;
+        white-space:nowrap;
+      `;
+      btn.textContent = label;
+      btn.addEventListener('click', () => {
+        (opts as any)[key] = !(opts as any)[key];
+        btn.classList.toggle('active', (opts as any)[key]);
+        transform();
+      });
+      row.appendChild(btn);
+    };
+
+    const addSep = () => {
+      const el = document.createElement('span');
+      el.style.cssText = 'color:var(--border); font-size:1rem;';
+      el.textContent = '|';
+      row.appendChild(el);
+    };
+
+    // Shared options
+    addToggle('Deduplicate', 'dedupe');
+    addToggle('Trim values', 'trimValues');
+    addSelect('Case', 'caseMode', [
+      { value: 'none',  label: 'As-is' },
+      { value: 'upper', label: 'UPPER' },
+      { value: 'lower', label: 'lower' },
+    ]);
+
+    addSep();
+
+    // Format-specific options
+    if (activeFormat === 'sql-in') {
+      addSelect('Quote', 'sqlQuote', [
+        { value: 'single', label: "' single" },
+        { value: 'double', label: '" double' },
+        { value: 'none',   label: 'No quotes' },
+      ]);
+    }
+
+    if (activeFormat === 'csv') {
+      addSelect('Separator', 'csvSep', [
+        { value: ',',  label: ', comma' },
+        { value: '; ', label: '; semicolon' },
+        { value: ' | ', label: '| pipe' },
+        { value: '\t', label: '⇥ tab' },
+      ]);
+      addSelect('Quote each', 'csvQuote', [
+        { value: 'none',   label: 'No quotes' },
+        { value: 'single', label: "' single" },
+        { value: 'double', label: '" double' },
+      ]);
+      addToggle('Wrap lines', 'csvWrap');
+    }
+
+    if (activeFormat === 'json') {
+      addToggle('Smart types', 'jsonSmart');
+      addToggle('Pretty print', 'jsonPretty');
+    }
+  }
+
+  // ── Transform engine ──────────────────────────────────────
+  function getValues(): { values: string[]; emptySkipped: number; dupesRemoved: number } {
+    const raw = (document.getElementById('ds-input') as HTMLTextAreaElement).value;
+    const lines = raw.split('\n');
+
+    let trimmed = lines.map(l => opts.trimValues ? l.trim() : l);
+    const emptySkipped = trimmed.filter(l => l === '').length;
+    trimmed = trimmed.filter(l => l !== '');
+
+    // Case
+    if (opts.caseMode === 'upper') trimmed = trimmed.map(v => v.toUpperCase());
+    if (opts.caseMode === 'lower') trimmed = trimmed.map(v => v.toLowerCase());
+
+    // Dedupe
+    let dupesRemoved = 0;
+    if (opts.dedupe) {
+      const seen = new Set<string>();
+      const deduped: string[] = [];
+      for (const v of trimmed) {
+        const key = v.toLowerCase();
+        if (!seen.has(key)) { seen.add(key); deduped.push(v); }
+        else dupesRemoved++;
+      }
+      trimmed = deduped;
+    }
+
+    return { values: trimmed, emptySkipped, dupesRemoved };
+  }
+
+  function sqlEscapeSingle(v: string) { return v.replace(/'/g, "''"); }
+  function sqlEscapeDouble(v: string) { return v.replace(/"/g, '""'); }
+
+  function formatOutput(values: string[]): string {
+    if (values.length === 0) return '';
+
+    switch (activeFormat) {
+      case 'sql-in': {
+        let items: string[];
+        if (opts.sqlQuote === 'single')      items = values.map(v => `'${sqlEscapeSingle(v)}'`);
+        else if (opts.sqlQuote === 'double') items = values.map(v => `"${sqlEscapeDouble(v)}"`);
+        else                                 items = values;
+        return `IN (${items.join(', ')})`;
+      }
+
+      case 'csv': {
+        const sep = opts.csvSep === '\t' ? '\t' : opts.csvSep;
+        let items: string[];
+        if (opts.csvQuote === 'single')      items = values.map(v => `'${v}'`);
+        else if (opts.csvQuote === 'double') items = values.map(v => `"${v}"`);
+        else                                 items = values;
+        if (opts.csvWrap) {
+          // Wrap at ~80 chars
+          const lines: string[] = [];
+          let line = '';
+          items.forEach((item, i) => {
+            const piece = (i === 0 ? '' : sep) + item;
+            if (line.length + piece.length > 80 && line.length > 0) {
+              lines.push(line);
+              line = item;
+            } else {
+              line += piece;
+            }
+          });
+          if (line) lines.push(line);
+          return lines.join('\n');
+        }
+        return items.join(sep);
+      }
+
+      case 'json': {
+        let parsed: (string | number | boolean)[];
+        if (opts.jsonSmart) {
+          parsed = values.map(v => {
+            if (v === 'true')  return true;
+            if (v === 'false') return false;
+            const n = Number(v);
+            if (!isNaN(n) && v.trim() !== '') return n;
+            return v;
+          });
+        } else {
+          parsed = values;
+        }
+        if (opts.jsonPretty) {
+          return JSON.stringify(parsed, null, 2);
+        }
+        return JSON.stringify(parsed);
+      }
+
+      case 'md-list':
+        return values.map(v => `- ${v}`).join('\n');
+
+      case 'md-table': {
+        const maxLen = Math.max(...values.map(v => v.length), 5);
+        const sep2 = `| --- | ${'-'.repeat(maxLen)} |`;
+        const header = `| #   | Value${' '.repeat(Math.max(0, maxLen - 5))} |`;
+        const rows = values.map((v, i) => `| ${String(i + 1).padStart(3)} | ${v.padEnd(maxLen)} |`);
+        return [header, sep2, ...rows].join('\n');
+      }
+
+      case 'powershell': {
+        const items = values.map(v => `'${v.replace(/'/g, "''")}'`);
+        return `@(${items.join(', ')})`;
+      }
+    }
+  }
+
+  function transform() {
+    const { values, emptySkipped, dupesRemoved } = getValues();
+    const output = formatOutput(values);
+
+    (document.getElementById('ds-output') as HTMLTextAreaElement).value = output;
+
+    // Stats
+    document.getElementById('input-count')!.textContent = `(${values.length + dupesRemoved} values)`;
+    document.getElementById('stat-values')!.textContent = `${values.length} value${values.length !== 1 ? 's' : ''}`;
+    document.getElementById('stat-empty')!.textContent  = `${emptySkipped} empty skipped`;
+    const dupeEl = document.getElementById('stat-dupes')!;
+    if (dupesRemoved > 0) {
+      dupeEl.textContent = `${dupesRemoved} duplicate${dupesRemoved !== 1 ? 's' : ''} removed`;
+      dupeEl.style.color = '#D97706';
+    } else {
+      dupeEl.textContent = '';
+    }
+  }
+
+  // ── Events ────────────────────────────────────────────────
+  document.getElementById('ds-input')!.addEventListener('input', transform);
+
+  document.getElementById('btn-copy')!.addEventListener('click', () => {
+    const val = (document.getElementById('ds-output') as HTMLTextAreaElement).value;
+    if (!val) return;
+    navigator.clipboard.writeText(val).then(() => {
+      const btn = document.getElementById('btn-copy')!;
+      btn.textContent = '✓ Copied!';
+      btn.style.color = '#059669';
+      setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = ''; }, 2000);
+    });
+  });
+
+  document.getElementById('btn-sample')!.addEventListener('click', () => {
+    (document.getElementById('ds-input') as HTMLTextAreaElement).value =
+      'alice@example.com\nbob@company.io\ncarol@mail.org\ndave@test.net\nelliot@example.com\nalice@example.com';
+    transform();
+  });
+
+  // ── Init ──────────────────────────────────────────────────
+  renderOptions();
+  transform();
+</script>

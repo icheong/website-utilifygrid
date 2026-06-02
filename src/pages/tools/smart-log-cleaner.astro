@@ -1,0 +1,448 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'smart-log-cleaner')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">
+      Smart Log Cleaner &amp; Filter
+    </h2>
+    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.25rem;">Paste server logs, toggle filters, download clean output.</p>
+
+    <!-- ── Filter control bar ── -->
+    <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.875rem; padding:1rem 1.125rem; margin-bottom:1rem;">
+
+      <!-- Row 1: HTTP status codes -->
+      <div style="margin-bottom:0.875rem;">
+        <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.5rem;">HTTP Status Codes — strip matching lines</div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.375rem;" id="status-toggles">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div style="border-top:1px solid var(--border); margin-bottom:0.875rem;"></div>
+
+      <!-- Row 2: Pattern filters -->
+      <div style="margin-bottom:0.875rem;">
+        <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.5rem;">Quick Filters</div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.375rem;" id="pattern-toggles">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div style="border-top:1px solid var(--border); margin-bottom:0.875rem;"></div>
+
+      <!-- Row 3: Custom regex -->
+      <div>
+        <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.5rem;">Custom Pattern (regex) — strip matching lines</div>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <input id="custom-regex" type="text" placeholder="e.g. /healthz|/ping|bot"
+            style="flex:1; padding:0.45rem 0.75rem; background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.5rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-primary); outline:none; transition:border-color 0.15s; min-width:0;"
+            onfocus="this.style.borderColor='#1D4ED8';" onblur="this.style.borderColor='var(--border)';" />
+          <span id="regex-error" style="font-size:0.72rem; color:#DC2626; white-space:nowrap; display:none;">Invalid regex</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Input / Output panels ── -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;" class="log-panels">
+
+      <!-- Input -->
+      <div style="display:flex; flex-direction:column; gap:0.375rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <label style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">Input Log</label>
+          <button id="btn-load-sample" style="font-size:0.72rem; color:#4F46E5; background:none; border:none; cursor:pointer; font-weight:600; padding:0; transition:color 0.15s;"
+            onmouseover="this.style.color='#1D4ED8';" onmouseout="this.style.color='#4F46E5';">Load Sample</button>
+        </div>
+        <textarea id="log-input" placeholder="Paste server log lines here…"
+          style="width:100%; height:260px; padding:0.75rem; background:#0B1120; border:1.5px solid var(--border); border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.72rem; color:#94A3B8; resize:vertical; box-sizing:border-box; outline:none; line-height:1.7; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='#1D4ED8';" onblur="this.style.borderColor='var(--border)';"
+          spellcheck="false"></textarea>
+        <div id="input-stats" style="font-size:0.7rem; color:var(--text-muted);">0 lines</div>
+      </div>
+
+      <!-- Output -->
+      <div style="display:flex; flex-direction:column; gap:0.375rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <label style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">Cleaned Output</label>
+          <div style="display:flex; gap:0.625rem; align-items:center;">
+            <button id="btn-copy-out" style="font-size:0.72rem; color:#4F46E5; background:none; border:none; cursor:pointer; font-weight:600; padding:0; transition:color 0.15s;"
+              onmouseover="this.style.color='#1D4ED8';" onmouseout="this.style.color='#4F46E5';">Copy</button>
+            <button id="btn-download" style="font-size:0.72rem; color:#059669; background:none; border:none; cursor:pointer; font-weight:600; padding:0; transition:color 0.15s;"
+              onmouseover="this.style.color='#047857';" onmouseout="this.style.color='#059669';">↓ Download</button>
+          </div>
+        </div>
+        <textarea id="log-output" readonly
+          style="width:100%; height:260px; padding:0.75rem; background:#0B1120; border:1.5px solid var(--border); border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.72rem; color:#86EFAC; resize:vertical; box-sizing:border-box; outline:none; line-height:1.7;"
+          spellcheck="false"></textarea>
+        <div id="output-stats" style="font-size:0.7rem; color:var(--text-muted);">0 lines · 0 removed</div>
+      </div>
+    </div>
+
+    <!-- ── Summary bar ── -->
+    <div id="summary-bar" style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.875rem 1rem; display:none;">
+      <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.625rem;">Filter Summary</div>
+      <div id="summary-content" style="display:flex; flex-wrap:wrap; gap:0.5rem; font-size:0.78rem; color:var(--text-secondary);"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW TO USE
+  ══════════════════════════════════════════════ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Log Cleaner</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste any server log into the input panel — Apache, Nginx, Node.js, or any newline-delimited log format. Use the status code toggles to instantly strip lines matching 2xx, 3xx, 4xx, or 5xx responses. Toggle quick filters to remove health checks, bot traffic, and timestamp-only lines in one click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      For custom filtering, type any regular expression into the custom pattern field — lines matching that pattern are stripped in real time. Copy the cleaned output or download it as a <code style="font-family:'Fira Code',monospace; font-size:0.85rem;">.log</code> file for further analysis.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the filtering works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Line-by-line processing', 'The input is split into individual lines. Each line is tested against every active filter pattern. If any pattern matches, the line is excluded from the output. All filtering happens entirely in your browser — your logs never leave your device.'],
+        ['HTTP status code matching', 'Status code filters use regular expressions to detect the code anywhere in the line — e.g. " 200 ", " 301 ", " 404 ". The filter matches the code as a complete token preceded by a space, preventing false matches on ports or timestamps that happen to contain the same digits.'],
+        ['Health check & bot detection', 'The built-in quick filters use battle-tested regex patterns for common health check endpoints (/healthz, /ping, /_health, /status), common crawler User-Agent strings (Googlebot, bingbot, Slurp), and lines that are purely timestamps with no meaningful payload.'],
+        ['Custom regex', 'Any JavaScript-compatible regular expression is accepted. It is applied as a line-level test: lines where the regex finds a match anywhere are removed. Flags like case-insensitivity can be added using standard syntax (e.g. /pattern/i — just type the inner pattern, flags are not needed in the input field).'],
+        ['Real-time updates', 'The output re-renders on every keystroke in the input, every toggle change, and every custom pattern edit. A filter summary shows how many lines each active filter removed, making it easy to understand exactly what was stripped.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════════ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Are my logs sent to a server?', a: 'No. All processing is done entirely in your browser using JavaScript. Your log data never leaves your device and is never transmitted anywhere. This makes the tool safe for use with sensitive production logs — nothing is stored, cached, or sent to any backend.' },
+        { q: 'What log formats are supported?', a: 'Any plain-text, newline-delimited log format works — Apache Combined Log Format, Nginx access logs, Node.js stdout, JSON-per-line logs, systemd journal exports, AWS CloudWatch log exports, and more. The tool treats each line independently, so mixed-format logs also work.' },
+        { q: 'How do I filter out a specific endpoint?', a: 'Type the endpoint path in the Custom Pattern field. For example, typing /api/healthcheck will strip all lines containing that string. For multiple endpoints, use the pipe operator: /healthcheck|/metrics|/ping. The pattern is treated as a JavaScript regular expression.' },
+        { q: 'Can I keep only specific status codes instead of stripping them?', a: 'The current tool strips lines matching the selected codes. To keep only a specific code, use the Custom Pattern field with a negative approach: enable all other status code filters except the one you want to keep. For complex keep-only logic, copy the output and paste it as the new input with different filters applied.' },
+        { q: 'What is the maximum log size?', a: 'There is no hard limit — the tool processes entirely in memory in your browser. In practice, very large logs (50MB+) may cause the browser tab to slow down during processing. For logs of that size, command-line tools like grep, awk, or sed are faster choices. For typical access logs up to a few megabytes, the tool handles them instantly.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  /* Stack panels on mobile */
+  @media (max-width: 640px) {
+    .log-panels {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+<script>
+  // ── Filter definitions ────────────────────────────────────
+
+  interface StatusFilter {
+    id: string;
+    label: string;
+    pattern: RegExp;
+    color: string;
+    bg: string;
+    activeBg: string;
+  }
+
+  interface PatternFilter {
+    id: string;
+    label: string;
+    description: string;
+    pattern: RegExp;
+  }
+
+  const STATUS_FILTERS: StatusFilter[] = [
+    { id: 's2xx', label: '2xx', pattern: /\s(2\d{2})\s/, color: '#059669', bg: 'rgba(5,150,105,0.08)',   activeBg: 'rgba(5,150,105,0.18)'   },
+    { id: 's3xx', label: '3xx', pattern: /\s(3\d{2})\s/, color: '#1D4ED8', bg: 'rgba(29,78,216,0.08)',   activeBg: 'rgba(29,78,216,0.18)'   },
+    { id: 's4xx', label: '4xx', pattern: /\s(4\d{2})\s/, color: '#D97706', bg: 'rgba(217,119,6,0.08)',   activeBg: 'rgba(217,119,6,0.18)'   },
+    { id: 's5xx', label: '5xx', pattern: /\s(5\d{2})\s/, color: '#DC2626', bg: 'rgba(220,38,38,0.08)',   activeBg: 'rgba(220,38,38,0.18)'   },
+    { id: 's200', label: '200', pattern: /\s200\s/,      color: '#059669', bg: 'rgba(5,150,105,0.08)',   activeBg: 'rgba(5,150,105,0.18)'   },
+    { id: 's301', label: '301', pattern: /\s301\s/,      color: '#1D4ED8', bg: 'rgba(29,78,216,0.08)',   activeBg: 'rgba(29,78,216,0.18)'   },
+    { id: 's302', label: '302', pattern: /\s302\s/,      color: '#1D4ED8', bg: 'rgba(29,78,216,0.08)',   activeBg: 'rgba(29,78,216,0.18)'   },
+    { id: 's304', label: '304', pattern: /\s304\s/,      color: '#64748B', bg: 'rgba(100,116,139,0.08)', activeBg: 'rgba(100,116,139,0.18)' },
+    { id: 's400', label: '400', pattern: /\s400\s/,      color: '#D97706', bg: 'rgba(217,119,6,0.08)',   activeBg: 'rgba(217,119,6,0.18)'   },
+    { id: 's401', label: '401', pattern: /\s401\s/,      color: '#D97706', bg: 'rgba(217,119,6,0.08)',   activeBg: 'rgba(217,119,6,0.18)'   },
+    { id: 's403', label: '403', pattern: /\s403\s/,      color: '#D97706', bg: 'rgba(217,119,6,0.08)',   activeBg: 'rgba(217,119,6,0.18)'   },
+    { id: 's404', label: '404', pattern: /\s404\s/,      color: '#D97706', bg: 'rgba(217,119,6,0.08)',   activeBg: 'rgba(217,119,6,0.18)'   },
+    { id: 's500', label: '500', pattern: /\s500\s/,      color: '#DC2626', bg: 'rgba(220,38,38,0.08)',   activeBg: 'rgba(220,38,38,0.18)'   },
+    { id: 's502', label: '502', pattern: /\s502\s/,      color: '#DC2626', bg: 'rgba(220,38,38,0.08)',   activeBg: 'rgba(220,38,38,0.18)'   },
+    { id: 's503', label: '503', pattern: /\s503\s/,      color: '#DC2626', bg: 'rgba(220,38,38,0.08)',   activeBg: 'rgba(220,38,38,0.18)'   },
+  ];
+
+  const PATTERN_FILTERS: PatternFilter[] = [
+    { id: 'pf-health',     label: '🩺 Health checks',     description: '/healthz /ping /_health /status /ready /live', pattern: /\/healthz|\/ping|\/ready|\/live(?:ness)?|\/status|\/health(?:check)?|\"GET \/ |\"HEAD \/ / },
+    { id: 'pf-bots',       label: '🤖 Known bots',         description: 'Googlebot, bingbot, Slurp, DuckDuckBot, etc.',  pattern: /Googlebot|bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|Exabot|facebot|ia_archiver|msnbot|Yahoo/i },
+    { id: 'pf-static',     label: '📁 Static assets',      description: '.css .js .ico .png .jpg .woff .svg',            pattern: /\.(css|js|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|map|webp)\b/ },
+    { id: 'pf-options',    label: '⚙️  OPTIONS requests',   description: 'CORS preflight requests',                      pattern: /"OPTIONS / },
+    { id: 'pf-timestamps', label: '🕐 Timestamp-only',     description: 'Lines that contain only a timestamp',           pattern: /^\[?\d{2}[\/:]\d{2}[\/:]\d{4}[\s\]:T]+\d{2}:\d{2}:\d{2}[\]Z\s]*$/ },
+    { id: 'pf-empty',      label: '⬜ Blank lines',         description: 'Empty or whitespace-only lines',               pattern: /^\s*$/ },
+  ];
+
+  // ── State ─────────────────────────────────────────────────
+  const activeStatus  = new Set<string>();
+  const activePattern = new Set<string>();
+  let customRegex: RegExp | null = null;
+
+  // ── Render toggle buttons ─────────────────────────────────
+  const statusContainer  = document.getElementById('status-toggles')!;
+  const patternContainer = document.getElementById('pattern-toggles')!;
+
+  function makeStatusToggle(f: StatusFilter) {
+    const btn = document.createElement('button');
+    btn.dataset.id = f.id;
+    btn.style.cssText = `
+      padding:0.3rem 0.7rem;
+      border-radius:999px;
+      font-family:'Fira Code',monospace;
+      font-size:0.75rem;
+      font-weight:700;
+      cursor:pointer;
+      border:1.5px solid ${f.color}40;
+      background:${f.bg};
+      color:${f.color};
+      transition:all 0.15s;
+      letter-spacing:0.03em;
+    `;
+    btn.textContent = f.label;
+    btn.addEventListener('click', () => {
+      const isActive = activeStatus.has(f.id);
+      if (isActive) {
+        activeStatus.delete(f.id);
+        btn.style.background = f.bg;
+        btn.style.borderColor = f.color + '40';
+        btn.style.boxShadow = 'none';
+        btn.style.opacity = '1';
+      } else {
+        activeStatus.add(f.id);
+        btn.style.background = f.activeBg;
+        btn.style.borderColor = f.color;
+        btn.style.boxShadow = `0 0 0 2px ${f.color}30`;
+        btn.style.opacity = '1';
+      }
+      // Visual strike-through effect on active filters
+      btn.style.textDecoration = activeStatus.has(f.id) ? 'line-through' : 'none';
+      applyFilters();
+    });
+    return btn;
+  }
+
+  function makePatternToggle(f: PatternFilter) {
+    const btn = document.createElement('button');
+    btn.dataset.id = f.id;
+    btn.title = f.description;
+    btn.style.cssText = `
+      padding:0.35rem 0.75rem;
+      border-radius:0.5rem;
+      font-size:0.78rem;
+      font-weight:600;
+      cursor:pointer;
+      border:1.5px solid var(--border);
+      background:var(--bg-surface);
+      color:var(--text-secondary);
+      transition:all 0.15s;
+      white-space:nowrap;
+    `;
+    btn.textContent = f.label;
+    btn.addEventListener('mouseenter', () => {
+      if (!activePattern.has(f.id)) btn.style.borderColor = '#1D4ED8';
+    });
+    btn.addEventListener('mouseleave', () => {
+      if (!activePattern.has(f.id)) btn.style.borderColor = 'var(--border)';
+    });
+    btn.addEventListener('click', () => {
+      if (activePattern.has(f.id)) {
+        activePattern.delete(f.id);
+        btn.style.background = 'var(--bg-surface)';
+        btn.style.borderColor = 'var(--border)';
+        btn.style.color = 'var(--text-secondary)';
+        btn.style.textDecoration = 'none';
+      } else {
+        activePattern.add(f.id);
+        btn.style.background = 'rgba(29,78,216,0.09)';
+        btn.style.borderColor = '#1D4ED8';
+        btn.style.color = '#1D4ED8';
+        btn.style.textDecoration = 'line-through';
+      }
+      applyFilters();
+    });
+    return btn;
+  }
+
+  STATUS_FILTERS.forEach(f  => statusContainer.appendChild(makeStatusToggle(f)));
+  PATTERN_FILTERS.forEach(f => patternContainer.appendChild(makePatternToggle(f)));
+
+  // ── Filter engine ─────────────────────────────────────────
+  interface FilterResult {
+    kept: string[];
+    removedByFilter: Map<string, number>;
+    totalRemoved: number;
+  }
+
+  function applyFilters(): void {
+    const raw   = (document.getElementById('log-input') as HTMLTextAreaElement).value;
+    const lines = raw === '' ? [] : raw.split('\n');
+
+    const inputStats = document.getElementById('input-stats')!;
+    inputStats.textContent = `${lines.length} line${lines.length !== 1 ? 's' : ''}`;
+
+    // Build active filter list
+    const activeFilters: { id: string; label: string; pattern: RegExp }[] = [];
+    STATUS_FILTERS.forEach(f  => { if (activeStatus.has(f.id))  activeFilters.push({ id: f.id, label: f.label, pattern: f.pattern }); });
+    PATTERN_FILTERS.forEach(f => { if (activePattern.has(f.id)) activeFilters.push({ id: f.id, label: f.label, pattern: f.pattern }); });
+    if (customRegex) activeFilters.push({ id: 'custom', label: 'Custom', pattern: customRegex });
+
+    const removedByFilter = new Map<string, number>();
+    activeFilters.forEach(f => removedByFilter.set(f.id, 0));
+
+    const kept: string[] = [];
+
+    for (const line of lines) {
+      let remove = false;
+      for (const f of activeFilters) {
+        if (f.pattern.test(line)) {
+          removedByFilter.set(f.id, (removedByFilter.get(f.id) ?? 0) + 1);
+          remove = true;
+          // Don't break — count all matching filters for summary
+        }
+      }
+      if (!remove) kept.push(line);
+    }
+
+    const totalRemoved = lines.length - kept.length;
+
+    // Update output
+    const outputEl = document.getElementById('log-output') as HTMLTextAreaElement;
+    outputEl.value = kept.join('\n');
+
+    const outputStats = document.getElementById('output-stats')!;
+    outputStats.textContent = `${kept.length} line${kept.length !== 1 ? 's' : ''} · ${totalRemoved} removed`;
+    outputStats.style.color = totalRemoved > 0 ? '#059669' : 'var(--text-muted)';
+
+    // Summary bar
+    const summaryBar     = document.getElementById('summary-bar')!;
+    const summaryContent = document.getElementById('summary-content')!;
+
+    if (activeFilters.length > 0 && lines.length > 0) {
+      summaryBar.style.display = 'block';
+      summaryContent.innerHTML = activeFilters.map(f => {
+        const count = removedByFilter.get(f.id) ?? 0;
+        return `<span style="display:inline-flex; align-items:center; gap:0.3rem; padding:0.25rem 0.6rem; background:var(--bg-surface); border:1px solid var(--border); border-radius:999px; font-size:0.75rem; font-family:'Fira Code',monospace;">
+          <span style="color:var(--text-muted);">${f.label}</span>
+          <span style="color:${count > 0 ? '#DC2626' : 'var(--text-muted)'}; font-weight:700;">−${count}</span>
+        </span>`;
+      }).join('');
+    } else {
+      summaryBar.style.display = 'none';
+    }
+  }
+
+  // ── Input wiring ──────────────────────────────────────────
+  document.getElementById('log-input')!.addEventListener('input', applyFilters);
+
+  // Custom regex
+  document.getElementById('custom-regex')!.addEventListener('input', (e) => {
+    const val = (e.target as HTMLInputElement).value.trim();
+    const errEl = document.getElementById('regex-error')!;
+    if (!val) {
+      customRegex = null;
+      errEl.style.display = 'none';
+      applyFilters();
+      return;
+    }
+    try {
+      customRegex = new RegExp(val);
+      errEl.style.display = 'none';
+    } catch {
+      customRegex = null;
+      errEl.style.display = 'inline';
+    }
+    applyFilters();
+  });
+
+  // Copy output
+  document.getElementById('btn-copy-out')!.addEventListener('click', () => {
+    const val = (document.getElementById('log-output') as HTMLTextAreaElement).value;
+    if (!val) return;
+    navigator.clipboard.writeText(val).then(() => {
+      const btn = document.getElementById('btn-copy-out')!;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    });
+  });
+
+  // Download output
+  document.getElementById('btn-download')!.addEventListener('click', () => {
+    const val = (document.getElementById('log-output') as HTMLTextAreaElement).value;
+    if (!val) return;
+    const blob = new Blob([val], { type: 'text/plain' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `cleaned-${Date.now()}.log`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Sample log
+  const SAMPLE_LOG = `127.0.0.1 - frank [10/Oct/2024:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326 "http://www.example.com/start.html" "Mozilla/4.08 [en] (Win98; I ;Nav)"
+127.0.0.1 - - [10/Oct/2024:13:55:37 -0700] "GET /favicon.ico HTTP/1.1" 404 209
+10.0.0.5 - - [10/Oct/2024:13:55:38 -0700] "GET /healthz HTTP/1.1" 200 2
+10.0.0.5 - - [10/Oct/2024:13:55:39 -0700] "GET /ping HTTP/1.1" 200 4
+192.168.1.1 - admin [10/Oct/2024:13:55:40 -0700] "POST /api/login HTTP/1.1" 401 89
+192.168.1.2 - - [10/Oct/2024:13:55:41 -0700] "GET /dashboard HTTP/1.1" 200 4523
+192.168.1.3 - - [10/Oct/2024:13:55:42 -0700] "GET /dashboard HTTP/1.1" 304 0
+10.0.0.8 - - [10/Oct/2024:13:55:43 -0700] "GET /metrics HTTP/1.1" 200 1248
+203.0.113.4 - - [10/Oct/2024:13:55:44 -0700] "GET /robots.txt HTTP/1.0" 200 68 "-" "Googlebot/2.1 (+http://www.google.com/bot.html)"
+203.0.113.5 - - [10/Oct/2024:13:55:45 -0700] "GET / HTTP/1.1" 200 11230 "-" "bingbot/2.0; +http://www.bing.com/bingbot.htm"
+192.168.1.5 - - [10/Oct/2024:13:55:46 -0700] "DELETE /api/user/42 HTTP/1.1" 403 112
+192.168.1.6 - - [10/Oct/2024:13:55:47 -0700] "PUT /api/data HTTP/1.1" 500 203
+192.168.1.7 - - [10/Oct/2024:13:55:48 -0700] "GET /styles/main.css HTTP/1.1" 200 8472
+192.168.1.7 - - [10/Oct/2024:13:55:48 -0700] "GET /scripts/app.js HTTP/1.1" 200 34128
+OPTIONS /api/auth HTTP/1.1 200 0
+192.168.1.9 - - [10/Oct/2024:13:55:50 -0700] "GET /api/products HTTP/1.1" 200 9821
+192.168.2.1 - - [10/Oct/2024:13:55:51 -0700] "GET /api/products/99 HTTP/1.1" 404 67
+192.168.2.2 - - [10/Oct/2024:13:55:52 -0700] "GET /checkout HTTP/1.1" 302 0
+10/Oct/2024:13:55:53 -0700
+192.168.2.4 - - [10/Oct/2024:13:55:54 -0700] "POST /api/orders HTTP/1.1" 503 0
+192.168.2.5 - user [10/Oct/2024:13:55:55 -0700] "GET /account HTTP/1.1" 200 6234`;
+
+  document.getElementById('btn-load-sample')!.addEventListener('click', () => {
+    (document.getElementById('log-input') as HTMLTextAreaElement).value = SAMPLE_LOG;
+    applyFilters();
+  });
+
+  // Init
+  applyFilters();
+</script>

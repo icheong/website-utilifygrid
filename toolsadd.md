@@ -136,15 +136,17 @@ Here is a curated list of 20 highly specific, friction-free utility tools for ea
 
 
 
-password hash & security evaluator needs to be a password generator instead with the same or more metrics
-anagram tool in the text processing
-exercise timer tool
-
-
-
 1. **Smart Log Cleaner & Filter:** Paste massive server logs and use toggle checkboxes to instantly strip out specific HTTP status codes, timestamps, or health checks.
-2. **Bulk String Case Mutator:** Instantly converts lists of text between camelCase, snake_case, PascalCase, kebab-case, or UPPERCASE.
 3. **Delimiter Swapper:** Paste a column of data from Excel and instantly swap the formatting into a comma-separated list, SQL `IN ('')` clause, or JSON array.
+
+
+exercise timer tool
+boggle solver tool
+
+
+
+
+2. **Bulk String Case Mutator:** Instantly converts lists of text between camelCase, snake_case, PascalCase, kebab-case, or UPPERCASE.
 4. **Duplicate Line Remover & Alphabetizer:** Paste a messy list to instantly sort it, strip out duplicate entries, and remove trailing white spaces.
 5. **Markdown Sanitizer & Formatter:** Paste messy text or broken lists to instantly fix indentation, uniform bullet styles, and repair broken link syntax.
 7. **Regex Bulk Find-and-Replace:** A text editor that runs complex regex replacement rules with real-time, color-coded highlighting of target tokens.
