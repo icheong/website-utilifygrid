@@ -138,6 +138,7 @@ Here is a curated list of 20 highly specific, friction-free utility tools for ea
 
 password hash & security evaluator needs to be a password generator instead with the same or more metrics
 anagram tool in the text processing
+exercise timer tool
 
 
 
