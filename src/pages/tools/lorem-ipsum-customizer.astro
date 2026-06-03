@@ -1,0 +1,700 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'lorem-ipsum-customizer')!;
+---
+
+<ToolLayout tool={tool}>
+  <div slot="tool">
+
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.2rem;">
+      Lorem Ipsum &amp; Dummy Text Customizer
+    </h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">
+      Slide to your exact count — paragraphs, sentences, words, characters, bytes, or list items — every format, every flavour.
+    </p>
+
+    <!-- ══ Controls grid ══ -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.875rem;" id="controls-grid">
+
+      <!-- Unit type -->
+      <div>
+        <label style="display:block;font-size:0.68rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.4rem;">Generate</label>
+        <div style="display:flex;gap:0.3rem;flex-wrap:wrap;" id="unit-group">
+          <button class="unit-btn active-unit" data-unit="paragraphs" style="padding:0.35rem 0.65rem;border-radius:0.4rem;border:1.5px solid #C2410C;background:rgba(194,65,12,0.1);color:#C2410C;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s;">Paragraphs</button>
+          <button class="unit-btn" data-unit="sentences" style="padding:0.35rem 0.65rem;border-radius:0.4rem;border:1.5px solid var(--border);background:var(--bg-surface-2);color:var(--text-secondary);font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s;">Sentences</button>
+          <button class="unit-btn" data-unit="words" style="padding:0.35rem 0.65rem;border-radius:0.4rem;border:1.5px solid var(--border);background:var(--bg-surface-2);color:var(--text-secondary);font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s;">Words</button>
+          <button class="unit-btn" data-unit="characters" style="padding:0.35rem 0.65rem;border-radius:0.4rem;border:1.5px solid var(--border);background:var(--bg-surface-2);color:var(--text-secondary);font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s;">Characters</button>
+          <button class="unit-btn" data-unit="bytes" style="padding:0.35rem 0.65rem;border-radius:0.4rem;border:1.5px solid var(--border);background:var(--bg-surface-2);color:var(--text-secondary);font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s;">Bytes</button>
+          <button class="unit-btn" data-unit="list" style="padding:0.35rem 0.65rem;border-radius:0.4rem;border:1.5px solid var(--border);background:var(--bg-surface-2);color:var(--text-secondary);font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s;">List items</button>
+        </div>
+      </div>
+
+      <!-- Amount slider -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.4rem;">
+          <label for="amount-slider" style="font-size:0.68rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;">Amount</label>
+          <!-- Value badge + fine-tune input -->
+          <div style="display:flex;align-items:center;gap:0.35rem;">
+            <input id="amount-input" type="number" min="1" max="9999" value="5"
+              style="width:4.5rem;padding:0.2rem 0.4rem;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.375rem;font-family:'Fira Code',monospace;font-size:0.82rem;font-weight:700;color:#C2410C;text-align:center;outline:none;" />
+            <span id="amount-unit-label" style="font-size:0.7rem;color:var(--text-muted);white-space:nowrap;">paragraphs</span>
+          </div>
+        </div>
+        <input id="amount-slider" type="range" min="1" max="20" value="5"
+          style="width:100%;accent-color:#C2410C;cursor:pointer;margin-bottom:0.25rem;" />
+        <div style="display:flex;justify-content:space-between;">
+          <span id="slider-min-label" style="font-size:0.65rem;color:var(--text-muted);font-family:'Fira Code',monospace;">1</span>
+          <span id="slider-mid-label" style="font-size:0.65rem;color:var(--text-muted);font-family:'Fira Code',monospace;"></span>
+          <span id="slider-max-label" style="font-size:0.65rem;color:var(--text-muted);font-family:'Fira Code',monospace;">20</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ Variant + Format row ══ -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.875rem;">
+
+      <!-- Variant / flavour -->
+      <div>
+        <label style="display:block;font-size:0.68rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.4rem;">Text variant</label>
+        <select id="variant-select"
+          style="width:100%;padding:0.45rem 0.6rem;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.4rem;font-size:0.82rem;color:var(--text-primary);outline:none;cursor:pointer;">
+          <option value="classic">Classic Lorem Ipsum</option>
+          <option value="cicero">Cicero (original Latin)</option>
+          <option value="corporate">Corporate Buzzword</option>
+          <option value="pirate">Pirate Speak</option>
+          <option value="hipster">Hipster Ipsum</option>
+          <option value="tech">Tech / Startup</option>
+          <option value="legal">Legal / Boilerplate</option>
+          <option value="medieval">Medieval / Fantasy</option>
+          <option value="emoji">Emoji Ipsum</option>
+        </select>
+      </div>
+
+      <!-- Output format -->
+      <div>
+        <label style="display:block;font-size:0.68rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.4rem;">Output format</label>
+        <select id="format-select"
+          style="width:100%;padding:0.45rem 0.6rem;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.4rem;font-size:0.82rem;color:var(--text-primary);outline:none;cursor:pointer;">
+          <option value="plain">Plain text</option>
+          <option value="html-p">HTML &lt;p&gt; tags</option>
+          <option value="html-div">HTML &lt;div&gt; tags</option>
+          <option value="html-li">HTML &lt;li&gt; list items</option>
+          <option value="html-h2p">HTML h2 + paragraphs</option>
+          <option value="md-para">Markdown paragraphs</option>
+          <option value="md-list">Markdown unordered list</option>
+          <option value="md-h2">Markdown ## headings + body</option>
+          <option value="json-array">JSON array of strings</option>
+          <option value="json-obj">JSON array of objects</option>
+          <option value="csv">CSV rows</option>
+          <option value="sql">SQL INSERT values</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- ══ Options row ══ -->
+    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;padding:0.625rem 0.875rem;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.625rem;margin-bottom:0.875rem;">
+      <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.78rem;font-weight:600;color:var(--text-secondary);user-select:none;">
+        <input id="opt-startlorem" type="checkbox" checked style="accent-color:#C2410C;width:0.85rem;height:0.85rem;" />
+        Start with "Lorem ipsum…"
+      </label>
+      <span style="color:var(--border);">·</span>
+      <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.78rem;font-weight:600;color:var(--text-secondary);user-select:none;">
+        <input id="opt-allcaps" type="checkbox" style="accent-color:#C2410C;width:0.85rem;height:0.85rem;" />
+        ALL CAPS
+      </label>
+      <span style="color:var(--border);">·</span>
+      <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.78rem;font-weight:600;color:var(--text-secondary);user-select:none;">
+        <input id="opt-html-decode" type="checkbox" style="accent-color:#C2410C;width:0.85rem;height:0.85rem;" />
+        Render HTML preview
+      </label>
+      <span style="color:var(--border);">·</span>
+      <!-- Paragraph length (min/max words per sentence) -->
+      <div style="display:flex;align-items:center;gap:0.35rem;font-size:0.78rem;font-weight:600;color:var(--text-secondary);">
+        Sentence length:
+        <select id="sent-length"
+          style="padding:0.2rem 0.35rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.3rem;font-size:0.75rem;color:var(--text-primary);outline:none;cursor:pointer;">
+          <option value="short">Short (6–10 w)</option>
+          <option value="medium" selected>Medium (8–18 w)</option>
+          <option value="long">Long (15–30 w)</option>
+          <option value="mixed">Mixed</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ══ Generate button ══ -->
+    <button id="btn-generate"
+      style="width:100%;padding:0.75rem 1.5rem;background:#C2410C;color:#fff;border:none;border-radius:0.625rem;font-family:'Sora',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.15s,transform 0.1s;display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-bottom:1rem;"
+      onmouseover="this.style.background='#9A3412';"
+      onmouseout="this.style.background='#C2410C';"
+      onmousedown="this.style.transform='scale(0.98)';"
+      onmouseup="this.style.transform='scale(1)';">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      Generate
+    </button>
+
+    <!-- ══ Output area ══ -->
+    <div id="output-section" style="display:none;">
+
+      <!-- Stats bar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.5rem;">
+        <div style="display:flex;gap:0.625rem;flex-wrap:wrap;">
+          <span id="stat-paras"  style="font-size:0.7rem;font-family:'Fira Code',monospace;color:var(--text-muted);"></span>
+          <span id="stat-words"  style="font-size:0.7rem;font-family:'Fira Code',monospace;color:var(--text-muted);"></span>
+          <span id="stat-chars"  style="font-size:0.7rem;font-family:'Fira Code',monospace;color:var(--text-muted);"></span>
+          <span id="stat-bytes"  style="font-size:0.7rem;font-family:'Fira Code',monospace;color:var(--text-muted);"></span>
+        </div>
+        <div style="display:flex;gap:0.4rem;">
+          <button id="btn-copy" style="padding:0.3rem 0.65rem;background:rgba(194,65,12,0.1);border:1px solid rgba(194,65,12,0.3);border-radius:0.375rem;font-size:0.72rem;font-weight:700;color:#C2410C;cursor:pointer;transition:all 0.15s;"
+            onmouseover="this.style.background='rgba(194,65,12,0.2)';" onmouseout="this.style.background='rgba(194,65,12,0.1)';">Copy</button>
+          <button id="btn-download" style="padding:0.3rem 0.65rem;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:0.375rem;font-size:0.72rem;font-weight:700;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;"
+            onmouseover="this.style.borderColor='#C2410C';this.style.color='#C2410C';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">↓ .txt</button>
+          <button id="btn-regen" style="padding:0.3rem 0.65rem;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:0.375rem;font-size:0.72rem;font-weight:700;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;"
+            onmouseover="this.style.borderColor='#0D9488';this.style.color='#0D9488';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">↺ Regenerate</button>
+        </div>
+      </div>
+
+      <!-- Preview rendered (HTML mode) -->
+      <div id="output-preview" style="display:none;padding:1.25rem 1.5rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.75rem;font-family:'Lora',Georgia,serif;font-size:0.9rem;line-height:1.8;color:var(--text-secondary);margin-bottom:0.5rem;max-height:320px;overflow-y:auto;"></div>
+
+      <!-- Raw output textarea -->
+      <textarea id="output-text" readonly
+        style="width:100%;height:260px;padding:1rem 1.1rem;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.75rem;font-family:'Fira Code',monospace;font-size:0.75rem;color:var(--text-primary);resize:vertical;outline:none;line-height:1.65;box-sizing:border-box;cursor:default;"
+        spellcheck="false"></textarea>
+
+    </div>
+
+  </div>
+
+  <!-- HOW TO USE -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the Lorem Ipsum Generator</h2>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+      Select your unit type — <strong>Paragraphs</strong>, <strong>Sentences</strong>, <strong>Words</strong>, <strong>Characters</strong>, <strong>Bytes</strong>, or <strong>List items</strong> — then set the amount and click Generate. The output stat bar shows exact counts across all units so you always know what you produced.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+      Choose a <strong>text variant</strong> for flavour: Classic Latin, Cicero's original De Finibus text, Corporate Buzzword, Pirate Speak, Hipster Ipsum, Tech/Startup, Legal boilerplate, Medieval fantasy, or Emoji. The <strong>output format</strong> wraps the generated text in HTML tags, Markdown, JSON arrays, CSV rows, or SQL INSERT values — ready to paste directly into your project.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">
+      Enable <strong>Render HTML preview</strong> to see the output typeset as a formatted page above the raw code. Use <strong>Copy</strong> to grab the raw text, <strong>↓ .txt</strong> to download a file, or <strong>↺ Regenerate</strong> to reshuffle with the same settings.
+    </p>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How it works</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      {[
+        ['Word pools per variant','Each variant has its own word pool — a curated vocabulary list of 80–200 words authentic to that register. Classic Lorem Ipsum uses the traditional Ciceronian Latin word set. Hipster uses artisanal/Brooklyn vocabulary. Tech/Startup uses genuine startup jargon. Sentences are assembled by sampling words at random with the configured length distribution.'],
+        ['Unit-precise generation','For paragraphs and sentences, the generator assembles content in discrete units. For words and characters, it generates text in a loop and truncates to the exact count requested. For bytes, it encodes as UTF-8 and truncates at the byte boundary (avoiding multi-byte character splits). List items generate one sentence per item.'],
+        ['Format wrapping','Format wrapping is applied as a post-processing step after generation. HTML formats wrap each paragraph in the appropriate tag pair. JSON array emits a valid JSON array of strings (one element per paragraph or sentence). CSV emits each unit as a quoted comma-separated row. SQL emits INSERT INTO lorem_ipsum (id, content) VALUES (...) statements numbered from 1.'],
+        ['"Start with Lorem ipsum…" option','When enabled, the first sentence of the first paragraph is always the canonical opening "Lorem ipsum dolor sit amet, consectetur adipiscing elit…" — the standard expected by most design tools. This only applies to the Classic variant; other variants use their own authentic opening phrase.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q:'What is Lorem Ipsum and where does it come from?', a:'Lorem ipsum is derived from Cicero\'s philosophical work "De Finibus Bonorum et Malorum" (45 BC), specifically from sections 1.10.32 and 1.10.33. The standard passage beginning "Lorem ipsum dolor sit amet…" has been used as typesetter dummy text since the 1500s. Richard McClintock, a Latin scholar, identified the source in 1994. The text is scrambled and sometimes missing words, making it clearly non-readable while still looking like natural language from a distance.' },
+        { q:'Why use Lorem Ipsum instead of real text?', a:'Placeholder text prevents readers from being distracted by the content when evaluating a layout or design. Real text draws attention to meaning; Lorem Ipsum lets viewers focus on typeface, spacing, visual hierarchy, and composition. It also prevents stakeholders from quoting or fixating on draft copy before it is ready.' },
+        { q:'What output formats are available?', a:'Plain text, HTML with <p>, <div>, or <li> tags, HTML with <h2> headings + body paragraphs, Markdown paragraphs, Markdown unordered list, Markdown ## headings + body, JSON array of strings, JSON array of objects (with id and content fields), CSV rows, and SQL INSERT statements. All formats are production-ready and can be pasted directly into code.' },
+        { q:'What is the Bytes unit type for?', a:'The Bytes option generates text truncated to an exact byte count when UTF-8 encoded. This is useful for testing database field limits, API payload sizes, network packet boundaries, or UI components with byte-based character limits. The truncation avoids splitting multi-byte characters (e.g. accented Latin characters) mid-codepoint.' },
+        { q:'Are the non-Latin variants linguistically accurate?', a:'The Pirate, Hipster, Corporate, and other variants use authentic vocabulary and phrasing conventions drawn from those registers — they are not random words. Corporate Buzzword uses real management consultant language; Hipster uses genuine Brooklyn/artisanal vocabulary; Tech/Startup uses real startup jargon. Medieval uses archaic English constructions. They are designed to be immediately recognisable as their register for design mockup communication.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// WORD POOLS — each variant has its own authentic vocabulary
+// ═══════════════════════════════════════════════════════════
+
+const POOLS: Record<string, { words: string[]; opener?: string; sentenceOpeners?: string[] }> = {
+
+  classic: {
+    opener: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    words: ['lorem','ipsum','dolor','sit','amet','consectetur','adipiscing','elit','sed','do','eiusmod','tempor','incididunt','ut','labore','et','dolore','magna','aliqua','enim','ad','minim','veniam','quis','nostrud','exercitation','ullamco','laboris','nisi','aliquip','ex','ea','commodo','consequat','duis','aute','irure','in','reprehenderit','voluptate','velit','esse','cillum','fugiat','nulla','pariatur','excepteur','sint','occaecat','cupidatat','non','proident','sunt','culpa','qui','officia','deserunt','mollit','anim','id','est','laborum','curabitur','pretium','tincidunt','lacus','nec','rutrum','volutpat','pellentesque','habitant','morbi','tristique','senectus','netus','malesuada','fames','ac','turpis','egestas','integer','eget','aliquet','nibh','praesent','tristique','magna','sit','amet','purus','gravida','quis','blandit','turpis','cursus','nunc','id','cursus','metus','aliquam','eleifend','mi','in','nulla','posuere','sollicitudin','aliquam','ultrices','sagittis','orci','faucibus','purus','ut','faucibus','pulvinar','elementum'],
+    sentenceOpeners: ['Ut','Nam','Sed','Nunc','Proin','Cras','Etiam','Mauris','Fusce','Aliquam','Donec','Vivamus','Integer','Nullam','Vestibulum','Phasellus','Morbi','Aenean','Pellentesque','Duis'],
+  },
+
+  cicero: {
+    opener: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti.',
+    words: ['vero','eos','accusamus','iusto','odio','dignissimos','ducimus','blanditiis','praesentium','voluptatum','deleniti','atque','corrupti','quos','dolores','quas','molestias','excepturi','sint','obcaecati','cupiditate','non','provident','similique','culpa','officia','deserunt','mollitia','animi','laborum','dolorum','fuga','harum','quidem','rerum','facilis','expedita','distinctio','nam','libero','tempore','cum','soluta','nobis','eligendi','optio','cumque','nihil','impedit','quo','minus','id','quod','maxime','placeat','facere','possimus','omnis','voluptas','assumenda','est','dolor','repellendus','temporibus','autem','quibusdam','officiis','debitis','rerum','necessitatibus','saepe','eveniet','voluptatibus','repudiandae','itaque','earum','hic','tenetur','sapiente','delectus','reiciendis','voluptatibus','maiores','alias','consequatur','aut','perferendis','doloribus','asperiores','repellat'],
+    sentenceOpeners: ['Sed','Nam','Itaque','Quod','Atque','Neque','Nisi','Ut','Cum','Ita'],
+  },
+
+  corporate: {
+    opener: 'Leveraging our core competencies, we synergise cross-functional teams to drive holistic value creation.',
+    words: ['leverage','synergise','holistic','agile','scalable','disruptive','paradigm','pivot','bandwidth','robust','ecosystem','stakeholder','deliverable','touchpoint','granular','actionable','streamline','optimise','empower','ideate','iterate','onboard','cascade','circle','back','deep','dive','low','hanging','fruit','move','needle','boil','ocean','drink','Kool-Aid','think','outside','box','drill','down','peel','onion','take','offline','reach','out','blue','sky','thinking','best','practice','core','competency','key','performance','indicator','value','proposition','strategic','alignment','change','management','growth','hacking','rapid','prototyping','minimum','viable','product','data','driven','decision','making','cross','functional','team','innovation','pipeline','customer','centric','go','market','strategy','competitive','landscape','pain','points','north','star','metric','outcome','focused','result','oriented'],
+    sentenceOpeners: ['Going forward,','At the end of the day,','It\'s important to note that','From a 30,000-foot view,','Circling back,','To put a pin in it,','Fundamentally,','In terms of scalability,','Strategically speaking,','From a bandwidth perspective,'],
+  },
+
+  pirate: {
+    opener: 'Ahoy, ye scallywags! Gather round and hear the tale of the seven seas and buried treasure.',
+    words: ['ahoy','matey','scallywag','landlubber','plunder','pillage','treasure','doubloon','kraken','Davy','Jones','locker','swab','deck','barnacle','bilge','buccaneers','starboard','port','aft','fore','crow','nest','mast','sail','anchor','cutlass','pistol','cannon','plank','walk','parrot','rum','grog','gruel','brine','seadog','corsair','privateer','booty','vessel','galleon','frigate','sloop','brigantine','latitude','longitude','compass','chart','map','horizon','squall','storm','typhoon','doldrums','trade','winds','maroon','mutiny','keelhaul','freebooter','jolly','roger','skull','crossbones','pieces','eight','cove','cay','reef','shoal','starfish','shark','whale','octopus','mermaid','siren','beacon','lighthouse','harbor','port','bow','stern','rigging','halyard','sheet','tack','jibe','heave','weigh','anchor'],
+    sentenceOpeners: ['Arr,','Shiver me timbers,','Blow me down,','By Davy Jones,','Hoist the mainsail,','Batten down the hatches,','Blimey,','Avast ye,','Yo-ho-ho,','Fire the cannons,'],
+  },
+
+  hipster: {
+    opener: 'Artisanal cold-brew pour-overs and small-batch fermented everything — this neighbourhood has really found itself.',
+    words: ['artisanal','small-batch','single-origin','craft','heritage','heirloom','sustainable','locally-sourced','farm-to-table','handcrafted','curated','bespoke','organic','raw','fermented','foraged','seasonal','ethical','slow','food','fixie','vinyl','flannel','beard','mason','jar','kombucha','kale','quinoa','avocado','sourdough','pour-over','cold-brew','matcha','turmeric','latte','oat-milk','vegan','gluten-free','activated','charcoal','adaptogen','mushroom','tonic','botanical','gin','natural','wine','lo-fi','synth','ambient','post-rock','cassette','zine','risograph','typeface','grotesque','sans','screen-print','hand-lettered','letterpress','monoprint','workshop','collective','pop-up','concept','store','brutalist','architecture','exposed','brick','reclaimed','wood','Edison','bulb','vintage','patina','wabi-sabi','hygge','lagom','ikigai','wanderlust','nomad','co-working','off-grid','tiny','house','capsule','wardrobe','minimalist','intentional'],
+    sentenceOpeners: ['Honestly,','Basically,','So like,','Have you heard about','You probably haven\'t tried','Before it was mainstream,','I was into this before','This hidden gem','The thing about','What they don\'t tell you is'],
+  },
+
+  tech: {
+    opener: 'Our AI-powered cloud-native platform enables real-time machine learning pipelines at infinite scale with zero-config DevOps.',
+    words: ['kubernetes','microservices','serverless','container','orchestration','API','REST','GraphQL','webhook','payload','endpoint','latency','throughput','bandwidth','scalable','distributed','asynchronous','event-driven','streaming','pipeline','infrastructure','deployment','continuous','integration','delivery','devops','gitops','terraform','ansible','docker','cluster','node','pod','replica','namespace','ingress','service','mesh','circuit','breaker','rate','limiting','backpressure','observability','telemetry','tracing','metrics','dashboards','alerting','SLO','SLA','error','budget','post-mortem','blameless','retrospective','sprint','backlog','kanban','agile','scrum','velocity','story','points','technical','debt','refactor','DRY','SOLID','immutable','idempotent','eventual','consistency','CAP','theorem','sharding','partitioning','replication','caching','CDN','edge','computing','WebAssembly','blockchain','zero-knowledge','proof','homomorphic','encryption'],
+    sentenceOpeners: ['At scale,','Under the hood,','The key insight is that','Leveraging modern tooling,','From a systems perspective,','In the distributed case,','When you look at the telemetry,','The architecture decision was','As the RFC states,','In production,'],
+  },
+
+  legal: {
+    opener: 'Notwithstanding the foregoing, the parties hereby agree to the following terms and conditions as set forth herein.',
+    words: ['notwithstanding','foregoing','hereinafter','whereas','pursuant','thereto','herein','thereof','heretofore','aforementioned','indemnify','warrant','covenant','represent','acknowledge','undertake','procure','ensure','guarantee','indemnification','liability','obligation','breach','remedy','jurisdiction','arbitration','litigation','subrogation','novation','assignment','encumbrance','lien','easement','covenant','restrictive','injunction','declaratory','relief','specific','performance','consequential','damages','liquidated','force','majeure','material','adverse','change','representations','warranties','conditions','precedent','subsequent','termination','notice','period','governing','law','entire','agreement','severability','waiver','amendment','supplement','ratification','ratify','execute','deliver','consummate','counterpart','electronic','signature','authorized','signatory','powers','attorney','proxy','fiduciary','duty','care','loyalty','good','faith','commercially','reasonable','best','efforts','time','essence','strict','compliance','cure','period'],
+    sentenceOpeners: ['In accordance with','Subject to the provisions herein,','For the avoidance of doubt,','Without limiting the generality of the foregoing,','To the extent permitted by law,','The parties acknowledge that','It is hereby agreed that','Notwithstanding any other provision,','Save as otherwise provided,','In the event that'],
+  },
+
+  medieval: {
+    opener: 'Hark! In the age of valiant knights and fearsome dragons, great deeds were wrought upon the realm.',
+    words: ['hark','verily','forsooth','prithee','thee','thou','thy','thine','doth','hath','ere','henceforth','betwixt','wherefore','naught','nought','perchance','mayhap','sooth','whence','thither','hither','yonder','anon','alas','fie','zounds','marry','knight','squire','liege','lord','lady','vassal','serf','peasant','herald','bard','minstrel','jester','wizard','sorcerer','druid','paladin','cleric','ranger','rogue','quest','dungeon','castle','keep','rampart','drawbridge','portcullis','moat','siege','trebuchet','catapult','lance','broadsword','shield','armour','heraldry','crest','sigil','dragon','basilisk','griffon','unicorn','wyvern','ogre','troll','goblin','elf','dwarf','hobbit','realm','kingdom','fiefdom','sovereign','throne','crown','sceptre','tournament','joust','melee','banquet','tavern','inn','mead','ale','feast','guild','charter','scroll','parchment','tome','grimoire','prophecy'],
+    sentenceOpeners: ['Hark!','Forsooth,','Verily,','In sooth,','Prithee,','Lo and behold,','Mark ye well,','By the gods,','It came to pass that','Long ago in the realm,'],
+  },
+
+  emoji: {
+    opener: '🎉✨ Hello beautiful world! 🌍💫 Ready to vibe? 🔥',
+    words: ['🎉','✨','💫','🔥','❤️','💙','💚','💛','💜','🌟','⭐','🌈','🎨','🎭','🎪','🎯','🎲','🎮','🕹️','🏆','🥇','🎗️','🎀','🎁','🛸','🚀','🌙','☀️','⚡','🌊','🌸','🌺','🌻','🦋','🦄','🐉','🦁','🐬','🦅','🍕','🍣','🎂','🍦','☕','🧉','🍵','🧃','💎','🔮','🪄','🎸','🥁','🎺','🎷','🎹','🎼','📚','🔬','🔭','💻','📱','🎬','📸','🗺️','🧭','⚓','🏄','🧗','🚵','🤸','🧘','💪','🤝','👊','✌️','🙌','👏','🤗','😎','🤩','🥳','😂','🤣','😍','🥰','🤯','😱','🤔','🧐','😴','💤','🌝','🌚'],
+    sentenceOpeners: ['🎉','✨ Wow,','💫 So basically,','🔥 Hot take:','❤️ Fun fact:','⭐ Did you know','🌈 Plot twist:','🚀 Breaking:','💎 Pro tip:','🦋 Meanwhile,'],
+  },
+
+};
+
+// ═══════════════════════════════════════════════════════════
+// SENTENCE LENGTH CONFIG
+// ═══════════════════════════════════════════════════════════
+const SENT_LENGTHS: Record<string,[number,number][]> = {
+  short:  [[6,10]],
+  medium: [[8,18]],
+  long:   [[15,30]],
+  mixed:  [[6,10],[8,18],[15,30],[8,14]],
+};
+
+// ═══════════════════════════════════════════════════════════
+// GENERATION CORE
+// ═══════════════════════════════════════════════════════════
+
+function randInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function pickWord(words: string[]): string {
+  return words[Math.floor(Math.random() * words.length)];
+}
+
+function buildSentence(words: string[], sentLenKey: string, idx: number): string {
+  const ranges = SENT_LENGTHS[sentLenKey];
+  const [min, max] = ranges[Math.floor(Math.random() * ranges.length)];
+  const len = randInt(min, max);
+  const picked: string[] = [];
+  for (let i = 0; i < len; i++) picked.push(pickWord(words));
+  // Capitalise first word, end with . or ? or !
+  const punct = Math.random() < 0.08 ? (Math.random() < 0.5 ? '?' : '!') : '.';
+  return capitalize(picked.join(' ')) + punct;
+}
+
+function buildSentenceWithOpener(words: string[], openers: string[], sentLenKey: string): string {
+  const opener = pickWord(openers);
+  const ranges = SENT_LENGTHS[sentLenKey];
+  const [min, max] = ranges[Math.floor(Math.random() * ranges.length)];
+  const len = randInt(Math.max(3, min - 2), max - 2);
+  const picked: string[] = [];
+  for (let i = 0; i < len; i++) picked.push(pickWord(words));
+  const punct = Math.random() < 0.08 ? (Math.random() < 0.5 ? '?' : '!') : '.';
+  return `${capitalize(opener)} ${picked.join(' ')}${punct}`;
+}
+
+function buildParagraph(
+  words: string[],
+  openers: string[],
+  sentLenKey: string,
+  sentCount: number
+): string {
+  const sents: string[] = [];
+  for (let i = 0; i < sentCount; i++) {
+    if (openers.length && Math.random() < 0.4) {
+      sents.push(buildSentenceWithOpener(words, openers, sentLenKey));
+    } else {
+      sents.push(buildSentence(words, sentLenKey, i));
+    }
+  }
+  return sents.join(' ');
+}
+
+function generateText(
+  unit: string,
+  amount: number,
+  variantKey: string,
+  sentLenKey: string,
+  startLorem: boolean,
+  allCaps: boolean
+): string[] {
+  const pool   = POOLS[variantKey];
+  const words  = pool.words;
+  const openers = pool.sentenceOpeners ?? [];
+
+  const paragraphs: string[] = [];
+
+  if (unit === 'paragraphs') {
+    for (let p = 0; p < amount; p++) {
+      const sentCount = randInt(3, 7);
+      let para = buildParagraph(words, openers, sentLenKey, sentCount);
+      if (p === 0 && startLorem && pool.opener) {
+        para = pool.opener + ' ' + buildParagraph(words, openers, sentLenKey, sentCount - 1);
+      }
+      paragraphs.push(para);
+    }
+
+  } else if (unit === 'sentences') {
+    const sents: string[] = [];
+    if (startLorem && pool.opener) sents.push(pool.opener);
+    while (sents.length < amount) {
+      if (openers.length && Math.random() < 0.4) {
+        sents.push(buildSentenceWithOpener(words, openers, sentLenKey));
+      } else {
+        sents.push(buildSentence(words, sentLenKey, sents.length));
+      }
+    }
+    // Group into paragraphs of 3–5 sentences
+    for (let i = 0; i < sents.length; i += randInt(3,5)) {
+      paragraphs.push(sents.slice(i, i + randInt(3,5)).join(' '));
+    }
+
+  } else if (unit === 'words') {
+    let wordList: string[] = [];
+    if (startLorem && pool.opener) wordList = pool.opener.split(' ');
+    while (wordList.length < amount) wordList.push(pickWord(words));
+    wordList = wordList.slice(0, amount);
+    // Build into sentences then paragraphs
+    let buf = '';
+    for (let i = 0; i < wordList.length; i++) {
+      const w = wordList[i];
+      buf += (buf ? ' ' : '') + (i === 0 ? capitalize(w) : w);
+      if (i === wordList.length - 1 || (i > 0 && i % randInt(8,15) === 0)) {
+        buf += '.';
+        if (buf.length > 0) { paragraphs.push(buf); buf = ''; }
+      }
+    }
+    if (buf) paragraphs.push(buf + '.');
+
+  } else if (unit === 'characters') {
+    let text = '';
+    if (startLorem && pool.opener) text = pool.opener + ' ';
+    while (text.length < amount) {
+      text += buildParagraph(words, openers, sentLenKey, randInt(3,6)) + '\n\n';
+    }
+    text = text.slice(0, amount);
+    paragraphs.push(text.trim());
+
+  } else if (unit === 'bytes') {
+    let text = '';
+    if (startLorem && pool.opener) text = pool.opener + ' ';
+    while (new TextEncoder().encode(text).length < amount) {
+      text += buildParagraph(words, openers, sentLenKey, randInt(3,6)) + '\n\n';
+    }
+    // Truncate at byte boundary
+    const enc = new TextEncoder();
+    let b = 0;
+    let truncated = '';
+    for (const char of text) {
+      const cb = enc.encode(char).length;
+      if (b + cb > amount) break;
+      truncated += char;
+      b += cb;
+    }
+    paragraphs.push(truncated.trim());
+
+  } else if (unit === 'list') {
+    for (let i = 0; i < amount; i++) {
+      if (i === 0 && startLorem && pool.opener) { paragraphs.push(pool.opener); continue; }
+      paragraphs.push(buildSentence(words, sentLenKey, i));
+    }
+  }
+
+  return paragraphs.map(p => allCaps ? p.toUpperCase() : p);
+}
+
+// ═══════════════════════════════════════════════════════════
+// FORMAT WRAPPING
+// ═══════════════════════════════════════════════════════════
+function formatOutput(paragraphs: string[], format: string, unit: string): string {
+  switch (format) {
+    case 'plain':
+      return paragraphs.join(unit === 'list' ? '\n' : '\n\n');
+
+    case 'html-p':
+      return paragraphs.map(p => `<p>${p}</p>`).join('\n');
+
+    case 'html-div':
+      return paragraphs.map(p => `<div>${p}</div>`).join('\n');
+
+    case 'html-li':
+      return `<ul>\n${paragraphs.map(p => `  <li>${p}</li>`).join('\n')}\n</ul>`;
+
+    case 'html-h2p': {
+      const fakeHeadings = ['Introduction','Background','Overview','Details','Summary','Context','Discussion','Notes','Remarks','Further Reading'];
+      return paragraphs.map((p, i) =>
+        `<h2>${fakeHeadings[i % fakeHeadings.length]}</h2>\n<p>${p}</p>`
+      ).join('\n\n');
+    }
+
+    case 'md-para':
+      return paragraphs.join('\n\n');
+
+    case 'md-list':
+      return paragraphs.map(p => `- ${p}`).join('\n');
+
+    case 'md-h2': {
+      const headings = ['Introduction','Background','Overview','Details','Summary','Context','Discussion','Notes'];
+      return paragraphs.map((p, i) =>
+        `## ${headings[i % headings.length]}\n\n${p}`
+      ).join('\n\n');
+    }
+
+    case 'json-array':
+      return JSON.stringify(paragraphs, null, 2);
+
+    case 'json-obj':
+      return JSON.stringify(
+        paragraphs.map((p, i) => ({ id: i + 1, content: p })),
+        null, 2
+      );
+
+    case 'csv': {
+      const rows = paragraphs.map((p, i) =>
+        `${i+1},"${p.replace(/"/g,'""')}"`
+      );
+      return `id,content\n${rows.join('\n')}`;
+    }
+
+    case 'sql': {
+      const rows = paragraphs.map((p, i) =>
+        `(${i+1}, '${p.replace(/'/g,"''")}')`
+      );
+      return `INSERT INTO lorem_ipsum (id, content) VALUES\n${rows.join(',\n')};`;
+    }
+
+    default:
+      return paragraphs.join('\n\n');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════════════════════
+function calcStats(text: string) {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const chars = text.length;
+  const bytes = new TextEncoder().encode(text).length;
+  const paras = text.split(/\n{2,}/).filter(s => s.trim()).length;
+  return { words, chars, bytes, paras };
+}
+
+// ═══════════════════════════════════════════════════════════
+// DOM REFS
+// ═══════════════════════════════════════════════════════════
+const amountInput    = document.getElementById('amount-input')    as HTMLInputElement;
+const amountSlider   = document.getElementById('amount-slider')   as HTMLInputElement;
+const amountUnitLabel= document.getElementById('amount-unit-label')!;
+const sliderMinLabel = document.getElementById('slider-min-label')!;
+const sliderMidLabel = document.getElementById('slider-mid-label')!;
+const sliderMaxLabel = document.getElementById('slider-max-label')!;
+const variantSelect  = document.getElementById('variant-select')  as HTMLSelectElement;
+const formatSelect   = document.getElementById('format-select')   as HTMLSelectElement;
+const sentLengthSel  = document.getElementById('sent-length')     as HTMLSelectElement;
+const optStartLorem  = document.getElementById('opt-startlorem')  as HTMLInputElement;
+const optAllCaps     = document.getElementById('opt-allcaps')     as HTMLInputElement;
+const optHtmlDecode  = document.getElementById('opt-html-decode') as HTMLInputElement;
+const btnGenerate    = document.getElementById('btn-generate')!;
+const btnCopy        = document.getElementById('btn-copy')!;
+const btnDownload    = document.getElementById('btn-download')!;
+const btnRegen       = document.getElementById('btn-regen')!;
+const outputSection  = document.getElementById('output-section')!;
+const outputText     = document.getElementById('output-text')     as HTMLTextAreaElement;
+const outputPreview  = document.getElementById('output-preview')!;
+const statParas      = document.getElementById('stat-paras')!;
+const statWords      = document.getElementById('stat-words')!;
+const statChars      = document.getElementById('stat-chars')!;
+const statBytes      = document.getElementById('stat-bytes')!;
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let currentUnit = 'paragraphs';
+let lastGenerated = '';
+
+// ═══════════════════════════════════════════════════════════
+// UNIT BUTTONS
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.unit-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.unit-btn').forEach(b => {
+      (b as HTMLElement).style.borderColor = 'var(--border)';
+      (b as HTMLElement).style.background  = 'var(--bg-surface-2)';
+      (b as HTMLElement).style.color       = 'var(--text-secondary)';
+      b.classList.remove('active-unit');
+    });
+    (btn as HTMLElement).style.borderColor = '#C2410C';
+    (btn as HTMLElement).style.background  = 'rgba(194,65,12,0.1)';
+    (btn as HTMLElement).style.color       = '#C2410C';
+    btn.classList.add('active-unit');
+    currentUnit = (btn as HTMLElement).dataset.unit!;
+    applySliderCfg(currentUnit);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+// SLIDER CONFIG — per-unit ranges and slider scale
+// ═══════════════════════════════════════════════════════════
+type SliderCfg = { min: number; max: number; step: number; default: number; label: string; midLabel: string };
+const SLIDER_CFG: Record<string, SliderCfg> = {
+  paragraphs:  { min:1,   max:20,   step:1,    default:5,   label:'paragraphs',  midLabel:'10' },
+  sentences:   { min:1,   max:50,   step:1,    default:10,  label:'sentences',   midLabel:'25' },
+  words:       { min:10,  max:1000, step:10,   default:100, label:'words',       midLabel:'500' },
+  characters:  { min:50,  max:5000, step:50,   default:500, label:'characters',  midLabel:'2,500' },
+  bytes:       { min:64,  max:4096, step:64,   default:512, label:'bytes',       midLabel:'2,048' },
+  list:        { min:1,   max:30,   step:1,    default:8,   label:'list items',  midLabel:'15' },
+};
+
+function applySliderCfg(unit: string) {
+  const cfg = SLIDER_CFG[unit] ?? SLIDER_CFG['paragraphs'];
+  amountSlider.min   = String(cfg.min);
+  amountSlider.max   = String(cfg.max);
+  amountSlider.step  = String(cfg.step);
+  amountSlider.value = String(cfg.default);
+  amountInput.min    = String(cfg.min);
+  amountInput.max    = String(cfg.max);
+  amountInput.value  = String(cfg.default);
+  sliderMinLabel.textContent = String(cfg.min);
+  sliderMaxLabel.textContent = String(cfg.max);
+  sliderMidLabel.textContent = cfg.midLabel;
+  amountUnitLabel.textContent = cfg.label;
+}
+
+// ─ slider ↔ number input sync
+amountSlider.addEventListener('input', () => {
+  amountInput.value = amountSlider.value;
+});
+amountInput.addEventListener('input', () => {
+  const v = parseInt(amountInput.value) || 1;
+  const cfg = SLIDER_CFG[currentUnit];
+  const clamped = Math.max(cfg.min, Math.min(cfg.max, v));
+  amountSlider.value = String(clamped);
+});
+
+// ═══════════════════════════════════════════════════════════
+// GENERATE
+// ═══════════════════════════════════════════════════════════
+function generate() {
+  const amount    = Math.max(1, Math.min(9999, parseInt(amountInput.value)||5));
+  const variant   = variantSelect.value;
+  const format    = formatSelect.value;
+  const sentLen   = sentLengthSel.value;
+  const startLorem= optStartLorem.checked;
+  const allCaps   = optAllCaps.checked;
+
+  const paragraphs = generateText(currentUnit, amount, variant, sentLen, startLorem, allCaps);
+  const formatted  = formatOutput(paragraphs, format, currentUnit);
+  lastGenerated    = formatted;
+
+  outputText.value       = formatted;
+  outputSection.style.display = 'block';
+
+  const s = calcStats(formatted);
+  statParas.textContent = `${paragraphs.length} blocks`;
+  statWords.textContent = `${s.words.toLocaleString()} words`;
+  statChars.textContent = `${s.chars.toLocaleString()} chars`;
+  statBytes.textContent = `${s.bytes.toLocaleString()} bytes`;
+
+  // HTML preview
+  const showPreview = optHtmlDecode.checked && (format.startsWith('html') || format.startsWith('md'));
+  outputPreview.style.display = showPreview ? 'block' : 'none';
+  if (showPreview) {
+    if (format.startsWith('html')) {
+      outputPreview.innerHTML = formatted;
+    } else {
+      // Simple markdown → html for preview
+      outputPreview.innerHTML = formatted
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/<li>/g, '<ul><li>').replace(/<\/li>\n/g, '</li></ul>\n')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^([^<].+)$/gm, '<p>$1</p>');
+    }
+  }
+}
+
+btnGenerate.addEventListener('click', generate);
+btnRegen.addEventListener('click', generate);
+
+// ─ copy
+btnCopy.addEventListener('click', () => {
+  navigator.clipboard.writeText(lastGenerated).then(() => {
+    btnCopy.textContent = '✓ Copied!';
+    setTimeout(() => { btnCopy.textContent = 'Copy'; }, 2000);
+  });
+});
+
+// ─ download
+btnDownload.addEventListener('click', () => {
+  const ext = formatSelect.value.startsWith('html') ? 'html' :
+              formatSelect.value.startsWith('md')   ? 'md'   :
+              formatSelect.value === 'json-array' || formatSelect.value === 'json-obj' ? 'json' :
+              formatSelect.value === 'csv' ? 'csv' :
+              formatSelect.value === 'sql' ? 'sql' : 'txt';
+  const blob = new Blob([lastGenerated], { type: 'text/plain' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `lorem-ipsum.${ext}`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+// ─ responsive controls grid
+function adjustLayout() {
+  const g = document.getElementById('controls-grid')!;
+  g.style.gridTemplateColumns = window.innerWidth < 500 ? '1fr' : '1fr 1fr';
+}
+window.addEventListener('resize', adjustLayout);
+adjustLayout();
+
+// ─ init slider for default unit
+applySliderCfg('paragraphs');
+
+// ─ generate on load
+generate();
+</script>
