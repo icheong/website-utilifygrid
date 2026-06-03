@@ -138,6 +138,8 @@ Here is a curated list of 20 highly specific, friction-free utility tools for ea
 
 1. **Smart Log Cleaner & Filter:** Paste massive server logs and use toggle checkboxes to instantly strip out specific HTTP status codes, timestamps, or health checks.
 3. **Delimiter Swapper:** Paste a column of data from Excel and instantly swap the formatting into a comma-separated list, SQL `IN ('')` clause, or JSON array.
+11. **Text Column Extractor:** Paste delimited text (like CSV or log strings) and choose which column number to isolate and extract as a clean list.
+16. **Anagram & Word Puzzle Finder:** Input letters to find all possible matching words, filtered by length—perfect for quick word game brainstorming.
 
 
 exercise timer tool
@@ -152,10 +154,8 @@ boggle solver tool
 7. **Regex Bulk Find-and-Replace:** A text editor that runs complex regex replacement rules with real-time, color-coded highlighting of target tokens.
 9. **HTML-to-Markdown Converter:** Paste rich text, a web snippet, or raw HTML; outputs clean, readable Markdown syntax.
 10. **White Space & Line Break Trimmer:** Strips empty lines, converts double spaces to single spaces, or flattens a multi-line paragraph into a single continuous string.
-11. **Text Column Extractor:** Paste delimited text (like CSV or log strings) and choose which column number to isolate and extract as a clean list.
 12. **Slug Generator:** Converts article or page titles into clean, URL-safe, lowercase slugs (e.g., stripping punctuation and swapping spaces for hyphens).
 13. **Lorem Ipsum & Dummy Text Customizer:** Sliders to generate exact numbers of paragraphs, sentences, or words of placeholder text.
 14. **JSON String Un-escaper:** Takes a JSON string that has been heavily escaped with backslashes (`{\"key\": \"value\"}`) and transforms it into a beautifully formatted JSON object.
-16. **Anagram & Word Puzzle Finder:** Input letters to find all possible matching words, filtered by length—perfect for quick word game brainstorming.
 17. **List Randomizer / Digital Hat Shuffler:** Paste a list of options or names and click to instantly randomize the order or draw a single winner.
 18. **Text Diff / Plagiarism Compare Checker:** Compares two text documents side-by-side to highlight exactly which sentences match or have minor alterations.

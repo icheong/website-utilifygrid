@@ -1,0 +1,585 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'timezone-schedule-picker')!;
+---
+
+<ToolLayout tool={tool}>
+  <div slot="tool">
+
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.2rem;">
+      Cross-Timezone Meeting Planner
+    </h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">
+      Drag the meeting window across the timeline to find a time that works for everyone. Green bands = working hours.
+    </p>
+
+    <!-- ── Controls bar ── -->
+    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:flex-end;margin-bottom:1rem;padding:0.875rem 1rem;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.75rem;">
+
+      <!-- Date picker -->
+      <div style="display:flex;flex-direction:column;gap:0.3rem;">
+        <label style="font-size:0.68rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;">Date</label>
+        <input id="meeting-date" type="date"
+          style="padding:0.4rem 0.6rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.5rem;font-size:0.82rem;color:var(--text-primary);outline:none;cursor:pointer;" />
+      </div>
+
+      <!-- Duration -->
+      <div style="display:flex;flex-direction:column;gap:0.3rem;">
+        <label style="font-size:0.68rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;">Duration</label>
+        <select id="meeting-duration"
+          style="padding:0.4rem 0.6rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.5rem;font-size:0.82rem;color:var(--text-primary);outline:none;cursor:pointer;">
+          <option value="30">30 min</option>
+          <option value="45">45 min</option>
+          <option value="60" selected>1 hour</option>
+          <option value="90">1.5 hours</option>
+          <option value="120">2 hours</option>
+          <option value="180">3 hours</option>
+        </select>
+      </div>
+
+      <!-- Working hours range -->
+      <div style="display:flex;flex-direction:column;gap:0.3rem;">
+        <label style="font-size:0.68rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;">Working hours</label>
+        <div style="display:flex;align-items:center;gap:0.4rem;">
+          <input id="work-start" type="number" min="0" max="23" value="9"
+            style="width:3.5rem;padding:0.4rem 0.5rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.5rem;font-size:0.82rem;color:var(--text-primary);text-align:center;outline:none;" />
+          <span style="font-size:0.75rem;color:var(--text-muted);">to</span>
+          <input id="work-end" type="number" min="1" max="24" value="18"
+            style="width:3.5rem;padding:0.4rem 0.5rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.5rem;font-size:0.82rem;color:var(--text-primary);text-align:center;outline:none;" />
+        </div>
+      </div>
+
+      <!-- Add timezone -->
+      <div style="display:flex;flex-direction:column;gap:0.3rem;flex:1;min-width:180px;">
+        <label style="font-size:0.68rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;">Add timezone</label>
+        <div style="display:flex;gap:0.4rem;">
+          <select id="tz-select"
+            style="flex:1;padding:0.4rem 0.6rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.5rem;font-size:0.8rem;color:var(--text-primary);outline:none;cursor:pointer;min-width:0;">
+          </select>
+          <button id="btn-add-tz"
+            style="padding:0.4rem 0.75rem;background:#0D9488;color:#fff;border:none;border-radius:0.5rem;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.15s;"
+            onmouseover="this.style.background='#0F766E';" onmouseout="this.style.background='#0D9488';">
+            + Add
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Grid legend ── -->
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-bottom:0.625rem;padding:0 0.25rem;">
+      <div style="display:flex;align-items:center;gap:0.35rem;font-size:0.7rem;color:var(--text-muted);">
+        <span style="width:20px;height:8px;border-radius:2px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.4);display:inline-block;"></span> Working hours
+      </div>
+      <div style="display:flex;align-items:center;gap:0.35rem;font-size:0.7rem;color:var(--text-muted);">
+        <span style="width:20px;height:8px;border-radius:2px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);display:inline-block;"></span> Outside hours
+      </div>
+      <div style="display:flex;align-items:center;gap:0.35rem;font-size:0.7rem;color:var(--text-muted);">
+        <span style="width:20px;height:8px;border-radius:2px;background:rgba(250,204,21,0.35);border:1px solid rgba(250,204,21,0.6);display:inline-block;"></span> Meeting window
+      </div>
+      <div style="display:flex;align-items:center;gap:0.35rem;font-size:0.7rem;color:var(--text-muted);">
+        <span style="width:20px;height:8px;border-radius:2px;background:rgba(250,204,21,0.65);border:1.5px solid #FBBF24;display:inline-block;"></span> Golden window (all working)
+      </div>
+      <div id="drag-hint" style="font-size:0.7rem;color:var(--text-muted);margin-left:auto;">← drag the yellow block to move the meeting →</div>
+    </div>
+
+    <!-- ── Timeline grid ── -->
+    <div style="background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.875rem;overflow:hidden;margin-bottom:1rem;">
+
+      <!-- Hour ruler -->
+      <div id="hour-ruler" style="display:grid;grid-template-columns:140px 1fr;border-bottom:1px solid var(--border);">
+        <div style="padding:0.4rem 0.75rem;font-size:0.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;display:flex;align-items:center;">Timezone</div>
+        <div id="ruler-ticks" style="position:relative;height:28px;overflow:hidden;"></div>
+      </div>
+
+      <!-- Zone rows container -->
+      <div id="zone-rows"></div>
+
+    </div>
+
+    <!-- ── Meeting summary ── -->
+    <div id="meeting-summary" style="padding:0.875rem 1rem;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.75rem;">
+      <div style="font-size:0.72rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.625rem;">Meeting Times</div>
+      <div id="summary-rows" style="display:flex;flex-direction:column;gap:0.35rem;"></div>
+    </div>
+
+  </div>
+
+  <!-- HOW TO USE -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the Timezone Meeting Planner</h2>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+      Add the timezones of every participant using the <strong>Add timezone</strong> dropdown — your local timezone is added automatically on load. Each zone appears as a horizontal row showing the full 24-hour day with working hours highlighted in green.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+      The <strong>yellow meeting window</strong> represents your chosen duration. Drag it left or right across the timeline to slide the proposed meeting time. When the window sits inside working hours on every row simultaneously it turns into the <strong>golden window</strong> — that's your ideal slot. The meeting summary below the grid shows the exact local time for each timezone as you drag.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">
+      Adjust the date, duration, and working-hours range at the top. Remove a timezone by clicking the × on its row label. The planner correctly accounts for DST transitions on the selected date.
+    </p>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How it works</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      {[
+        ['DST-aware timezone offsets','The tool uses the Intl.DateTimeFormat API with each IANA timezone identifier and the selected date to resolve the actual UTC offset in effect on that day — accounting for Daylight Saving Time transitions. This means if your meeting is on a date where one region has already switched clocks and another has not, the offsets are still correct.'],
+        ['24-hour timeline rendering','Each row renders a 1440-minute (24-hour) timeline as a proportional CSS grid. Working-hour bands are positioned as percentage-width absolutely-placed overlays. The meeting window is positioned by tracking its left-offset as a fraction of the row width and converting that pixel position back to a UTC minute value, which is then localised per row.'],
+        ['The golden window','At each drag position the tool checks whether the meeting start and end times (in each zone\'s local time) fall entirely within the configured working-hour window. If all active zones pass the check, the overlay turns gold and the summary panel shows a ✓ for every row — making the ideal slot immediately obvious.'],
+        ['Drag interaction','Drag uses pointermove events (works on both mouse and touch) on the timeline container. The window snaps to 15-minute increments for clean time values. The position is clamped so the block never overflows the 24-hour boundary.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q:'Does it handle Daylight Saving Time correctly?', a:'Yes. The tool uses the Intl.DateTimeFormat API with the selected date and each IANA timezone identifier, so the UTC offset used is the one actually in effect on that specific day — including DST transitions. Changing the date to a day when clocks change will immediately update all offsets.' },
+        { q:'How do I find the right timezone identifier?', a:'The Add timezone dropdown lists IANA timezone names in a human-readable format (e.g. "New York (America/New_York)"). They are the same identifiers used by operating systems and databases worldwide. If you need a city not in the list, pick the closest major city in the same timezone region.' },
+        { q:'What does the golden window mean?', a:'The meeting window turns gold when every active timezone row shows the proposed time falling within the configured working hours (default 09:00–18:00). It is the single visual cue that tells you "this slot works for everyone" — you do not need to read individual rows.' },
+        { q:'Can I change what counts as working hours?', a:'Yes. The "Working hours" fields in the controls bar let you set a start and end hour (0–24). Each row applies the same working-hour window in that timezone\'s local time, so 09:00–18:00 means 9am to 6pm wherever that person is located.' },
+        { q:'Is there a limit on how many timezones I can add?', a:'There is no hard limit, but the grid becomes difficult to read beyond 8–10 rows. The tool is designed for the typical meeting scenario of 3–6 participants across different regions. Duplicate timezones are silently ignored to keep the view clean.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// TIMEZONE DATA — comprehensive IANA list with labels
+// ═══════════════════════════════════════════════════════════
+const TZ_LIST: { label: string; tz: string }[] = [
+  { label:'UTC / GMT',                   tz:'UTC' },
+  { label:'London (GMT/BST)',            tz:'Europe/London' },
+  { label:'Paris / Berlin / Rome',       tz:'Europe/Paris' },
+  { label:'Helsinki / Kyiv',             tz:'Europe/Helsinki' },
+  { label:'Moscow',                      tz:'Europe/Moscow' },
+  { label:'Dubai',                       tz:'Asia/Dubai' },
+  { label:'Mumbai / Kolkata',            tz:'Asia/Kolkata' },
+  { label:'Dhaka',                       tz:'Asia/Dhaka' },
+  { label:'Bangkok / Jakarta',           tz:'Asia/Bangkok' },
+  { label:'Singapore / KL / Perth',      tz:'Asia/Singapore' },
+  { label:'Hong Kong / Taipei',          tz:'Asia/Hong_Kong' },
+  { label:'Tokyo / Seoul',               tz:'Asia/Tokyo' },
+  { label:'Sydney / Melbourne',          tz:'Australia/Sydney' },
+  { label:'Auckland',                    tz:'Pacific/Auckland' },
+  { label:'Honolulu',                    tz:'Pacific/Honolulu' },
+  { label:'Anchorage',                   tz:'America/Anchorage' },
+  { label:'Los Angeles / Seattle',       tz:'America/Los_Angeles' },
+  { label:'Denver',                      tz:'America/Denver' },
+  { label:'Chicago / Mexico City',       tz:'America/Chicago' },
+  { label:'New York / Toronto',          tz:'America/New_York' },
+  { label:'São Paulo',                   tz:'America/Sao_Paulo' },
+  { label:'Buenos Aires',                tz:'America/Argentina/Buenos_Aires' },
+  { label:'Reykjavik',                   tz:'Atlantic/Reykjavik' },
+  { label:'Nairobi',                     tz:'Africa/Nairobi' },
+  { label:'Lagos',                       tz:'Africa/Lagos' },
+  { label:'Cairo',                       tz:'Africa/Cairo' },
+  { label:'Johannesburg',                tz:'Africa/Johannesburg' },
+  { label:'Karachi',                     tz:'Asia/Karachi' },
+  { label:'Tashkent',                    tz:'Asia/Tashkent' },
+  { label:'Tehran',                      tz:'Asia/Tehran' },
+  { label:'Kabul',                       tz:'Asia/Kabul' },
+  { label:'Colombo',                     tz:'Asia/Colombo' },
+  { label:'Yangon',                      tz:'Asia/Rangoon' },
+  { label:'Taipei',                      tz:'Asia/Taipei' },
+  { label:'Beijing / Shanghai',          tz:'Asia/Shanghai' },
+  { label:'Ulaanbaatar',                 tz:'Asia/Ulaanbaatar' },
+  { label:'Vladivostok',                 tz:'Asia/Vladivostok' },
+  { label:'Port Moresby',                tz:'Pacific/Port_Moresby' },
+  { label:'Fiji',                        tz:'Pacific/Fiji' },
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let activeZones: string[] = [];       // IANA tz strings
+let meetingStartMin = 9 * 60;         // UTC minutes from midnight of selected date
+let meetingDurationMin = 60;
+let isDragging = false;
+let dragStartX = 0;
+let dragStartMeetingMin = 0;
+let workStart = 9;
+let workEnd = 18;
+let selectedDate = new Date();
+
+// ═══════════════════════════════════════════════════════════
+// DOM REFS
+// ═══════════════════════════════════════════════════════════
+const tzSelect       = document.getElementById('tz-select')       as HTMLSelectElement;
+const btnAddTz       = document.getElementById('btn-add-tz')!;
+const zoneRows       = document.getElementById('zone-rows')!;
+const rulerTicks     = document.getElementById('ruler-ticks')!;
+const summaryRowsEl  = document.getElementById('summary-rows')!;
+const meetingDateEl  = document.getElementById('meeting-date')    as HTMLInputElement;
+const durationEl     = document.getElementById('meeting-duration') as HTMLSelectElement;
+const workStartEl    = document.getElementById('work-start')      as HTMLInputElement;
+const workEndEl      = document.getElementById('work-end')        as HTMLInputElement;
+
+// ═══════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════
+
+/** Get UTC offset in minutes for a given IANA tz on a given date */
+function getOffsetMin(tz: string, date: Date): number {
+  // Compare UTC date parts to localised date parts
+  const utcParts  = getDateParts(date, 'UTC');
+  const tzParts   = getDateParts(date, tz);
+  const utcMins   = utcParts.h * 60 + utcParts.m;
+  const tzMins    = tzParts.h  * 60 + tzParts.m;
+  let diff = tzMins - utcMins;
+  // Handle day boundary
+  if (diff > 720)  diff -= 1440;
+  if (diff < -720) diff += 1440;
+  return diff;
+}
+
+function getDateParts(date: Date, tz: string) {
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz, hour: 'numeric', minute: 'numeric', hour12: false
+  });
+  const parts = fmt.formatToParts(date);
+  const h = parseInt(parts.find(p => p.type === 'hour')!.value);
+  const m = parseInt(parts.find(p => p.type === 'minute')!.value);
+  return { h: h === 24 ? 0 : h, m };
+}
+
+function padZ(n: number) { return String(n).padStart(2, '0'); }
+
+function fmtMinutes(mins: number): string {
+  // Wrap into 0–1440
+  const m = ((mins % 1440) + 1440) % 1440;
+  const h = Math.floor(m / 60);
+  const min = m % 60;
+  const suffix = h >= 12 ? 'pm' : 'am';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${padZ(min)} ${suffix}`;
+}
+
+function fmtUTC(offsetMin: number): string {
+  const sign = offsetMin >= 0 ? '+' : '−';
+  const abs  = Math.abs(offsetMin);
+  const h    = Math.floor(abs / 60);
+  const m    = abs % 60;
+  return m ? `UTC${sign}${h}:${padZ(m)}` : `UTC${sign}${h}`;
+}
+
+/** Local minute of day for a UTC meeting start in a given tz */
+function localMeetingMin(utcMin: number, offsetMin: number): number {
+  return ((utcMin + offsetMin) % 1440 + 1440) % 1440;
+}
+
+/** Check if [start, start+duration] is fully within [workStart*60, workEnd*60] local */
+function isInWorkHours(localStart: number, durMin: number): boolean {
+  const ws = workStart * 60;
+  const we = workEnd * 60;
+  return localStart >= ws && (localStart + durMin) <= we;
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER HOUR RULER
+// ═══════════════════════════════════════════════════════════
+function renderRuler() {
+  rulerTicks.innerHTML = '';
+  for (let h = 0; h <= 24; h += 2) {
+    const pct = (h / 24) * 100;
+    const tick = document.createElement('div');
+    tick.style.cssText = `position:absolute;left:${pct}%;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;`;
+    tick.innerHTML = `
+      <span style="font-family:'Fira Code',monospace;font-size:0.62rem;font-weight:600;color:var(--text-muted);white-space:nowrap;">${padZ(h)}:00</span>
+      <span style="width:1px;height:6px;background:var(--border);margin-top:1px;"></span>
+    `;
+    rulerTicks.appendChild(tick);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER ZONE ROWS
+// ═══════════════════════════════════════════════════════════
+function renderRows() {
+  zoneRows.innerHTML = '';
+  activeZones.forEach((tz, idx) => {
+    const entry    = TZ_LIST.find(t => t.tz === tz);
+    const label    = entry?.label ?? tz;
+    const offset   = getOffsetMin(tz, selectedDate);
+    const utcLabel = fmtUTC(offset);
+
+    // Is meeting in work hours for this zone?
+    const localStart = localMeetingMin(meetingStartMin, offset);
+    const inWork     = isInWorkHours(localStart, meetingDurationMin);
+
+    const row = document.createElement('div');
+    row.dataset.tz = tz;
+    row.style.cssText = `display:grid;grid-template-columns:140px 1fr;border-top:1px solid var(--border);position:relative;`;
+
+    // Label cell
+    const labelCell = document.createElement('div');
+    labelCell.style.cssText = `padding:0.5rem 0.625rem;display:flex;flex-direction:column;gap:0.15rem;justify-content:center;background:var(--bg-surface-2);border-right:1px solid var(--border);`;
+    labelCell.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:0.25rem;">
+        <span style="font-size:0.75rem;font-weight:700;color:var(--text-primary);line-height:1.2;word-break:break-word;">${label.split('(')[0].trim()}</span>
+        <button class="remove-tz" data-tz="${tz}" title="Remove" style="flex-shrink:0;width:16px;height:16px;border-radius:50%;border:none;background:var(--bg-surface-3);color:var(--text-muted);font-size:0.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:all 0.15s;"
+          onmouseover="this.style.background='rgba(220,38,38,0.15)';this.style.color='#DC2626';"
+          onmouseout="this.style.background='var(--bg-surface-3)';this.style.color='var(--text-muted)';">✕</button>
+      </div>
+      <span style="font-family:'Fira Code',monospace;font-size:0.62rem;color:var(--text-muted);">${utcLabel}</span>
+    `;
+
+    // Timeline cell
+    const timeCell = document.createElement('div');
+    timeCell.style.cssText = `position:relative;height:44px;cursor:ew-resize;user-select:none;overflow:hidden;`;
+    timeCell.dataset.timeline = '1';
+
+    // Working-hours band
+    const wsP  = (workStart / 24) * 100;
+    const weP  = (workEnd   / 24) * 100;
+    const band = document.createElement('div');
+    band.style.cssText = `position:absolute;top:0;bottom:0;left:${wsP}%;width:${weP - wsP}%;background:rgba(16,185,129,0.12);border-left:1px solid rgba(16,185,129,0.3);border-right:1px solid rgba(16,185,129,0.3);`;
+    timeCell.appendChild(band);
+
+    // Midnight divider line at 50%
+    const midLine = document.createElement('div');
+    midLine.style.cssText = `position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(255,255,255,0.04);pointer-events:none;`;
+    timeCell.appendChild(midLine);
+
+    // Meeting window overlay
+    const localStartPct = (localStart / 1440) * 100;
+    const durPct        = (meetingDurationMin / 1440) * 100;
+    const allInWork     = isAllInWork();
+    const winBg  = allInWork ? 'rgba(250,204,21,0.55)' : 'rgba(250,204,21,0.3)';
+    const winBdr = allInWork ? '2px solid #FBBF24'     : '2px solid rgba(250,204,21,0.6)';
+
+    const win = document.createElement('div');
+    win.className = 'meeting-win';
+    win.style.cssText = `position:absolute;top:4px;bottom:4px;left:${localStartPct}%;width:${durPct}%;background:${winBg};border:${winBdr};border-radius:4px;transition:background 0.2s,border-color 0.2s;pointer-events:none;z-index:2;`;
+
+    // Time label inside window
+    const winLabel = document.createElement('span');
+    winLabel.style.cssText = `position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Fira Code',monospace;font-size:0.6rem;font-weight:700;color:${allInWork?'#78350F':'#92400E'};white-space:nowrap;pointer-events:none;`;
+    winLabel.textContent = fmtMinutes(localStart);
+    win.appendChild(winLabel);
+    timeCell.appendChild(win);
+
+    row.appendChild(labelCell);
+    row.appendChild(timeCell);
+    zoneRows.appendChild(row);
+  });
+
+  // Bind remove buttons
+  zoneRows.querySelectorAll('.remove-tz').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const tz = (btn as HTMLElement).dataset.tz!;
+      activeZones = activeZones.filter(z => z !== tz);
+      renderRows();
+      renderSummary();
+    });
+  });
+}
+
+function isAllInWork(): boolean {
+  return activeZones.every(tz => {
+    const offset     = getOffsetMin(tz, selectedDate);
+    const localStart = localMeetingMin(meetingStartMin, offset);
+    return isInWorkHours(localStart, meetingDurationMin);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER SUMMARY
+// ═══════════════════════════════════════════════════════════
+function renderSummary() {
+  summaryRowsEl.innerHTML = '';
+  const allGood = isAllInWork();
+
+  activeZones.forEach(tz => {
+    const entry      = TZ_LIST.find(t => t.tz === tz);
+    const label      = entry?.label ?? tz;
+    const offset     = getOffsetMin(tz, selectedDate);
+    const localStart = localMeetingMin(meetingStartMin, offset);
+    const localEnd   = localStart + meetingDurationMin;
+    const inWork     = isInWorkHours(localStart, meetingDurationMin);
+    const utcLabel   = fmtUTC(offset);
+
+    const row = document.createElement('div');
+    row.style.cssText = `display:flex;align-items:center;justify-content:space-between;padding:0.35rem 0.5rem;border-radius:0.4rem;background:${inWork ? 'rgba(16,185,129,0.06)' : 'rgba(220,38,38,0.04)'};border:1px solid ${inWork ? 'rgba(16,185,129,0.2)' : 'rgba(220,38,38,0.15)'};`;
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <span style="font-size:0.82rem;">${inWork ? '✅' : '⚠️'}</span>
+        <div>
+          <div style="font-size:0.8rem;font-weight:600;color:var(--text-primary);">${label.split('(')[0].trim()}</div>
+          <div style="font-size:0.67rem;color:var(--text-muted);font-family:'Fira Code',monospace;">${utcLabel}</div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'Fira Code',monospace;font-size:0.82rem;font-weight:700;color:${inWork ? '#059669' : '#DC2626'};">${fmtMinutes(localStart)} – ${fmtMinutes(localEnd)}</div>
+        <div style="font-size:0.67rem;color:var(--text-muted);">${inWork ? 'within working hours' : 'outside working hours'}</div>
+      </div>
+    `;
+    summaryRowsEl.appendChild(row);
+  });
+
+  if (allGood && activeZones.length > 1) {
+    const badge = document.createElement('div');
+    badge.style.cssText = `margin-top:0.5rem;padding:0.5rem 0.75rem;background:rgba(250,204,21,0.15);border:1.5px solid rgba(250,204,21,0.5);border-radius:0.5rem;font-size:0.8rem;font-weight:700;color:#92400E;text-align:center;`;
+    badge.textContent = '✨ Golden window — this time works for everyone!';
+    summaryRowsEl.appendChild(badge);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// DRAG HANDLING
+// ═══════════════════════════════════════════════════════════
+function getTimelineWidth(): number {
+  const first = zoneRows.querySelector('[data-timeline]') as HTMLElement | null;
+  return first ? first.getBoundingClientRect().width : 800;
+}
+
+function snapToQuarter(mins: number): number {
+  return Math.round(mins / 15) * 15;
+}
+
+function clampMeeting(mins: number): number {
+  return Math.max(0, Math.min(1440 - meetingDurationMin, mins));
+}
+
+// Attach pointer events to each timeline cell
+function bindDrag() {
+  // Use event delegation on zoneRows
+  zoneRows.addEventListener('pointerdown', (e) => {
+    const target = (e.target as HTMLElement).closest('[data-timeline]') as HTMLElement | null;
+    if (!target) return;
+    isDragging    = true;
+    dragStartX    = e.clientX;
+    dragStartMeetingMin = meetingStartMin;
+    target.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+
+  zoneRows.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    const w     = getTimelineWidth();
+    const dx    = e.clientX - dragStartX;
+    const dMin  = (dx / w) * 1440;
+    meetingStartMin = clampMeeting(snapToQuarter(dragStartMeetingMin + dMin));
+    renderRows();
+    renderSummary();
+  });
+
+  const stopDrag = () => { isDragging = false; };
+  zoneRows.addEventListener('pointerup',     stopDrag);
+  zoneRows.addEventListener('pointercancel', stopDrag);
+}
+
+// ═══════════════════════════════════════════════════════════
+// POPULATE TZ SELECT
+// ═══════════════════════════════════════════════════════════
+function populateTzSelect() {
+  TZ_LIST.forEach(({ label, tz }) => {
+    const opt = document.createElement('option');
+    opt.value = tz;
+    opt.textContent = label;
+    tzSelect.appendChild(opt);
+  });
+}
+
+function addTimezone(tz: string) {
+  if (!tz || activeZones.includes(tz)) return;
+  activeZones.push(tz);
+  renderRows();
+  renderSummary();
+}
+
+// ═══════════════════════════════════════════════════════════
+// DATE HELPERS
+// ═══════════════════════════════════════════════════════════
+function dateToInputValue(d: Date): string {
+  return `${d.getFullYear()}-${padZ(d.getMonth()+1)}-${padZ(d.getDate())}`;
+}
+
+function inputValueToDate(s: string): Date {
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d, 12, 0, 0)); // noon UTC to avoid tz edge cases
+}
+
+// ═══════════════════════════════════════════════════════════
+// EVENT WIRING
+// ═══════════════════════════════════════════════════════════
+btnAddTz.addEventListener('click', () => { addTimezone(tzSelect.value); });
+
+meetingDateEl.addEventListener('change', () => {
+  selectedDate = inputValueToDate(meetingDateEl.value);
+  renderRows();
+  renderSummary();
+});
+
+durationEl.addEventListener('change', () => {
+  meetingDurationMin = parseInt(durationEl.value);
+  meetingStartMin    = clampMeeting(meetingStartMin);
+  renderRows();
+  renderSummary();
+});
+
+workStartEl.addEventListener('change', () => {
+  workStart = Math.max(0, Math.min(23, parseInt(workStartEl.value) || 9));
+  workStartEl.value = String(workStart);
+  renderRows(); renderSummary();
+});
+
+workEndEl.addEventListener('change', () => {
+  workEnd = Math.max(1, Math.min(24, parseInt(workEndEl.value) || 18));
+  workEndEl.value = String(workEnd);
+  renderRows(); renderSummary();
+});
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+
+// Set date input to today
+meetingDateEl.value = dateToInputValue(selectedDate);
+
+// Detect user's local timezone
+const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+// Default seed zones (always include user's local tz)
+const DEFAULT_ZONES = ['America/New_York', 'Europe/London', 'Asia/Singapore', 'Australia/Sydney'];
+const seedZones = [localTz, ...DEFAULT_ZONES.filter(z => z !== localTz)].slice(0, 5);
+
+// Set initial meeting time to 9am in user's local tz
+const localOffset = getOffsetMin(localTz, selectedDate);
+meetingStartMin   = clampMeeting(snapToQuarter(9 * 60 - localOffset));
+
+populateTzSelect();
+renderRuler();
+seedZones.forEach(addTimezone);
+bindDrag();
+
+// Focus input styling
+const style = document.createElement('style');
+style.textContent = `
+  [data-timeline] { cursor:ew-resize; }
+  #meeting-date:focus, #meeting-duration:focus, #work-start:focus, #work-end:focus, #tz-select:focus {
+    border-color:#0D9488 !important; box-shadow:0 0 0 2px rgba(13,148,136,0.15);
+  }
+`;
+document.head.appendChild(style);
+</script>

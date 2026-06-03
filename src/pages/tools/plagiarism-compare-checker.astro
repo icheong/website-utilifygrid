@@ -1,0 +1,619 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">
+      Text Diff &amp; Plagiarism Compare Checker
+    </h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.5rem;">
+      Paste two documents to find exact matches, near-matches, and word-level alterations — sentence by sentence.
+    </p>
+
+    <!-- ── Input panes ── -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:1rem;" id="input-grid">
+
+      <!-- Doc A -->
+      <div style="display:flex; flex-direction:column; gap:0.4rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <label style="font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.07em; display:flex; align-items:center; gap:0.4rem;">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#1E3A8A; flex-shrink:0;"></span>
+            Document A
+          </label>
+          <span id="count-a" style="font-size:0.68rem; color:var(--text-muted); font-family:'Fira Code',monospace;">0 sentences</span>
+        </div>
+        <textarea id="doc-a"
+          placeholder="Paste original document here…"
+          style="width:100%; height:200px; padding:0.75rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; font-size:0.82rem; color:var(--text-primary); resize:vertical; outline:none; line-height:1.65; box-sizing:border-box; transition:border-color 0.15s; font-family:'Source Serif 4',Georgia,serif;"
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <!-- Doc B -->
+      <div style="display:flex; flex-direction:column; gap:0.4rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <label style="font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.07em; display:flex; align-items:center; gap:0.4rem;">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#9A3412; flex-shrink:0;"></span>
+            Document B
+          </label>
+          <span id="count-b" style="font-size:0.68rem; color:var(--text-muted); font-family:'Fira Code',monospace;">0 sentences</span>
+        </div>
+        <textarea id="doc-b"
+          placeholder="Paste comparison document here…"
+          style="width:100%; height:200px; padding:0.75rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; font-size:0.82rem; color:var(--text-primary); resize:vertical; outline:none; line-height:1.65; box-sizing:border-box; transition:border-color 0.15s; font-family:'Source Serif 4',Georgia,serif;"
+          spellcheck="false"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- ── Options row ── -->
+    <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center; padding:0.75rem 1rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; margin-bottom:1rem;">
+
+      <div style="display:flex; flex-direction:column; gap:0.25rem; min-width:160px;">
+        <label style="font-size:0.7rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em;">
+          Near-match threshold
+        </label>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <input id="threshold" type="range" min="50" max="95" value="70"
+            style="flex:1; accent-color:#1E3A8A; cursor:pointer;" />
+          <span id="threshold-display" style="font-family:'Fira Code',monospace; font-size:0.8rem; font-weight:700; color:#1E3A8A; min-width:2.5rem; text-align:right;">70%</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
+        <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-size:0.78rem; font-weight:600; color:var(--text-secondary); user-select:none;">
+          <input id="opt-case" type="checkbox" checked style="accent-color:#1E3A8A; width:0.85rem; height:0.85rem;" />
+          Case-insensitive
+        </label>
+        <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-size:0.78rem; font-weight:600; color:var(--text-secondary); user-select:none;">
+          <input id="opt-punct" type="checkbox" checked style="accent-color:#1E3A8A; width:0.85rem; height:0.85rem;" />
+          Ignore punctuation
+        </label>
+        <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-size:0.78rem; font-weight:600; color:var(--text-secondary); user-select:none;">
+          <input id="opt-stopwords" type="checkbox" style="accent-color:#1E3A8A; width:0.85rem; height:0.85rem;" />
+          Ignore stop words
+        </label>
+      </div>
+    </div>
+
+    <!-- ── Compare button ── -->
+    <button id="btn-compare"
+      style="width:100%; padding:0.75rem 1.5rem; background:#1E3A8A; color:#fff; border:none; border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; transition:background 0.15s, transform 0.1s; display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:1.25rem;"
+      onmouseover="this.style.background='#1D4ED8';"
+      onmouseout="this.style.background='#1E3A8A';"
+      onmousedown="this.style.transform='scale(0.98)';"
+      onmouseup="this.style.transform='scale(1)';"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      Compare Documents
+    </button>
+
+    <!-- ── Legend ── -->
+    <div id="legend" style="display:none; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding:0.625rem 0.875rem; background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.625rem;">
+      <span style="font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-right:0.25rem;">Legend:</span>
+      <span style="display:flex; align-items:center; gap:0.35rem; font-size:0.75rem; color:var(--text-secondary);">
+        <span style="width:14px; height:14px; border-radius:2px; background:rgba(220,38,38,0.18); border:1.5px solid rgba(220,38,38,0.5); flex-shrink:0;"></span> Exact match
+      </span>
+      <span style="display:flex; align-items:center; gap:0.35rem; font-size:0.75rem; color:var(--text-secondary);">
+        <span style="width:14px; height:14px; border-radius:2px; background:rgba(217,119,6,0.18); border:1.5px solid rgba(217,119,6,0.5); flex-shrink:0;"></span> Near-match
+      </span>
+      <span style="display:flex; align-items:center; gap:0.35rem; font-size:0.75rem; color:var(--text-secondary);">
+        <span style="width:14px; height:14px; border-radius:2px; background:rgba(5,150,105,0.12); border:1.5px solid rgba(5,150,105,0.4); flex-shrink:0;"></span> Unique
+      </span>
+      <span style="display:flex; align-items:center; gap:0.35rem; font-size:0.75rem; color:var(--text-secondary);">
+        <span style="font-family:'Fira Code',monospace; font-size:0.7rem; padding:0 3px; background:rgba(217,119,6,0.2); border-radius:2px; color:#92400E;">word</span> Altered word
+      </span>
+    </div>
+
+    <!-- ── Summary cards ── -->
+    <div id="summary-cards" style="display:none; grid-template-columns:repeat(4,1fr); gap:0.625rem; margin-bottom:1.25rem;">
+      <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.75rem; text-align:center;">
+        <div id="stat-similarity" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:800; color:#DC2626;">—</div>
+        <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem;">Similarity</div>
+      </div>
+      <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.75rem; text-align:center;">
+        <div id="stat-exact" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:800; color:#DC2626;">—</div>
+        <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem;">Exact matches</div>
+      </div>
+      <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.75rem; text-align:center;">
+        <div id="stat-near" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:800; color:#D97706;">—</div>
+        <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem;">Near-matches</div>
+      </div>
+      <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.75rem; text-align:center;">
+        <div id="stat-unique" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:800; color:#059669;">—</div>
+        <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem;">Unique sentences</div>
+      </div>
+    </div>
+
+    <!-- ── Results: side-by-side sentence view ── -->
+    <div id="results-section" style="display:none;">
+      <div style="font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.625rem;">Sentence-by-Sentence Analysis</div>
+
+      <!-- Column headers -->
+      <div style="display:grid; grid-template-columns:1fr 28px 1fr; gap:0; margin-bottom:0.4rem;" id="col-headers">
+        <div style="font-size:0.72rem; font-weight:700; color:var(--text-secondary); padding:0 0.5rem; display:flex; align-items:center; gap:0.4rem;">
+          <span style="width:8px; height:8px; border-radius:50%; background:#1E3A8A; display:inline-block;"></span> Document A
+        </div>
+        <div></div>
+        <div style="font-size:0.72rem; font-weight:700; color:var(--text-secondary); padding:0 0.5rem; display:flex; align-items:center; gap:0.4rem;">
+          <span style="width:8px; height:8px; border-radius:50%; background:#9A3412; display:inline-block;"></span> Document B
+        </div>
+      </div>
+
+      <div id="diff-rows" style="display:flex; flex-direction:column; gap:3px;"></div>
+    </div>
+
+    <!-- ── Empty state ── -->
+    <div id="state-empty" style="display:none; text-align:center; padding:2rem 1rem;">
+      <div style="font-size:2.25rem; margin-bottom:0.5rem;">📄</div>
+      <div style="font-size:0.88rem; font-weight:600; color:var(--text-secondary);">No overlapping sentences found</div>
+      <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">Try lowering the near-match threshold or disabling stop-word filtering.</div>
+    </div>
+
+    <!-- ── Error state ── -->
+    <div id="state-error" style="display:none; padding:0.75rem 1rem; background:rgba(220,38,38,0.08); border:1px solid rgba(220,38,38,0.25); border-radius:0.625rem; font-size:0.82rem; color:#DC2626;"></div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW TO USE
+  ══════════════════════════════════════════════ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this tool</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste the original document into the <strong>Document A</strong> box and the comparison text into <strong>Document B</strong>, then click <strong>Compare Documents</strong>. Results appear as a sentence-by-sentence side-by-side view. Each sentence is classified as an exact match (highlighted red), a near-match (amber), or unique (green).
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      For near-matches, the tool highlights the specific words that differ between the two versions so you can see at a glance whether a sentence has been lightly paraphrased, had synonyms swapped, or had punctuation changed. Connector lines between the two panels show which sentences are paired.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Adjust the <strong>near-match threshold</strong> to control sensitivity — 70% means sentences sharing at least 70% word similarity are flagged as near-matches. Enable <strong>ignore stop words</strong> to focus on content words only, which surfaces paraphrasing that swaps articles and prepositions while keeping core meaning the same.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the comparison works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Sentence segmentation', 'Each document is split into sentences using a regex that breaks on terminal punctuation (. ! ?) followed by whitespace and an uppercase letter, or end-of-string. Abbreviations like "Dr." and "e.g." are handled with a common exception list to avoid false splits. Each sentence is then normalised according to the active options (case folding, punctuation stripping, stop-word removal) for comparison purposes — the original text is retained for display.'],
+        ['Similarity scoring (Jaccard index)', 'Each sentence pair is scored using the Jaccard similarity coefficient over word sets: |intersection| / |union|. This measures how much vocabulary the two sentences share regardless of word order. A score of 1.0 means every unique word is shared; 0.0 means no words in common. The Jaccard method is lightweight, language-agnostic, and robust against word reordering.'],
+        ['Matching algorithm', 'To find the best global matching rather than just local pairs, the tool builds a similarity matrix for all A×B sentence pairs, then greedily assigns matches starting from the highest-scoring pair, removing both sentences from the pool once matched. This prevents one sentence from being the "best match" for multiple opposing sentences.'],
+        ['Word-level diff for near-matches', 'For near-match pairs, a word-level diff is computed using the longest common subsequence (LCS) algorithm. Words present in one sentence but absent from the other are highlighted in amber, giving a precise view of what was altered, added, or removed.'],
+        ['Similarity score', 'The headline similarity percentage is calculated as the proportion of Document A sentences that have at least one match (exact or near) in Document B, weighted by the average match score across those pairs. Unique sentences in both documents contribute 0 to the score.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════════ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: 'Is this tool suitable for detecting academic plagiarism?',
+          a: 'It is effective for direct copying and light paraphrasing — sentence transpositions, synonym swaps, and punctuation changes. However, it compares only the two documents you paste; it does not search the internet or any database. For institutional academic integrity checking against the web, purpose-built services like Turnitin or iThenticate are more appropriate. This tool is best for comparing a student submission against a source document you already have.'
+        },
+        {
+          q: 'What does the similarity percentage mean exactly?',
+          a: 'It reflects how many of Document A\'s sentences have a matching counterpart in Document B (by the Jaccard word-overlap method), weighted by the strength of each match. A 100% score means every sentence in Document A has an exact duplicate somewhere in Document B. A 0% score means no sentence shares any vocabulary with any sentence in the other document (which is rare in practice for same-language text).'
+        },
+        {
+          q: 'Why might a sentence I think is similar not be flagged?',
+          a: 'The Jaccard method measures shared vocabulary, not meaning. If two sentences convey the same idea using completely different words (full paraphrase), they will score near 0. Lowering the near-match threshold helps with partial paraphrase, but deep semantic similarity requires embedding-based models. For best results, enable "ignore stop words" so matching focuses on content words rather than function words like "the", "a", "is".'
+        },
+        {
+          q: 'What are stop words and when should I enable that option?',
+          a: 'Stop words are high-frequency function words (the, a, is, in, of, and, etc.) that carry little semantic content. Excluding them from the similarity calculation makes the comparison focus on nouns, verbs, and adjectives — the words that actually convey meaning. Enable this option when comparing academic or professional writing where paraphrasing often replaces content words while keeping the same sentence structure.'
+        },
+        {
+          q: 'Does this tool send my text to a server?',
+          a: 'No. All comparison logic runs entirely in your browser using JavaScript. Neither document ever leaves your device. This makes it safe to use with confidential manuscripts, legal documents, or student submissions — no data is transmitted, logged, or stored.'
+        },
+        {
+          q: 'Is there a word or document length limit?',
+          a: 'There is no hard limit. The comparison scales quadratically with the number of sentences (each sentence in A is compared to each in B), so very long documents with hundreds of sentences may take a second or two to process. For documents under 100 sentences each, comparison is near-instantaneous.'
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  // ═══════════════════════════════════════════════════════════
+  // CONSTANTS & CONFIG
+  // ═══════════════════════════════════════════════════════════
+
+  const STOP_WORDS = new Set([
+    'a','an','the','and','or','but','in','on','at','to','for','of','with',
+    'by','from','is','was','are','were','be','been','being','have','has',
+    'had','do','does','did','will','would','could','should','may','might',
+    'shall','can','not','no','nor','so','yet','both','either','neither',
+    'each','every','all','any','few','more','most','other','some','such',
+    'than','then','that','this','these','those','it','its','as','if','when',
+    'while','after','before','since','until','unless','although','because',
+    'though','even','also','just','very','too','only','much','many','own',
+    'same','up','out','about','into','through','over','under','again',
+    'further','once','here','there','where','which','who','whom','what',
+    'i','me','my','we','us','our','you','your','he','him','his','she',
+    'her','they','them','their'
+  ]);
+
+  // Abbreviations that should NOT trigger sentence splits
+  const ABBREV = /\b(mr|mrs|ms|dr|prof|sr|jr|vs|etc|e\.g|i\.e|fig|vol|no|pp|cf|al|dept|est|approx|corp|inc|ltd|co)\./gi;
+
+  // ── DOM refs ──────────────────────────────────────────────
+  const docA          = document.getElementById('doc-a')          as HTMLTextAreaElement;
+  const docB          = document.getElementById('doc-b')          as HTMLTextAreaElement;
+  const countA        = document.getElementById('count-a')!;
+  const countB        = document.getElementById('count-b')!;
+  const thresholdSlider = document.getElementById('threshold')    as HTMLInputElement;
+  const thresholdDisplay = document.getElementById('threshold-display')!;
+  const optCase       = document.getElementById('opt-case')       as HTMLInputElement;
+  const optPunct      = document.getElementById('opt-punct')      as HTMLInputElement;
+  const optStopWords  = document.getElementById('opt-stopwords')  as HTMLInputElement;
+  const btnCompare    = document.getElementById('btn-compare')!;
+  const legend        = document.getElementById('legend')!;
+  const summaryCards  = document.getElementById('summary-cards')! as HTMLElement;
+  const statSimilarity= document.getElementById('stat-similarity')!;
+  const statExact     = document.getElementById('stat-exact')!;
+  const statNear      = document.getElementById('stat-near')!;
+  const statUnique    = document.getElementById('stat-unique')!;
+  const resultsSection= document.getElementById('results-section')!;
+  const diffRows      = document.getElementById('diff-rows')!;
+  const stateEmpty    = document.getElementById('state-empty')!;
+  const stateError    = document.getElementById('state-error')!;
+
+  // ── Threshold display ─────────────────────────────────────
+  thresholdSlider.addEventListener('input', () => {
+    thresholdDisplay.textContent = `${thresholdSlider.value}%`;
+  });
+
+  // ── Sentence counter live ─────────────────────────────────
+  docA.addEventListener('input', () => { countA.textContent = `${segmentSentences(docA.value).length} sentences`; });
+  docB.addEventListener('input', () => { countB.textContent = `${segmentSentences(docB.value).length} sentences`; });
+
+  // ── Sentence segmentation ──────────────────────────────────
+  function segmentSentences(text: string): string[] {
+    if (!text.trim()) return [];
+    // Temporarily mask abbreviations
+    const masked = text.replace(ABBREV, (m) => m.replace('.', '\x00'));
+    // Split on . ! ? followed by whitespace + capital, or end of string
+    const parts = masked
+      .split(/(?<=[.!?])\s+(?=[A-Z"'])|(?<=[.!?])$/gm)
+      .map(s => s.replace(/\x00/g, '.').trim())
+      .filter(s => s.length > 3);
+    return parts;
+  }
+
+  // ── Normalise a sentence for comparison ───────────────────
+  function normalise(sentence: string): string[] {
+    let s = sentence;
+    if (optCase.checked)  s = s.toLowerCase();
+    if (optPunct.checked) s = s.replace(/[^\w\s]/g, ' ');
+    let words = s.split(/\s+/).filter(Boolean);
+    if (optStopWords.checked) words = words.filter(w => !STOP_WORDS.has(w.toLowerCase()));
+    return words;
+  }
+
+  // ── Jaccard similarity ────────────────────────────────────
+  function jaccard(wordsA: string[], wordsB: string[]): number {
+    if (!wordsA.length || !wordsB.length) return 0;
+    const setA = new Set(wordsA);
+    const setB = new Set(wordsB);
+    let inter = 0;
+    for (const w of setA) if (setB.has(w)) inter++;
+    const union = setA.size + setB.size - inter;
+    return union === 0 ? 0 : inter / union;
+  }
+
+  // ── LCS-based word diff ───────────────────────────────────
+  function wordDiff(sentA: string, sentB: string): { aHtml: string; bHtml: string } {
+    const wA = sentA.split(/(\s+)/);
+    const wB = sentB.split(/(\s+)/);
+
+    // Build LCS table on non-whitespace tokens only
+    const tokA = wA.filter(t => t.trim());
+    const tokB = wB.filter(t => t.trim());
+    const m = tokA.length, n = tokB.length;
+    const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+    for (let i = m - 1; i >= 0; i--) {
+      for (let j = n - 1; j >= 0; j--) {
+        const match = optCase.checked
+          ? tokA[i].toLowerCase() === tokB[j].toLowerCase()
+          : tokA[i] === tokB[j];
+        dp[i][j] = match ? 1 + dp[i+1][j+1] : Math.max(dp[i+1][j], dp[i][j+1]);
+      }
+    }
+
+    // Trace back: mark added/removed tokens
+    const aMarked = new Set<number>(); // indices in tokA that are NOT in LCS
+    const bMarked = new Set<number>();
+    let i = 0, j = 0;
+    while (i < m && j < n) {
+      const match = optCase.checked
+        ? tokA[i].toLowerCase() === tokB[j].toLowerCase()
+        : tokA[i] === tokB[j];
+      if (match) { i++; j++; }
+      else if (dp[i+1][j] >= dp[i][j+1]) { aMarked.add(i); i++; }
+      else { bMarked.add(j); j++; }
+    }
+    while (i < m) { aMarked.add(i); i++; }
+    while (j < n) { bMarked.add(j); j++; }
+
+    function buildHtml(tokens: string[], marked: Set<number>): string {
+      let ai = 0;
+      return tokens.map(t => {
+        if (!/\S/.test(t)) return t; // whitespace passthrough
+        const idx = ai++;
+        const esc = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        if (marked.has(idx)) {
+          return `<mark style="background:rgba(217,119,6,0.22);color:#92400E;border-radius:2px;padding:0 2px;font-weight:600;">${esc}</mark>`;
+        }
+        return esc;
+      }).join('');
+    }
+
+    return {
+      aHtml: buildHtml(wA, aMarked),
+      bHtml: buildHtml(wB, bMarked),
+    };
+  }
+
+  // ── Main comparison ───────────────────────────────────────
+  function compare() {
+    hideStates();
+
+    const textA = docA.value.trim();
+    const textB = docB.value.trim();
+
+    if (!textA || !textB) {
+      showError('Please paste text into both Document A and Document B.');
+      return;
+    }
+
+    const sentencesA = segmentSentences(textA);
+    const sentencesB = segmentSentences(textB);
+
+    if (!sentencesA.length || !sentencesB.length) {
+      showError('Could not detect sentences in one or both documents. Make sure the text contains full sentences.');
+      return;
+    }
+
+    const threshold = parseInt(thresholdSlider.value) / 100;
+
+    // Normalised word arrays for scoring
+    const normA = sentencesA.map(normalise);
+    const normB = sentencesB.map(normalise);
+
+    // Build full similarity matrix
+    const matrix: number[][] = normA.map(wa => normB.map(wb => jaccard(wa, wb)));
+
+    // Greedy best-match assignment
+    type Match = { ai: number; bi: number; score: number; type: 'exact' | 'near' | 'unique' };
+    const matches: Match[] = [];
+    const usedA = new Set<number>();
+    const usedB = new Set<number>();
+
+    // Collect all candidate pairs sorted by score desc
+    const candidates: { ai: number; bi: number; score: number }[] = [];
+    for (let ai = 0; ai < sentencesA.length; ai++) {
+      for (let bi = 0; bi < sentencesB.length; bi++) {
+        if (matrix[ai][bi] >= threshold) {
+          candidates.push({ ai, bi, score: matrix[ai][bi] });
+        }
+      }
+    }
+    candidates.sort((a, b) => b.score - a.score);
+
+    for (const { ai, bi, score } of candidates) {
+      if (usedA.has(ai) || usedB.has(bi)) continue;
+      usedA.add(ai);
+      usedB.add(bi);
+      matches.push({ ai, bi, score, type: score >= 0.98 ? 'exact' : 'near' });
+    }
+
+    // Unmatched A sentences
+    for (let ai = 0; ai < sentencesA.length; ai++) {
+      if (!usedA.has(ai)) matches.push({ ai, bi: -1, score: 0, type: 'unique' });
+    }
+    // Unmatched B sentences
+    for (let bi = 0; bi < sentencesB.length; bi++) {
+      if (!usedB.has(bi)) matches.push({ ai: -1, bi, score: 0, type: 'unique' });
+    }
+
+    // Sort by A index (then B for unmatched-A rows)
+    matches.sort((a, b) => {
+      const ai = a.ai === -1 ? 999 : a.ai;
+      const bi = b.ai === -1 ? 999 : b.ai;
+      return ai - bi || a.bi - b.bi;
+    });
+
+    // ── Stats ──
+    const exactCount  = matches.filter(m => m.type === 'exact').length;
+    const nearCount   = matches.filter(m => m.type === 'near').length;
+    const uniqueCount = matches.filter(m => m.type === 'unique').length;
+    const matchedA    = matches.filter(m => m.ai !== -1 && m.type !== 'unique').length;
+    const avgScore    = matchedA > 0
+      ? matches.filter(m => m.type !== 'unique').reduce((s, m) => s + m.score, 0) / matchedA
+      : 0;
+    const similarityPct = sentencesA.length > 0
+      ? Math.round((matchedA / sentencesA.length) * avgScore * 100)
+      : 0;
+
+    statSimilarity.textContent = `${similarityPct}%`;
+    statSimilarity.style.color = similarityPct > 60 ? '#DC2626' : similarityPct > 30 ? '#D97706' : '#059669';
+    statExact.textContent  = String(exactCount);
+    statNear.textContent   = String(nearCount);
+    statUnique.textContent = String(uniqueCount);
+
+    summaryCards.style.display = 'grid';
+    legend.style.display = 'flex';
+
+    if (!exactCount && !nearCount) {
+      stateEmpty.style.display = 'block';
+    } else {
+      resultsSection.style.display = 'block';
+      renderDiffRows(matches, sentencesA, sentencesB);
+    }
+  }
+
+  // ── Render diff rows ──────────────────────────────────────
+  function renderDiffRows(
+    matches: { ai: number; bi: number; score: number; type: string }[],
+    sentencesA: string[],
+    sentencesB: string[]
+  ) {
+    diffRows.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+
+    matches.forEach((m, idx) => {
+      const isExact  = m.type === 'exact';
+      const isNear   = m.type === 'near';
+      const isUnique = m.type === 'unique';
+
+      // Colour scheme
+      const borderColor = isExact ? 'rgba(220,38,38,0.35)' : isNear ? 'rgba(217,119,6,0.35)' : 'rgba(5,150,105,0.25)';
+      const bgA         = isExact ? 'rgba(220,38,38,0.06)'  : isNear ? 'rgba(217,119,6,0.06)'  : m.ai !== -1 ? 'rgba(5,150,105,0.05)' : 'transparent';
+      const bgB         = isExact ? 'rgba(220,38,38,0.06)'  : isNear ? 'rgba(217,119,6,0.06)'  : m.bi !== -1 ? 'rgba(5,150,105,0.05)' : 'transparent';
+      const connColor   = isExact ? '#DC2626' : isNear ? '#D97706' : '#059669';
+
+      // Build HTML content for each cell
+      let cellAHtml = '';
+      let cellBHtml = '';
+
+      if (isNear && m.ai !== -1 && m.bi !== -1) {
+        const diff = wordDiff(sentencesA[m.ai], sentencesB[m.bi]);
+        cellAHtml = diff.aHtml;
+        cellBHtml = diff.bHtml;
+      } else {
+        const escA = m.ai !== -1 ? sentencesA[m.ai].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
+        const escB = m.bi !== -1 ? sentencesB[m.bi].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
+        cellAHtml = escA;
+        cellBHtml = escB;
+      }
+
+      // Score badge
+      const scorePct = Math.round(m.score * 100);
+      const badgeHtml = (isExact || isNear)
+        ? `<span style="font-family:'Fira Code',monospace;font-size:0.62rem;font-weight:700;color:${connColor};white-space:nowrap;">${scorePct}%</span>`
+        : '';
+
+      // Type badge
+      const typeBadge = isExact ? '=' : isNear ? '≈' : '·';
+      const typeTip   = isExact ? 'Exact match' : isNear ? 'Near-match' : 'Unique';
+
+      const row = document.createElement('div');
+      row.style.cssText = `
+        display:grid; grid-template-columns:1fr 28px 1fr;
+        gap:0; animation:rowIn 0.18s ease both;
+        animation-delay:${Math.min(idx * 0.015, 0.6)}s;
+        border-radius:0.5rem; overflow:hidden;
+      `;
+
+      row.innerHTML = `
+        <div style="padding:0.6rem 0.75rem; background:${bgA}; border:1px solid ${borderColor}; border-right:none; border-radius:0.5rem 0 0 0.5rem; font-size:0.82rem; line-height:1.65; color:${m.ai !== -1 ? 'var(--text-primary)' : 'transparent'}; font-family:'Source Serif 4',Georgia,serif; min-height:2.5rem;">
+          ${m.ai !== -1 ? cellAHtml : ''}
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:${isUnique ? 'var(--bg-surface-2)' : bgA}; border-top:1px solid ${borderColor}; border-bottom:1px solid ${borderColor}; gap:0.15rem;">
+          <span title="${typeTip}" style="font-size:0.75rem; font-weight:800; color:${connColor}; line-height:1;">${typeBadge}</span>
+          ${badgeHtml}
+        </div>
+        <div style="padding:0.6rem 0.75rem; background:${bgB}; border:1px solid ${borderColor}; border-left:none; border-radius:0 0.5rem 0.5rem 0; font-size:0.82rem; line-height:1.65; color:${m.bi !== -1 ? 'var(--text-primary)' : 'transparent'}; font-family:'Source Serif 4',Georgia,serif; min-height:2.5rem;">
+          ${m.bi !== -1 ? cellBHtml : ''}
+        </div>
+      `;
+
+      fragment.appendChild(row);
+    });
+
+    diffRows.appendChild(fragment);
+  }
+
+  // ── State helpers ─────────────────────────────────────────
+  function hideStates() {
+    resultsSection.style.display = 'none';
+    stateEmpty.style.display     = 'none';
+    stateError.style.display     = 'none';
+  }
+
+  function showError(msg: string) {
+    stateError.textContent   = `⚠ ${msg}`;
+    stateError.style.display = 'block';
+  }
+
+  // ── CSS animations ────────────────────────────────────────
+  const styleTag = document.createElement('style');
+  styleTag.textContent = `
+    @keyframes rowIn {
+      from { opacity:0; transform:translateY(4px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    #doc-a:focus, #doc-b:focus {
+      border-color:#1E3A8A !important;
+      box-shadow:0 0 0 3px rgba(30,58,138,0.12);
+    }
+    @media (max-width:640px) {
+      #input-grid     { grid-template-columns:1fr !important; }
+      #col-headers    { display:none !important; }
+      #diff-rows > div { grid-template-columns:1fr !important; }
+      #diff-rows > div > div:nth-child(2) { display:none !important; }
+    }
+  `;
+  document.head.appendChild(styleTag);
+
+  // ── Responsive summary cards ──────────────────────────────
+  function adjustSummaryGrid() {
+    summaryCards.style.gridTemplateColumns = window.innerWidth < 480
+      ? 'repeat(2,1fr)' : 'repeat(4,1fr)';
+  }
+  window.addEventListener('resize', adjustSummaryGrid);
+  adjustSummaryGrid();
+
+  // ── Seed example on load ───────────────────────────────────
+  docA.value = `Machine learning is a branch of artificial intelligence that enables systems to learn from data.
+Neural networks are computational models inspired by the structure of the human brain.
+Deep learning uses multiple layers of neural networks to extract high-level features from raw data.
+Supervised learning requires labelled training examples to teach the model correct outputs.
+The development of transformer models has revolutionised natural language processing tasks.`;
+
+  docB.value = `Machine learning is a field of artificial intelligence that allows systems to learn automatically from data.
+Neural networks are computing models inspired by the architecture of the human brain.
+Gradient descent is an optimisation algorithm used to minimise the loss function during training.
+Supervised learning relies on labelled training data to guide the model toward accurate predictions.
+The introduction of transformer architectures has transformed the landscape of natural language processing.`;
+
+  countA.textContent = `${segmentSentences(docA.value).length} sentences`;
+  countB.textContent = `${segmentSentences(docB.value).length} sentences`;
+
+  btnCompare.addEventListener('click', compare);
+</script>

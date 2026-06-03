@@ -1,0 +1,572 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'text-column-extractor')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">
+      Text Column Extractor
+    </h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.5rem;">
+      Paste delimited text, pick a delimiter and column number, get a clean list instantly.
+    </p>
+
+    <!-- ── Top controls row ── -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+
+      <!-- Delimiter selector -->
+      <div>
+        <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.4rem;">Delimiter</label>
+        <div style="display:flex; gap:0.35rem; flex-wrap:wrap;" id="delim-group">
+          <button class="delim-btn active-delim" data-delim="," style="padding:0.35rem 0.65rem; border-radius:0.4rem; border:1.5px solid #0D9488; background:rgba(13,148,136,0.1); color:#0D9488; font-family:'Fira Code',monospace; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 0.15s;">,</button>
+          <button class="delim-btn" data-delim="	" style="padding:0.35rem 0.65rem; border-radius:0.4rem; border:1.5px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-family:'Fira Code',monospace; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 0.15s;">tab</button>
+          <button class="delim-btn" data-delim="|" style="padding:0.35rem 0.65rem; border-radius:0.4rem; border:1.5px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-family:'Fira Code',monospace; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 0.15s;">|</button>
+          <button class="delim-btn" data-delim=";" style="padding:0.35rem 0.65rem; border-radius:0.4rem; border:1.5px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-family:'Fira Code',monospace; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 0.15s;">;</button>
+          <button class="delim-btn" data-delim=" " style="padding:0.35rem 0.65rem; border-radius:0.4rem; border:1.5px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-family:'Fira Code',monospace; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 0.15s;">space</button>
+          <button class="delim-btn" data-delim="custom" style="padding:0.35rem 0.65rem; border-radius:0.4rem; border:1.5px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-family:'Fira Code',monospace; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 0.15s;">custom</button>
+        </div>
+        <!-- Custom delimiter input (hidden by default) -->
+        <input id="custom-delim-input" type="text" maxlength="8" placeholder="enter delimiter…"
+          style="display:none; margin-top:0.4rem; width:100%; padding:0.4rem 0.6rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.4rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-primary); outline:none; box-sizing:border-box;"
+        />
+      </div>
+
+      <!-- Column number -->
+      <div>
+        <label for="col-number" style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.4rem;">Column Number</label>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <button id="col-dec" aria-label="Decrease column"
+            style="width:2rem; height:2rem; border-radius:0.4rem; border:1.5px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:1.1rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; flex-shrink:0;"
+            onmouseover="this.style.borderColor='#0D9488';this.style.color='#0D9488';"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';"
+          >−</button>
+          <input id="col-number" type="number" min="1" max="99" value="1"
+            style="flex:1; padding:0.4rem 0.5rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.4rem; font-family:'Fira Code',monospace; font-size:0.95rem; font-weight:700; color:#0D9488; text-align:center; outline:none; min-width:0;"
+          />
+          <button id="col-inc" aria-label="Increase column"
+            style="width:2rem; height:2rem; border-radius:0.4rem; border:1.5px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:1.1rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; flex-shrink:0;"
+            onmouseover="this.style.borderColor='#0D9488';this.style.color='#0D9488';"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';"
+          >+</button>
+        </div>
+        <div id="col-hint" style="font-size:0.7rem; color:var(--text-muted); margin-top:0.35rem; font-family:'Fira Code',monospace;">1-indexed · negative counts from end</div>
+      </div>
+    </div>
+
+    <!-- ── Options row ── -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem; padding:0.625rem 0.875rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem;">
+      <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-size:0.78rem; font-weight:600; color:var(--text-secondary); user-select:none;">
+        <input id="opt-trim"   type="checkbox" checked style="accent-color:#0D9488; width:0.85rem; height:0.85rem; cursor:pointer;" />
+        Trim whitespace
+      </label>
+      <span style="color:var(--border); font-size:0.8rem;">·</span>
+      <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-size:0.78rem; font-weight:600; color:var(--text-secondary); user-select:none;">
+        <input id="opt-dedup"  type="checkbox" style="accent-color:#0D9488; width:0.85rem; height:0.85rem; cursor:pointer;" />
+        Deduplicate
+      </label>
+      <span style="color:var(--border); font-size:0.8rem;">·</span>
+      <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-size:0.78rem; font-weight:600; color:var(--text-secondary); user-select:none;">
+        <input id="opt-skipempty" type="checkbox" checked style="accent-color:#0D9488; width:0.85rem; height:0.85rem; cursor:pointer;" />
+        Skip empty
+      </label>
+      <span style="color:var(--border); font-size:0.8rem;">·</span>
+      <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-size:0.78rem; font-weight:600; color:var(--text-secondary); user-select:none;">
+        <input id="opt-header"  type="checkbox" style="accent-color:#0D9488; width:0.85rem; height:0.85rem; cursor:pointer;" />
+        Skip header row
+      </label>
+    </div>
+
+    <!-- ── Main split layout: input | preview + output ── -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:1rem;" id="split-pane">
+
+      <!-- Input pane -->
+      <div style="display:flex; flex-direction:column; gap:0.4rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em;">Input</span>
+          <button id="btn-clear" style="font-size:0.72rem; color:var(--text-muted); background:none; border:none; cursor:pointer; padding:0; font-weight:600; transition:color 0.15s;"
+            onmouseover="this.style.color='#DC2626';" onmouseout="this.style.color='var(--text-muted)';">Clear</button>
+        </div>
+        <div style="position:relative;">
+          <!-- Row numbers overlay -->
+          <div id="row-nums" style="position:absolute; left:0; top:0; bottom:0; width:2.25rem; padding:0.625rem 0 0.625rem 0; overflow:hidden; pointer-events:none; border-right:1px solid var(--border); background:var(--bg-surface-3); border-radius:0.625rem 0 0 0.625rem; z-index:1;">
+          </div>
+          <textarea id="input-text"
+            placeholder="Paste CSV, log lines, or any delimited text…
+
+alice,30,engineer,london
+bob,25,designer,paris
+carol,35,manager,berlin"
+            style="width:100%; height:220px; padding:0.625rem 0.625rem 0.625rem 2.75rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:var(--text-primary); resize:vertical; outline:none; line-height:1.55; box-sizing:border-box; transition:border-color 0.15s;"
+            spellcheck="false"
+          ></textarea>
+        </div>
+        <div id="input-stats" style="font-size:0.7rem; color:var(--text-muted); font-family:'Fira Code',monospace;">0 rows · 0 columns detected</div>
+      </div>
+
+      <!-- Output pane -->
+      <div style="display:flex; flex-direction:column; gap:0.4rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em;">Extracted Column <span id="out-col-label" style="color:#0D9488;">1</span></span>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <span id="out-count" style="font-size:0.7rem; color:var(--text-muted); font-family:'Fira Code',monospace;"></span>
+            <button id="btn-copy-out" style="font-size:0.72rem; color:#0D9488; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:color 0.15s;"
+              onmouseover="this.style.color='#0F766E';" onmouseout="this.style.color='#0D9488';">Copy</button>
+          </div>
+        </div>
+        <textarea id="output-text" readonly
+          placeholder="Extracted values appear here…"
+          style="width:100%; height:220px; padding:0.625rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:var(--text-primary); resize:vertical; outline:none; line-height:1.55; box-sizing:border-box; cursor:default;"
+          spellcheck="false"
+        ></textarea>
+        <div id="output-stats" style="font-size:0.7rem; color:var(--text-muted); font-family:'Fira Code',monospace;"></div>
+      </div>
+    </div>
+
+    <!-- ── Column preview grid ── -->
+    <div id="preview-section" style="display:none; margin-bottom:0.875rem;">
+      <div style="font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem;">Column Preview <span style="font-weight:400; color:var(--text-muted); text-transform:none; letter-spacing:0;">(first 5 rows)</span></div>
+      <div id="preview-grid" style="overflow-x:auto; border:1.5px solid var(--border); border-radius:0.625rem; background:var(--bg-surface-2);">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- ── Download + secondary actions ── -->
+    <div style="display:flex; gap:0.625rem; flex-wrap:wrap;">
+      <button id="btn-extract"
+        style="flex:1; min-width:120px; padding:0.7rem 1.25rem; background:#0D9488; color:#fff; border:none; border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.875rem; font-weight:700; cursor:pointer; transition:background 0.15s, transform 0.1s; display:flex; align-items:center; justify-content:center; gap:0.5rem;"
+        onmouseover="this.style.background='#0F766E';"
+        onmouseout="this.style.background='#0D9488';"
+        onmousedown="this.style.transform='scale(0.98)';"
+        onmouseup="this.style.transform='scale(1)';"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+        </svg>
+        Extract Column
+      </button>
+      <button id="btn-download"
+        style="padding:0.7rem 1rem; background:var(--bg-surface-2); color:var(--text-secondary); border:1.5px solid var(--border); border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; gap:0.4rem;"
+        onmouseover="this.style.borderColor='#0D9488';this.style.color='#0D9488';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        .txt
+      </button>
+      <button id="btn-download-csv"
+        style="padding:0.7rem 1rem; background:var(--bg-surface-2); color:var(--text-secondary); border:1.5px solid var(--border); border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; gap:0.4rem;"
+        onmouseover="this.style.borderColor='#0D9488';this.style.color='#0D9488';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        .csv
+      </button>
+    </div>
+
+    <!-- ── Error banner ── -->
+    <div id="error-banner" style="display:none; margin-top:0.875rem; padding:0.625rem 0.875rem; background:rgba(220,38,38,0.08); border:1px solid rgba(220,38,38,0.3); border-radius:0.5rem; font-size:0.8rem; color:#DC2626; display:flex; align-items:center; gap:0.5rem;">
+      <span>⚠</span><span id="error-msg"></span>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW TO USE
+  ══════════════════════════════════════════════ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Text Column Extractor</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste any delimited text into the input box — CSV exports, TSV files, server log lines, pipe-separated data, or any structured text where columns are separated by a consistent character. Select the delimiter that matches your data using the quick-pick buttons, or choose <strong>custom</strong> to type any delimiter string.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Set the <strong>Column Number</strong> to the position you want to extract — column 1 is the first field. Negative numbers count from the end: <code style="font-family:'Fira Code',monospace; font-size:0.85rem;">-1</code> extracts the last column regardless of how many columns each row has. The column preview grid highlights your target column in context so you can confirm the selection before copying.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Use the <strong>options row</strong> to trim surrounding whitespace, deduplicate the output, skip blank values, or skip a header row. Output can be copied to clipboard or downloaded as <code style="font-family:'Fira Code',monospace; font-size:0.85rem;">.txt</code> (one value per line) or <code style="font-family:'Fira Code',monospace; font-size:0.85rem;">.csv</code>.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Splitting logic', 'Each line is split using JavaScript\'s String.prototype.split() with the chosen delimiter. For multi-character custom delimiters this produces correct results. Tab-delimited files (TSV) are handled by selecting the tab delimiter button, which passes a literal tab character (\\t).'],
+        ['Column indexing', 'Column numbers are 1-indexed to match spreadsheet conventions. Internally, column N maps to array index N−1. Negative values are resolved as array.length + N, so −1 always gives the last element regardless of row width. Rows with fewer columns than the requested index are silently skipped and counted in the "missing" tally.'],
+        ['Trim & dedup', 'Trim removes leading and trailing whitespace from each extracted value using String.prototype.trim(). Deduplication preserves first-occurrence order using a Set. Both operations apply after extraction, so they never affect which rows are considered.'],
+        ['CSV quoting', 'For simple delimited text the tool uses a fast direct split. It does not implement full RFC 4180 quoted-field parsing (e.g. fields containing the delimiter wrapped in quotes). For CSV with quoted fields containing commas, consider pre-processing with a dedicated CSV parser first.'],
+        ['Download formats', '.txt outputs one value per line with a trailing newline — safe to pipe into any Unix tool. .csv wraps each value in double quotes and joins with commas on a single line, suitable for pasting into spreadsheet applications.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════════ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: 'What delimiters are supported?',
+          a: 'Comma, tab, pipe (|), semicolon, and space are available as one-click options. The custom field accepts any string, including multi-character sequences like " :: " or " -> ". The only constraint is that the delimiter must be consistent across all rows in your input.'
+        },
+        {
+          q: 'Can I extract a column from the end of each row?',
+          a: 'Yes. Enter a negative column number: −1 gives the last column, −2 gives the second-to-last, and so on. This is particularly useful for log lines where a field at the end always means the same thing regardless of how many optional fields appear before it.'
+        },
+        {
+          q: 'What happens when rows have different numbers of columns?',
+          a: 'Rows that are too short to contain the requested column are skipped rather than causing an error. The output stats show how many rows were processed versus how many were skipped due to missing columns, so you can spot malformed data at a glance.'
+        },
+        {
+          q: 'Does it handle CSV files with quoted fields?',
+          a: 'Not fully. The tool uses a simple split and does not implement RFC 4180 quoted-field parsing. If your CSV contains fields that include the delimiter character wrapped in double quotes (e.g. "Smith, John"), those fields will be split incorrectly. For those cases, open the file in a spreadsheet first and copy a single column.'
+        },
+        {
+          q: 'How do I extract multiple columns at once?',
+          a: 'Run the extraction once per column and use the download buttons to save each result. For complex multi-column extraction from large files, a command-line tool like awk or cut is more appropriate: awk -F, \'{print $2}\' file.csv extracts column 2 from a comma-delimited file.'
+        },
+        {
+          q: 'Is there a row or size limit?',
+          a: 'No hard limit is enforced — the tool processes whatever you paste entirely in your browser. In practice, very large inputs (tens of thousands of rows) will work but may cause a brief processing pause. All computation is local; no data is sent to any server.'
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  // ── State ──────────────────────────────────────────────────
+  let currentDelimiter = ',';
+  let extracted: string[] = [];
+
+  // ── Elements ──────────────────────────────────────────────
+  const inputText        = document.getElementById('input-text')       as HTMLTextAreaElement;
+  const outputText       = document.getElementById('output-text')      as HTMLTextAreaElement;
+  const colNumber        = document.getElementById('col-number')       as HTMLInputElement;
+  const colDec           = document.getElementById('col-dec')!;
+  const colInc           = document.getElementById('col-inc')!;
+  const outColLabel      = document.getElementById('out-col-label')!;
+  const inputStats       = document.getElementById('input-stats')!;
+  const outputStats      = document.getElementById('output-stats')!;
+  const outCount         = document.getElementById('out-count')!;
+  const btnExtract       = document.getElementById('btn-extract')!;
+  const btnCopyOut       = document.getElementById('btn-copy-out')!;
+  const btnClear         = document.getElementById('btn-clear')!;
+  const btnDownload      = document.getElementById('btn-download')!;
+  const btnDownloadCsv   = document.getElementById('btn-download-csv')!;
+  const errorBanner      = document.getElementById('error-banner')!;
+  const errorMsg         = document.getElementById('error-msg')!;
+  const previewSection   = document.getElementById('preview-section')!;
+  const previewGrid      = document.getElementById('preview-grid')!;
+  const customDelimInput = document.getElementById('custom-delim-input') as HTMLInputElement;
+  const optTrim          = document.getElementById('opt-trim')          as HTMLInputElement;
+  const optDedup         = document.getElementById('opt-dedup')         as HTMLInputElement;
+  const optSkipEmpty     = document.getElementById('opt-skipempty')     as HTMLInputElement;
+  const optHeader        = document.getElementById('opt-header')        as HTMLInputElement;
+
+  // ── Delimiter buttons ──────────────────────────────────────
+  document.querySelectorAll('.delim-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.delim-btn').forEach(b => {
+        (b as HTMLElement).style.borderColor = 'var(--border)';
+        (b as HTMLElement).style.background  = 'var(--bg-surface-2)';
+        (b as HTMLElement).style.color       = 'var(--text-secondary)';
+        b.classList.remove('active-delim');
+      });
+      (btn as HTMLElement).style.borderColor = '#0D9488';
+      (btn as HTMLElement).style.background  = 'rgba(13,148,136,0.1)';
+      (btn as HTMLElement).style.color       = '#0D9488';
+      btn.classList.add('active-delim');
+
+      const val = (btn as HTMLElement).dataset.delim!;
+      if (val === 'custom') {
+        customDelimInput.style.display = 'block';
+        customDelimInput.focus();
+        currentDelimiter = customDelimInput.value || ',';
+      } else {
+        customDelimInput.style.display = 'none';
+        currentDelimiter = val;
+      }
+      analyseInput();
+    });
+  });
+
+  customDelimInput.addEventListener('input', () => {
+    currentDelimiter = customDelimInput.value || ',';
+    analyseInput();
+  });
+
+  // ── Column controls ───────────────────────────────────────
+  colDec.addEventListener('click', () => {
+    const v = parseInt(colNumber.value) || 1;
+    colNumber.value = String(v - 1 === 0 ? -1 : v - 1);
+    outColLabel.textContent = colNumber.value;
+    analyseInput();
+  });
+  colInc.addEventListener('click', () => {
+    const v = parseInt(colNumber.value) || 1;
+    colNumber.value = String(v + 1 === 0 ? 1 : v + 1);
+    outColLabel.textContent = colNumber.value;
+    analyseInput();
+  });
+  colNumber.addEventListener('input', () => {
+    outColLabel.textContent = colNumber.value;
+    analyseInput();
+  });
+
+  // ── Analyse input: update stats + preview ─────────────────
+  function getLines(): string[] {
+    const raw = inputText.value;
+    if (!raw.trim()) return [];
+    return raw.split('\n');
+  }
+
+  function resolveColIdx(lines: string[], colN: number): number {
+    // Use first row to detect column count for negative resolution
+    if (lines.length === 0) return 0;
+    const firstRow = lines[0].split(currentDelimiter);
+    if (colN < 0) return firstRow.length + colN;
+    return colN - 1; // convert 1-indexed to 0-indexed
+  }
+
+  function analyseInput() {
+    const lines = getLines();
+    if (lines.length === 0) {
+      inputStats.textContent = '0 rows · 0 columns detected';
+      previewSection.style.display = 'none';
+      return;
+    }
+
+    const dataLines = optHeader.checked ? lines.slice(1) : lines;
+    const colCounts = dataLines.map(l => l.split(currentDelimiter).length);
+    const maxCols   = Math.max(0, ...colCounts);
+    const rowCount  = dataLines.length;
+
+    inputStats.textContent = `${rowCount} row${rowCount !== 1 ? 's' : ''} · up to ${maxCols} column${maxCols !== 1 ? 's' : ''} detected`;
+
+    // Build preview grid (first 5 rows, all columns)
+    const previewLines = lines.slice(0, optHeader.checked ? 6 : 5);
+    if (previewLines.length > 0) buildPreview(previewLines);
+  }
+
+  function buildPreview(lines: string[]) {
+    const colN   = parseInt(colNumber.value) || 1;
+    const allRows = lines.map(l => l.split(currentDelimiter));
+    const maxCols = Math.max(...allRows.map(r => r.length));
+    const colIdx  = colN < 0 ? maxCols + colN : colN - 1;
+
+    // Cap preview columns at 8 to avoid overflow
+    const displayCols = Math.min(maxCols, 8);
+
+    let html = '<table style="width:100%; border-collapse:collapse; font-family:\'Fira Code\',monospace; font-size:0.72rem;">';
+
+    allRows.forEach((cells, rowIdx) => {
+      const isHeader = optHeader.checked && rowIdx === 0;
+      html += `<tr style="border-bottom:1px solid var(--border);">`;
+      for (let c = 0; c < displayCols; c++) {
+        const isTarget = c === colIdx;
+        const val = cells[c] !== undefined ? cells[c] : '';
+        const trimmed = optTrim.checked ? val.trim() : val;
+        const cellBg   = isTarget ? 'rgba(13,148,136,0.12)' : (rowIdx % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.03)');
+        const cellColor= isTarget ? '#0D9488' : (isHeader ? 'var(--text-primary)' : 'var(--text-secondary)');
+        const cellFw   = isTarget || isHeader ? '700' : '400';
+        const borderL  = isTarget ? '2px solid #0D9488' : '1px solid var(--border)';
+        html += `<td style="padding:0.3rem 0.5rem; background:${cellBg}; color:${cellColor}; font-weight:${cellFw}; border-left:${borderL}; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${trimmed.replace(/"/g,'&quot;')}">${trimmed || '<span style="color:var(--text-muted);font-style:italic;">empty</span>'}</td>`;
+      }
+      if (maxCols > 8) {
+        html += `<td style="padding:0.3rem 0.5rem; color:var(--text-muted); border-left:1px solid var(--border);">…</td>`;
+      }
+      html += '</tr>';
+    });
+
+    html += '</table>';
+    previewGrid.innerHTML = html;
+    previewSection.style.display = 'block';
+  }
+
+  // ── Core extraction ───────────────────────────────────────
+  function extract() {
+    hideError();
+    const lines = getLines();
+
+    if (lines.length === 0) {
+      showError('Paste some delimited text into the input box first.');
+      return;
+    }
+
+    const colN = parseInt(colNumber.value);
+    if (isNaN(colN) || colN === 0) {
+      showError('Column number cannot be 0. Use 1 for first column or −1 for last.');
+      return;
+    }
+
+    const dataLines = optHeader.checked ? lines.slice(1) : lines;
+    let skipped = 0;
+    const results: string[] = [];
+
+    dataLines.forEach(line => {
+      if (!line.trim() && optSkipEmpty.checked) return;
+      const cells  = line.split(currentDelimiter);
+      const colIdx = colN < 0 ? cells.length + colN : colN - 1;
+
+      if (colIdx < 0 || colIdx >= cells.length) {
+        skipped++;
+        return;
+      }
+
+      let val = cells[colIdx];
+      if (optTrim.checked) val = val.trim();
+      if (optSkipEmpty.checked && val === '') return;
+      results.push(val);
+    });
+
+    let finalResults = results;
+    if (optDedup.checked) {
+      const seen = new Set<string>();
+      finalResults = results.filter(v => { if (seen.has(v)) return false; seen.add(v); return true; });
+    }
+
+    extracted = finalResults;
+    outputText.value = finalResults.join('\n');
+    outColLabel.textContent = String(colN);
+
+    const dupCount = results.length - finalResults.length;
+    let statsStr = `${finalResults.length} value${finalResults.length !== 1 ? 's' : ''}`;
+    if (skipped > 0) statsStr += ` · ${skipped} row${skipped !== 1 ? 's' : ''} skipped`;
+    if (dupCount > 0) statsStr += ` · ${dupCount} duplicate${dupCount !== 1 ? 's' : ''} removed`;
+    outputStats.textContent = statsStr;
+    outCount.textContent = `${finalResults.length}`;
+
+    // Rebuild preview to highlight correct column
+    analyseInput();
+  }
+
+  // ── Live analysis on input change ─────────────────────────
+  inputText.addEventListener('input', () => {
+    analyseInput();
+    // Auto-extract if output already has content
+    if (extracted.length > 0) extract();
+  });
+
+  [optTrim, optDedup, optSkipEmpty, optHeader].forEach(el => {
+    el.addEventListener('change', () => { analyseInput(); if (extracted.length > 0) extract(); });
+  });
+
+  // ── Buttons ───────────────────────────────────────────────
+  btnExtract.addEventListener('click', extract);
+
+  btnClear.addEventListener('click', () => {
+    inputText.value = '';
+    outputText.value = '';
+    extracted = [];
+    inputStats.textContent = '0 rows · 0 columns detected';
+    outputStats.textContent = '';
+    outCount.textContent = '';
+    previewSection.style.display = 'none';
+    hideError();
+  });
+
+  btnCopyOut.addEventListener('click', () => {
+    if (!extracted.length) return;
+    navigator.clipboard.writeText(extracted.join('\n')).then(() => {
+      btnCopyOut.textContent = '✓ Copied!';
+      setTimeout(() => { btnCopyOut.textContent = 'Copy'; }, 2000);
+    });
+  });
+
+  btnDownload.addEventListener('click', () => {
+    if (!extracted.length) return;
+    const blob = new Blob([extracted.join('\n') + '\n'], { type: 'text/plain' });
+    triggerDownload(blob, 'column-extract.txt');
+  });
+
+  btnDownloadCsv.addEventListener('click', () => {
+    if (!extracted.length) return;
+    const csv = extracted.map(v => `"${v.replace(/"/g, '""')}"`).join(',');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    triggerDownload(blob, 'column-extract.csv');
+  });
+
+  function triggerDownload(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
+    const a   = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── Row numbers ───────────────────────────────────────────
+  function updateRowNums() {
+    const lines = inputText.value.split('\n');
+    const nums  = document.getElementById('row-nums')!;
+    nums.innerHTML = lines.map((_, i) =>
+      `<div style="height:1.2rem; line-height:1.2rem; font-family:'Fira Code',monospace; font-size:0.7rem; color:var(--text-muted); text-align:right; padding-right:0.35rem;">${i + 1}</div>`
+    ).join('');
+  }
+
+  inputText.addEventListener('input',  updateRowNums);
+  inputText.addEventListener('scroll', () => {
+    const nums = document.getElementById('row-nums')!;
+    nums.scrollTop = inputText.scrollTop;
+  });
+
+  // ── Error helpers ─────────────────────────────────────────
+  function showError(msg: string) {
+    errorMsg.textContent = msg;
+    errorBanner.style.display = 'flex';
+  }
+  function hideError() {
+    errorBanner.style.display = 'none';
+  }
+
+  // ── Responsive: stack on narrow viewports ─────────────────
+  function checkWidth() {
+    const splitPane = document.getElementById('split-pane')!;
+    if (window.innerWidth < 640) {
+      splitPane.style.gridTemplateColumns = '1fr';
+    } else {
+      splitPane.style.gridTemplateColumns = '1fr 1fr';
+    }
+  }
+  window.addEventListener('resize', checkWidth);
+  checkWidth();
+
+  // ── Seed example on load ───────────────────────────────────
+  inputText.value = `name,age,role,city
+alice,30,engineer,london
+bob,25,designer,paris
+carol,35,manager,berlin
+dave,28,developer,sydney
+eve,32,analyst,toronto`;
+
+  updateRowNums();
+  analyseInput();
+  extract();
+</script>

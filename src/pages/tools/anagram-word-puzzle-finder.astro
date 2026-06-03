@@ -1,0 +1,626 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'anagram-word-puzzle-finder')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">
+      Anagram &amp; Word Puzzle Finder
+    </h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">
+      Enter your letters — find every valid word you can make from them, filtered by length.
+    </p>
+
+    <!-- ── Word list load status ── -->
+    <div id="dict-status" style="display:flex; align-items:center; gap:0.625rem; padding:0.6rem 0.875rem; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:0.625rem; margin-bottom:1.25rem; font-size:0.78rem; color:var(--text-secondary);">
+      <span id="dict-icon" style="font-size:1rem;">⏳</span>
+      <span id="dict-msg">Loading word list…</span>
+      <div id="dict-progress-wrap" style="flex:1; height:4px; background:var(--bg-surface-3); border-radius:999px; overflow:hidden; margin-left:0.25rem;">
+        <div id="dict-progress-bar" style="height:100%; width:0%; background:#F59E0B; border-radius:999px; transition:width 0.3s;"></div>
+      </div>
+    </div>
+
+    <!-- ── Letter input ── -->
+    <div style="margin-bottom:1rem;">
+      <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:0.5rem;">Your Letters</label>
+
+      <!-- Tile display -->
+      <div id="tile-row" style="display:flex; flex-wrap:wrap; gap:0.4rem; min-height:3rem; padding:0.5rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; margin-bottom:0.5rem; align-items:center;" aria-live="polite">
+        <span id="tile-placeholder" style="color:var(--text-muted); font-size:0.82rem; font-style:italic;">Letters appear as tiles…</span>
+      </div>
+
+      <!-- Text input row -->
+      <div style="display:flex; gap:0.5rem; align-items:center;">
+        <input id="letter-input" type="text" maxlength="20" placeholder="e.g. a e i n r s t"
+          autocomplete="off" autocorrect="off" spellcheck="false"
+          style="flex:1; padding:0.65rem 1rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:1rem; font-weight:600; color:var(--text-primary); outline:none; transition:border-color 0.15s; letter-spacing:0.12em; text-transform:uppercase;"
+        />
+        <button id="btn-clear-input" title="Clear" aria-label="Clear letters"
+          style="width:2.5rem; height:2.5rem; border-radius:0.5rem; border:1.5px solid var(--border); background:var(--bg-surface-2); color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; flex-shrink:0;"
+          onmouseover="this.style.borderColor='#DC2626';this.style.color='#DC2626';"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)';"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.3rem;">Letters only. Spaces and duplicates are fine — each unique character is one tile.</div>
+    </div>
+
+    <!-- ── Mode tabs ── -->
+    <div style="display:flex; gap:0; margin-bottom:1rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; padding:0.2rem;">
+      <button id="mode-anagram" class="mode-tab active-mode"
+        style="flex:1; padding:0.45rem 0.5rem; border-radius:0.45rem; border:none; cursor:pointer; font-family:'Sora',sans-serif; font-size:0.78rem; font-weight:700; transition:all 0.2s; background:#EA580C; color:#fff; box-shadow:0 1px 3px rgba(234,88,12,0.3);">
+        🔀 Anagram (exact)
+      </button>
+      <button id="mode-sub" class="mode-tab"
+        style="flex:1; padding:0.45rem 0.5rem; border-radius:0.45rem; border:none; cursor:pointer; font-family:'Sora',sans-serif; font-size:0.78rem; font-weight:700; transition:all 0.2s; background:transparent; color:var(--text-secondary);">
+        🔡 Sub-words (any subset)
+      </button>
+    </div>
+
+    <!-- ── Length filter ── -->
+    <div style="margin-bottom:1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+        <label style="font-size:0.75rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.07em;">Min Word Length</label>
+        <span id="min-len-display" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:#EA580C;">3</span>
+      </div>
+      <input id="min-len" type="range" min="2" max="15" value="3"
+        style="width:100%; accent-color:#EA580C; cursor:pointer;" />
+      <div style="display:flex; justify-content:space-between; margin-top:0.2rem;">
+        <span style="font-size:0.68rem; color:var(--text-muted);">2 letters</span>
+        <span style="font-size:0.68rem; color:var(--text-muted);">15 letters</span>
+      </div>
+    </div>
+
+    <!-- ── Search button ── -->
+    <button id="btn-search"
+      style="width:100%; padding:0.75rem 1.5rem; background:#EA580C; color:#fff; border:none; border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; transition:background 0.15s, transform 0.1s; display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:1.25rem;"
+      onmouseover="this.style.background='#C2410C';"
+      onmouseout="this.style.background='#EA580C';"
+      onmousedown="this.style.transform='scale(0.98)';"
+      onmouseup="this.style.transform='scale(1)';"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <span id="btn-search-text">Find Words</span>
+    </button>
+
+    <!-- ── Results area ── -->
+    <div id="results-section" style="display:none;">
+
+      <!-- Stats bar -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.4rem;">
+        <div id="results-stats" style="font-size:0.78rem; font-weight:600; color:var(--text-secondary);"></div>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <!-- Sort control -->
+          <select id="sort-select"
+            style="padding:0.3rem 0.5rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.4rem; font-size:0.75rem; color:var(--text-secondary); cursor:pointer; outline:none;">
+            <option value="alpha">A–Z</option>
+            <option value="length-desc">Longest first</option>
+            <option value="length-asc">Shortest first</option>
+          </select>
+          <button id="btn-copy-results"
+            style="padding:0.3rem 0.75rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.4rem; font-size:0.75rem; font-weight:600; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;"
+            onmouseover="this.style.borderColor='#EA580C';this.style.color='#EA580C';"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';"
+          >Copy all</button>
+        </div>
+      </div>
+
+      <!-- Length group tabs -->
+      <div id="length-tabs" style="display:flex; gap:0.3rem; flex-wrap:wrap; margin-bottom:0.875rem;"></div>
+
+      <!-- Word tiles grid -->
+      <div id="results-grid" style="display:flex; flex-wrap:wrap; gap:0.4rem; min-height:3rem;"></div>
+
+    </div>
+
+    <!-- ── Empty / error states ── -->
+    <div id="state-empty" style="display:none; text-align:center; padding:2rem 1rem;">
+      <div style="font-size:2.5rem; margin-bottom:0.5rem;">🔠</div>
+      <div style="font-size:0.9rem; font-weight:600; color:var(--text-secondary);">No words found</div>
+      <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">Try more letters, switch to Sub-words mode, or lower the minimum length.</div>
+    </div>
+
+    <div id="state-error" style="display:none; padding:0.75rem 1rem; background:rgba(220,38,38,0.08); border:1px solid rgba(220,38,38,0.25); border-radius:0.625rem; font-size:0.82rem; color:#DC2626;"></div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW TO USE
+  ══════════════════════════════════════════════ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Anagram &amp; Word Puzzle Finder</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Type your available letters into the input field — spaces between letters are fine and are ignored. Each letter becomes a tile. Choose a mode: <strong>Anagram (exact)</strong> finds words that use all your letters exactly once each. <strong>Sub-words</strong> finds every valid word that can be formed from any subset of your letters, which is ideal for games like Scrabble, Words with Friends, or Wordle where you don't have to use every tile.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Drag the <strong>Min Word Length</strong> slider to filter out very short words. Results are grouped by word length — click a length tab to jump straight to words of that size. Use the sort control to order results alphabetically, longest first, or shortest first.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      The word list is fetched from an open-source English dictionary on first use and cached locally for the session — subsequent searches are instant. No data leaves your browser.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Word list source', 'The dictionary is loaded from the SCOWL (Spell Checker Oriented Word Lists) project via the dwyl/english-words repository on GitHub — a curated 370,000+ word list used by real spell checkers. It is fetched as a plain text file once per session over HTTPS and stored in memory. No words are bundled into the page.'],
+        ['Anagram matching', 'For exact anagram mode, each candidate word\'s letter frequency map is compared against the input letter frequency map. A word matches only if its frequency map is identical — every letter used, every letter accounted for. This handles duplicate letters correctly: "aab" matches "aba" and "baa" but not "ab".'],
+        ['Sub-word matching', 'For sub-word mode, the algorithm checks that every letter in the candidate word appears in the input with at least the required frequency. If the input contains two A\'s, only words needing at most two A\'s are returned. Words can be shorter than the input — this is the core Scrabble/crossword use case.'],
+        ['Performance', 'On first search, the tool builds a frequency-map index over the entire dictionary (~370k words) in a single pass and caches it. Subsequent searches scan the index in under 10ms even on mobile. The minimum length filter is applied during the scan to reduce allocations. Results are grouped by length using a Map, then sorted after collection.'],
+        ['Filtering', 'Words are filtered to only include entries that contain alphabetic characters (no hyphens, apostrophes, or numbers). All comparisons are case-insensitive; results are displayed in lowercase.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════════ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: 'What is the difference between Anagram and Sub-words mode?',
+          a: 'Anagram mode returns only words that use every one of your input letters exactly once — a perfect rearrangement. Sub-words mode returns all valid words that can be spelled using any combination of your letters (each used at most as many times as it appears in your input). Sub-words mode is much more useful for tile-based word games where you pick from a rack.'
+        },
+        {
+          q: 'Where does the word list come from?',
+          a: 'The word list is the SCOWL English dictionary maintained in the dwyl/english-words GitHub repository. It contains over 370,000 words sourced from multiple public-domain spell-check word lists, filtered to remove proper nouns and non-alphabetic entries. It is fetched live from GitHub\'s raw content CDN — nothing is bundled into the page.'
+        },
+        {
+          q: 'Does it work for Scrabble, Wordle, or other word games?',
+          a: 'Sub-words mode is ideal for Scrabble, Words with Friends, and similar tile games — enter your rack letters and see every word you can play. For Wordle or Spelling Bee, use it to explore what words fit your known letters. Note that game-specific word lists (Scrabble TWL, Wordle\'s accepted list) differ from the general English dictionary used here; some results may not be accepted by a specific game.'
+        },
+        {
+          q: 'Can I use repeated letters?',
+          a: 'Yes. If you enter "aab", the tool understands you have two A\'s and one B. It will find words like "aba" and "baa" in anagram mode. In sub-word mode it will find any word that needs at most two A\'s and one B. Just type or paste your letters naturally.'
+        },
+        {
+          q: 'Why does the first search take longer?',
+          a: 'On first use, the tool fetches the word list file (~1.8MB) and builds an in-memory frequency-map index. This takes 1–3 seconds on a typical connection. After that, all searches within the session use the cached index and complete in milliseconds.'
+        },
+        {
+          q: 'Is there a letter limit?',
+          a: 'The input accepts up to 20 letters. In sub-word mode with many letters, result counts can be very large (thousands of words). The minimum length filter is the most effective way to narrow results — raising it to 5 or 6 letters makes the output much more manageable for word game use.'
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  // ═══════════════════════════════════════════════════════════
+  // WORD LIST — fetched from dwyl/english-words (SCOWL ~370k)
+  // Cached in module-scope so navigating back is instant.
+  // ═══════════════════════════════════════════════════════════
+
+  const WORD_LIST_URL =
+    'https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt';
+
+  // Module-level cache — survives SPA navigation within session
+  let wordIndex: { word: string; freq: Map<string,number> }[] | null = null;
+  let dictReady = false;
+
+  // ── DOM refs ──────────────────────────────────────────────
+  const dictStatus      = document.getElementById('dict-status')!;
+  const dictIcon        = document.getElementById('dict-icon')!;
+  const dictMsg         = document.getElementById('dict-msg')!;
+  const dictProgressBar = document.getElementById('dict-progress-bar')!;
+  const letterInput     = document.getElementById('letter-input') as HTMLInputElement;
+  const tileRow         = document.getElementById('tile-row')!;
+  const tilePlaceholder = document.getElementById('tile-placeholder')!;
+  const btnSearch       = document.getElementById('btn-search')!;
+  const btnSearchText   = document.getElementById('btn-search-text')!;
+  const btnClearInput   = document.getElementById('btn-clear-input')!;
+  const minLenSlider    = document.getElementById('min-len') as HTMLInputElement;
+  const minLenDisplay   = document.getElementById('min-len-display')!;
+  const resultsSection  = document.getElementById('results-section')!;
+  const resultsStats    = document.getElementById('results-stats')!;
+  const resultsGrid     = document.getElementById('results-grid')!;
+  const lengthTabs      = document.getElementById('length-tabs')!;
+  const sortSelect      = document.getElementById('sort-select') as HTMLSelectElement;
+  const btnCopyResults  = document.getElementById('btn-copy-results')!;
+  const stateEmpty      = document.getElementById('state-empty')!;
+  const stateError      = document.getElementById('state-error')!;
+  const modeAnagram     = document.getElementById('mode-anagram')!;
+  const modeSub         = document.getElementById('mode-sub')!;
+
+  // ── State ──────────────────────────────────────────────────
+  let currentMode     = 'anagram';
+  let currentResults: string[] = [];
+  let activeLength    = 'all';
+
+  // ── Frequency map helper ──────────────────────────────────
+  function freqMap(s: string): Map<string, number> {
+    const m = new Map<string, number>();
+    for (const c of s) m.set(c, (m.get(c) ?? 0) + 1);
+    return m;
+  }
+
+  function freqMapsEqual(a: Map<string,number>, b: Map<string,number>): boolean {
+    if (a.size !== b.size) return false;
+    for (const [k, v] of a) if (b.get(k) !== v) return false;
+    return true;
+  }
+
+  function freqMapSubset(word: Map<string,number>, avail: Map<string,number>): boolean {
+    for (const [k, v] of word) {
+      if ((avail.get(k) ?? 0) < v) return false;
+    }
+    return true;
+  }
+
+  // ── Load word list ─────────────────────────────────────────
+  async function loadWordList() {
+    if (wordIndex) { markDictReady(wordIndex.length); return; }
+
+    try {
+      dictProgressBar.style.width = '15%';
+      const res = await fetch(WORD_LIST_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      dictProgressBar.style.width = '60%';
+      const text = await res.text();
+      dictProgressBar.style.width = '80%';
+
+      // Build index: filter to pure alpha words only
+      const lines = text.split('\n');
+      const index: { word: string; freq: Map<string,number> }[] = [];
+      for (const raw of lines) {
+        const w = raw.trim().toLowerCase();
+        if (w && /^[a-z]+$/.test(w)) {
+          index.push({ word: w, freq: freqMap(w) });
+        }
+      }
+
+      wordIndex = index;
+      dictProgressBar.style.width = '100%';
+      markDictReady(index.length);
+
+    } catch (err) {
+      dictIcon.textContent = '❌';
+      dictMsg.textContent  = `Failed to load word list: ${(err as Error).message}. Check your connection and reload.`;
+      dictStatus.style.background = 'rgba(220,38,38,0.08)';
+      dictStatus.style.borderColor = 'rgba(220,38,38,0.25)';
+      dictProgressBar.style.background = '#DC2626';
+    }
+  }
+
+  function markDictReady(count: number) {
+    dictReady = true;
+    dictIcon.textContent = '✅';
+    dictMsg.textContent  = `${count.toLocaleString()} words loaded — ready`;
+    dictStatus.style.background   = 'rgba(5,150,105,0.07)';
+    dictStatus.style.borderColor  = 'rgba(5,150,105,0.25)';
+    dictProgressBar.style.background = '#059669';
+    dictProgressBar.style.width = '100%';
+  }
+
+  // ── Tile rendering ─────────────────────────────────────────
+  // Distinct warm colours for tiles
+  const TILE_COLORS = [
+    { bg:'#FEF3C7', text:'#92400E', border:'#FCD34D' },
+    { bg:'#FFEDD5', text:'#9A3412', border:'#FDBA74' },
+    { bg:'#FEE2E2', text:'#991B1B', border:'#FCA5A5' },
+    { bg:'#FCE7F3', text:'#9D174D', border:'#F9A8D4' },
+    { bg:'#EDE9FE', text:'#4C1D95', border:'#C4B5FD' },
+    { bg:'#DBEAFE', text:'#1E40AF', border:'#93C5FD' },
+    { bg:'#D1FAE5', text:'#065F46', border:'#6EE7B7' },
+  ];
+
+  function renderTiles(letters: string[]) {
+    tileRow.querySelectorAll('.letter-tile').forEach(el => el.remove());
+    tilePlaceholder.style.display = letters.length ? 'none' : 'inline';
+
+    letters.forEach((letter, idx) => {
+      const col = TILE_COLORS[idx % TILE_COLORS.length];
+      const tile = document.createElement('span');
+      tile.className = 'letter-tile';
+      tile.textContent = letter.toUpperCase();
+      tile.style.cssText = `
+        display:inline-flex; align-items:center; justify-content:center;
+        width:2.25rem; height:2.25rem; border-radius:0.4rem;
+        background:${col.bg}; color:${col.text}; border:2px solid ${col.border};
+        font-family:'Fira Code',monospace; font-size:0.95rem; font-weight:700;
+        letter-spacing:0; animation:tileIn 0.18s ease both;
+        animation-delay:${idx * 0.04}s;
+      `;
+      tileRow.appendChild(tile);
+    });
+  }
+
+  // ── Input handling ────────────────────────────────────────
+  function getLetters(): string[] {
+    return letterInput.value
+      .toLowerCase()
+      .replace(/[^a-z]/g, '')
+      .split('');
+  }
+
+  letterInput.addEventListener('input', () => {
+    renderTiles(getLetters());
+  });
+
+  letterInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); runSearch(); }
+  });
+
+  btnClearInput.addEventListener('click', () => {
+    letterInput.value = '';
+    renderTiles([]);
+    resultsSection.style.display = 'none';
+    stateEmpty.style.display = 'none';
+    stateError.style.display = 'none';
+    currentResults = [];
+  });
+
+  minLenSlider.addEventListener('input', () => {
+    minLenDisplay.textContent = minLenSlider.value;
+  });
+
+  // ── Mode tabs ─────────────────────────────────────────────
+  function setMode(mode: 'anagram' | 'sub') {
+    currentMode = mode;
+    const isAnagram = mode === 'anagram';
+    modeAnagram.style.background   = isAnagram ? '#EA580C' : 'transparent';
+    modeAnagram.style.color        = isAnagram ? '#fff'    : 'var(--text-secondary)';
+    modeAnagram.style.boxShadow    = isAnagram ? '0 1px 3px rgba(234,88,12,0.3)' : 'none';
+    modeSub.style.background       = !isAnagram ? '#EA580C' : 'transparent';
+    modeSub.style.color            = !isAnagram ? '#fff'    : 'var(--text-secondary)';
+    modeSub.style.boxShadow        = !isAnagram ? '0 1px 3px rgba(234,88,12,0.3)' : 'none';
+  }
+
+  modeAnagram.addEventListener('click', () => setMode('anagram'));
+  modeSub.addEventListener('click', () => setMode('sub'));
+
+  // ── Search ────────────────────────────────────────────────
+  async function runSearch() {
+    if (!dictReady) {
+      showError('Word list is still loading. Please wait a moment.');
+      return;
+    }
+
+    const letters = getLetters();
+    if (letters.length < 2) {
+      showError('Enter at least 2 letters to search.');
+      return;
+    }
+
+    hideStates();
+    btnSearch.setAttribute('disabled', 'true');
+    btnSearchText.textContent = 'Searching…';
+    (btnSearch as HTMLButtonElement).style.opacity = '0.7';
+
+    // Yield to browser to update UI before heavy loop
+    await new Promise(r => setTimeout(r, 10));
+
+    try {
+      const inputFreq = freqMap(letters.join(''));
+      const minLen    = parseInt(minLenSlider.value);
+      const maxLen    = letters.length;
+      const results: string[] = [];
+
+      for (const entry of wordIndex!) {
+        const wLen = entry.word.length;
+        if (wLen < minLen) continue;
+        if (currentMode === 'anagram' && wLen !== maxLen) continue;
+        if (currentMode === 'sub' && wLen > maxLen) continue;
+
+        const matches = currentMode === 'anagram'
+          ? freqMapsEqual(entry.freq, inputFreq)
+          : freqMapSubset(entry.freq, inputFreq);
+
+        if (matches) results.push(entry.word);
+      }
+
+      currentResults = results;
+      renderResults(results);
+    } catch (err) {
+      showError(`Search error: ${(err as Error).message}`);
+    } finally {
+      btnSearch.removeAttribute('disabled');
+      btnSearchText.textContent = 'Find Words';
+      (btnSearch as HTMLButtonElement).style.opacity = '1';
+    }
+  }
+
+  btnSearch.addEventListener('click', runSearch);
+
+  // ── Render results ────────────────────────────────────────
+  function sortResults(arr: string[]): string[] {
+    const s = sortSelect.value;
+    if (s === 'length-desc') return [...arr].sort((a,b) => b.length - a.length || a.localeCompare(b));
+    if (s === 'length-asc')  return [...arr].sort((a,b) => a.length - b.length || a.localeCompare(b));
+    return [...arr].sort((a,b) => a.localeCompare(b));
+  }
+
+  function renderResults(results: string[]) {
+    if (!results.length) {
+      stateEmpty.style.display = 'block';
+      resultsSection.style.display = 'none';
+      return;
+    }
+
+    resultsSection.style.display = 'block';
+    stateEmpty.style.display = 'none';
+
+    const sorted = sortResults(results);
+
+    // Group by length
+    const byLen = new Map<number, string[]>();
+    for (const w of sorted) {
+      const l = w.length;
+      if (!byLen.has(l)) byLen.set(l, []);
+      byLen.get(l)!.push(w);
+    }
+    const lengths = [...byLen.keys()].sort((a,b) => a - b);
+
+    // Stats
+    resultsStats.textContent = `${results.length.toLocaleString()} word${results.length !== 1 ? 's' : ''} found`;
+
+    // Length tabs
+    lengthTabs.innerHTML = '';
+    const allTab = makeLengthTab('all', `All (${results.length})`);
+    lengthTabs.appendChild(allTab);
+    for (const l of lengths) {
+      const tab = makeLengthTab(String(l), `${l}-letter (${byLen.get(l)!.length})`);
+      lengthTabs.appendChild(tab);
+    }
+    activeLength = 'all';
+    updateActiveLengthTab();
+
+    renderGrid(sorted);
+  }
+
+  function makeLengthTab(val: string, label: string): HTMLButtonElement {
+    const btn = document.createElement('button');
+    btn.dataset.len = val;
+    btn.textContent = label;
+    btn.className   = 'len-tab';
+    btn.style.cssText = `padding:0.3rem 0.65rem; border-radius:999px; border:1.5px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s; white-space:nowrap;`;
+    btn.addEventListener('click', () => {
+      activeLength = val;
+      updateActiveLengthTab();
+      const displayWords = val === 'all'
+        ? sortResults(currentResults)
+        : sortResults(currentResults.filter(w => String(w.length) === val));
+      renderGrid(displayWords);
+    });
+    return btn;
+  }
+
+  function updateActiveLengthTab() {
+    document.querySelectorAll('.len-tab').forEach(b => {
+      const isActive = (b as HTMLElement).dataset.len === activeLength;
+      (b as HTMLElement).style.background   = isActive ? '#EA580C'              : 'var(--bg-surface-2)';
+      (b as HTMLElement).style.color        = isActive ? '#fff'                 : 'var(--text-secondary)';
+      (b as HTMLElement).style.borderColor  = isActive ? '#EA580C'              : 'var(--border)';
+    });
+  }
+
+  function renderGrid(words: string[]) {
+    resultsGrid.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+
+    words.forEach((word, idx) => {
+      const chip = document.createElement('button');
+      chip.textContent = word;
+      chip.title = `Copy "${word}"`;
+      chip.style.cssText = `
+        padding:0.35rem 0.75rem; border-radius:0.4rem;
+        background:var(--bg-surface-2); border:1.5px solid var(--border);
+        color:var(--text-primary); font-family:'Fira Code',monospace;
+        font-size:0.8rem; font-weight:500; cursor:pointer;
+        transition:all 0.12s;
+        animation:wordIn 0.2s ease both;
+        animation-delay:${Math.min(idx * 0.008, 0.5)}s;
+      `;
+      chip.addEventListener('mouseenter', () => {
+        chip.style.borderColor = '#EA580C';
+        chip.style.color       = '#EA580C';
+        chip.style.background  = 'rgba(234,88,12,0.06)';
+      });
+      chip.addEventListener('mouseleave', () => {
+        chip.style.borderColor = 'var(--border)';
+        chip.style.color       = 'var(--text-primary)';
+        chip.style.background  = 'var(--bg-surface-2)';
+      });
+      chip.addEventListener('click', () => {
+        navigator.clipboard.writeText(word).then(() => {
+          const orig = chip.textContent;
+          chip.textContent   = '✓';
+          chip.style.borderColor = '#059669';
+          chip.style.color       = '#059669';
+          setTimeout(() => {
+            chip.textContent   = orig;
+            chip.style.borderColor = 'var(--border)';
+            chip.style.color       = 'var(--text-primary)';
+          }, 900);
+        });
+      });
+      fragment.appendChild(chip);
+    });
+
+    resultsGrid.appendChild(fragment);
+  }
+
+  sortSelect.addEventListener('change', () => {
+    if (!currentResults.length) return;
+    const displayWords = activeLength === 'all'
+      ? sortResults(currentResults)
+      : sortResults(currentResults.filter(w => String(w.length) === activeLength));
+    renderGrid(displayWords);
+  });
+
+  btnCopyResults.addEventListener('click', () => {
+    if (!currentResults.length) return;
+    navigator.clipboard.writeText(sortResults(currentResults).join('\n')).then(() => {
+      btnCopyResults.textContent = '✓ Copied!';
+      setTimeout(() => { btnCopyResults.textContent = 'Copy all'; }, 2000);
+    });
+  });
+
+  // ── State helpers ─────────────────────────────────────────
+  function hideStates() {
+    stateEmpty.style.display  = 'none';
+    stateError.style.display  = 'none';
+    resultsSection.style.display = 'none';
+  }
+
+  function showError(msg: string) {
+    stateError.textContent  = `⚠ ${msg}`;
+    stateError.style.display = 'block';
+    resultsSection.style.display = 'none';
+    stateEmpty.style.display = 'none';
+  }
+
+  // ── CSS keyframes injected once ──────────────────────────
+  const styleTag = document.createElement('style');
+  styleTag.textContent = `
+    @keyframes tileIn {
+      from { opacity:0; transform:translateY(-6px) scale(0.85); }
+      to   { opacity:1; transform:translateY(0)    scale(1); }
+    }
+    @keyframes wordIn {
+      from { opacity:0; transform:scale(0.92); }
+      to   { opacity:1; transform:scale(1); }
+    }
+    #letter-input:focus {
+      border-color:#EA580C !important;
+      box-shadow:0 0 0 3px rgba(234,88,12,0.12);
+    }
+  `;
+  document.head.appendChild(styleTag);
+
+  // ── Kick off dictionary load ──────────────────────────────
+  loadWordList();
+</script>
