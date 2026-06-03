@@ -1,0 +1,462 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'list-randomizer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+
+    <!-- Header -->
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:linear-gradient(135deg,#F59E0B,#EA580C); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 12px rgba(245,158,11,0.35);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
+        </svg>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">List Randomizer &amp; Digital Hat</h2>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">Shuffle your list or draw a single winner — all in your browser</p>
+      </div>
+    </div>
+
+    <!-- Mode tabs -->
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; background:var(--bg-surface-2); border-radius:0.75rem; padding:0.25rem;">
+      <button id="tab-shuffle"
+        style="flex:1; padding:0.55rem 1rem; border-radius:0.5rem; border:none; cursor:pointer; font-size:0.82rem; font-weight:700; font-family:'Sora',sans-serif; transition:all 0.18s; background:#1D4ED8; color:#fff; box-shadow:0 2px 8px rgba(29,78,216,0.25);"
+      >🔀 Shuffle All</button>
+      <button id="tab-draw"
+        style="flex:1; padding:0.55rem 1rem; border-radius:0.5rem; border:none; cursor:pointer; font-size:0.82rem; font-weight:700; font-family:'Sora',sans-serif; transition:all 0.18s; background:transparent; color:var(--text-secondary);"
+      >🎩 Draw Winner</button>
+    </div>
+
+    <!-- Input area -->
+    <div style="margin-bottom:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+        <label for="list-input" style="font-size:0.78rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em;">Your List</label>
+        <span id="item-count" style="font-size:0.72rem; color:var(--text-muted); font-family:'Fira Code',monospace;">0 items</span>
+      </div>
+      <textarea
+        id="list-input"
+        placeholder="Enter one item per line, e.g.
+Alice
+Bob
+Charlie
+Team Alpha
+..."
+        rows="6"
+        style="width:100%; box-sizing:border-box; resize:vertical; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.85rem; color:var(--text-primary); line-height:1.6; transition:border-color 0.15s; outline:none;"
+        onfocus="this.style.borderColor='#1D4ED8'; this.style.boxShadow='0 0 0 3px rgba(29,78,216,0.12)';"
+        onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+      ></textarea>
+    </div>
+
+    <!-- Quick-fill chips -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1.25rem;">
+      <span style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:flex; align-items:center; margin-right:0.25rem;">Quick fill:</span>
+      <button class="chip-btn" data-preset="days" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#1D4ED8';this.style.color='#1D4ED8';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Days</button>
+      <button class="chip-btn" data-preset="months" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#1D4ED8';this.style.color='#1D4ED8';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Months</button>
+      <button class="chip-btn" data-preset="numbers" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#1D4ED8';this.style.color='#1D4ED8';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">1–10</button>
+      <button class="chip-btn" data-preset="yesno" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#1D4ED8';this.style.color='#1D4ED8';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Yes / No</button>
+      <button class="chip-btn" data-preset="suits" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#1D4ED8';this.style.color='#1D4ED8';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Card Suits</button>
+    </div>
+
+    <!-- Action button -->
+    <button id="btn-action"
+      style="width:100%; padding:0.8rem 1.5rem; background:linear-gradient(135deg,#F59E0B,#EA580C); color:#fff; border:none; border-radius:0.75rem; font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; transition:opacity 0.15s, transform 0.12s; letter-spacing:0.02em; box-shadow:0 4px 14px rgba(245,158,11,0.4); display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:1.5rem;"
+      onmouseover="this.style.opacity='0.9';"
+      onmouseout="this.style.opacity='1';"
+      onmousedown="this.style.transform='scale(0.98)';"
+      onmouseup="this.style.transform='scale(1)';"
+    >
+      <span id="btn-icon">🔀</span>
+      <span id="btn-label">Shuffle List</span>
+    </button>
+
+    <!-- Output area (hidden until used) -->
+    <div id="output-area" style="display:none;">
+
+      <!-- Divider -->
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem;">
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+        <span id="output-heading" style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Result</span>
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+      </div>
+
+      <!-- Winner spotlight (draw mode) -->
+      <div id="winner-display" style="display:none; margin-bottom:1.25rem;">
+        <div style="position:relative; overflow:hidden; background:linear-gradient(135deg,#FEF3C7,#FDE68A); border:2px solid #F59E0B; border-radius:1rem; padding:1.5rem; text-align:center;">
+          <!-- Confetti dots (decorative) -->
+          <div style="position:absolute; top:0.5rem; left:1rem; width:8px; height:8px; border-radius:50%; background:#EA580C; opacity:0.6;"></div>
+          <div style="position:absolute; top:1rem; right:2rem; width:6px; height:6px; border-radius:50%; background:#1D4ED8; opacity:0.5;"></div>
+          <div style="position:absolute; bottom:0.75rem; left:2.5rem; width:5px; height:5px; border-radius:50%; background:#16A34A; opacity:0.5;"></div>
+          <div style="position:absolute; bottom:0.5rem; right:1rem; width:7px; height:7px; border-radius:50%; background:#7C3AED; opacity:0.5;"></div>
+          <div style="font-size:2rem; margin-bottom:0.5rem;">🏆</div>
+          <div style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#92400E; margin-bottom:0.4rem;">And the winner is…</div>
+          <div id="winner-name" style="font-family:'Sora',sans-serif; font-size:1.75rem; font-weight:800; color:#92400E; word-break:break-word; line-height:1.2;"></div>
+        </div>
+      </div>
+
+      <!-- Shuffled list -->
+      <div id="shuffled-list-container" style="display:none;">
+        <ol id="shuffled-list"
+          style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:0.35rem;">
+        </ol>
+      </div>
+
+      <!-- Output controls -->
+      <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+        <button id="btn-copy-result"
+          style="flex:1; padding:0.6rem 1rem; background:var(--bg-surface-2); color:var(--text-secondary); border:1.5px solid var(--border); border-radius:0.625rem; font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:0.4rem;"
+          onmouseover="this.style.borderColor='#1D4ED8';this.style.color='#1D4ED8';"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span id="copy-result-label">Copy Result</span>
+        </button>
+        <button id="btn-again"
+          style="flex:1; padding:0.6rem 1rem; background:var(--bg-surface-2); color:var(--text-secondary); border:1.5px solid var(--border); border-radius:0.625rem; font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:0.4rem;"
+          onmouseover="this.style.borderColor='#F59E0B';this.style.color='#D97706';"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          <span id="again-label">Again</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Empty state hint -->
+    <div id="empty-hint" style="text-align:center; padding:1.25rem; background:var(--bg-surface-2); border:1.5px dashed var(--border); border-radius:0.875rem; display:none;">
+      <div style="font-size:1.5rem; margin-bottom:0.4rem;">✏️</div>
+      <div style="font-size:0.82rem; color:var(--text-muted);">Enter at least 2 items to shuffle or 1 item to draw.</div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW TO USE
+  ══════════════════════════════════════════════ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the List Randomizer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Type or paste your list into the text area — one item per line. Use the <strong>Shuffle All</strong> mode to randomize the entire order, or switch to <strong>Draw Winner</strong> to pick a single random item from the hat. Click the action button to run it.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Use the <em>Quick fill</em> chips to instantly load common lists (days of the week, months, numbers 1–10, etc.) as a starting point. Hit <strong>Again</strong> to re-run the randomization without clearing your list, or <strong>Copy Result</strong> to copy the shuffled output to your clipboard.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Ideal for: team standups (random speaker order), raffle draws, random queue assignment, picking a restaurant, shuffling a playlist or reading list, and anything else where impartial randomness is needed.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the randomization works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Fisher-Yates Shuffle', 'The list is shuffled using the Fisher-Yates (Knuth) algorithm — the gold standard for unbiased in-place shuffles. It iterates from the last element down, swapping each position with a randomly chosen position at or before it. Every permutation of the list is equally likely.'],
+        ['Cryptographic Randomness', 'Random indices are generated using window.crypto.getRandomValues() rather than Math.random(). This draws from the OS-level CSPRNG, ensuring the results are not predictable or repeatable — unlike seeded pseudo-random generators.'],
+        ['Draw Winner Mode', 'In Draw mode, a single index is selected uniformly at random from the full list using the same cryptographic source. Each item has exactly 1/N probability of being chosen, regardless of its position in the original list.'],
+        ['No Server, No Tracking', 'Your list never leaves your browser. There are no API calls, no logging, and no analytics on the content you enter. The entire operation runs in client-side JavaScript.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════════ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: 'Is the shuffle truly random and unbiased?',
+          a: 'Yes. The tool uses the Fisher-Yates shuffle algorithm combined with window.crypto.getRandomValues() — the same cryptographic random source browsers use for TLS. Every possible ordering of your list is equally likely. By contrast, naive sort-based shuffles (arr.sort(() => Math.random() - 0.5)) produce biased results where some permutations appear more frequently than others.'
+        },
+        {
+          q: 'How many items can I randomize?',
+          a: 'There is no hard limit — the tool handles hundreds or thousands of lines without issue. Practical limits are your browser\'s memory and how readable the output is. For very large lists, the Copy Result button lets you paste the full shuffled output elsewhere.'
+        },
+        {
+          q: 'Can I use this for a raffle or prize draw?',
+          a: 'Yes. Draw Winner mode selects one item at random with equal probability. For a fully transparent raffle, you may want to screen-record the draw so all participants can verify the result. For high-stakes draws, consider a purpose-built raffle platform that provides a verifiable audit trail.'
+        },
+        {
+          q: 'Does it remove duplicate entries?',
+          a: 'No — the tool respects your list as entered, including duplicates. If you enter "Alice" twice, she has twice the probability of being drawn as winner. Remove duplicates manually in the text area before drawing if you want each person represented once.'
+        },
+        {
+          q: 'Are blank lines included in the shuffle?',
+          a: 'No. The tool automatically strips blank lines before shuffling, so extra whitespace between entries does not create empty slots in the result.'
+        },
+        {
+          q: 'Can I shuffle the same list multiple times?',
+          a: 'Yes — click the Again button to re-shuffle or re-draw without clearing the input. Each run is fully independent; previous results have no effect on subsequent draws.'
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<!-- ══════════════════════════════════════════════════════════
+     CLIENT-SIDE LOGIC
+══════════════════════════════════════════════════════════ -->
+<script>
+  // ── Preset data ───────────────────────────────────────────
+  const PRESETS: Record<string, string> = {
+    days:    'Monday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday',
+    months:  'January\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember',
+    numbers: '1\n2\n3\n4\n5\n6\n7\n8\n9\n10',
+    yesno:   'Yes\nNo',
+    suits:   '♠ Spades\n♥ Hearts\n♦ Diamonds\n♣ Clubs',
+  };
+
+  // ── DOM refs ──────────────────────────────────────────────
+  const listInput      = document.getElementById('list-input')         as HTMLTextAreaElement;
+  const itemCount      = document.getElementById('item-count')!;
+  const tabShuffle     = document.getElementById('tab-shuffle')!;
+  const tabDraw        = document.getElementById('tab-draw')!;
+  const btnAction      = document.getElementById('btn-action')!;
+  const btnIcon        = document.getElementById('btn-icon')!;
+  const btnLabel       = document.getElementById('btn-label')!;
+  const outputArea     = document.getElementById('output-area')!;
+  const outputHeading  = document.getElementById('output-heading')!;
+  const winnerDisplay  = document.getElementById('winner-display')!;
+  const winnerName     = document.getElementById('winner-name')!;
+  const shuffledList   = document.getElementById('shuffled-list')      as HTMLOListElement;
+  const shuffledCont   = document.getElementById('shuffled-list-container')!;
+  const btnCopyResult  = document.getElementById('btn-copy-result')!;
+  const copyResultLbl  = document.getElementById('copy-result-label')!;
+  const againLbl       = document.getElementById('again-label')!;
+  const btnAgain       = document.getElementById('btn-again')!;
+  const emptyHint      = document.getElementById('empty-hint')!;
+
+  // ── State ─────────────────────────────────────────────────
+  type Mode = 'shuffle' | 'draw';
+  let mode: Mode = 'shuffle';
+  let lastResult: string[] = [];
+
+  // ── Crypto-secure random int in [0, max) ──────────────────
+  function secureRandInt(max: number): number {
+    const arr = new Uint32Array(1);
+    const limit = Math.floor(0xFFFFFFFF / max) * max;
+    do { crypto.getRandomValues(arr); } while (arr[0] > limit);
+    return arr[0] % max;
+  }
+
+  // ── Fisher-Yates shuffle ──────────────────────────────────
+  function fisherYates<T>(arr: T[]): T[] {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = secureRandInt(i + 1);
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ── Parse items from textarea ─────────────────────────────
+  function parseItems(): string[] {
+    return listInput.value
+      .split('\n')
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
+
+  // ── Update item count label ───────────────────────────────
+  function updateCount() {
+    const n = parseItems().length;
+    itemCount.textContent = `${n} item${n !== 1 ? 's' : ''}`;
+  }
+
+  // ── Tab switching ─────────────────────────────────────────
+  function setMode(m: Mode) {
+    mode = m;
+    const activeSt  = 'background:#1D4ED8; color:#fff; box-shadow:0 2px 8px rgba(29,78,216,0.25);';
+    const inactiveSt= 'background:transparent; color:var(--text-secondary); box-shadow:none;';
+
+    if (m === 'shuffle') {
+      tabShuffle.setAttribute('style', tabShuffle.getAttribute('style')!.replace(/background:[^;]+;/, 'background:#1D4ED8;').replace(/color:[^;]+;/, 'color:#fff;') );
+      tabShuffle.style.background = '#1D4ED8';
+      tabShuffle.style.color = '#fff';
+      tabShuffle.style.boxShadow = '0 2px 8px rgba(29,78,216,0.25)';
+      tabDraw.style.background = 'transparent';
+      tabDraw.style.color = 'var(--text-secondary)';
+      tabDraw.style.boxShadow = 'none';
+      btnIcon.textContent = '🔀';
+      btnLabel.textContent = 'Shuffle List';
+      againLbl.textContent = 'Shuffle Again';
+    } else {
+      tabDraw.style.background = '#1D4ED8';
+      tabDraw.style.color = '#fff';
+      tabDraw.style.boxShadow = '0 2px 8px rgba(29,78,216,0.25)';
+      tabShuffle.style.background = 'transparent';
+      tabShuffle.style.color = 'var(--text-secondary)';
+      tabShuffle.style.boxShadow = 'none';
+      btnIcon.textContent = '🎩';
+      btnLabel.textContent = 'Draw a Winner';
+      againLbl.textContent = 'Draw Again';
+    }
+    // Hide previous result on mode switch
+    outputArea.style.display = 'none';
+    emptyHint.style.display = 'none';
+  }
+
+  // ── Color palette for list items ──────────────────────────
+  const ITEM_COLORS = [
+    { bg: 'rgba(29,78,216,0.08)',   border: 'rgba(29,78,216,0.2)',  num: '#1D4ED8' },
+    { bg: 'rgba(234,88,12,0.08)',   border: 'rgba(234,88,12,0.2)',  num: '#EA580C' },
+    { bg: 'rgba(22,163,74,0.08)',   border: 'rgba(22,163,74,0.2)',  num: '#16A34A' },
+    { bg: 'rgba(124,58,237,0.08)',  border: 'rgba(124,58,237,0.2)', num: '#7C3AED' },
+    { bg: 'rgba(245,158,11,0.10)',  border: 'rgba(245,158,11,0.25)',num: '#D97706' },
+  ];
+
+  // ── Render shuffled list with staggered animation ─────────
+  function renderShuffledList(items: string[]) {
+    shuffledList.innerHTML = '';
+    items.forEach((item, i) => {
+      const col = ITEM_COLORS[i % ITEM_COLORS.length];
+      const li = document.createElement('li');
+      li.style.cssText = `
+        display:flex; align-items:center; gap:0.75rem;
+        background:${col.bg}; border:1px solid ${col.border};
+        border-radius:0.625rem; padding:0.55rem 0.875rem;
+        opacity:0; transform:translateY(8px);
+        transition:opacity 0.22s ease, transform 0.22s ease;
+        transition-delay:${Math.min(i * 40, 600)}ms;
+      `;
+      li.innerHTML = `
+        <span style="font-family:'Fira Code',monospace; font-size:0.72rem; font-weight:700; color:${col.num}; min-width:1.5rem; text-align:right;">${i + 1}.</span>
+        <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary); flex:1;">${escapeHtml(item)}</span>
+      `;
+      shuffledList.appendChild(li);
+      // Trigger animation on next frame
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        li.style.opacity = '1';
+        li.style.transform = 'translateY(0)';
+      }));
+    });
+  }
+
+  function escapeHtml(s: string): string {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Animate winner reveal ─────────────────────────────────
+  function revealWinner(name: string) {
+    winnerName.textContent = name;
+    winnerDisplay.style.display = 'block';
+    winnerDisplay.style.opacity = '0';
+    winnerDisplay.style.transform = 'scale(0.92)';
+    winnerDisplay.style.transition = 'opacity 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1)';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      winnerDisplay.style.opacity = '1';
+      winnerDisplay.style.transform = 'scale(1)';
+    }));
+  }
+
+  // ── Main action ───────────────────────────────────────────
+  function run() {
+    const items = parseItems();
+
+    if (mode === 'shuffle' && items.length < 2) {
+      outputArea.style.display = 'none';
+      emptyHint.style.display = 'block';
+      return;
+    }
+    if (mode === 'draw' && items.length < 1) {
+      outputArea.style.display = 'none';
+      emptyHint.style.display = 'block';
+      return;
+    }
+
+    emptyHint.style.display = 'none';
+
+    if (mode === 'shuffle') {
+      const shuffled = fisherYates(items);
+      lastResult = shuffled;
+
+      outputHeading.textContent = `Shuffled (${shuffled.length} items)`;
+      winnerDisplay.style.display = 'none';
+      shuffledCont.style.display = 'block';
+      renderShuffledList(shuffled);
+    } else {
+      const idx = secureRandInt(items.length);
+      const winner = items[idx];
+      lastResult = [winner];
+
+      outputHeading.textContent = 'Winner';
+      shuffledCont.style.display = 'none';
+      revealWinner(winner);
+    }
+
+    outputArea.style.display = 'block';
+    // Scroll into view gently
+    setTimeout(() => outputArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+  }
+
+  // ── Event wiring ──────────────────────────────────────────
+  tabShuffle.addEventListener('click', () => setMode('shuffle'));
+  tabDraw.addEventListener('click',    () => setMode('draw'));
+  btnAction.addEventListener('click',  run);
+  btnAgain.addEventListener('click',   run);
+
+  listInput.addEventListener('input', updateCount);
+
+  // Quick fill chips
+  document.querySelectorAll<HTMLButtonElement>('.chip-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const preset = btn.dataset.preset!;
+      if (PRESETS[preset]) {
+        listInput.value = PRESETS[preset];
+        updateCount();
+      }
+    });
+  });
+
+  // Copy result
+  btnCopyResult.addEventListener('click', () => {
+    const text = mode === 'draw'
+      ? lastResult[0] || ''
+      : lastResult.join('\n');
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      copyResultLbl.textContent = '✓ Copied!';
+      setTimeout(() => { copyResultLbl.textContent = 'Copy Result'; }, 2000);
+    });
+  });
+
+  // Initial count
+  updateCount();
+</script>
