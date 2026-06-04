@@ -1,0 +1,404 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'bulk-case-mutator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+
+    <!-- ── Header ── -->
+    <div style="display:flex; align-items:center; gap:0.875rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.625rem; background:linear-gradient(135deg,#312e81,#4338ca); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 14px rgba(99,102,241,0.4); border:1px solid rgba(196,157,78,0.4);">
+        <span style="font-family:'Fira Code',monospace; font-size:0.7rem; font-weight:800; color:#c49d4e; letter-spacing:-0.03em;">Aa</span>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">Bulk String Case Mutator</h2>
+        <p style="font-size:0.76rem; color:var(--text-muted); margin:0;">Paste identifiers — see every case variant instantly. Click a row to copy.</p>
+      </div>
+    </div>
+
+    <!-- ── Input ── -->
+    <div style="margin-bottom:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.45rem;">
+        <label style="font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Input — one identifier per line</label>
+        <div style="display:flex; gap:0.5rem;">
+          <button id="bcm-sample" style="font-size:0.68rem; color:#818cf8; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">sample</button>
+          <button id="bcm-clear" style="font-size:0.68rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">clear</button>
+        </div>
+      </div>
+      <textarea id="bcm-input"
+        placeholder="getUserProfile&#10;fetch_api_data&#10;MyComponentName&#10;background-color"
+        rows="4"
+        style="width:100%; box-sizing:border-box; resize:vertical; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:var(--text-primary); line-height:1.65; outline:none; transition:border-color 0.15s;"
+        onfocus="this.style.borderColor='#818cf8'; this.style.boxShadow='0 0 0 3px rgba(129,140,248,0.12)';"
+        onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+      ></textarea>
+    </div>
+
+    <!-- ── Case format selector bar ── -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1.1rem; padding:0.625rem 0.875rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; align-items:center;">
+      <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.09em; color:var(--text-muted); margin-right:0.25rem; flex-shrink:0;">Show:</span>
+      <label id="toggle-camel" class="case-toggle case-active" data-case="camel"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #818cf8; background:rgba(129,140,248,0.12); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#818cf8; font-family:'Fira Code',monospace;">camelCase</span>
+      </label>
+      <label id="toggle-pascal" class="case-toggle case-active" data-case="pascal"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #818cf8; background:rgba(129,140,248,0.12); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#818cf8; font-family:'Fira Code',monospace;">PascalCase</span>
+      </label>
+      <label id="toggle-snake" class="case-toggle case-active" data-case="snake"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #818cf8; background:rgba(129,140,248,0.12); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#818cf8; font-family:'Fira Code',monospace;">snake_case</span>
+      </label>
+      <label id="toggle-screaming" class="case-toggle case-active" data-case="screaming"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #818cf8; background:rgba(129,140,248,0.12); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#818cf8; font-family:'Fira Code',monospace;">SCREAMING_SNAKE</span>
+      </label>
+      <label id="toggle-kebab" class="case-toggle case-active" data-case="kebab"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #818cf8; background:rgba(129,140,248,0.12); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#818cf8; font-family:'Fira Code',monospace;">kebab-case</span>
+      </label>
+      <label id="toggle-title" class="case-toggle case-active" data-case="title"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #818cf8; background:rgba(129,140,248,0.12); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#818cf8; font-family:'Fira Code',monospace;">Title Case</span>
+      </label>
+      <label id="toggle-upper" class="case-toggle case-active" data-case="upper"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #818cf8; background:rgba(129,140,248,0.12); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#818cf8; font-family:'Fira Code',monospace;">UPPER</span>
+      </label>
+      <label id="toggle-lower" class="case-toggle case-active" data-case="lower"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #818cf8; background:rgba(129,140,248,0.12); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#818cf8; font-family:'Fira Code',monospace;">lower</span>
+      </label>
+    </div>
+
+    <!-- ── Type specimen output ── -->
+    <div id="specimen-grid" style="display:flex; flex-direction:column; gap:0; border:1.5px solid var(--border); border-radius:0.875rem; overflow:hidden;">
+      <!-- Empty state -->
+      <div id="specimen-empty" style="padding:2.5rem; text-align:center; color:var(--text-muted); font-size:0.82rem;">
+        <div style="font-size:2rem; margin-bottom:0.5rem;">Aa</div>
+        Type or paste identifiers above to see all case variants here.<br/>
+        <span style="font-size:0.72rem; opacity:0.7;">Click any row to copy that variant.</span>
+      </div>
+    </div>
+
+    <!-- ── Copy-all footer ── -->
+    <div id="copy-all-bar" style="display:none; margin-top:0.75rem; padding:0.625rem 0.875rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; display:none; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+      <span id="copy-all-hint" style="font-size:0.72rem; color:var(--text-muted);">Click a row to copy · or copy all of one format:</span>
+      <div id="copy-all-btns" style="display:flex; flex-wrap:wrap; gap:0.35rem;">
+      </div>
+    </div>
+
+  </div>
+
+  <!-- HOW TO USE ───────────────────────────────── -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Bulk Case Mutator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste one or more identifiers into the input — one per line. The tool detects the existing format automatically (camelCase, snake_case, kebab-case, PascalCase, etc.) and outputs all enabled case variants in real time. Click any row in the specimen grid to copy that row's values to your clipboard.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Use the toggle chips to show or hide specific case formats. The <strong>Copy all</strong> buttons in the footer let you copy all converted lines for a single format at once — useful when you need to paste a full column of snake_case constants or kebab-case class names into another file.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Common uses: converting a list of database column names (snake_case) to TypeScript interface keys (camelCase), generating CSS custom property names (kebab-case) from JavaScript variable names, and bulk-renaming identifiers when refactoring across languages or conventions.
+    </p>
+  </div>
+
+  <!-- HOW IT WORKS ────────────────────────────── -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How case conversion works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Input Tokenisation', 'Every identifier is first split into its component words regardless of original format. The splitter handles: camelCase and PascalCase (split on uppercase letter boundaries), snake_case and SCREAMING_SNAKE (split on underscores), kebab-case and dot.case (split on - and .), mixed formats, and plain space-separated words. Numbers adjacent to letters are preserved as separate tokens (e.g. rgb2hex → ["rgb","2","hex"]).'],
+        ['Format Detection', 'After tokenisation, the original format is inferred from structural patterns: all-uppercase with underscores → SCREAMING_SNAKE, all-lowercase with hyphens → kebab-case, first char uppercase with no separators → PascalCase, etc. This is displayed as a small badge on the input identifier row for reference — not required for conversion.'],
+        ['Case Application', 'Each token list is reassembled into the target format: camelCase (first token lowercase, rest title-cased, joined without separator), PascalCase (all tokens title-cased, joined), snake_case (all lowercase, joined with _), SCREAMING_SNAKE (all uppercase, joined with _), kebab-case (all lowercase, joined with -), Title Case (all tokens title-cased, joined with space), UPPER (all tokens uppercase, space-joined), lower (all tokens lowercase, space-joined).'],
+        ['Bulk Processing', 'All lines are processed in parallel — each line through the same tokenise → reassemble pipeline. Empty lines are preserved as empty strings to maintain the original line structure. This means a 200-line list of database column names converts to all 8 formats simultaneously without any per-format button press.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- FAQ ─────────────────────────────────────── -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What input formats does it understand?', a: 'The tokeniser handles camelCase, PascalCase, snake_case, SCREAMING_SNAKE_CASE, kebab-case, dot.case, space-separated words, and mixed formats. It correctly splits consecutive capitals (e.g. parseHTTPSResponse → ["parse","HTTPS","Response"]) by detecting transitions from a run of capitals back to lowercase.' },
+        { q: 'Does it handle numbers and acronyms?', a: 'Numbers within identifiers are treated as their own tokens: rgb2hex tokenises to ["rgb","2","hex"], yielding rgb2Hex (camel), Rgb2Hex (Pascal), rgb_2_hex (snake). Acronyms in all-caps (HTTP, URL, API) are preserved as single uppercase tokens — in PascalCase they remain uppercased as a block: parseHTTPSRequest → ParseHTTPSRequest.' },
+        { q: 'Can I convert between more than two formats in one pass?', a: 'Yes — all enabled formats are shown simultaneously. You do not need to re-run or change any setting to see camelCase and snake_case and kebab-case at the same time. Toggle off any formats you do not need to reduce visual noise.' },
+        { q: 'What is SCREAMING_SNAKE_CASE used for?', a: 'SCREAMING_SNAKE_CASE (all uppercase with underscores) is the conventional format for constants in many languages: Python constants (MAX_RETRY_COUNT), C/C++ macros (#define MAX_BUFFER_SIZE 1024), Java/Kotlin static final fields, and environment variable names (DATABASE_CONNECTION_STRING).' },
+        { q: 'What is the difference between Title Case and PascalCase?', a: 'PascalCase removes all word separators and joins tokens directly (getUserProfile → GetUserProfile). Title Case keeps the words as separate tokens joined by spaces (getUserProfile → Get User Profile). Title Case is for human-readable display; PascalCase is for code identifiers like class names and constructor functions.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  /* Row hover */
+  .specimen-row { transition: background 0.12s; cursor: pointer; }
+  .specimen-row:hover { background: rgba(129,140,248,0.07) !important; }
+  .specimen-row:active { background: rgba(129,140,248,0.14) !important; }
+</style>
+
+<script>
+  // ── Case definitions ──────────────────────────────────────
+  type CaseKey = 'camel'|'pascal'|'snake'|'screaming'|'kebab'|'title'|'upper'|'lower';
+
+  const CASE_META: Record<CaseKey, { label: string; example: string; color: string }> = {
+    camel:     { label: 'camelCase',      example: 'getUserProfile',    color: '#818cf8' },
+    pascal:    { label: 'PascalCase',     example: 'GetUserProfile',    color: '#a78bfa' },
+    snake:     { label: 'snake_case',     example: 'get_user_profile',  color: '#34d399' },
+    screaming: { label: 'SCREAMING_SNAKE',example: 'GET_USER_PROFILE',  color: '#f87171' },
+    kebab:     { label: 'kebab-case',     example: 'get-user-profile',  color: '#fbbf24' },
+    title:     { label: 'Title Case',     example: 'Get User Profile',  color: '#60a5fa' },
+    upper:     { label: 'UPPER',          example: 'GET USER PROFILE',  color: '#e879f9' },
+    lower:     { label: 'lower',          example: 'get user profile',  color: '#94a3b8' },
+  };
+
+  const ALL_CASES: CaseKey[] = ['camel','pascal','snake','screaming','kebab','title','upper','lower'];
+
+  // ── Toggle state ──────────────────────────────────────────
+  const caseEnabled: Record<CaseKey, boolean> = {
+    camel: true, pascal: true, snake: true, screaming: true,
+    kebab: true, title: true, upper: true, lower: true,
+  };
+
+  document.querySelectorAll<HTMLLabelElement>('.case-toggle').forEach(lbl => {
+    lbl.addEventListener('click', e => {
+      e.preventDefault();
+      const key = lbl.dataset.case as CaseKey;
+      // Don't allow disabling all
+      const activeCount = ALL_CASES.filter(k => caseEnabled[k]).length;
+      if (caseEnabled[key] && activeCount <= 1) return;
+      caseEnabled[key] = !caseEnabled[key];
+      const chk  = lbl.querySelector('input') as HTMLInputElement;
+      const span = lbl.querySelector('span')!;
+      chk.checked = caseEnabled[key];
+      const col = CASE_META[key].color;
+      if (caseEnabled[key]) {
+        lbl.style.borderColor = col;
+        lbl.style.background  = `${col}1a`;
+        span.style.color      = col;
+      } else {
+        lbl.style.borderColor = 'var(--border)';
+        lbl.style.background  = 'var(--bg-surface-2)';
+        span.style.color      = 'var(--text-muted)';
+      }
+      render();
+    });
+  });
+
+  // Init toggle colours
+  ALL_CASES.forEach(key => {
+    const lbl  = document.getElementById(`toggle-${key}`)!;
+    const col  = CASE_META[key].color;
+    const span = lbl.querySelector('span')!;
+    lbl.style.borderColor = col;
+    lbl.style.background  = `${col}1a`;
+    span.style.color      = col;
+  });
+
+  // ── Tokeniser ─────────────────────────────────────────────
+  function tokenise(s: string): string[] {
+    if (!s.trim()) return [];
+    // Split on separators first
+    let str = s.trim();
+    // Replace separators with space
+    str = str.replace(/[-_.]+/g, ' ');
+    // Split camelCase / PascalCase boundaries
+    // Insert space before uppercase letters preceded by lowercase
+    str = str.replace(/([a-z\d])([A-Z])/g, '$1 $2');
+    // Insert space before uppercase run followed by lowercase (e.g. HTTPSRequest → HTTPS Request)
+    str = str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');
+    // Split on spaces/multiple spaces
+    return str.split(/\s+/).filter(Boolean);
+  }
+
+  // ── Converters ────────────────────────────────────────────
+  const titleCase = (w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+
+  const converters: Record<CaseKey, (tokens: string[]) => string> = {
+    camel:     ts => ts.map((t,i) => i === 0 ? t.toLowerCase() : titleCase(t)).join(''),
+    pascal:    ts => ts.map(t => titleCase(t)).join(''),
+    snake:     ts => ts.map(t => t.toLowerCase()).join('_'),
+    screaming: ts => ts.map(t => t.toUpperCase()).join('_'),
+    kebab:     ts => ts.map(t => t.toLowerCase()).join('-'),
+    title:     ts => ts.map(t => titleCase(t)).join(' '),
+    upper:     ts => ts.map(t => t.toUpperCase()).join(' '),
+    lower:     ts => ts.map(t => t.toLowerCase()).join(' '),
+  };
+
+  function convert(input: string, key: CaseKey): string {
+    const tokens = tokenise(input);
+    if (tokens.length === 0) return '';
+    return converters[key](tokens);
+  }
+
+  // ── Render ────────────────────────────────────────────────
+  const specimenGrid  = document.getElementById('specimen-grid')!;
+  const specimenEmpty = document.getElementById('specimen-empty')!;
+  const copyAllBar    = document.getElementById('copy-all-bar')!;
+  const copyAllBtns   = document.getElementById('copy-all-btns')!;
+  const bcmInput      = document.getElementById('bcm-input') as HTMLTextAreaElement;
+
+  // Results cache for copy-all
+  const allResults: Record<CaseKey, string[]> = {} as any;
+  ALL_CASES.forEach(k => allResults[k] = []);
+
+  function render() {
+    const lines = bcmInput.value.split('\n');
+    const nonEmpty = lines.filter(l => l.trim());
+
+    if (nonEmpty.length === 0) {
+      specimenEmpty.style.display = 'block';
+      // Remove all rows except empty state
+      Array.from(specimenGrid.children).forEach(c => {
+        if (c.id !== 'specimen-empty') c.remove();
+      });
+      copyAllBar.style.display = 'none';
+      return;
+    }
+
+    specimenEmpty.style.display = 'none';
+    specimenGrid.innerHTML = '';
+
+    const activeCases = ALL_CASES.filter(k => caseEnabled[k]);
+
+    // Compute all results
+    ALL_CASES.forEach(k => {
+      allResults[k] = nonEmpty.map(line => convert(line.trim(), k));
+    });
+
+    // Render a row per case format
+    activeCases.forEach((key, idx) => {
+      const meta    = CASE_META[key];
+      const results = allResults[key];
+      const values  = results.join('\n');
+
+      const row = document.createElement('div');
+      row.className = 'specimen-row';
+      row.setAttribute('role', 'button');
+      row.setAttribute('tabindex', '0');
+      row.setAttribute('aria-label', `Copy ${meta.label} variants`);
+      row.style.cssText = `
+        display:grid; grid-template-columns:7.5rem 1fr auto;
+        align-items:start; gap:0.75rem;
+        padding:0.75rem 1rem;
+        background:var(--bg-surface);
+        border-bottom:1px solid var(--border);
+        ${idx === activeCases.length - 1 ? 'border-bottom:none;' : ''}
+      `;
+      row.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:0.2rem; padding-top:0.1rem; flex-shrink:0;">
+          <span style="font-family:'Fira Code',monospace; font-size:0.7rem; font-weight:800; color:${meta.color}; letter-spacing:0.03em;">${meta.label}</span>
+          <span style="font-family:'Fira Code',monospace; font-size:0.6rem; color:var(--text-muted); opacity:0.7;">${meta.example}</span>
+        </div>
+        <div style="font-family:'Fira Code',monospace; font-size:0.82rem; font-weight:600; color:var(--text-primary); line-height:1.7; word-break:break-all; white-space:pre-wrap;">${escHtml(values)}</div>
+        <div class="copy-badge" style="opacity:0; font-size:0.65rem; font-weight:700; color:${meta.color}; white-space:nowrap; padding-top:0.15rem; transition:opacity 0.15s; pointer-events:none;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline; vertical-align:middle; margin-right:2px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          copy
+        </div>
+      `;
+
+      // Show/hide copy badge on hover
+      row.addEventListener('mouseenter', () => {
+        (row.querySelector('.copy-badge') as HTMLElement).style.opacity = '1';
+      });
+      row.addEventListener('mouseleave', () => {
+        (row.querySelector('.copy-badge') as HTMLElement).style.opacity = '0';
+      });
+
+      // Click to copy
+      const copyFeedback = (el: HTMLElement) => {
+        const badge = el.querySelector('.copy-badge') as HTMLElement;
+        const prev = badge.innerHTML;
+        badge.innerHTML = `<svg width="11" height="11" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> copied!`;
+        badge.style.opacity = '1';
+        setTimeout(() => { badge.innerHTML = prev; badge.style.opacity = '0'; }, 1800);
+      };
+
+      row.addEventListener('click', () => {
+        navigator.clipboard.writeText(values).then(() => copyFeedback(row));
+      });
+      row.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          navigator.clipboard.writeText(values).then(() => copyFeedback(row));
+        }
+      });
+
+      specimenGrid.appendChild(row);
+    });
+
+    // Copy-all bar
+    copyAllBar.style.display = 'flex';
+    copyAllBtns.innerHTML = '';
+    activeCases.forEach(key => {
+      const meta = CASE_META[key];
+      const btn  = document.createElement('button');
+      btn.style.cssText = `
+        padding:0.22rem 0.6rem; border-radius:999px;
+        border:1px solid ${meta.color}44; background:${meta.color}0f;
+        font-family:'Fira Code',monospace; font-size:0.65rem; font-weight:700;
+        color:${meta.color}; cursor:pointer; transition:all 0.15s;
+      `;
+      btn.textContent = meta.label;
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(allResults[key].join('\n')).then(() => {
+          btn.textContent = '✓ copied';
+          setTimeout(() => { btn.textContent = meta.label; }, 1800);
+        });
+      });
+      copyAllBtns.appendChild(btn);
+    });
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Events ────────────────────────────────────────────────
+  bcmInput.addEventListener('input', render);
+
+  document.getElementById('bcm-sample')!.addEventListener('click', () => {
+    bcmInput.value = `getUserProfile\nfetch_api_data\nMyComponentName\nbackground-color\nMAX_RETRY_COUNT\nparse https response`;
+    render();
+  });
+
+  document.getElementById('bcm-clear')!.addEventListener('click', () => {
+    bcmInput.value = '';
+    render();
+  });
+
+  // Initial render
+  bcmInput.value = `getUserProfile\nfetch_api_data\nMyComponentName\nbackground-color`;
+  render();
+</script>

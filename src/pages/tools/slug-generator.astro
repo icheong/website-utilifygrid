@@ -1,0 +1,451 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'slug-generator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+
+    <!-- ── Parchment card wrapper ── -->
+    <div style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:1rem; padding:1.5rem; position:relative; overflow:hidden;">
+
+      <!-- Decorative corner rule lines -->
+      <div aria-hidden="true" style="position:absolute; top:0; left:0; width:40px; height:40px; border-right:none; border-bottom:none; border-top:2px solid #DC2626; border-left:2px solid #DC2626; border-radius:0.75rem 0 0 0; pointer-events:none; opacity:0.4;"></div>
+      <div aria-hidden="true" style="position:absolute; bottom:0; right:0; width:40px; height:40px; border-left:none; border-top:none; border-bottom:2px solid #DC2626; border-right:2px solid #DC2626; border-radius:0 0 0.75rem 0; pointer-events:none; opacity:0.4;"></div>
+
+      <!-- ── Header ── -->
+      <div style="display:flex; align-items:center; gap:0.875rem; margin-bottom:1.75rem;">
+        <div style="display:flex; flex-direction:column; gap:0.1rem;">
+          <h2 style="font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:800; color:var(--text-primary); margin:0; letter-spacing:-0.02em;">Slug Generator</h2>
+          <p style="font-size:0.76rem; color:var(--text-muted); margin:0; letter-spacing:0.01em;">Title → URL-safe, lowercase, hyphenated slug</p>
+        </div>
+      </div>
+
+      <!-- ── Input ── -->
+      <div style="margin-bottom:1.5rem;">
+        <label for="slug-input" style="display:block; font-size:0.7rem; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); margin-bottom:0.5rem;">Page / Article Title</label>
+        <input id="slug-input" type="text"
+          placeholder="e.g. The Quick Brown Fox & 10 Amazing Tricks!"
+          style="width:100%; box-sizing:border-box; background:var(--bg-surface-2); border:2px solid var(--border); border-radius:0.5rem; padding:0.875rem 1rem; font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); outline:none; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='#DC2626'; this.style.boxShadow='0 0 0 3px rgba(220,38,38,0.1)';"
+          onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+        />
+      </div>
+
+      <!-- ── Options row ── -->
+      <div style="display:flex; flex-wrap:wrap; gap:0.875rem; margin-bottom:1.5rem; align-items:flex-start;">
+
+        <!-- Separator -->
+        <div>
+          <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:0.4rem;">Separator</div>
+          <div style="display:flex; gap:0.3rem;">
+            <button class="sep-btn selected-sep" data-sep="-"
+              style="padding:0.3rem 0.75rem; border-radius:0.375rem; border:2px solid #DC2626; background:rgba(220,38,38,0.08); font-family:'Fira Code',monospace; font-size:0.82rem; font-weight:700; color:#DC2626; cursor:pointer; transition:all 0.15s;">-</button>
+            <button class="sep-btn" data-sep="_"
+              style="padding:0.3rem 0.75rem; border-radius:0.375rem; border:2px solid var(--border); background:var(--bg-surface-2); font-family:'Fira Code',monospace; font-size:0.82rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">_</button>
+            <button class="sep-btn" data-sep="."
+              style="padding:0.3rem 0.75rem; border-radius:0.375rem; border:2px solid var(--border); background:var(--bg-surface-2); font-family:'Fira Code',monospace; font-size:0.82rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">.</button>
+          </div>
+        </div>
+
+        <!-- Case -->
+        <div>
+          <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:0.4rem;">Case</div>
+          <div style="display:flex; gap:0.3rem;">
+            <button class="case-btn selected-case" data-case="lower"
+              style="padding:0.3rem 0.7rem; border-radius:0.375rem; border:2px solid #DC2626; background:rgba(220,38,38,0.08); font-size:0.72rem; font-weight:700; color:#DC2626; cursor:pointer; transition:all 0.15s;">lower</button>
+            <button class="case-btn" data-case="upper"
+              style="padding:0.3rem 0.7rem; border-radius:0.375rem; border:2px solid var(--border); background:var(--bg-surface-2); font-size:0.72rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">UPPER</button>
+            <button class="case-btn" data-case="preserve"
+              style="padding:0.3rem 0.7rem; border-radius:0.375rem; border:2px solid var(--border); background:var(--bg-surface-2); font-size:0.72rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">Preserve</button>
+          </div>
+        </div>
+
+        <!-- Toggles -->
+        <div>
+          <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:0.4rem;">Options</div>
+          <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+            <label class="slug-opt active-slug-opt" data-key="accent"
+              style="display:flex; align-items:center; gap:0.35rem; padding:0.3rem 0.65rem; border-radius:0.375rem; border:2px solid #DC2626; background:rgba(220,38,38,0.08); cursor:pointer; user-select:none; transition:all 0.15s;">
+              <input type="checkbox" checked style="display:none;" />
+              <span style="font-size:0.7rem; font-weight:700; color:#DC2626;">Strip accents</span>
+            </label>
+            <label class="slug-opt active-slug-opt" data-key="stopwords"
+              style="display:flex; align-items:center; gap:0.35rem; padding:0.3rem 0.65rem; border-radius:0.375rem; border:2px solid #DC2626; background:rgba(220,38,38,0.08); cursor:pointer; user-select:none; transition:all 0.15s;">
+              <input type="checkbox" checked style="display:none;" />
+              <span style="font-size:0.7rem; font-weight:700; color:#DC2626;">Remove stop words</span>
+            </label>
+            <label class="slug-opt" data-key="truncate"
+              style="display:flex; align-items:center; gap:0.35rem; padding:0.3rem 0.65rem; border-radius:0.375rem; border:2px solid var(--border); background:var(--bg-surface-2); cursor:pointer; user-select:none; transition:all 0.15s;">
+              <input type="checkbox" style="display:none;" />
+              <span style="font-size:0.7rem; font-weight:700; color:var(--text-secondary);">Max 60 chars</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Pipeline ── -->
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:0.625rem;">Transformation pipeline</div>
+        <div id="pipeline" style="display:flex; flex-direction:column; gap:0.3rem;">
+        </div>
+      </div>
+
+      <!-- ── Output ── -->
+      <div style="position:relative; margin-bottom:1.25rem;">
+        <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:0.5rem;">Generated Slug</div>
+        <div style="display:flex; align-items:stretch; gap:0;">
+          <div style="flex:1; background:var(--bg-surface-2); border:2px solid var(--border); border-right:none; border-radius:0.5rem 0 0 0.5rem; padding:0.875rem 1rem; display:flex; align-items:center; overflow-x:auto; min-height:3rem;">
+            <code id="slug-output"
+              style="font-family:'Fira Code',monospace; font-size:0.95rem; font-weight:600; color:#DC2626; white-space:nowrap; letter-spacing:0.02em; transition:color 0.2s;">
+            </code>
+          </div>
+          <button id="btn-copy-slug"
+            style="padding:0 1.25rem; background:#DC2626; border:2px solid #DC2626; border-radius:0 0.5rem 0.5rem 0; color:#fff; font-family:'Sora',sans-serif; font-size:0.8rem; font-weight:700; cursor:pointer; transition:background 0.15s; white-space:nowrap; display:flex; align-items:center; gap:0.4rem;"
+            onmouseover="this.style.background='#B91C1C'; this.style.borderColor='#B91C1C';"
+            onmouseout="this.style.background='#DC2626'; this.style.borderColor='#DC2626';">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            <span id="copy-slug-label">Copy</span>
+          </button>
+        </div>
+        <!-- char count -->
+        <div style="display:flex; justify-content:space-between; margin-top:0.4rem;">
+          <span id="slug-char-count" style="font-size:0.68rem; font-family:'Fira Code',monospace; color:var(--text-muted);"></span>
+          <span id="slug-warn" style="font-size:0.68rem; color:#F59E0B; display:none;">⚠ Over 60 chars — consider enabling truncation</span>
+        </div>
+      </div>
+
+      <!-- ── Bulk mode ── -->
+      <div style="border-top:1px solid var(--border); padding-top:1.25rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.625rem;">
+          <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Bulk Mode — one title per line</div>
+          <button id="btn-copy-bulk" style="font-size:0.68rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">Copy all</button>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.625rem;" class="bulk-grid">
+          <textarea id="bulk-input" placeholder="Title One&#10;Title Two&#10;Another Great Article"
+            rows="5"
+            style="box-sizing:border-box; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.5rem; padding:0.75rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:var(--text-primary); line-height:1.65; outline:none; resize:vertical; transition:border-color 0.15s;"
+            onfocus="this.style.borderColor='#DC2626';" onblur="this.style.borderColor='var(--border)';"></textarea>
+          <textarea id="bulk-output" readonly placeholder="slugs appear here…"
+            rows="5"
+            style="box-sizing:border-box; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.5rem; padding:0.75rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:#DC2626; line-height:1.65; outline:none; resize:vertical; cursor:default;"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW TO USE
+  ══════════════════════════════════════════════ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Slug Generator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Type or paste a page title in the input field — the slug updates in real time. Choose your preferred word separator (<code style="font-family:'Fira Code',monospace; font-size:0.85em;">-</code>, <code style="font-family:'Fira Code',monospace; font-size:0.85em;">_</code>, or <code style="font-family:'Fira Code',monospace; font-size:0.85em;">.</code>), output case, and toggle options like accent stripping, stop word removal, and 60-character truncation. The <strong>transformation pipeline</strong> shows each processing step and the intermediate result after each one.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Use <strong>Bulk Mode</strong> at the bottom to process an entire list of titles at once — paste one title per line on the left, and all corresponding slugs appear on the right. Click <strong>Copy all</strong> to grab the full list.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Common uses: generating URL slugs for blog posts and CMS articles, creating file or folder names from titles, building clean anchor IDs from heading text, and normalising product names for e-commerce URLs.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How slugs are generated</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Unicode Normalisation & Accent Stripping', 'When "Strip accents" is enabled, the title is first normalised to Unicode NFD form (decomposing combined characters like é into e + ́). The combining diacritic marks are then stripped using a regex against the Mn Unicode category. This converts café → cafe, Müller → Muller, naïve → naive, ñoño → nono.'],
+        ['Stop Word Removal', 'A curated list of 40 common English stop words (a, an, the, and, or, but, in, on, at, to, for, of, with, by, from, …) is removed as whole-word matches after lowercasing. This keeps slugs concise and semantically meaningful: "A Guide to the Best Practices" → "guide-best-practices".'],
+        ['Character Sanitisation', 'All characters that are not alphanumeric, spaces, or the chosen separator character are stripped. Ampersands (&) are converted to "and". Smart quotes and em/en dashes are normalised to their ASCII equivalents before stripping.'],
+        ['Separator Normalisation', 'Spaces and runs of multiple separators are collapsed into a single separator. Leading and trailing separators are removed. This ensures idempotent output: running the slug through the generator twice produces the same result.'],
+        ['Truncation', 'When the 60-character option is enabled, the slug is cut at 60 characters, then trimmed back to the last complete word (last separator boundary) to avoid cutting mid-word. This keeps slugs within common CMS and SEO URL length recommendations.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════════ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is a URL slug?', a: 'A slug is the human-readable, URL-safe portion of a web address that identifies a specific page. For example, in https://example.com/blog/getting-started-with-python, the slug is "getting-started-with-python". Good slugs are lowercase, use hyphens as word separators, contain no special characters, and are concise enough to be memorable and shareable.' },
+        { q: 'Should I use hyphens or underscores?', a: 'Hyphens are strongly preferred for SEO. Google\'s documentation historically treated underscores as part of words (making "my_post" read as "mypost") while treating hyphens as word separators ("my-post" reads as two words "my" and "post"). Both are valid URL characters, but hyphens produce better search engine keyword matching and are standard across most major CMS platforms (WordPress, Ghost, Webflow).' },
+        { q: 'How long should a slug be?', a: 'Most SEO guidance recommends keeping slugs under 60–75 characters. Very long slugs dilute keyword relevance and get truncated in browser address bars and social share previews. Removing stop words naturally shortens slugs while preserving their meaning. The 60-character truncation option cuts at the nearest word boundary to avoid awkward breaks.' },
+        { q: 'Does it handle non-Latin scripts?', a: 'The accent stripping step handles Latin-script diacritics (accented French, German umlauts, Spanish tildes, etc.). Non-Latin scripts (Chinese, Arabic, Cyrillic, Japanese) do not have direct ASCII transliterations built in — characters with no ASCII equivalent are stripped, which may result in an empty or very short slug. For non-Latin content, consider a dedicated transliteration library.' },
+        { q: 'What are stop words and should I always remove them?', a: 'Stop words are common words with little individual semantic value: the, a, an, and, of, in, for, etc. Removing them produces shorter slugs that focus on meaningful keywords. However, for some titles the stop word is essential to the meaning or brand — "The New Yorker" should not become "new-yorker" if "The" is part of the official name. Use the toggle to decide per use case.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  @media (max-width: 640px) {
+    .bulk-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+<script>
+  // ── Stop words ────────────────────────────────────────────
+  const STOP_WORDS = new Set([
+    'a','an','the','and','or','but','in','on','at','to','for',
+    'of','with','by','from','as','is','was','are','were','be',
+    'been','being','have','has','had','do','does','did','will',
+    'would','could','should','may','might','shall','can','this',
+    'that','these','those','it','its','i','my','we','our','you',
+    'your','he','she','they','their',
+  ]);
+
+  // ── Options state ─────────────────────────────────────────
+  let separator = '-';
+  let caseMode: 'lower' | 'upper' | 'preserve' = 'lower';
+  const opts = { accent: true, stopwords: true, truncate: false };
+
+  // ── Pipeline step definitions ─────────────────────────────
+  const PIPELINE_STEPS: Array<{ id: string; label: string; fn: (s: string) => string }> = [
+    {
+      id: 'raw',
+      label: 'Input',
+      fn: s => s,
+    },
+    {
+      id: 'accent',
+      label: 'Strip accents',
+      fn: s => opts.accent
+        ? s.normalize('NFD').replace(/\p{Mn}/gu, '')
+        : s,
+    },
+    {
+      id: 'ampersand',
+      label: 'Normalise & → and',
+      fn: s => s.replace(/&/g, ' and ').replace(/\s+/g, ' ').trim(),
+    },
+    {
+      id: 'case',
+      label: 'Apply case',
+      fn: s => caseMode === 'lower' ? s.toLowerCase() : caseMode === 'upper' ? s.toUpperCase() : s,
+    },
+    {
+      id: 'stopwords',
+      label: 'Remove stop words',
+      fn: s => {
+        if (!opts.stopwords) return s;
+        return s.split(/\s+/)
+          .filter(w => !STOP_WORDS.has(w.toLowerCase()))
+          .join(' ');
+      },
+    },
+    {
+      id: 'sanitise',
+      label: 'Strip non-alphanumeric',
+      fn: s => s.replace(/[^\w\s-_.]/g, '').replace(/\s+/g, ' ').trim(),
+    },
+    {
+      id: 'separator',
+      label: 'Replace spaces with separator',
+      fn: s => s.replace(/\s+/g, separator),
+    },
+    {
+      id: 'dedup',
+      label: 'Deduplicate separators',
+      fn: s => {
+        const esc = separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return s
+          .replace(new RegExp(`${esc}{2,}`, 'g'), separator)
+          .replace(new RegExp(`^${esc}|${esc}$`, 'g'), '');
+      },
+    },
+    {
+      id: 'truncate',
+      label: 'Truncate to 60 chars',
+      fn: s => {
+        if (!opts.truncate || s.length <= 60) return s;
+        let cut = s.slice(0, 60);
+        const lastSep = cut.lastIndexOf(separator);
+        if (lastSep > 20) cut = cut.slice(0, lastSep);
+        return cut;
+      },
+    },
+  ];
+
+  // ── Slug pipeline runner ──────────────────────────────────
+  function generateSlug(input: string): { slug: string; steps: Array<{ label: string; value: string; changed: boolean }> } {
+    let val = input;
+    const steps: Array<{ label: string; value: string; changed: boolean }> = [];
+
+    for (const step of PIPELINE_STEPS) {
+      const prev = val;
+      val = step.fn(val);
+      steps.push({ label: step.label, value: val, changed: val !== prev });
+    }
+
+    return { slug: val, steps };
+  }
+
+  // ── Pipeline render ───────────────────────────────────────
+  const pipelineEl = document.getElementById('pipeline')!;
+
+  function renderPipeline(steps: ReturnType<typeof generateSlug>['steps']) {
+    pipelineEl.innerHTML = '';
+    steps.forEach((step, i) => {
+      if (i === 0) return; // skip raw input echo
+      const row = document.createElement('div');
+      row.style.cssText = `
+        display:flex; align-items:baseline; gap:0.625rem;
+        padding:0.3rem 0; border-bottom:1px dashed var(--border);
+        opacity:${step.changed ? '1' : '0.4'};
+        transition:opacity 0.2s;
+      `;
+      row.innerHTML = `
+        <span style="font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:${step.changed ? '#DC2626' : 'var(--text-muted)'}; min-width:9rem; flex-shrink:0;">${step.label}</span>
+        <span style="font-family:'Fira Code',monospace; font-size:0.72rem; color:${step.changed ? 'var(--text-primary)' : 'var(--text-muted)'}; word-break:break-all;">${escHtml(step.value) || '<span style="color:var(--text-muted); font-style:italic;">empty</span>'}</span>
+        ${step.changed ? '<span style="margin-left:auto; font-size:0.6rem; color:#DC2626; flex-shrink:0; font-weight:700;">✦</span>' : ''}
+      `;
+      pipelineEl.appendChild(row);
+    });
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── DOM refs ──────────────────────────────────────────────
+  const slugInput     = document.getElementById('slug-input')     as HTMLInputElement;
+  const slugOutput    = document.getElementById('slug-output')!;
+  const slugCharCount = document.getElementById('slug-char-count')!;
+  const slugWarn      = document.getElementById('slug-warn')!;
+  const bulkInput     = document.getElementById('bulk-input')     as HTMLTextAreaElement;
+  const bulkOutput    = document.getElementById('bulk-output')    as HTMLTextAreaElement;
+
+  // ── Main update ───────────────────────────────────────────
+  function update() {
+    const input = slugInput.value;
+    if (!input.trim()) {
+      slugOutput.textContent = '';
+      slugCharCount.textContent = '';
+      slugWarn.style.display = 'none';
+      renderPipeline([]);
+      bulkUpdate();
+      return;
+    }
+
+    const { slug, steps } = generateSlug(input);
+    slugOutput.textContent = slug;
+    slugCharCount.textContent = `${slug.length} chars`;
+    slugWarn.style.display = slug.length > 60 && !opts.truncate ? 'inline' : 'none';
+    renderPipeline(steps);
+    bulkUpdate();
+  }
+
+  function bulkUpdate() {
+    const lines = bulkInput.value.split('\n');
+    bulkOutput.value = lines.map(line =>
+      line.trim() ? generateSlug(line).slug : ''
+    ).join('\n');
+  }
+
+  // ── Separator picker ──────────────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.sep-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      separator = btn.dataset.sep!;
+      document.querySelectorAll<HTMLButtonElement>('.sep-btn').forEach(b => {
+        const active = b === btn;
+        b.style.borderColor = active ? '#DC2626' : 'var(--border)';
+        b.style.background  = active ? 'rgba(220,38,38,0.08)' : 'var(--bg-surface-2)';
+        b.style.color       = active ? '#DC2626' : 'var(--text-secondary)';
+      });
+      update();
+    });
+  });
+
+  // ── Case picker ───────────────────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.case-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      caseMode = btn.dataset.case as typeof caseMode;
+      document.querySelectorAll<HTMLButtonElement>('.case-btn').forEach(b => {
+        const active = b === btn;
+        b.style.borderColor = active ? '#DC2626' : 'var(--border)';
+        b.style.background  = active ? 'rgba(220,38,38,0.08)' : 'var(--bg-surface-2)';
+        b.style.color       = active ? '#DC2626' : 'var(--text-secondary)';
+      });
+      update();
+    });
+  });
+
+  // ── Option toggles ────────────────────────────────────────
+  document.querySelectorAll<HTMLLabelElement>('.slug-opt').forEach(lbl => {
+    lbl.addEventListener('click', e => {
+      e.preventDefault();
+      const key = lbl.dataset.key as keyof typeof opts;
+      opts[key] = !opts[key];
+      const chk  = lbl.querySelector('input') as HTMLInputElement;
+      const span = lbl.querySelector('span')!;
+      chk.checked = opts[key];
+      if (opts[key]) {
+        lbl.style.borderColor = '#DC2626';
+        lbl.style.background  = 'rgba(220,38,38,0.08)';
+        span.style.color      = '#DC2626';
+      } else {
+        lbl.style.borderColor = 'var(--border)';
+        lbl.style.background  = 'var(--bg-surface-2)';
+        span.style.color      = 'var(--text-secondary)';
+      }
+      update();
+    });
+  });
+
+  // ── Copy slug ─────────────────────────────────────────────
+  document.getElementById('btn-copy-slug')!.addEventListener('click', () => {
+    const slug = slugOutput.textContent || '';
+    if (!slug) return;
+    navigator.clipboard.writeText(slug).then(() => {
+      const lbl = document.getElementById('copy-slug-label')!;
+      lbl.textContent = '✓ Copied!';
+      setTimeout(() => { lbl.textContent = 'Copy'; }, 2000);
+    });
+  });
+
+  // ── Copy bulk ─────────────────────────────────────────────
+  document.getElementById('btn-copy-bulk')!.addEventListener('click', () => {
+    if (!bulkOutput.value) return;
+    navigator.clipboard.writeText(bulkOutput.value).then(() => {
+      const btn = document.getElementById('btn-copy-bulk')!;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = 'Copy all'; }, 2000);
+    });
+  });
+
+  // ── Wire events ───────────────────────────────────────────
+  slugInput.addEventListener('input', update);
+  bulkInput.addEventListener('input', bulkUpdate);
+
+  // Seed with an example
+  slugInput.value = 'The Quick Brown Fox & 10 Amazing Tricks!';
+  update();
+</script>

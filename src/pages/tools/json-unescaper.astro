@@ -1,0 +1,553 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-unescaper')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+
+    <!-- ── Header ── -->
+    <div style="display:flex; align-items:center; gap:0.875rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.625rem; background:linear-gradient(135deg,#042f2e,#134e4a); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 16px rgba(20,184,166,0.3); border:1px solid rgba(20,184,166,0.3);">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+        </svg>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">JSON String Un-escaper</h2>
+        <p style="font-size:0.76rem; color:var(--text-muted); margin:0;">Unwrap {\&quot;key\&quot;: \&quot;value\&quot;} → beautifully formatted JSON, through every escape layer</p>
+      </div>
+    </div>
+
+    <!-- ── Input panel ── -->
+    <div style="margin-bottom:0.875rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.45rem;">
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#fb923c;">Escaped Input</span>
+          <span id="escape-depth-badge" style="display:none; font-size:0.62rem; font-weight:700; font-family:'Fira Code',monospace; padding:0.1rem 0.45rem; border-radius:999px; background:rgba(251,146,60,0.15); border:1px solid rgba(251,146,60,0.35); color:#fb923c;"></span>
+        </div>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <button id="btn-sample-1" style="font-size:0.65rem; color:#fb923c; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">sample ×1</button>
+          <button id="btn-sample-2" style="font-size:0.65rem; color:#fb923c; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">sample ×2</button>
+          <button id="btn-sample-3" style="font-size:0.65rem; color:#fb923c; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">sample ×3</button>
+          <button id="btn-clear" style="font-size:0.65rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">clear</button>
+        </div>
+      </div>
+      <textarea id="json-input"
+        placeholder="{\"name\": \"Alice\", \"age\": 30, \"active\": true}"
+        rows="6"
+        style="width:100%; box-sizing:border-box; resize:vertical; background:#0a1628; border:1.5px solid rgba(251,146,60,0.25); border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:#fed7aa; line-height:1.7; outline:none; transition:border-color 0.15s; caret-color:#fb923c;"
+        onfocus="this.style.borderColor='#fb923c'; this.style.boxShadow='0 0 0 3px rgba(251,146,60,0.1)';"
+        onblur="this.style.borderColor='rgba(251,146,60,0.25)'; this.style.boxShadow='none';"
+      ></textarea>
+    </div>
+
+    <!-- ── Options row ── -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.875rem; padding:0.625rem 0.875rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; align-items:center;">
+      <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.09em; color:var(--text-muted); flex-shrink:0;">Options:</span>
+
+      <label class="ju-opt ju-active" data-key="outerQuotes"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #2dd4bf; background:rgba(45,212,191,0.08); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#2dd4bf;">Strip outer quotes</span>
+      </label>
+      <label class="ju-opt ju-active" data-key="pretty"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #2dd4bf; background:rgba(45,212,191,0.08); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#2dd4bf;">Pretty print</span>
+      </label>
+      <label class="ju-opt ju-active" data-key="highlight"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #2dd4bf; background:rgba(45,212,191,0.08); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#2dd4bf;">Syntax highlight</span>
+      </label>
+      <label class="ju-opt" data-key="autoLayers"
+        style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid var(--border); background:var(--bg-surface-2); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:var(--text-muted);">Auto-peel all layers</span>
+      </label>
+
+      <!-- Indent size -->
+      <div style="display:flex; align-items:center; gap:0.35rem; margin-left:auto;">
+        <span style="font-size:0.65rem; font-weight:700; color:var(--text-muted);">Indent:</span>
+        <div style="display:flex; gap:0.25rem;">
+          <button class="indent-btn selected-indent" data-n="2" style="padding:0.2rem 0.5rem; border-radius:0.3rem; border:1.5px solid #2dd4bf; background:rgba(45,212,191,0.1); font-family:'Fira Code',monospace; font-size:0.68rem; font-weight:700; color:#2dd4bf; cursor:pointer; transition:all 0.15s;">2</button>
+          <button class="indent-btn" data-n="4" style="padding:0.2rem 0.5rem; border-radius:0.3rem; border:1.5px solid var(--border); background:var(--bg-surface-2); font-family:'Fira Code',monospace; font-size:0.68rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">4</button>
+          <button class="indent-btn" data-n="tab" style="padding:0.2rem 0.5rem; border-radius:0.3rem; border:1.5px solid var(--border); background:var(--bg-surface-2); font-family:'Fira Code',monospace; font-size:0.68rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">tab</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Unescape button ── -->
+    <button id="btn-unescape"
+      style="width:100%; padding:0.78rem 1.5rem; background:linear-gradient(90deg,#042f2e,#134e4a 50%,#042f2e); color:#2dd4bf; border:1.5px solid rgba(45,212,191,0.35); border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.92rem; font-weight:700; cursor:pointer; transition:all 0.15s; letter-spacing:0.03em; box-shadow:0 4px 14px rgba(20,184,166,0.15); display:flex; align-items:center; justify-content:center; gap:0.6rem; margin-bottom:1rem;"
+      onmouseover="this.style.boxShadow='0 4px 22px rgba(45,212,191,0.3)'; this.style.borderColor='rgba(45,212,191,0.6)';"
+      onmouseout="this.style.boxShadow='0 4px 14px rgba(20,184,166,0.15)'; this.style.borderColor='rgba(45,212,191,0.35)';"
+      onmousedown="this.style.transform='scale(0.985)';"
+      onmouseup="this.style.transform='scale(1)';"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+      Un-escape &amp; Format JSON
+    </button>
+
+    <!-- ── Pipeline depth gauge ── -->
+    <div id="pipeline-wrap" style="display:none; margin-bottom:1rem;">
+      <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; flex-wrap:wrap;">
+        <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Unescape layers</span>
+        <div id="depth-gauge" style="display:flex; gap:0.3rem; align-items:center;"></div>
+      </div>
+      <div id="pipeline-steps" style="display:flex; flex-direction:column; gap:0.3rem;"></div>
+    </div>
+
+    <!-- ── Error banner ── -->
+    <div id="error-banner" style="display:none; margin-bottom:1rem; padding:0.75rem 1rem; background:rgba(239,68,68,0.08); border:1.5px solid rgba(239,68,68,0.3); border-radius:0.625rem;">
+      <div style="font-size:0.75rem; font-weight:700; color:#f87171; margin-bottom:0.25rem;">Parse error</div>
+      <div id="error-msg" style="font-family:'Fira Code',monospace; font-size:0.72rem; color:#fca5a5; line-height:1.5;"></div>
+    </div>
+
+    <!-- ── Output panel ── -->
+    <div id="output-wrap" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.45rem; flex-wrap:wrap; gap:0.4rem;">
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#2dd4bf;">Formatted JSON</span>
+          <span id="out-stats" style="font-size:0.62rem; font-family:'Fira Code',monospace; color:var(--text-muted);"></span>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button id="btn-copy-json" style="font-size:0.68rem; color:#2dd4bf; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">Copy JSON</button>
+          <button id="btn-minify" style="font-size:0.68rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">Minify</button>
+          <button id="btn-use-output" style="font-size:0.68rem; color:#fb923c; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">Re-escape →</button>
+        </div>
+      </div>
+
+      <!-- Highlighted output -->
+      <div id="json-highlighted"
+        style="display:block; background:#0a1628; border:1.5px solid rgba(45,212,191,0.2); border-radius:0.625rem; padding:1rem; font-family:'Fira Code',monospace; font-size:0.76rem; line-height:1.75; overflow-x:auto; max-height:420px; overflow-y:auto; white-space:pre;">
+      </div>
+
+      <!-- Plain textarea (shown when highlight off) -->
+      <textarea id="json-plain" readonly
+        style="display:none; width:100%; box-sizing:border-box; background:#0a1628; border:1.5px solid rgba(45,212,191,0.2); border-radius:0.625rem; padding:1rem; font-family:'Fira Code',monospace; font-size:0.76rem; color:#a7f3d0; line-height:1.75; outline:none; cursor:default; resize:vertical; min-height:200px; max-height:420px;">
+      </textarea>
+    </div>
+
+  </div>
+
+  <!-- HOW TO USE ───────────────────────────────── -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Un-escaper</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste your escaped JSON string into the input field — with or without surrounding double quotes — and click <strong>Un-escape &amp; Format JSON</strong>. The tool automatically detects how many layers of escaping have been applied and peels them back one by one, showing each intermediate stage in the pipeline display.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Use the <strong>sample ×1 / ×2 / ×3</strong> buttons to load a single, double, or triple-escaped JSON string and see the depth gauge animate through each layer. Toggle <strong>Auto-peel all layers</strong> to let the tool recursively unescape until a valid JSON object is reached, no matter how many times it was escaped.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      The <strong>Re-escape →</strong> button feeds the formatted output back in as input — useful for debugging tools that re-escape on each round-trip. Common sources of escaped JSON: API debug logs, database VARCHAR fields containing serialised JSON, stringified Redux state, webhook payloads logged as strings, and AI model outputs that wrap JSON in a string.
+    </p>
+  </div>
+
+  <!-- HOW IT WORKS ────────────────────────────── -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the un-escaping pipeline works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Outer Quote Stripping', 'Many tools serialise JSON twice, wrapping the entire JSON string in an extra pair of double quotes. The first step checks whether the input starts and ends with a double-quote character (after trimming whitespace) and, if so, removes them before proceeding. This is toggleable so it does not accidentally strip quotes that are part of the data.'],
+        ['Unescape Pass', 'Each unescape pass calls JSON.parse() on the current string. If the string is a valid JSON string token (i.e. the parsed result is itself a string), the tool replaces the input with that parsed value and runs another pass. If the parsed result is an object or array, the string has been fully resolved and the pipeline stops.'],
+        ['Layer Detection', 'The depth gauge counts how many JSON.parse() iterations were needed before an object or array was reached. A depth of 1 means a single \\\" escape layer; depth 2 means the JSON was stringified twice (each key and value has \\\\\" doubled backslashes); depth 3+ is common in webhook logs and event-sourcing systems that re-serialise each stage.'],
+        ['Syntax Highlighting', 'The formatted JSON is colourised using a tokeniser that walks the JSON string character by character using a small state machine — tracking whether the current position is inside a string, a key, a number, a boolean, or null. Keys are highlighted in teal, string values in amber, numbers in lavender, booleans/null in rose. No external library is used.'],
+        ['Pretty Printing', 'When enabled, the parsed JavaScript object is serialised back to a string using JSON.stringify(parsed, null, indent) where indent is 2 spaces, 4 spaces, or a tab character. This guarantees canonical key ordering within each object level and consistent indentation regardless of how the original JSON was spaced.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- FAQ ─────────────────────────────────────── -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Why does my JSON have so many backslashes?', a: 'This happens when JSON is serialised multiple times. The first JSON.stringify() call turns { "key": "value" } into the string \'{"key":"value"}\'. A second stringify of that string produces \'"{\\\"key\\\":\\\"value\\\"}"\' — every inner quote gets backslash-escaped. This is common in logging pipelines, message queues, HTTP response bodies that wrap JSON in a JSON string, and ORM layers that auto-serialise objects.' },
+        { q: 'What is the difference between \" and \\\"?', a: 'In a JSON string, \\\" is the escaped form of a literal double-quote character. When you see {\\\"key\\\": \\\"value\\\"} in raw form, each \\\" is a single escaped quote. After one unescape pass this becomes {"key": "value"} — a valid JSON object. After two escape layers you see {\\\\\\"key\\\\\\": \\\\\\"value\\\\\\"} — four characters (backslash-backslash-backslash-quote) representing one escaped quote.' },
+        { q: 'Can it handle JSON wrapped in single quotes?', a: 'Standard JSON does not support single-quoted strings — only double quotes are valid per the RFC 8259 specification. However, some non-standard serialisers (older PHP, Python repr output) use single quotes. The tool attempts to detect single-quote-wrapped JSON and normalises it to double quotes before parsing, but this heuristic may fail on strings that contain apostrophes.' },
+        { q: 'What if my JSON has Unicode escape sequences (\\u0041)?', a: 'JSON.parse() natively handles all \\uXXXX Unicode escape sequences and converts them to their actual Unicode characters. So \\u0041 becomes A, \\u00e9 becomes é, and emoji represented as \\uD83D\\uDE00 (surrogate pairs) become 😀. The output displays the resolved characters, not the escape sequences.' },
+        { q: 'Why does the tool sometimes show multiple pipeline layers even for simple JSON?', a: 'If the tool is set to auto-peel, it continues unescaping as long as each pass produces a string rather than an object. Occasionally a legitimate JSON value is itself a JSON string (a field whose value is a serialised sub-document) — in this case the tool will peel into it. Disable Auto-peel and run single passes manually if you want precise control over each layer.' },
+        { q: 'Is my JSON data sent to a server?', a: 'No. All parsing is done using the browser\'s built-in JSON.parse() function and the Clipboard API. Your JSON never leaves your device. There are no API calls, no analytics on content, and no server-side processing.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  // ── Sample data ───────────────────────────────────────────
+  const BASE_JSON = {
+    name: "Alice Wonderland",
+    age: 30,
+    active: true,
+    score: 98.5,
+    tags: ["developer", "designer"],
+    address: { city: "Sydney", postcode: "2000", country: null },
+    meta: { created: "2024-01-15T09:30:00Z", version: 3 }
+  };
+
+  function makeEscaped(depth: number): string {
+    let s = JSON.stringify(BASE_JSON);
+    for (let i = 0; i < depth; i++) s = JSON.stringify(s);
+    return s;
+  }
+
+  // ── Options state ─────────────────────────────────────────
+  const opts = { outerQuotes: true, pretty: true, highlight: true, autoLayers: false };
+  let indentVal: number | string = 2;
+
+  // ── Opt toggles ───────────────────────────────────────────
+  document.querySelectorAll<HTMLLabelElement>('.ju-opt').forEach(lbl => {
+    lbl.addEventListener('click', e => {
+      e.preventDefault();
+      const key = lbl.dataset.key as keyof typeof opts;
+      opts[key] = !opts[key];
+      const span = lbl.querySelector('span')!;
+      if (opts[key]) {
+        lbl.style.borderColor = '#2dd4bf';
+        lbl.style.background  = 'rgba(45,212,191,0.08)';
+        span.style.color      = '#2dd4bf';
+      } else {
+        lbl.style.borderColor = 'var(--border)';
+        lbl.style.background  = 'var(--bg-surface-2)';
+        span.style.color      = 'var(--text-muted)';
+      }
+    });
+  });
+
+  // ── Indent buttons ────────────────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.indent-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const v = btn.dataset.n!;
+      indentVal = v === 'tab' ? '\t' : parseInt(v);
+      document.querySelectorAll<HTMLButtonElement>('.indent-btn').forEach(b => {
+        const active = b === btn;
+        b.style.borderColor = active ? '#2dd4bf' : 'var(--border)';
+        b.style.background  = active ? 'rgba(45,212,191,0.1)' : 'var(--bg-surface-2)';
+        b.style.color       = active ? '#2dd4bf' : 'var(--text-secondary)';
+      });
+    });
+  });
+
+  // ── Core un-escaper ───────────────────────────────────────
+  type PipelineStep = { layer: number; raw: string; parsed: unknown; wasString: boolean };
+
+  function unescape(input: string): { steps: PipelineStep[]; final: unknown; error?: string } {
+    let current = input.trim();
+
+    // Strip outer double-quotes if option enabled
+    if (opts.outerQuotes && current.startsWith('"') && current.endsWith('"') && current.length > 1) {
+      // Try removing outer quotes
+      const inner = current.slice(1, -1);
+      // Only strip if what's inside looks like escaped JSON (contains \" or starts with {)
+      if (inner.includes('\\"') || inner.trimStart().startsWith('{') || inner.trimStart().startsWith('[')) {
+        current = inner;
+      }
+    }
+
+    const steps: PipelineStep[] = [];
+    const maxLayers = opts.autoLayers ? 10 : 5;
+
+    for (let layer = 1; layer <= maxLayers; layer++) {
+      // Try to parse the current string
+      let parsed: unknown;
+      try {
+        // Wrap in quotes if it doesn't look like a JSON value itself
+        const toParse = current;
+        parsed = JSON.parse(toParse);
+      } catch (e1) {
+        // Maybe it's a raw string without surrounding quotes — try wrapping
+        try {
+          parsed = JSON.parse(`"${current}"`);
+        } catch {
+          return { steps, final: null, error: `Layer ${layer}: ${(e1 as Error).message}` };
+        }
+      }
+
+      steps.push({ layer, raw: current, parsed, wasString: typeof parsed === 'string' });
+
+      if (typeof parsed === 'string') {
+        // The result is still a string — another layer of escaping; peel again
+        current = parsed;
+        if (!opts.autoLayers && layer >= 1) {
+          // In non-auto mode, do just one unescape pass and see if it's valid JSON
+          // Try parsing current as JSON object
+          try {
+            const inner = JSON.parse(current);
+            if (typeof inner !== 'string') {
+              steps.push({ layer: layer + 1, raw: current, parsed: inner, wasString: false });
+              return { steps, final: inner };
+            }
+          } catch {
+            // Not yet an object — return what we have as string result
+          }
+          return { steps, final: parsed };
+        }
+      } else {
+        // Got an object or array or primitive — done
+        return { steps, final: parsed };
+      }
+    }
+
+    // Exhausted max layers
+    return { steps, final: current, error: 'Max unescape depth reached. The input may be valid as-is.' };
+  }
+
+  // ── Syntax highlighter ────────────────────────────────────
+  function syntaxHighlight(json: string): string {
+    // Token colours
+    const C = {
+      key:    '#2dd4bf',   // teal
+      str:    '#fcd34d',   // amber
+      num:    '#c4b5fd',   // lavender
+      bool:   '#f9a8d4',   // rose pink
+      null_:  '#94a3b8',   // slate
+      punct:  '#475569',   // dim
+      brace:  '#64748b',   // brackets
+    };
+
+    return json
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      // Keys: "word": → teal
+      .replace(/"([^"\\]*(\\.[^"\\]*)*)"(\s*):/g,
+        `<span style="color:${C.key}">"$1"</span>$3:`)
+      // Strings: "value" (not keys)
+      .replace(/(:\s*)"([^"\\]*(\\.[^"\\]*)*)"/g,
+        `$1<span style="color:${C.str}">"$2"</span>`)
+      // Numbers
+      .replace(/(:\s*)(-?\d+\.?\d*([eE][+-]?\d+)?)/g,
+        `$1<span style="color:${C.num}">$2</span>`)
+      // Booleans
+      .replace(/\b(true|false)\b/g,
+        `<span style="color:${C.bool}">$1</span>`)
+      // Null
+      .replace(/\bnull\b/g,
+        `<span style="color:${C.null_}">null</span>`)
+      // Array values (strings at start of line after [)
+      .replace(/(\[\s*)"([^"\\]*(\\.[^"\\]*)*)"/g,
+        `$1<span style="color:${C.str}">"$2"</span>`);
+  }
+
+  // ── Depth gauge render ────────────────────────────────────
+  function renderDepthGauge(depth: number) {
+    const gauge = document.getElementById('depth-gauge')!;
+    gauge.innerHTML = '';
+    for (let i = 1; i <= Math.max(depth, 1); i++) {
+      const dot = document.createElement('div');
+      const filled = i <= depth;
+      dot.style.cssText = `
+        width:10px; height:10px; border-radius:50%;
+        background:${filled ? '#2dd4bf' : 'var(--bg-surface-3)'};
+        border:1.5px solid ${filled ? '#2dd4bf' : 'var(--border)'};
+        box-shadow:${filled ? '0 0 6px rgba(45,212,191,0.5)' : 'none'};
+        transition:all 0.3s;
+        transition-delay:${(i-1)*80}ms;
+      `;
+      gauge.appendChild(dot);
+    }
+    // Label
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'font-family:"Fira Code",monospace; font-size:0.68rem; color:var(--text-muted); margin-left:0.3rem;';
+    lbl.textContent = `${depth} layer${depth !== 1 ? 's' : ''} detected`;
+    gauge.appendChild(lbl);
+  }
+
+  // ── Pipeline steps render ─────────────────────────────────
+  function renderPipelineSteps(steps: PipelineStep[]) {
+    const container = document.getElementById('pipeline-steps')!;
+    container.innerHTML = '';
+
+    steps.forEach((step, idx) => {
+      const row = document.createElement('div');
+      row.style.cssText = `
+        display:flex; align-items:baseline; gap:0.625rem;
+        padding:0.3rem 0; border-bottom:1px dashed var(--border);
+        opacity:0; transform:translateX(-8px);
+        transition:opacity 0.2s ease, transform 0.2s ease;
+        transition-delay:${idx * 60}ms;
+      `;
+
+      const preview = typeof step.parsed === 'string'
+        ? `"${step.parsed.slice(0, 60)}${step.parsed.length > 60 ? '…' : ''}"`
+        : JSON.stringify(step.parsed, null, 0).slice(0, 80) + (JSON.stringify(step.parsed).length > 80 ? '…' : '');
+
+      const typeLabel = typeof step.parsed === 'string' ? 'string→' : (Array.isArray(step.parsed) ? 'array ✓' : typeof step.parsed + ' ✓');
+      const typeColor = step.wasString ? '#fb923c' : '#4ade80';
+
+      row.innerHTML = `
+        <span style="font-family:'Fira Code',monospace; font-size:0.65rem; font-weight:800; color:#2dd4bf; flex-shrink:0; min-width:4rem;">Layer ${step.layer}</span>
+        <span style="font-size:0.62rem; font-weight:700; color:${typeColor}; flex-shrink:0; font-family:'Fira Code',monospace;">${typeLabel}</span>
+        <span style="font-family:'Fira Code',monospace; font-size:0.68rem; color:var(--text-secondary); word-break:break-all; line-height:1.5;">${escHtml(preview)}</span>
+      `;
+
+      container.appendChild(row);
+      // Trigger animation
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        row.style.opacity = '1';
+        row.style.transform = 'translateX(0)';
+      }));
+    });
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Main run ──────────────────────────────────────────────
+  let lastParsed: unknown = null;
+
+  function run() {
+    const raw = (document.getElementById('json-input') as HTMLTextAreaElement).value;
+    if (!raw.trim()) return;
+
+    const errorBanner  = document.getElementById('error-banner')!;
+    const errorMsg     = document.getElementById('error-msg')!;
+    const outputWrap   = document.getElementById('output-wrap')!;
+    const pipelineWrap = document.getElementById('pipeline-wrap')!;
+    const depthBadge   = document.getElementById('escape-depth-badge')!;
+    const outStats     = document.getElementById('out-stats')!;
+    const highlighted  = document.getElementById('json-highlighted')!;
+    const plainTA      = document.getElementById('json-plain') as HTMLTextAreaElement;
+
+    errorBanner.style.display  = 'none';
+    outputWrap.style.display   = 'none';
+    pipelineWrap.style.display = 'none';
+
+    const { steps, final, error } = unescape(raw);
+
+    if (error && (steps.length === 0 || steps.every(s => s.wasString))) {
+      errorBanner.style.display = 'block';
+      errorMsg.textContent      = error;
+      depthBadge.style.display  = 'none';
+      return;
+    }
+
+    // Depth = how many string layers were peeled
+    const depth = steps.filter(s => s.wasString).length + (steps.some(s => !s.wasString) ? 0 : 0);
+    const realDepth = steps.length > 0 ? steps.filter(s => s.wasString).length : 0;
+
+    depthBadge.textContent    = `×${realDepth} escape${realDepth !== 1 ? 's' : ''}`;
+    depthBadge.style.display  = realDepth > 0 ? 'inline' : 'none';
+
+    pipelineWrap.style.display = 'block';
+    renderDepthGauge(realDepth > 0 ? realDepth : 1);
+    renderPipelineSteps(steps);
+
+    // Format output
+    lastParsed = final;
+    const indent = typeof indentVal === 'number' ? indentVal : '\t';
+    const formatted = opts.pretty
+      ? JSON.stringify(final, null, indent)
+      : JSON.stringify(final);
+
+    const lineCount  = formatted.split('\n').length;
+    const charCount  = formatted.length;
+    outStats.textContent = `${lineCount} lines · ${charCount.toLocaleString()} chars`;
+
+    if (opts.highlight) {
+      highlighted.innerHTML = syntaxHighlight(formatted);
+      highlighted.style.display = 'block';
+      plainTA.style.display     = 'none';
+    } else {
+      plainTA.value         = formatted;
+      plainTA.style.display = 'block';
+      highlighted.style.display = 'none';
+    }
+
+    outputWrap.style.display = 'block';
+
+    // Error note if any
+    if (error) {
+      errorBanner.style.display = 'block';
+      errorMsg.textContent      = error;
+    }
+  }
+
+  // ── Button events ─────────────────────────────────────────
+  document.getElementById('btn-unescape')!.addEventListener('click', run);
+
+  document.getElementById('btn-sample-1')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = makeEscaped(1);
+    run();
+  });
+  document.getElementById('btn-sample-2')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = makeEscaped(2);
+    run();
+  });
+  document.getElementById('btn-sample-3')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = makeEscaped(3);
+    run();
+  });
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = '';
+    document.getElementById('output-wrap')!.style.display   = 'none';
+    document.getElementById('pipeline-wrap')!.style.display = 'none';
+    document.getElementById('error-banner')!.style.display  = 'none';
+    document.getElementById('escape-depth-badge')!.style.display = 'none';
+  });
+
+  document.getElementById('btn-copy-json')!.addEventListener('click', () => {
+    const text = opts.highlight
+      ? (document.getElementById('json-plain') as HTMLTextAreaElement).value ||
+        document.getElementById('json-highlighted')!.textContent || ''
+      : (document.getElementById('json-plain') as HTMLTextAreaElement).value;
+    const toCopy = JSON.stringify(lastParsed, null, typeof indentVal === 'number' ? indentVal : '\t');
+    navigator.clipboard.writeText(toCopy).then(() => {
+      const btn = document.getElementById('btn-copy-json')!;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = 'Copy JSON'; }, 2000);
+    });
+  });
+
+  document.getElementById('btn-minify')!.addEventListener('click', () => {
+    if (lastParsed === null) return;
+    const min = JSON.stringify(lastParsed);
+    navigator.clipboard.writeText(min).then(() => {
+      const btn = document.getElementById('btn-minify')!;
+      btn.textContent = '✓ Copied minified!';
+      setTimeout(() => { btn.textContent = 'Minify'; }, 2000);
+    });
+  });
+
+  document.getElementById('btn-use-output')!.addEventListener('click', () => {
+    if (lastParsed === null) return;
+    const reEscaped = JSON.stringify(JSON.stringify(lastParsed));
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = reEscaped;
+    document.getElementById('output-wrap')!.style.display   = 'none';
+    document.getElementById('pipeline-wrap')!.style.display = 'none';
+    document.getElementById('error-banner')!.style.display  = 'none';
+  });
+
+  // Ctrl+Enter shortcut
+  document.getElementById('json-input')!.addEventListener('keydown', (e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); run(); }
+  });
+
+  // Auto-run on load with sample ×1
+  (document.getElementById('json-input') as HTMLTextAreaElement).value = makeEscaped(1);
+  run();
+</script>

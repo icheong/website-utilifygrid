@@ -1,0 +1,494 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'whitespace-trimmer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+
+    <!-- ── Header ── -->
+    <div style="display:flex; align-items:center; gap:0.875rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:linear-gradient(135deg,#0F2744,#1E3A5F); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 14px rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.25);">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6h16M4 12h16M4 18h7"/>
+        </svg>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">Whitespace &amp; Line Break Trimmer</h2>
+        <p style="font-size:0.76rem; color:var(--text-muted); margin:0;">Strip, collapse, and flatten — real-time as you type</p>
+      </div>
+    </div>
+
+    <!-- ── Operation board ── -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:1.25rem;" class="ops-grid">
+
+      <!-- Op 1 -->
+      <label id="op-trailing" class="ws-op active-op"
+        style="display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0.875rem; border-radius:0.75rem; border:1.5px solid #EF4444; background:rgba(239,68,68,0.06); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <div style="margin-top:0.1rem; width:18px; height:18px; border-radius:0.3rem; border:1.5px solid #EF4444; background:rgba(239,68,68,0.15); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s;" class="op-check">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#EF4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;">Strip trailing spaces</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.45;">Remove spaces and tabs at the end of each line</div>
+        </div>
+      </label>
+
+      <!-- Op 2 -->
+      <label id="op-leading" class="ws-op"
+        style="display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0.875rem; border-radius:0.75rem; border:1.5px solid var(--border); background:var(--bg-surface-2); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" style="display:none;"/>
+        <div style="margin-top:0.1rem; width:18px; height:18px; border-radius:0.3rem; border:1.5px solid var(--border); background:var(--bg-surface-3); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s;" class="op-check">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="transparent" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;">Strip leading spaces</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.45;">Remove indentation from the start of each line</div>
+        </div>
+      </label>
+
+      <!-- Op 3 -->
+      <label id="op-blanklines" class="ws-op active-op"
+        style="display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0.875rem; border-radius:0.75rem; border:1.5px solid #EF4444; background:rgba(239,68,68,0.06); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <div style="margin-top:0.1rem; width:18px; height:18px; border-radius:0.3rem; border:1.5px solid #EF4444; background:rgba(239,68,68,0.15); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s;" class="op-check">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#EF4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;">Remove empty lines</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.45;">Delete all completely blank lines from the text</div>
+        </div>
+      </label>
+
+      <!-- Op 4 -->
+      <label id="op-collapseblank" class="ws-op"
+        style="display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0.875rem; border-radius:0.75rem; border:1.5px solid var(--border); background:var(--bg-surface-2); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" style="display:none;"/>
+        <div style="margin-top:0.1rem; width:18px; height:18px; border-radius:0.3rem; border:1.5px solid var(--border); background:var(--bg-surface-3); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s;" class="op-check">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="transparent" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;">Collapse multiple blank lines</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.45;">Reduce 2+ blank lines to a single blank line</div>
+        </div>
+      </label>
+
+      <!-- Op 5 -->
+      <label id="op-doublespace" class="ws-op active-op"
+        style="display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0.875rem; border-radius:0.75rem; border:1.5px solid #EF4444; background:rgba(239,68,68,0.06); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <div style="margin-top:0.1rem; width:18px; height:18px; border-radius:0.3rem; border:1.5px solid #EF4444; background:rgba(239,68,68,0.15); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s;" class="op-check">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#EF4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;">Double spaces → single</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.45;">Collapse multiple consecutive spaces within lines</div>
+        </div>
+      </label>
+
+      <!-- Op 6 -->
+      <label id="op-flatten" class="ws-op"
+        style="display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0.875rem; border-radius:0.75rem; border:1.5px solid var(--border); background:var(--bg-surface-2); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" style="display:none;"/>
+        <div style="margin-top:0.1rem; width:18px; height:18px; border-radius:0.3rem; border:1.5px solid var(--border); background:var(--bg-surface-3); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s;" class="op-check">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="transparent" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;">Flatten to single line</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.45;">Join all lines into one continuous string</div>
+        </div>
+      </label>
+
+      <!-- Op 7 -->
+      <label id="op-tabs" class="ws-op"
+        style="display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0.875rem; border-radius:0.75rem; border:1.5px solid var(--border); background:var(--bg-surface-2); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" style="display:none;"/>
+        <div style="margin-top:0.1rem; width:18px; height:18px; border-radius:0.3rem; border:1.5px solid var(--border); background:var(--bg-surface-3); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s;" class="op-check">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="transparent" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;">Tabs → spaces</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.45;">Replace each tab character with spaces</div>
+        </div>
+      </label>
+
+      <!-- Op 8 -->
+      <label id="op-trimends" class="ws-op active-op"
+        style="display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 0.875rem; border-radius:0.75rem; border:1.5px solid #EF4444; background:rgba(239,68,68,0.06); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <div style="margin-top:0.1rem; width:18px; height:18px; border-radius:0.3rem; border:1.5px solid #EF4444; background:rgba(239,68,68,0.15); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s;" class="op-check">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#EF4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;">Trim start &amp; end</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.45;">Remove leading and trailing whitespace from the whole text</div>
+        </div>
+      </label>
+
+    </div>
+
+    <!-- Tabs width picker (shown when tabs→spaces active) -->
+    <div id="tab-width-row" style="display:none; align-items:center; gap:0.75rem; margin-bottom:1rem; padding:0.625rem 0.875rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem;">
+      <span style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Tab width:</span>
+      <div style="display:flex; gap:0.35rem;">
+        {[2,4,8].map(n => (
+          <button class="tab-w-btn" data-width={String(n)}
+            style={`padding:0.25rem 0.6rem; border-radius:0.35rem; border:1.5px solid ${n===2?'#EF4444':'var(--border)'}; background:${n===2?'rgba(239,68,68,0.1)':'var(--bg-surface)'}; font-family:'Fira Code',monospace; font-size:0.78rem; font-weight:700; color:${n===2?'#EF4444':'var(--text-secondary)'}; cursor:pointer; transition:all 0.15s;`}
+          >{n}</button>
+        ))}
+      </div>
+    </div>
+
+    <!-- ── Stats bar ── -->
+    <div id="stats-bar" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; margin-bottom:1rem;">
+      {[
+        { id:'stat-chars-removed', label:'Chars removed' },
+        { id:'stat-lines-removed', label:'Lines removed' },
+        { id:'stat-spaces-collapsed', label:'Spaces collapsed' },
+        { id:'stat-out-lines', label:'Output lines' },
+      ].map(s => (
+        <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; padding:0.625rem 0.5rem; text-align:center;">
+          <div id={s.id} style="font-family:'Fira Code',monospace; font-size:1.1rem; font-weight:700; color:var(--text-primary); transition:color 0.25s;">—</div>
+          <div style="font-size:0.6rem; font-weight:600; color:var(--text-muted); margin-top:0.15rem; text-transform:uppercase; letter-spacing:0.05em; line-height:1.3;">{s.label}</div>
+        </div>
+      ))}
+    </div>
+
+    <!-- ── Input / Output ── -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.875rem;" class="ws-panes">
+
+      <div style="display:flex; flex-direction:column; gap:0.4rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Input</span>
+          <div style="display:flex; gap:0.5rem;">
+            <button id="ws-load-sample" style="font-size:0.68rem; color:#EF4444; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">Load sample</button>
+            <button id="ws-clear" style="font-size:0.68rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">Clear</button>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <textarea id="ws-input"
+            placeholder="Paste your text here and watch it clean in real time…"
+            rows="10"
+            style="width:100%; box-sizing:border-box; resize:vertical; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; padding:0.875rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:var(--text-primary); line-height:1.65; outline:none; transition:border-color 0.15s; display:block;"
+            onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 3px rgba(239,68,68,0.1)';"
+            onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"
+          ></textarea>
+          <span id="in-char-count" style="position:absolute; bottom:0.5rem; right:0.75rem; font-size:0.62rem; color:var(--text-muted); font-family:'Fira Code',monospace; pointer-events:none;">0 chars</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:0.4rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Output</span>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <span id="out-char-count" style="font-size:0.62rem; color:var(--text-muted); font-family:'Fira Code',monospace;"></span>
+            <button id="ws-copy" style="font-size:0.68rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">Copy</button>
+            <button id="ws-use-output" style="font-size:0.68rem; color:#EF4444; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">← Use as input</button>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <textarea id="ws-output" readonly
+            placeholder="Cleaned output appears here in real time…"
+            rows="10"
+            style="width:100%; box-sizing:border-box; resize:vertical; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; padding:0.875rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:var(--text-primary); line-height:1.65; outline:none; cursor:default; display:block;">
+          </textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Privacy note ── -->
+    <div style="padding:0.6rem 0.875rem; background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.15); border-radius:0.5rem; font-size:0.76rem; color:var(--text-muted); display:flex; align-items:center; gap:0.5rem;">
+      <span style="flex-shrink:0;">🔒</span>
+      All processing happens in your browser. Your text is never sent anywhere.
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW TO USE
+  ══════════════════════════════════════════════ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Whitespace Trimmer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste or type text into the left pane. The output updates in real time as you type — no button press needed. Toggle the operation switches to choose exactly which whitespace issues to fix: trailing spaces, blank lines, double spaces, full flattening, tab expansion, and more.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The stats bar shows how many characters and lines were removed, and how many consecutive spaces were collapsed — useful for verifying the cleanup was as expected. Use <strong>← Use as input</strong> to pipe the output back in for a second pass, or click <strong>Copy</strong> to grab the result.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Common uses: cleaning up text copied from PDFs (which often add spurious line breaks mid-sentence), normalising log file whitespace before parsing, flattening SQL queries or JSON strings into single-line format, and stripping invisible characters from pasted content.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What each operation does</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Strip trailing spaces', 'Removes all space and tab characters at the end of each line using a /[\\t ]+$/ per-line regex. This is the most common invisible source of "files differ" noise in version control diffs.'],
+        ['Strip leading spaces', 'Removes all whitespace characters at the start of each line. Use this when you want to remove indentation entirely — for example, when reformatting indented SQL or code for a single-line string context.'],
+        ['Remove empty lines', 'Deletes every line that consists entirely of whitespace (or is truly empty). Applied after trailing-space stripping so that lines which contained only spaces are also caught.'],
+        ['Collapse multiple blank lines', 'Reduces any sequence of two or more consecutive blank lines down to exactly one. Preserves paragraph structure while removing excessive vertical gaps.'],
+        ['Double spaces → single', 'Replaces runs of two or more consecutive space characters within a line with a single space. Useful for cleaning up text from OCR software, PDF extraction, or word processors that insert non-breaking spaces.'],
+        ['Flatten to single line', 'Joins all lines into one continuous string using a single space as the separator. Ideal for creating single-line SQL queries, JSON strings, or CSS rules from multi-line formatted originals.'],
+        ['Tabs → spaces', 'Replaces each U+0009 tab character with 2, 4, or 8 spaces (configurable). Applied before trailing-space stripping so that tab-only lines are correctly caught by subsequent blank-line operations.'],
+        ['Trim start & end', 'Applies String.prototype.trim() to the entire text block — removes leading and trailing whitespace (including newlines) from the document as a whole, not just individual lines.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════════ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Does it handle non-breaking spaces (U+00A0)?', a: 'Yes. The double spaces → single operation targets any Unicode whitespace character within a run using a \\s+ match, which includes non-breaking spaces (U+00A0), en spaces, em spaces, and other Unicode space variants copied from web pages or word processors.' },
+        { q: 'Will flattening to a single line collapse paragraph breaks?', a: 'Yes — that is the intended behaviour of the "flatten to single line" operation. It joins every line with a space, effectively removing all newlines. If you want to preserve paragraph groupings, use "collapse multiple blank lines" instead to normalise spacing without flattening.' },
+        { q: 'Can I use this to clean up SQL queries?', a: 'Yes. A common workflow: paste a formatted multi-line SQL query → enable "strip trailing spaces", "remove empty lines", "double spaces → single", and "flatten to single line" → copy the output as a minified single-line string ready to embed in code.' },
+        { q: 'Does the real-time update affect performance for large texts?', a: 'The processing is synchronous JavaScript with O(n) string operations — it handles texts of several hundred kilobytes without noticeable lag. For files larger than ~1MB, consider pasting in sections or using a local editor plugin.' },
+        { q: 'What is the difference between "remove empty lines" and "collapse multiple blank lines"?', a: '"Remove empty lines" deletes every blank line, leaving no vertical separation between content blocks at all. "Collapse multiple blank lines" keeps one blank line wherever multiple appeared — it preserves paragraph structure while reducing excessive gaps. Use the former for data, the latter for prose.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  @media (max-width: 640px) {
+    .ops-grid  { grid-template-columns: 1fr !important; }
+    .ws-panes  { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+<script>
+  // ── Sample text ───────────────────────────────────────────
+  const SAMPLE = `  Welcome to the Whitespace Trimmer.   
+
+  This paragraph has   double spaces  scattered  throughout it.
+
+  
+  
+  This section has three blank lines above it.
+
+Each of these lines has trailing spaces.   
+  And this one has leading spaces.
+	This line uses a tab character for indentation.
+
+Final paragraph with no issues.  `;
+
+  // ── Operation state ───────────────────────────────────────
+  const opState: Record<string, boolean> = {
+    trailing: true, leading: false, blanklines: true, collapseblank: false,
+    doublespace: true, flatten: false, tabs: false, trimends: true,
+  };
+  let tabWidth = 2;
+
+  // ── Toggle handler ────────────────────────────────────────
+  const ACCENT = '#EF4444';
+
+  document.querySelectorAll<HTMLLabelElement>('.ws-op').forEach(lbl => {
+    lbl.addEventListener('click', e => {
+      e.preventDefault();
+      const id  = lbl.id.replace('op-', '');
+      opState[id] = !opState[id];
+      const chk  = lbl.querySelector('input') as HTMLInputElement;
+      const box  = lbl.querySelector('.op-check') as HTMLElement;
+      const tick = box.querySelector('path') as SVGPathElement;
+      chk.checked = opState[id];
+
+      if (opState[id]) {
+        lbl.style.borderColor = ACCENT;
+        lbl.style.background  = `rgba(239,68,68,0.06)`;
+        box.style.borderColor = ACCENT;
+        box.style.background  = `rgba(239,68,68,0.15)`;
+        tick.setAttribute('stroke', ACCENT);
+      } else {
+        lbl.style.borderColor = 'var(--border)';
+        lbl.style.background  = 'var(--bg-surface-2)';
+        box.style.borderColor = 'var(--border)';
+        box.style.background  = 'var(--bg-surface-3)';
+        tick.setAttribute('stroke', 'transparent');
+      }
+
+      // Show/hide tab width picker
+      const tabWidthRow = document.getElementById('tab-width-row')!;
+      tabWidthRow.style.display = opState.tabs ? 'flex' : 'none';
+
+      process();
+    });
+  });
+
+  // ── Tab width picker ──────────────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.tab-w-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabWidth = parseInt(btn.dataset.width!);
+      document.querySelectorAll<HTMLButtonElement>('.tab-w-btn').forEach(b => {
+        const active = b === btn;
+        b.style.borderColor = active ? ACCENT : 'var(--border)';
+        b.style.background  = active ? 'rgba(239,68,68,0.1)' : 'var(--bg-surface)';
+        b.style.color       = active ? ACCENT : 'var(--text-secondary)';
+      });
+      process();
+    });
+  });
+
+  // ── Core processing pipeline ──────────────────────────────
+  function processText(raw: string): { output: string; stats: Record<string, number> } {
+    const stats = { charsRemoved: 0, linesRemoved: 0, spacesCollapsed: 0, outLines: 0 };
+    let text = raw;
+
+    // Tabs → spaces (do first so blank-line detection works on tabs-only lines)
+    if (opState.tabs) {
+      const spaces = ' '.repeat(tabWidth);
+      text = text.replace(/\t/g, spaces);
+    }
+
+    // Strip trailing spaces
+    if (opState.trailing) {
+      const before = text.length;
+      text = text.replace(/[ \t]+$/gm, '');
+      stats.charsRemoved += before - text.length;
+    }
+
+    // Strip leading spaces
+    if (opState.leading) {
+      const before = text.length;
+      text = text.replace(/^[ \t]+/gm, '');
+      stats.charsRemoved += before - text.length;
+    }
+
+    // Remove empty lines
+    if (opState.blanklines) {
+      const lines = text.split('\n');
+      const before = lines.length;
+      const filtered = lines.filter(l => l.trim() !== '');
+      stats.linesRemoved += before - filtered.length;
+      text = filtered.join('\n');
+    }
+
+    // Collapse multiple blank lines
+    if (opState.collapseblank && !opState.blanklines) {
+      const before = text.split('\n').length;
+      text = text.replace(/\n{3,}/g, '\n\n');
+      stats.linesRemoved += before - text.split('\n').length;
+    }
+
+    // Double spaces → single
+    if (opState.doublespace) {
+      let count = 0;
+      text = text.replace(/[ \t]{2,}/g, m => { count += m.length - 1; return ' '; });
+      stats.spacesCollapsed += count;
+    }
+
+    // Flatten to single line
+    if (opState.flatten) {
+      const before = text.split('\n').length;
+      text = text.replace(/\n+/g, ' ');
+      stats.linesRemoved += before - 1;
+    }
+
+    // Trim start & end
+    if (opState.trimends) {
+      const before = text.length;
+      text = text.trim();
+      stats.charsRemoved += before - text.length;
+    }
+
+    stats.outLines = text ? text.split('\n').length : 0;
+    return { output: text, stats };
+  }
+
+  // ── DOM refs ──────────────────────────────────────────────
+  const wsInput  = document.getElementById('ws-input')  as HTMLTextAreaElement;
+  const wsOutput = document.getElementById('ws-output') as HTMLTextAreaElement;
+  const inCharCount  = document.getElementById('in-char-count')!;
+  const outCharCount = document.getElementById('out-char-count')!;
+
+  const statEls = {
+    charsRemoved:    document.getElementById('stat-chars-removed')!,
+    linesRemoved:    document.getElementById('stat-lines-removed')!,
+    spacesCollapsed: document.getElementById('stat-spaces-collapsed')!,
+    outLines:        document.getElementById('stat-out-lines')!,
+  };
+
+  function animateStat(el: HTMLElement, val: number) {
+    el.textContent = val === 0 ? '—' : String(val);
+    if (val > 0) {
+      el.style.color = ACCENT;
+      setTimeout(() => { el.style.color = 'var(--text-primary)'; }, 400);
+    }
+  }
+
+  function process() {
+    const raw = wsInput.value;
+    inCharCount.textContent = `${raw.length} chars`;
+    if (!raw) {
+      wsOutput.value = '';
+      outCharCount.textContent = '';
+      Object.values(statEls).forEach(el => { el.textContent = '—'; });
+      return;
+    }
+    const { output, stats } = processText(raw);
+    wsOutput.value = output;
+    outCharCount.textContent = `${output.length} chars`;
+    animateStat(statEls.charsRemoved,    stats.charsRemoved);
+    animateStat(statEls.linesRemoved,    stats.linesRemoved);
+    animateStat(statEls.spacesCollapsed, stats.spacesCollapsed);
+    animateStat(statEls.outLines,        stats.outLines);
+  }
+
+  wsInput.addEventListener('input', process);
+
+  document.getElementById('ws-copy')!.addEventListener('click', () => {
+    if (!wsOutput.value) return;
+    navigator.clipboard.writeText(wsOutput.value).then(() => {
+      const btn = document.getElementById('ws-copy')!;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    });
+  });
+
+  document.getElementById('ws-use-output')!.addEventListener('click', () => {
+    if (!wsOutput.value) return;
+    wsInput.value = wsOutput.value;
+    process();
+  });
+
+  document.getElementById('ws-load-sample')!.addEventListener('click', () => {
+    wsInput.value = SAMPLE;
+    process();
+  });
+
+  document.getElementById('ws-clear')!.addEventListener('click', () => {
+    wsInput.value = '';
+    process();
+  });
+
+  // Init
+  process();
+</script>

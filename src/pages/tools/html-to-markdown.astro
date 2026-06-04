@@ -1,0 +1,638 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'html-to-markdown')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+
+    <!-- ── Header ── -->
+    <div style="display:flex; align-items:center; gap:0.875rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:linear-gradient(135deg,#0F172A,#1E3A5F); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 14px rgba(6,182,212,0.3); border:1px solid rgba(6,182,212,0.3);">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">HTML → Markdown Converter</h2>
+        <p style="font-size:0.76rem; color:var(--text-muted); margin:0;">Paste HTML or rich text — get clean, readable Markdown instantly</p>
+      </div>
+    </div>
+
+    <!-- ── View mode tabs ── -->
+    <div style="display:flex; gap:0; margin-bottom:1.1rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; overflow:hidden; width:fit-content;">
+      <button id="view-split" class="view-tab active-view"
+        style="padding:0.45rem 1rem; border:none; cursor:pointer; font-size:0.78rem; font-weight:700; font-family:'Sora',sans-serif; transition:all 0.15s; background:#0F172A; color:#06B6D4; border-right:1px solid rgba(6,182,212,0.2);">
+        ⇌ Split
+      </button>
+      <button id="view-source" class="view-tab"
+        style="padding:0.45rem 1rem; border:none; cursor:pointer; font-size:0.78rem; font-weight:700; font-family:'Sora',sans-serif; transition:all 0.15s; background:transparent; color:var(--text-secondary); border-right:1px solid var(--border);">
+        &lt;/&gt; HTML
+      </button>
+      <button id="view-preview" class="view-tab"
+        style="padding:0.45rem 1rem; border:none; cursor:pointer; font-size:0.78rem; font-weight:700; font-family:'Sora',sans-serif; transition:all 0.15s; background:transparent; color:var(--text-secondary);">
+        👁 Preview
+      </button>
+    </div>
+
+    <!-- ── Panels wrapper ── -->
+    <div id="panels-wrapper" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.875rem; transition:all 0.2s;" class="htm-panels">
+
+      <!-- INPUT panel -->
+      <div id="panel-input" style="display:flex; flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#06B6D4; font-family:'Fira Code',monospace;">HTML</span>
+            <span style="width:6px; height:6px; border-radius:50%; background:#06B6D4; opacity:0.6; flex-shrink:0;"></span>
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <button id="btn-sample" style="font-size:0.68rem; color:#06B6D4; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">Load sample</button>
+            <button id="btn-clear-html" style="font-size:0.68rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">Clear</button>
+          </div>
+        </div>
+        <!-- Input mode toggle -->
+        <div style="display:flex; gap:0.35rem; margin-bottom:0.5rem;">
+          <button id="mode-code" class="input-mode-btn active-mode"
+            style="padding:0.22rem 0.65rem; border-radius:0.35rem; border:1px solid #06B6D4; background:rgba(6,182,212,0.1); font-size:0.68rem; font-weight:700; color:#06B6D4; cursor:pointer; transition:all 0.15s;">&lt;/&gt; Raw HTML</button>
+          <button id="mode-rich" class="input-mode-btn"
+            style="padding:0.22rem 0.65rem; border-radius:0.35rem; border:1px solid var(--border); background:var(--bg-surface-2); font-size:0.68rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">📋 Rich Paste</button>
+        </div>
+
+        <!-- Raw HTML textarea -->
+        <div id="raw-input-wrap" style="flex:1;">
+          <textarea id="html-input"
+            placeholder="<h1>Title</h1>&#10;<p>Paragraph with <strong>bold</strong> and <a href=&quot;https://example.com&quot;>a link</a>.</p>&#10;<ul>&#10;  <li>Item one</li>&#10;  <li>Item two</li>&#10;</ul>"
+            style="width:100%; height:240px; box-sizing:border-box; resize:vertical; background:#0B1221; border:1.5px solid rgba(6,182,212,0.2); border-radius:0.625rem; padding:0.875rem; font-family:'Fira Code',monospace; font-size:0.76rem; color:#CBD5E1; line-height:1.65; outline:none; transition:border-color 0.15s; display:block;"
+            onfocus="this.style.borderColor='#06B6D4'; this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)';"
+            onblur="this.style.borderColor='rgba(6,182,212,0.2)'; this.style.boxShadow='none';"
+          ></textarea>
+        </div>
+
+        <!-- Rich paste contenteditable -->
+        <div id="rich-input-wrap" style="display:none; flex:1;">
+          <div id="rich-paste-area" contenteditable="true"
+            style="width:100%; min-height:240px; box-sizing:border-box; background:#0B1221; border:1.5px solid rgba(6,182,212,0.2); border-radius:0.625rem; padding:0.875rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:#CBD5E1; line-height:1.65; outline:none; transition:border-color 0.15s; overflow-y:auto;"
+            onfocus="this.style.borderColor='#06B6D4'; this.style.boxShadow='0 0 0 3px rgba(6,182,212,0.1)';"
+            onblur="this.style.borderColor='rgba(6,182,212,0.2)'; this.style.boxShadow='none';"
+            data-placeholder="Paste rich text here (Ctrl+V from a webpage or Word doc)…">
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTPUT panel -->
+      <div id="panel-output" style="display:flex; flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#A78BFA; font-family:'Fira Code',monospace;">MARKDOWN</span>
+            <span style="width:6px; height:6px; border-radius:50%; background:#A78BFA; opacity:0.6; flex-shrink:0;"></span>
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <span id="md-stat" style="font-size:0.65rem; font-family:'Fira Code',monospace; color:var(--text-muted);"></span>
+            <button id="btn-copy-md" style="font-size:0.68rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">Copy</button>
+          </div>
+        </div>
+        <textarea id="md-output" readonly
+          placeholder="Converted Markdown will appear here…"
+          style="width:100%; height:277px; box-sizing:border-box; resize:vertical; background:#0B1221; border:1.5px solid rgba(167,139,250,0.2); border-radius:0.625rem; padding:0.875rem; font-family:'Fira Code',monospace; font-size:0.76rem; color:#CBD5E1; line-height:1.65; outline:none; cursor:default;">
+        </textarea>
+      </div>
+
+      <!-- PREVIEW panel (hidden initially) -->
+      <div id="panel-preview" style="display:none; flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:#34D399; font-family:'Fira Code',monospace;">RENDERED</span>
+        </div>
+        <div id="md-preview"
+          style="width:100%; min-height:240px; box-sizing:border-box; background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.625rem; padding:1rem 1.25rem; font-size:0.875rem; color:var(--text-primary); line-height:1.75; overflow-y:auto;">
+          <p style="color:var(--text-muted); font-style:italic; font-size:0.8rem;">Rendered preview will appear here after conversion…</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Convert button ── -->
+    <button id="btn-convert"
+      style="width:100%; padding:0.78rem 1.5rem; background:linear-gradient(90deg,#0F172A 0%,#164E63 50%,#0F172A 100%); color:#06B6D4; border:1.5px solid rgba(6,182,212,0.35); border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.92rem; font-weight:700; cursor:pointer; transition:all 0.15s; letter-spacing:0.03em; box-shadow:0 4px 14px rgba(6,182,212,0.15); display:flex; align-items:center; justify-content:center; gap:0.6rem; margin-bottom:1.1rem;"
+      onmouseover="this.style.boxShadow='0 4px 20px rgba(6,182,212,0.35)'; this.style.borderColor='rgba(6,182,212,0.7)';"
+      onmouseout="this.style.boxShadow='0 4px 14px rgba(6,182,212,0.15)'; this.style.borderColor='rgba(6,182,212,0.35)';"
+      onmousedown="this.style.transform='scale(0.985)';"
+      onmouseup="this.style.transform='scale(1)';"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+      Convert to Markdown
+    </button>
+
+    <!-- ── Options bar ── -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; padding:0.75rem 0.875rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem;">
+      <span style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-muted); display:flex; align-items:center; margin-right:0.25rem;">Options:</span>
+      <label class="opt-toggle active-opt" data-key="tables" style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.6rem; border-radius:999px; border:1px solid rgba(6,182,212,0.4); background:rgba(6,182,212,0.07); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#06B6D4;">TABLES</span>
+      </label>
+      <label class="opt-toggle active-opt" data-key="images" style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.6rem; border-radius:999px; border:1px solid rgba(6,182,212,0.4); background:rgba(6,182,212,0.07); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#06B6D4;">IMAGES</span>
+      </label>
+      <label class="opt-toggle active-opt" data-key="codeblocks" style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.6rem; border-radius:999px; border:1px solid rgba(6,182,212,0.4); background:rgba(6,182,212,0.07); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#06B6D4;">CODE BLOCKS</span>
+      </label>
+      <label class="opt-toggle active-opt" data-key="strikethrough" style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.6rem; border-radius:999px; border:1px solid rgba(6,182,212,0.4); background:rgba(6,182,212,0.07); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#06B6D4;">STRIKETHROUGH</span>
+      </label>
+      <label class="opt-toggle active-opt" data-key="stripcomments" style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.6rem; border-radius:999px; border:1px solid rgba(6,182,212,0.4); background:rgba(6,182,212,0.07); cursor:pointer; user-select:none; transition:all 0.15s;">
+        <input type="checkbox" checked style="display:none;"/>
+        <span style="font-size:0.68rem; font-weight:700; color:#06B6D4;">STRIP COMMENTS</span>
+      </label>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW TO USE
+  ══════════════════════════════════════════════ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the HTML to Markdown Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste raw HTML into the left panel and click <strong>Convert to Markdown</strong> — or switch to <strong>Rich Paste</strong> mode and paste content directly from a webpage, Google Doc, or Word document (the tool captures the clipboard HTML automatically). The converted Markdown appears in the right panel immediately.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Use the <strong>⇌ Split</strong> view to see input and output side by side, or switch to <strong>👁 Preview</strong> to see the rendered Markdown output. Toggle the options bar to control whether tables, images, code blocks, and strikethrough syntax are converted or stripped.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Common uses: cleaning up exported Notion/CMS HTML for a static site generator, converting documentation snippets from HTML to Markdown for a README, or stripping rich text from emails and web pages to plain, portable Markdown.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How HTML is converted to Markdown</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['DOM Parsing', 'The HTML string is parsed using the browser\'s built-in DOMParser — the same engine your browser uses to render pages. This handles malformed HTML gracefully, normalises self-closing tags, and ensures the conversion operates on a real document tree rather than fragile regex patterns.'],
+        ['Recursive Tree Walk', 'A recursive walker visits each node in the DOM tree. Block elements (h1–h6, p, div, ul, ol, blockquote, table, pre) produce block-level Markdown. Inline elements (strong, em, a, code, img, del) are converted in-place. Text nodes are escaped to prevent accidental Markdown syntax.'],
+        ['Table Conversion', 'HTML tables are converted to GitHub-Flavored Markdown pipe tables. The first <tr> inside a <thead> becomes the header row; a separator row (| --- |) is inserted automatically. If no <thead> is present, the first body row is promoted to the header.'],
+        ['Rich Paste Mode', 'When you paste content in Rich Paste mode, the tool intercepts the clipboard\'s text/html MIME type via the Clipboard API (clipboardData.getData). This captures the structured HTML behind rich text from web pages, Google Docs, and Word Online — without you needing to "View Source" manually.'],
+        ['Rendered Preview', 'The Preview panel converts the generated Markdown back to HTML using a lightweight client-side renderer. This lets you verify that the round-trip (original HTML → Markdown → rendered HTML) produces equivalent visual output before you copy the Markdown.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════════ -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Does it handle nested lists and blockquotes?', a: 'Yes. Nested <ul> and <ol> elements are converted with proper Markdown indentation (2 spaces per level). Nested <blockquote> elements produce stacked > markers (>> for second level, etc.). Mixed ordered/unordered nesting is preserved.' },
+        { q: 'What HTML elements are not converted?', a: 'Elements with no direct Markdown equivalent — <div>, <span>, <section>, <article>, <nav>, <aside> — are treated transparently: their text content is extracted and rendered as paragraphs. Inline styles, class attributes, and data attributes are all stripped. <script> and <style> blocks are removed entirely.' },
+        { q: 'What dialect of Markdown does it output?', a: 'The output targets CommonMark with GitHub Flavored Markdown (GFM) extensions: fenced code blocks with optional language hints, pipe tables, and ~~strikethrough~~ syntax. This is compatible with GitHub READMEs, GitLab, Obsidian, Notion imports, and most static site generators (Jekyll, Hugo, Astro, Next.js).' },
+        { q: 'Can I convert an entire webpage?', a: 'You can paste a page\'s full HTML source, but the converter is designed for content fragments — articles, documentation blocks, emails. Full pages include navigation, sidebars, footers, and scripts that add noise. For best results, paste only the main content area\'s HTML. Browser extensions like "Copy as Markdown" are better suited to full-page conversion.' },
+        { q: 'Is my HTML content sent to a server?', a: 'No. The entire conversion runs in JavaScript in your browser using DOMParser and the Clipboard API. Your HTML is never transmitted anywhere.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  @media (max-width: 700px) {
+    .htm-panels { grid-template-columns: 1fr !important; }
+  }
+  /* Rich paste placeholder */
+  [data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-muted);
+    font-style: italic;
+    pointer-events: none;
+  }
+  /* Rendered preview styles */
+  #md-preview h1 { font-family:'Sora',sans-serif; font-size:1.4rem; font-weight:700; margin:0 0 0.75rem; color:var(--text-primary); }
+  #md-preview h2 { font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:700; margin:1.25rem 0 0.5rem; color:var(--text-primary); }
+  #md-preview h3 { font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; margin:1rem 0 0.4rem; color:var(--text-primary); }
+  #md-preview p  { margin:0 0 0.75rem; }
+  #md-preview ul, #md-preview ol { margin:0 0 0.75rem; padding-left:1.5rem; }
+  #md-preview li { margin-bottom:0.25rem; }
+  #md-preview a  { color:#06B6D4; text-decoration:underline; }
+  #md-preview strong { font-weight:700; }
+  #md-preview em { font-style:italic; }
+  #md-preview code { font-family:'Fira Code',monospace; font-size:0.82em; background:var(--bg-surface-2); padding:0.1em 0.35em; border-radius:0.25rem; }
+  #md-preview pre { background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.5rem; padding:0.875rem; overflow-x:auto; margin:0 0 0.75rem; }
+  #md-preview pre code { background:none; padding:0; }
+  #md-preview blockquote { border-left:3px solid #06B6D4; margin:0 0 0.75rem; padding:0.25rem 0 0.25rem 1rem; color:var(--text-secondary); }
+  #md-preview table { border-collapse:collapse; width:100%; margin-bottom:0.75rem; font-size:0.85rem; }
+  #md-preview th, #md-preview td { border:1px solid var(--border); padding:0.4rem 0.7rem; }
+  #md-preview th { background:var(--bg-surface-2); font-weight:700; }
+  #md-preview del { text-decoration:line-through; color:var(--text-muted); }
+  #md-preview img { max-width:100%; border-radius:0.375rem; }
+</style>
+
+<script>
+  // ── Sample HTML ───────────────────────────────────────────
+  const SAMPLE_HTML = `<article>
+  <h1>Getting Started with TypeScript</h1>
+  <p>TypeScript is a <strong>typed superset</strong> of JavaScript that compiles to plain JavaScript. It offers <em>optional static typing</em> and class-based object-oriented programming.</p>
+
+  <h2>Installation</h2>
+  <p>Install TypeScript globally using npm:</p>
+  <pre><code class="language-bash">npm install -g typescript
+tsc --version</code></pre>
+
+  <h2>Key Features</h2>
+  <ul>
+    <li>Static type checking</li>
+    <li>Enhanced IDE support with <strong>IntelliSense</strong></li>
+    <li>ES6+ features compiled down to ES5</li>
+    <li>Interfaces and <em>generics</em>
+      <ul>
+        <li>Generic functions</li>
+        <li>Generic classes</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2>Comparison</h2>
+  <table>
+    <thead>
+      <tr><th>Feature</th><th>JavaScript</th><th>TypeScript</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Type safety</td><td>❌</td><td>✅</td></tr>
+      <tr><td>Interfaces</td><td>❌</td><td>✅</td></tr>
+      <tr><td>Browser support</td><td>✅</td><td>Compiled</td></tr>
+    </tbody>
+  </table>
+
+  <blockquote>
+    <p>TypeScript is <del>optional</del> <strong>recommended</strong> for large-scale applications.</p>
+  </blockquote>
+
+  <p>Learn more at <a href="https://www.typescriptlang.org">typescriptlang.org</a>.</p>
+</article>`;
+
+  // ── Options state ─────────────────────────────────────────
+  const opts: Record<string, boolean> = {
+    tables: true, images: true, codeblocks: true,
+    strikethrough: true, stripcomments: true
+  };
+
+  document.querySelectorAll<HTMLLabelElement>('.opt-toggle').forEach(lbl => {
+    lbl.addEventListener('click', e => {
+      e.preventDefault();
+      const key = lbl.dataset.key!;
+      opts[key] = !opts[key];
+      const span = lbl.querySelector('span')!;
+      if (opts[key]) {
+        lbl.style.borderColor = 'rgba(6,182,212,0.4)';
+        lbl.style.background  = 'rgba(6,182,212,0.07)';
+        span.style.color      = '#06B6D4';
+      } else {
+        lbl.style.borderColor = 'var(--border)';
+        lbl.style.background  = 'var(--bg-surface-2)';
+        span.style.color      = 'var(--text-muted)';
+      }
+    });
+  });
+
+  // ── View mode ─────────────────────────────────────────────
+  let currentView: 'split' | 'source' | 'preview' = 'split';
+  const panelInput   = document.getElementById('panel-input')!;
+  const panelOutput  = document.getElementById('panel-output')!;
+  const panelPreview = document.getElementById('panel-preview')!;
+  const panelsWrapper= document.getElementById('panels-wrapper')!;
+
+  function setView(v: typeof currentView) {
+    currentView = v;
+    document.querySelectorAll<HTMLButtonElement>('.view-tab').forEach(btn => {
+      const isActive = btn.id === `view-${v}`;
+      btn.style.background = isActive ? '#0F172A' : 'transparent';
+      btn.style.color      = isActive ? '#06B6D4' : 'var(--text-secondary)';
+    });
+    if (v === 'split') {
+      panelsWrapper.style.gridTemplateColumns = '1fr 1fr';
+      panelInput.style.display   = 'flex';
+      panelOutput.style.display  = 'flex';
+      panelPreview.style.display = 'none';
+    } else if (v === 'source') {
+      panelsWrapper.style.gridTemplateColumns = '1fr';
+      panelInput.style.display   = 'flex';
+      panelOutput.style.display  = 'none';
+      panelPreview.style.display = 'none';
+    } else {
+      panelsWrapper.style.gridTemplateColumns = '1fr';
+      panelInput.style.display   = 'none';
+      panelOutput.style.display  = 'flex';
+      panelPreview.style.display = 'flex';
+    }
+  }
+
+  document.getElementById('view-split')!  .addEventListener('click', () => setView('split'));
+  document.getElementById('view-source')! .addEventListener('click', () => setView('source'));
+  document.getElementById('view-preview')!.addEventListener('click', () => setView('preview'));
+
+  // ── Input mode (raw HTML vs rich paste) ───────────────────
+  let inputMode: 'code' | 'rich' = 'code';
+  const rawWrap  = document.getElementById('raw-input-wrap')!;
+  const richWrap = document.getElementById('rich-input-wrap')!;
+  const htmlInput= document.getElementById('html-input') as HTMLTextAreaElement;
+  const richArea = document.getElementById('rich-paste-area') as HTMLDivElement;
+
+  function setInputMode(m: typeof inputMode) {
+    inputMode = m;
+    document.querySelectorAll<HTMLButtonElement>('.input-mode-btn').forEach(btn => {
+      const active = btn.id === `mode-${m}`;
+      btn.style.borderColor = active ? '#06B6D4' : 'var(--border)';
+      btn.style.background  = active ? 'rgba(6,182,212,0.1)' : 'var(--bg-surface-2)';
+      btn.style.color       = active ? '#06B6D4' : 'var(--text-secondary)';
+    });
+    rawWrap.style.display  = m === 'code' ? 'block' : 'none';
+    richWrap.style.display = m === 'rich' ? 'block' : 'none';
+  }
+
+  document.getElementById('mode-code')!.addEventListener('click', () => setInputMode('code'));
+  document.getElementById('mode-rich')!.addEventListener('click', () => setInputMode('rich'));
+
+  // ── Core converter ────────────────────────────────────────
+  function nodeToMd(node: Node, indent = 0): string {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const t = node.textContent || '';
+      // Escape markdown special chars in text nodes
+      return t.replace(/([\\`*_{}[\]()#+\-.!|])/g, '\\$1');
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return '';
+
+    const el = node as Element;
+    const tag = el.tagName.toLowerCase();
+    const children = () => Array.from(el.childNodes).map(n => nodeToMd(n, indent)).join('');
+    const indentStr = '  '.repeat(indent);
+
+    // Strip script/style/comments
+    if (tag === 'script' || tag === 'style') return '';
+    if (opts.stripcomments && node.nodeType === Node.COMMENT_NODE) return '';
+
+    switch (tag) {
+      case 'h1': return `\n\n# ${children().trim()}\n\n`;
+      case 'h2': return `\n\n## ${children().trim()}\n\n`;
+      case 'h3': return `\n\n### ${children().trim()}\n\n`;
+      case 'h4': return `\n\n#### ${children().trim()}\n\n`;
+      case 'h5': return `\n\n##### ${children().trim()}\n\n`;
+      case 'h6': return `\n\n###### ${children().trim()}\n\n`;
+
+      case 'p': {
+        const inner = children().trim();
+        return inner ? `\n\n${inner}\n\n` : '';
+      }
+      case 'br': return '  \n';
+
+      case 'strong': case 'b': return `**${children()}**`;
+      case 'em': case 'i':     return `*${children()}*`;
+      case 'del': case 's':
+        return opts.strikethrough ? `~~${children()}~~` : children();
+
+      case 'a': {
+        const href = el.getAttribute('href') || '';
+        const title = el.getAttribute('title');
+        const text = children().trim();
+        if (!text) return href ? `<${href}>` : '';
+        return title ? `[${text}](${href} "${title}")` : `[${text}](${href})`;
+      }
+
+      case 'img': {
+        if (!opts.images) return '';
+        const src = el.getAttribute('src') || '';
+        const alt = el.getAttribute('alt') || '';
+        const title = el.getAttribute('title');
+        return title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`;
+      }
+
+      case 'code': {
+        if (el.closest('pre')) return el.textContent || '';
+        return `\`${el.textContent}\``;
+      }
+
+      case 'pre': {
+        if (!opts.codeblocks) return `\n\n    ${(el.textContent || '').replace(/\n/g, '\n    ')}\n\n`;
+        const codeEl = el.querySelector('code');
+        const lang = codeEl?.className.match(/language-(\S+)/)?.[1] || '';
+        const content = (codeEl?.textContent || el.textContent || '').trimEnd();
+        return `\n\n\`\`\`${lang}\n${content}\n\`\`\`\n\n`;
+      }
+
+      case 'blockquote': {
+        const inner = convertNodes(Array.from(el.childNodes), indent).trim();
+        return '\n\n' + inner.split('\n').map(l => `> ${l}`).join('\n') + '\n\n';
+      }
+
+      case 'ul': {
+        const items = Array.from(el.children).filter(c => c.tagName.toLowerCase() === 'li');
+        const lines = items.map(li => {
+          const inner = convertNodes(Array.from(li.childNodes), indent + 1).trim();
+          return `${indentStr}- ${inner}`;
+        });
+        return `\n\n${lines.join('\n')}\n\n`;
+      }
+
+      case 'ol': {
+        const items = Array.from(el.children).filter(c => c.tagName.toLowerCase() === 'li');
+        const lines = items.map((li, i) => {
+          const inner = convertNodes(Array.from(li.childNodes), indent + 1).trim();
+          return `${indentStr}${i + 1}. ${inner}`;
+        });
+        return `\n\n${lines.join('\n')}\n\n`;
+      }
+
+      case 'table': {
+        if (!opts.tables) return `\n\n${el.textContent?.trim()}\n\n`;
+        return convertTable(el) + '\n';
+      }
+
+      case 'hr': return '\n\n---\n\n';
+
+      case 'div': case 'section': case 'article':
+      case 'main': case 'header': case 'footer':
+      case 'nav': case 'aside': case 'span':
+      case 'li': {
+        return children();
+      }
+
+      default:
+        return children();
+    }
+  }
+
+  function convertNodes(nodes: Node[], indent: number): string {
+    return nodes.map(n => nodeToMd(n, indent)).join('');
+  }
+
+  function convertTable(table: Element): string {
+    const rows: string[][] = [];
+    table.querySelectorAll('tr').forEach(tr => {
+      rows.push(Array.from(tr.querySelectorAll('th, td')).map(cell =>
+        cell.textContent?.trim().replace(/\|/g, '\\|') || ''
+      ));
+    });
+    if (rows.length === 0) return '';
+    const header = rows[0];
+    const sep    = header.map(() => '---');
+    const body   = rows.slice(1);
+    const toRow  = (cells: string[]) => `| ${cells.join(' | ')} |`;
+    return [toRow(header), toRow(sep), ...body.map(toRow)].join('\n');
+  }
+
+  function htmlToMarkdown(html: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    // Remove comments if enabled
+    if (opts.stripcomments) {
+      const walker = document.createTreeWalker(doc.body, NodeFilter.SHOW_COMMENT);
+      const toRemove: Node[] = [];
+      let node;
+      while ((node = walker.nextNode())) toRemove.push(node);
+      toRemove.forEach(n => n.parentNode?.removeChild(n));
+    }
+    const raw = convertNodes(Array.from(doc.body.childNodes), 0);
+    // Clean up excessive blank lines
+    return raw
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/^\n+/, '')
+      .replace(/\n+$/, '');
+  }
+
+  // ── Simple Markdown → HTML renderer for preview ───────────
+  function mdToHtml(md: string): string {
+    let h = md
+      // Fenced code blocks
+      .replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) =>
+        `<pre><code class="language-${lang}">${escHtml(code.trim())}</code></pre>`)
+      // Headings
+      .replace(/^#{6}\s+(.+)$/gm, '<h6>$1</h6>')
+      .replace(/^#{5}\s+(.+)$/gm, '<h5>$1</h5>')
+      .replace(/^#{4}\s+(.+)$/gm, '<h4>$1</h4>')
+      .replace(/^#{3}\s+(.+)$/gm, '<h3>$1</h3>')
+      .replace(/^#{2}\s+(.+)$/gm, '<h2>$1</h2>')
+      .replace(/^#{1}\s+(.+)$/gm, '<h1>$1</h1>')
+      // HR
+      .replace(/^---$/gm, '<hr>')
+      // Bold + italic
+      .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/~~(.+?)~~/g, '<del>$1</del>')
+      // Inline code
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      // Images before links
+      .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+      // Links
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+      // Blockquote lines
+      .replace(/^> (.+)$/gm, '<blockquote><p>$1</p></blockquote>')
+      // Unordered lists
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      // Ordered lists
+      .replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+
+    // Wrap consecutive <li> in <ul>
+    h = h.replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
+
+    // Pipe tables
+    h = h.replace(/(\|.+\|\n)+/g, tableBlock => {
+      const lines = tableBlock.trim().split('\n').filter(l => l.trim() && !/^\|[-| :]+\|$/.test(l));
+      if (lines.length < 1) return tableBlock;
+      const toRow = (line: string, isHeader = false) => {
+        const cells = line.split('|').filter((_, i, a) => i > 0 && i < a.length - 1);
+        const tag = isHeader ? 'th' : 'td';
+        return `<tr>${cells.map(c => `<${tag}>${c.trim()}</${tag}>`).join('')}</tr>`;
+      };
+      return `<table>${toRow(lines[0], true)}${lines.slice(1).map(l => toRow(l)).join('')}</table>`;
+    });
+
+    // Paragraphs: wrap non-tag lines
+    h = h.replace(/^(?!<[a-z]).+$/gm, line => line.trim() ? `<p>${line}</p>` : '');
+
+    return h;
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Convert action ────────────────────────────────────────
+  const mdOutput  = document.getElementById('md-output') as HTMLTextAreaElement;
+  const mdStat    = document.getElementById('md-stat')!;
+  const mdPreview = document.getElementById('md-preview')!;
+
+  function runConvert() {
+    const html = inputMode === 'code'
+      ? htmlInput.value
+      : richArea.innerHTML;
+
+    if (!html.trim()) return;
+    const md = htmlToMarkdown(html);
+    mdOutput.value = md;
+    const lines = md.split('\n').length;
+    const words = md.split(/\s+/).filter(Boolean).length;
+    mdStat.textContent = `${lines}L · ${words}W`;
+    mdPreview.innerHTML = mdToHtml(md);
+  }
+
+  document.getElementById('btn-convert')!.addEventListener('click', runConvert);
+
+  document.getElementById('btn-copy-md')!.addEventListener('click', () => {
+    if (!mdOutput.value) return;
+    navigator.clipboard.writeText(mdOutput.value).then(() => {
+      const btn = document.getElementById('btn-copy-md')!;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    });
+  });
+
+  document.getElementById('btn-sample')!.addEventListener('click', () => {
+    htmlInput.value = SAMPLE_HTML;
+    setInputMode('code');
+  });
+
+  document.getElementById('btn-clear-html')!.addEventListener('click', () => {
+    htmlInput.value = '';
+    richArea.innerHTML = '';
+    mdOutput.value = '';
+    mdStat.textContent = '';
+    mdPreview.innerHTML = '<p style="color:var(--text-muted); font-style:italic; font-size:0.8rem;">Rendered preview will appear here after conversion…</p>';
+  });
+
+  // Rich paste: capture clipboard HTML
+  richArea.addEventListener('paste', (e: ClipboardEvent) => {
+    e.preventDefault();
+    const clipHtml = e.clipboardData?.getData('text/html');
+    if (clipHtml) {
+      richArea.innerHTML = clipHtml;
+    } else {
+      const text = e.clipboardData?.getData('text/plain') || '';
+      richArea.textContent = text;
+    }
+  });
+</script>

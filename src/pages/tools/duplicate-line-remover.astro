@@ -1,0 +1,424 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'duplicate-line-remover')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
+  <div slot="tool">
+
+    <!-- ── Header ── -->
+    <div style="display:flex; align-items:center; gap:0.875rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:linear-gradient(135deg,#052e16,#166534); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 14px rgba(22,101,52,0.35); border:1px solid rgba(74,222,128,0.25);">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6"/>
+          <line x1="8" y1="12" x2="21" y2="12"/>
+          <line x1="8" y1="18" x2="21" y2="18"/>
+          <line x1="3" y1="6" x2="3.01" y2="6"/>
+          <line x1="3" y1="12" x2="3.01" y2="12"/>
+          <line x1="3" y1="18" x2="3.01" y2="18"/>
+        </svg>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">Duplicate Line Remover &amp; Alphabetizer</h2>
+        <p style="font-size:0.76rem; color:var(--text-muted); margin:0;">Sort, deduplicate, and clean lists — with a diff of what was removed</p>
+      </div>
+    </div>
+
+    <!-- ── Stats bar ── -->
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; margin-bottom:1.1rem;">
+      {[
+        { id:'stat-total',  label:'Total lines',      color:'var(--text-primary)' },
+        { id:'stat-unique', label:'Unique lines',      color:'#4ade80' },
+        { id:'stat-dupes',  label:'Duplicates removed',color:'#f87171' },
+        { id:'stat-blank',  label:'Blanks removed',    color:'#fbbf24' },
+      ].map(s => (
+        <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; padding:0.6rem 0.5rem; text-align:center;">
+          <div id={s.id} style={`font-family:'Fira Code',monospace; font-size:1.1rem; font-weight:700; color:${s.color}; transition:color 0.2s;`}>—</div>
+          <div style="font-size:0.6rem; font-weight:600; color:var(--text-muted); margin-top:0.15rem; text-transform:uppercase; letter-spacing:0.05em; line-height:1.3;">{s.label}</div>
+        </div>
+      ))}
+    </div>
+
+    <!-- ── Options bar ── -->
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem; padding:0.625rem 0.875rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; align-items:center;">
+
+      <!-- Sort mode -->
+      <div style="display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap;">
+        <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.09em; color:var(--text-muted); flex-shrink:0;">Sort:</span>
+        <div style="display:flex; gap:0.3rem;">
+          <button class="sort-btn selected-sort" data-sort="az"
+            style="padding:0.25rem 0.6rem; border-radius:0.35rem; border:1.5px solid #4ade80; background:rgba(74,222,128,0.1); font-size:0.7rem; font-weight:700; color:#4ade80; cursor:pointer; transition:all 0.15s;">A→Z</button>
+          <button class="sort-btn" data-sort="za"
+            style="padding:0.25rem 0.6rem; border-radius:0.35rem; border:1.5px solid var(--border); background:var(--bg-surface); font-size:0.7rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">Z→A</button>
+          <button class="sort-btn" data-sort="length-asc"
+            style="padding:0.25rem 0.6rem; border-radius:0.35rem; border:1.5px solid var(--border); background:var(--bg-surface); font-size:0.7rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">Len↑</button>
+          <button class="sort-btn" data-sort="length-desc"
+            style="padding:0.25rem 0.6rem; border-radius:0.35rem; border:1.5px solid var(--border); background:var(--bg-surface); font-size:0.7rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">Len↓</button>
+          <button class="sort-btn" data-sort="none"
+            style="padding:0.25rem 0.6rem; border-radius:0.35rem; border:1.5px solid var(--border); background:var(--bg-surface); font-size:0.7rem; font-weight:700; color:var(--text-secondary); cursor:pointer; transition:all 0.15s;">Keep order</button>
+        </div>
+      </div>
+
+      <div style="width:1px; height:1.25rem; background:var(--border); flex-shrink:0;"></div>
+
+      <!-- Option toggles -->
+      <div style="display:flex; flex-wrap:wrap; gap:0.35rem; align-items:center;">
+        <label class="dlr-opt dlr-active" data-key="dedup"
+          style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #4ade80; background:rgba(74,222,128,0.1); cursor:pointer; user-select:none; transition:all 0.15s;">
+          <input type="checkbox" checked style="display:none;"/>
+          <span style="font-size:0.68rem; font-weight:700; color:#4ade80;">Remove dupes</span>
+        </label>
+        <label class="dlr-opt dlr-active" data-key="trim"
+          style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #4ade80; background:rgba(74,222,128,0.1); cursor:pointer; user-select:none; transition:all 0.15s;">
+          <input type="checkbox" checked style="display:none;"/>
+          <span style="font-size:0.68rem; font-weight:700; color:#4ade80;">Trim whitespace</span>
+        </label>
+        <label class="dlr-opt dlr-active" data-key="blanks"
+          style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid #4ade80; background:rgba(74,222,128,0.1); cursor:pointer; user-select:none; transition:all 0.15s;">
+          <input type="checkbox" checked style="display:none;"/>
+          <span style="font-size:0.68rem; font-weight:700; color:#4ade80;">Remove blanks</span>
+        </label>
+        <label class="dlr-opt" data-key="ignorecase"
+          style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid var(--border); background:var(--bg-surface-2); cursor:pointer; user-select:none; transition:all 0.15s;">
+          <input type="checkbox" style="display:none;"/>
+          <span style="font-size:0.68rem; font-weight:700; color:var(--text-muted);">Case-insensitive</span>
+        </label>
+        <label class="dlr-opt" data-key="number"
+          style="display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.65rem; border-radius:999px; border:1.5px solid var(--border); background:var(--bg-surface-2); cursor:pointer; user-select:none; transition:all 0.15s;">
+          <input type="checkbox" style="display:none;"/>
+          <span style="font-size:0.68rem; font-weight:700; color:var(--text-muted);">Number lines</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ── Three-panel layout ── -->
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.625rem; margin-bottom:0.875rem;" class="dlr-panels">
+
+      <!-- Input -->
+      <div style="display:flex; flex-direction:column; gap:0.4rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.09em; color:var(--text-muted);">Input</span>
+          <div style="display:flex; gap:0.4rem;">
+            <button id="dlr-sample" style="font-size:0.65rem; color:#4ade80; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">sample</button>
+            <button id="dlr-clear" style="font-size:0.65rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">clear</button>
+          </div>
+        </div>
+        <textarea id="dlr-input" placeholder="Paste your list here…" rows="14"
+          style="width:100%; box-sizing:border-box; resize:vertical; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.625rem; padding:0.75rem; font-family:'Fira Code',monospace; font-size:0.75rem; color:var(--text-primary); line-height:1.65; outline:none; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='#4ade80'; this.style.boxShadow='0 0 0 3px rgba(74,222,128,0.1)';"
+          onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none';"></textarea>
+      </div>
+
+      <!-- Output -->
+      <div style="display:flex; flex-direction:column; gap:0.4rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.09em; color:#4ade80;">Output</span>
+          <button id="dlr-copy" style="font-size:0.65rem; color:#4ade80; background:none; border:none; cursor:pointer; font-weight:700; padding:0; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7';" onmouseout="this.style.opacity='1';">copy</button>
+        </div>
+        <textarea id="dlr-output" readonly placeholder="Cleaned list appears here…" rows="14"
+          style="width:100%; box-sizing:border-box; resize:vertical; background:var(--bg-surface-2); border:1.5px solid rgba(74,222,128,0.25); border-radius:0.625rem; padding:0.75rem; font-family:'Fira Code',monospace; font-size:0.75rem; color:var(--text-primary); line-height:1.65; outline:none; cursor:default;"></textarea>
+      </div>
+
+      <!-- Diff / removed panel -->
+      <div style="display:flex; flex-direction:column; gap:0.4rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.09em; color:#f87171;">Removed</span>
+          <span id="removed-count" style="font-size:0.65rem; font-family:'Fira Code',monospace; color:var(--text-muted);"></span>
+        </div>
+        <!-- Diff display (scrollable) -->
+        <div id="dlr-diff"
+          style="flex:1; min-height:14.5rem; background:var(--bg-surface-2); border:1.5px solid rgba(248,113,113,0.2); border-radius:0.625rem; padding:0.75rem; font-family:'Fira Code',monospace; font-size:0.73rem; line-height:1.65; overflow-y:auto; color:var(--text-muted);">
+          <span style="font-style:italic; opacity:0.6; font-size:0.7rem;">Removed duplicates &amp; blanks will appear here…</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Use output as input ── -->
+    <button id="dlr-use-output"
+      style="width:100%; padding:0.6rem 1rem; background:var(--bg-surface-2); color:var(--text-secondary); border:1.5px solid var(--border); border-radius:0.625rem; font-size:0.8rem; font-weight:600; font-family:'Sora',sans-serif; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:0.4rem;"
+      onmouseover="this.style.borderColor='#4ade80'; this.style.color='#4ade80';"
+      onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text-secondary)';">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      Use output as input (run another pass)
+    </button>
+
+  </div>
+
+  <!-- HOW TO USE ───────────────────────────────── -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Duplicate Line Remover</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste your list into the left panel — the tool processes it in real time. The middle panel shows the cleaned output; the right panel shows a <strong>diff view</strong> of every line that was removed (duplicates shown in red, blank lines in amber), so you can verify the cleanup before copying.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Use the sort buttons to alphabetise A→Z or Z→A, sort by line length, or preserve the original order. Toggle individual operations on or off — remove duplicates, trim whitespace, remove blank lines, case-insensitive deduplication, and line numbering. The stats bar updates live to show how many duplicates and blanks were removed.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click <strong>Use output as input</strong> to feed the result back in for a second pass — useful for verifying idempotency (running twice should produce the same result). Common uses: deduplicating CSV exports, cleaning email lists, sorting dependency names, alphabetising glossary entries, and normalising tag or keyword lists.
+    </p>
+  </div>
+
+  <!-- HOW IT WORKS ────────────────────────────── -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How deduplication and sorting work</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {[
+        ['Processing Pipeline', 'Operations are applied in a fixed order: (1) split into lines, (2) optionally trim each line\'s leading and trailing whitespace, (3) optionally remove blank lines, (4) optionally deduplicate using a Set (preserving first-occurrence order or discarding order for sort), (5) optionally sort, (6) optionally prepend line numbers. This ordering ensures blank-only lines (which become empty strings after trimming) are caught by the blank-line filter before deduplication.'],
+        ['Deduplication with Set', 'Duplicate detection uses a JavaScript Set, which gives O(1) average lookup per line. First-occurrence order is preserved by default: if "apple" appears on lines 3, 7, and 12, the line-3 occurrence is kept and the others are removed. With case-insensitive mode enabled, all lines are lowercased for comparison only — the original casing of the kept line is preserved in the output.'],
+        ['Sort Algorithms', 'A→Z and Z→A use the locale-aware Array.sort() with localeCompare, which handles accented characters (é < f, not after z) correctly for European languages. Length sorts are secondary-stable: lines of equal length retain their relative order. All sorts happen after deduplication.'],
+        ['Diff View', 'The removed-lines panel tracks every line that was discarded and why: duplicate lines are shown with a red ✕ prefix and the duplicate count (×N), blank lines with an amber ∅ symbol. This makes the tool auditable — you can confirm that nothing important was accidentally removed before using the output.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- FAQ ─────────────────────────────────────── -->
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Does case-insensitive mode change the output casing?', a: 'No. Case-insensitive mode only affects how duplicates are detected — "Apple", "apple", and "APPLE" are treated as the same line and only the first occurrence is kept. The kept line retains its original casing exactly as it appeared in the input. The output is not lowercased.' },
+        { q: 'How does it handle lines that differ only in whitespace?', a: 'With "Trim whitespace" enabled, lines are trimmed before comparison. This means "  apple  " and "apple" are considered duplicates — only the first trimmed occurrence is kept (with whitespace removed). With trimming disabled, they are treated as distinct lines.' },
+        { q: 'Can I use this on comma-separated values or JSON arrays?', a: 'The tool operates line-by-line only — it does not parse CSV structure or JSON syntax. For a comma-separated list, paste it one item per line first (using the Delimiter Swapper tool), process it here, then re-join. For JSON arrays, paste the values without the bracket/comma framing.' },
+        { q: 'What does "Number lines" do?', a: 'Prepends a sequential 1-based line number and a tab character to each output line: "1\tapple", "2\tbanana", etc. This is useful when the line order matters (e.g. ranked lists, priority queues) and you want a stable numbered reference in the output.' },
+        { q: 'Is there a limit on how many lines I can process?', a: 'No hard limit. The processing is O(n) with a Set lookup for deduplication and O(n log n) for sorting. Lists of tens of thousands of lines process in milliseconds. Very large pastes (millions of lines) may cause the browser tab to pause briefly but will not crash or corrupt data.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  @media (max-width: 768px) {
+    .dlr-panels { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+<script>
+  // ── Sample data ───────────────────────────────────────────
+  const SAMPLE = `banana
+apple
+Cherry
+  apple  
+BANANA
+date
+cherry
+fig
+apple
+Date
+elderberry
+banana
+fig
+  
+grape
+Cherry
+elderberry`;
+
+  // ── Options state ─────────────────────────────────────────
+  let sortMode: 'az'|'za'|'length-asc'|'length-desc'|'none' = 'az';
+  const opts = { dedup: true, trim: true, blanks: true, ignorecase: false, number: false };
+
+  // ── DOM refs ──────────────────────────────────────────────
+  const dlrInput    = document.getElementById('dlr-input')    as HTMLTextAreaElement;
+  const dlrOutput   = document.getElementById('dlr-output')   as HTMLTextAreaElement;
+  const dlrDiff     = document.getElementById('dlr-diff')!;
+  const removedCount= document.getElementById('removed-count')!;
+  const statTotal   = document.getElementById('stat-total')!;
+  const statUnique  = document.getElementById('stat-unique')!;
+  const statDupes   = document.getElementById('stat-dupes')!;
+  const statBlank   = document.getElementById('stat-blank')!;
+
+  // ── Sort button wiring ────────────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      sortMode = btn.dataset.sort as typeof sortMode;
+      document.querySelectorAll<HTMLButtonElement>('.sort-btn').forEach(b => {
+        const active = b === btn;
+        b.style.borderColor = active ? '#4ade80' : 'var(--border)';
+        b.style.background  = active ? 'rgba(74,222,128,0.1)' : 'var(--bg-surface)';
+        b.style.color       = active ? '#4ade80' : 'var(--text-secondary)';
+      });
+      process();
+    });
+  });
+
+  // ── Option toggles ────────────────────────────────────────
+  document.querySelectorAll<HTMLLabelElement>('.dlr-opt').forEach(lbl => {
+    lbl.addEventListener('click', e => {
+      e.preventDefault();
+      const key = lbl.dataset.key as keyof typeof opts;
+      opts[key] = !opts[key];
+      const chk  = lbl.querySelector('input') as HTMLInputElement;
+      const span = lbl.querySelector('span')!;
+      chk.checked = opts[key];
+      if (opts[key]) {
+        lbl.style.borderColor = '#4ade80';
+        lbl.style.background  = 'rgba(74,222,128,0.1)';
+        span.style.color      = '#4ade80';
+      } else {
+        lbl.style.borderColor = 'var(--border)';
+        lbl.style.background  = 'var(--bg-surface-2)';
+        span.style.color      = 'var(--text-muted)';
+      }
+      process();
+    });
+  });
+
+  // ── Core processing ───────────────────────────────────────
+  function process() {
+    const raw   = dlrInput.value;
+    const lines = raw.split('\n');
+    statTotal.textContent = String(lines.length);
+
+    // Step 1: optionally trim
+    const trimmed = opts.trim ? lines.map(l => l.trim()) : [...lines];
+
+    // Step 2: track blank removals
+    let blanksRemoved = 0;
+    const nonBlank = opts.blanks
+      ? trimmed.filter(l => { if (l === '') { blanksRemoved++; return false; } return true; })
+      : trimmed;
+
+    // Step 3: deduplicate, tracking removed
+    const seen   = new Set<string>();
+    const dupeCount: Record<string, number> = {};
+    const kept:    string[] = [];
+    const removed: Array<{ line: string; type: 'dupe' | 'blank' }> = [];
+
+    if (opts.blanks) {
+      // Add blank removals first (for display)
+      const blankLines = trimmed.filter(l => l === '');
+      blankLines.forEach(() => removed.push({ line: '(blank line)', type: 'blank' }));
+    }
+
+    for (const line of nonBlank) {
+      const key = opts.ignorecase ? line.toLowerCase() : line;
+      if (opts.dedup && seen.has(key)) {
+        dupeCount[key] = (dupeCount[key] || 1) + 1;
+        removed.push({ line, type: 'dupe' });
+      } else {
+        seen.add(key);
+        kept.push(line);
+      }
+    }
+
+    // Step 4: sort
+    let sorted = [...kept];
+    if (sortMode === 'az')          sorted.sort((a,b) => a.localeCompare(b));
+    else if (sortMode === 'za')     sorted.sort((a,b) => b.localeCompare(a));
+    else if (sortMode === 'length-asc')  sorted.sort((a,b) => a.length - b.length || a.localeCompare(b));
+    else if (sortMode === 'length-desc') sorted.sort((a,b) => b.length - a.length || a.localeCompare(b));
+
+    // Step 5: number lines
+    const output = opts.number
+      ? sorted.map((l, i) => `${i + 1}\t${l}`)
+      : sorted;
+
+    // ── Update UI ───────────────────────────────────────
+    const dupesRemoved = removed.filter(r => r.type === 'dupe').length;
+
+    statUnique.textContent  = String(sorted.length);
+    statDupes.textContent   = String(dupesRemoved);
+    statBlank.textContent   = String(blanksRemoved);
+
+    // Animate stats on change
+    [statUnique, statDupes, statBlank].forEach(el => {
+      el.style.transition = 'none';
+      requestAnimationFrame(() => {
+        el.style.transition = 'color 0.3s';
+      });
+    });
+
+    dlrOutput.value = output.join('\n');
+
+    // ── Diff panel ──────────────────────────────────────
+    const totalRemoved = removed.length;
+    removedCount.textContent = totalRemoved > 0 ? `${totalRemoved} line${totalRemoved !== 1 ? 's' : ''}` : '';
+
+    if (totalRemoved === 0) {
+      dlrDiff.innerHTML = `<span style="font-style:italic; opacity:0.5; font-size:0.7rem;">✓ No duplicates or blanks found</span>`;
+    } else {
+      // Group consecutive dupes
+      const grouped: Array<{ line: string; type: 'dupe'|'blank'; count: number }> = [];
+      for (const r of removed) {
+        const last = grouped[grouped.length - 1];
+        if (last && last.line === r.line && last.type === r.type) {
+          last.count++;
+        } else {
+          grouped.push({ ...r, count: 1 });
+        }
+      }
+
+      dlrDiff.innerHTML = grouped.slice(0, 200).map(r => {
+        if (r.type === 'blank') {
+          return `<div style="display:flex; align-items:baseline; gap:0.4rem; padding:0.15rem 0; border-bottom:1px dashed var(--border);">
+            <span style="color:#fbbf24; font-size:0.65rem; font-weight:800; flex-shrink:0;">∅</span>
+            <span style="color:#78350f; font-style:italic; font-size:0.7rem;">(blank line)</span>
+          </div>`;
+        }
+        return `<div style="display:flex; align-items:baseline; gap:0.4rem; padding:0.15rem 0; border-bottom:1px dashed var(--border);">
+          <span style="color:#f87171; font-size:0.65rem; font-weight:800; flex-shrink:0;">✕${r.count > 1 ? `×${r.count}` : ''}</span>
+          <span style="color:#f87171; opacity:0.7; text-decoration:line-through; word-break:break-all; font-size:0.72rem;">${escHtml(r.line)}</span>
+        </div>`;
+      }).join('') + (grouped.length > 200 ? `<div style="color:var(--text-muted); font-size:0.68rem; margin-top:0.5rem;">…and ${grouped.length - 200} more</div>` : '');
+    }
+  }
+
+  function escHtml(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Copy output ───────────────────────────────────────────
+  document.getElementById('dlr-copy')!.addEventListener('click', () => {
+    if (!dlrOutput.value) return;
+    navigator.clipboard.writeText(dlrOutput.value).then(() => {
+      const btn = document.getElementById('dlr-copy')!;
+      btn.textContent = '✓ copied';
+      setTimeout(() => { btn.textContent = 'copy'; }, 2000);
+    });
+  });
+
+  // ── Use output as input ───────────────────────────────────
+  document.getElementById('dlr-use-output')!.addEventListener('click', () => {
+    if (!dlrOutput.value) return;
+    dlrInput.value = dlrOutput.value;
+    process();
+  });
+
+  // ── Sample / clear ────────────────────────────────────────
+  document.getElementById('dlr-sample')!.addEventListener('click', () => {
+    dlrInput.value = SAMPLE;
+    process();
+  });
+
+  document.getElementById('dlr-clear')!.addEventListener('click', () => {
+    dlrInput.value = '';
+    process();
+  });
+
+  // ── Wire input ────────────────────────────────────────────
+  dlrInput.addEventListener('input', process);
+
+  // Init
+  dlrInput.value = SAMPLE;
+  process();
+</script>
