@@ -48,11 +48,11 @@ Maintain strict uniform hierarchies for labeling and numbers:
 ### A. Modular Workspace Card (The Main Container)
 
 Enclose standalone components within a single structural surface wrapper featuring explicit border parameters and crisp tracking drop-shadows:
-```html
 <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
   <!-- Interactive Form Elements and Logic Sandbox -->
 </div>
-B. Standardized Form Field Elements
+
+### B. Standardized Form Field Elements
 Inputs must scale fluidly to 100% width inside subgrid modules, including custom tracking ring offsets on absolute browser focus states:
 
 HTML
@@ -64,7 +64,8 @@ HTML
     placeholder="Value..."
   />
 </div>
-C. Responsive Utility Grid Layout
+
+### C. Responsive Utility Grid Layout
 For parallel interaction blocks (e.g., source inputs adjacent to converted data targets), stack rows vertically on mobile viewports and layout horizontally into dual-column sets on viewport scales starting above sm: (640px):
 
 HTML
