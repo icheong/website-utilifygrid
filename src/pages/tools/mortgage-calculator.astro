@@ -7,566 +7,413 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
 
 <ToolLayout tool={tool}>
 
-  <!-- ═══ THE TOOL ═══ -->
   <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">Mortgage Amortization Calculator</h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">See how extra repayments reduce your loan term and total interest paid.</p>
 
-    <!-- ── TOP: INPUTS + KPI STRIP ── -->
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;" class="mort-top-grid">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
 
-      <!-- Inputs -->
-      <div style="display:flex; flex-direction:column; gap:1rem;">
-
-        <div class="mort-field">
-          <label class="mort-label" for="m-principal">Loan amount</label>
-          <div class="mort-input-wrap">
-            <span class="mort-prefix">$</span>
-            <input id="m-principal" type="number" value="600000" min="1000" step="1000" class="mort-input" />
-          </div>
-        </div>
-
-        <div class="mort-field">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label class="mort-label" for="m-rate">Interest rate (p.a.)</label>
-            <span id="m-rate-val" class="mort-slider-val">6.00%</span>
-          </div>
-          <input id="m-rate" type="range" min="1" max="15" value="6" step="0.25" class="mort-range" />
-          <div class="mort-range-ticks"><span>1%</span><span>6%</span><span>15%</span></div>
-        </div>
-
-        <div class="mort-field">
-          <label class="mort-label" for="m-term">Loan term (years)</label>
-          <select id="m-term" class="mort-select">
-            {[10,15,20,25,30].map(y => (
-              <option value={y} selected={y === 30}>{y} years</option>
-            ))}
-          </select>
-        </div>
-
-        <div class="mort-field">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label class="mort-label" for="m-extra">Extra monthly payment</label>
-            <span id="m-extra-val" class="mort-slider-val">$0</span>
-          </div>
-          <input id="m-extra" type="range" min="0" max="5000" value="0" step="50" class="mort-range" style="accent-color:#10B981;" />
-          <div class="mort-range-ticks"><span>$0</span><span>$2,500</span><span>$5,000</span></div>
-        </div>
-
+      <div>
+        <label style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.375rem;">Loan Amount ($)</label>
+        <input id="loan-amount" type="number" value="600000" min="10000" step="1000" class="input-themed" style="width:100%; padding:0.625rem 0.875rem; border-radius:0.5rem; font-size:0.95rem; box-sizing:border-box;"/>
       </div>
 
-      <!-- KPI cards -->
-      <div style="display:flex; flex-direction:column; gap:0.75rem;">
-
-        <div class="mort-kpi" style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE); border-color:#BFDBFE;">
-          <div class="mort-kpi-label" style="color:#1D4ED8;">Monthly repayment</div>
-          <div class="mort-kpi-val" id="k-monthly" style="color:#1D4ED8;">—</div>
+      <div>
+        <label style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.375rem;">Interest Rate (% p.a.)</label>
+        <div style="display:flex; align-items:center; gap:0.625rem;">
+          <input id="interest-rate" type="range" min="1" max="12" value="6" step="0.05" style="flex:1; accent-color:#1D4ED8;"/>
+          <span id="interest-rate-val" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:var(--text-primary); min-width:2.75rem;">6.00%</span>
         </div>
+      </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-          <div class="mort-kpi">
-            <div class="mort-kpi-label">Total paid</div>
-            <div class="mort-kpi-val" id="k-total-base" style="color:var(--text-primary);">—</div>
-            <div class="mort-kpi-sub">no extra payments</div>
-          </div>
-          <div class="mort-kpi" id="kpi-extra-box" style="border-color:#BBF7D0; background:#F0FDF4; display:none;">
-            <div class="mort-kpi-label" style="color:#166534;">With extra payments</div>
-            <div class="mort-kpi-val" id="k-total-extra" style="color:#16A34A;">—</div>
-            <div class="mort-kpi-sub" id="k-extra-sub" style="color:#16A34A;"></div>
-          </div>
+      <div>
+        <label style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.375rem;">Loan Term (years)</label>
+        <select id="loan-term" class="select-themed" style="width:100%; padding:0.625rem 0.875rem; border-radius:0.5rem; font-size:0.875rem;">
+          <option value="10">10 years</option>
+          <option value="15">15 years</option>
+          <option value="20">20 years</option>
+          <option value="25">25 years</option>
+          <option value="30" selected>30 years</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.375rem;">Extra Monthly Payment ($)</label>
+        <div style="display:flex; align-items:center; gap:0.625rem;">
+          <input id="extra-payment" type="range" min="0" max="5000" value="0" step="50" style="flex:1; accent-color:#10B981;"/>
+          <span id="extra-payment-val" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:#10B981; min-width:3.5rem;">$0</span>
         </div>
+      </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
-          <div class="mort-kpi">
-            <div class="mort-kpi-label">Total interest</div>
-            <div class="mort-kpi-val" id="k-interest-base" style="color:#DC2626;">—</div>
-            <div class="mort-kpi-sub">no extra payments</div>
-          </div>
-          <div class="mort-kpi" id="kpi-saving-box" style="border-color:#BBF7D0; background:#F0FDF4; display:none;">
-            <div class="mort-kpi-label" style="color:#166534;">Interest saved</div>
-            <div class="mort-kpi-val" id="k-interest-saved" style="color:#16A34A;">—</div>
-            <div class="mort-kpi-sub" id="k-years-saved" style="color:#16A34A;"></div>
-          </div>
-        </div>
+    </div>
 
+    <!-- KPI cards -->
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1rem;">
+
+      <div class="result-card accent-blue">
+        <div class="result-value" id="out-monthly">—</div>
+        <div class="result-label">Monthly Payment</div>
+      </div>
+
+      <div class="result-card accent-success">
+        <div class="result-value" style="color:#10B981;" id="out-interest-saved">—</div>
+        <div class="result-label">Interest Saved</div>
+      </div>
+
+      <div class="result-card accent-warning">
+        <div class="result-value" style="color:#D97706;" id="out-time-saved">—</div>
+        <div class="result-label">Time Saved</div>
+      </div>
+
+    </div>
+
+    <!-- Summary row -->
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; margin-bottom:1.25rem;">
+      <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.5rem; padding:0.625rem 0.75rem; text-align:center;">
+        <div id="out-total-interest" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:var(--text-secondary);">—</div>
+        <div style="font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-top:0.2rem;">Total Interest (base)</div>
+      </div>
+      <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.5rem; padding:0.625rem 0.75rem; text-align:center;">
+        <div id="out-total-interest-extra" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:#16A34A;">—</div>
+        <div style="font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-top:0.2rem;">Total Interest (extra)</div>
+      </div>
+      <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.5rem; padding:0.625rem 0.75rem; text-align:center;">
+        <div id="out-payoff-date" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:var(--text-primary);">—</div>
+        <div style="font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-top:0.2rem;">Loan paid off</div>
       </div>
     </div>
 
-    <!-- ── CHART ── -->
-    <div style="margin-bottom:1.5rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
-        <div style="font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">Balance over time</div>
-        <div style="display:flex; gap:1rem; font-size:0.75rem; color:var(--text-secondary);">
-          <span style="display:flex; align-items:center; gap:0.35rem;"><span style="display:inline-block; width:12px; height:3px; background:#94A3B8; border-radius:2px;"></span>Standard</span>
-          <span style="display:flex; align-items:center; gap:0.35rem;" id="legend-extra" style="display:none !important;"><span style="display:inline-block; width:12px; height:3px; background:#10B981; border-radius:2px;"></span>With extra payments</span>
+    <!-- Balance chart -->
+    <div style="margin-bottom:1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.625rem;">
+        <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em;">Balance Over Time</div>
+        <div style="display:flex; align-items:center; gap:1rem; font-size:0.7rem; font-weight:600; color:var(--text-muted);">
+          <span style="display:flex; align-items:center; gap:0.3rem;"><span style="width:10px; height:3px; background:#1D4ED8; border-radius:2px; display:inline-block;"></span>Base</span>
+          <span style="display:flex; align-items:center; gap:0.3rem;"><span style="width:10px; height:3px; background:#10B981; border-radius:2px; display:inline-block;"></span>With extra</span>
         </div>
       </div>
-      <canvas id="amort-chart" style="width:100%; border-radius:0.625rem;"></canvas>
+      <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.75rem; overflow:hidden;">
+        <svg id="balance-chart" width="100%" height="180" viewBox="0 0 600 180" preserveAspectRatio="none" style="display:block; overflow:visible;">
+          <!-- Y axis labels -->
+          <text id="chart-y-top"    x="0"   y="12"  font-size="9" fill="currentColor" style="fill:var(--text-muted); font-family:'Fira Code',monospace;"></text>
+          <text id="chart-y-mid"    x="0"   y="97"  font-size="9" fill="currentColor" style="fill:var(--text-muted); font-family:'Fira Code',monospace;"></text>
+          <text id="chart-y-bottom" x="0"   y="174" font-size="9" fill="currentColor" style="fill:var(--text-muted); font-family:'Fira Code',monospace;">$0</text>
+          <!-- Grid lines -->
+          <line x1="48" y1="10"  x2="598" y2="10"  stroke="currentColor" stroke-width="0.5" style="stroke:var(--border);"/>
+          <line x1="48" y1="95"  x2="598" y2="95"  stroke="currentColor" stroke-width="0.5" style="stroke:var(--border);"/>
+          <line x1="48" y1="170" x2="598" y2="170" stroke="currentColor" stroke-width="0.5" style="stroke:var(--border);"/>
+          <!-- X axis labels -->
+          <text id="chart-x-0"   x="48"  y="180" font-size="9" text-anchor="middle" style="fill:var(--text-muted); font-family:'Fira Code',monospace;">Yr 0</text>
+          <text id="chart-x-mid" x="323" y="180" font-size="9" text-anchor="middle" style="fill:var(--text-muted); font-family:'Fira Code',monospace;"></text>
+          <text id="chart-x-end" x="598" y="180" font-size="9" text-anchor="end"    style="fill:var(--text-muted); font-family:'Fira Code',monospace;"></text>
+          <!-- Base balance area (blue, behind) -->
+          <path id="chart-base-area" fill="#1D4ED8" fill-opacity="0.12" stroke="none" d=""/>
+          <!-- Extra balance area (green, in front) -->
+          <path id="chart-extra-area" fill="#10B981" fill-opacity="0.18" stroke="none" d=""/>
+          <!-- Base balance line -->
+          <path id="chart-base-line" fill="none" stroke="#1D4ED8" stroke-width="2" stroke-linejoin="round" d=""/>
+          <!-- Extra balance line -->
+          <path id="chart-extra-line" fill="none" stroke="#10B981" stroke-width="2" stroke-linejoin="round" d=""/>
+          <!-- Payoff marker for extra (vertical dashed) -->
+          <line id="chart-payoff-line" x1="0" y1="10" x2="0" y2="170" stroke="#10B981" stroke-width="1.5" stroke-dasharray="4,3" style="display:none;"/>
+          <text id="chart-payoff-label" x="0" y="8" font-size="8" text-anchor="middle" style="fill:#10B981; font-family:'Fira Code',monospace; display:none;"></text>
+        </svg>
+      </div>
     </div>
 
-    <!-- ── SAVINGS HIGHLIGHT BAR ── -->
-    <div id="savings-bar" style="display:none; background:linear-gradient(135deg,#F0FDF4,#DCFCE7); border:1.5px solid #BBF7D0; border-radius:0.875rem; padding:1rem 1.25rem; margin-bottom:1.5rem;">
-      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; text-align:center;">
-        <div>
-          <div style="font-size:1.25rem; font-weight:700; color:#16A34A; font-family:'Sora',sans-serif;" id="sb-saved">—</div>
-          <div style="font-size:0.72rem; color:#166534; margin-top:0.15rem;">Interest saved</div>
-        </div>
-        <div>
-          <div style="font-size:1.25rem; font-weight:700; color:#16A34A; font-family:'Sora',sans-serif;" id="sb-years">—</div>
-          <div style="font-size:0.72rem; color:#166534; margin-top:0.15rem;">Years off loan</div>
-        </div>
-        <div>
-          <div style="font-size:1.25rem; font-weight:700; color:#16A34A; font-family:'Sora',sans-serif;" id="sb-payoff">—</div>
-          <div style="font-size:0.72rem; color:#166534; margin-top:0.15rem;">Loan-free by</div>
-        </div>
-      </div>
+    <!-- Amortization toggle -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+      <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.07em;">Amortization Schedule</div>
+      <button id="btn-toggle-schedule" class="btn-secondary" style="padding:0.3rem 0.75rem; font-size:0.75rem;">Show</button>
     </div>
 
-    <!-- ── AMORTIZATION TABLE ── -->
-    <div>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-        <div style="font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">Annual schedule</div>
-        <div style="display:flex; gap:0.5rem; font-size:0.72rem; color:var(--text-muted);">
-          <span style="display:flex; align-items:center; gap:0.3rem;"><span style="display:inline-block; width:8px; height:8px; background:#3B82F6; border-radius:2px;"></span>Principal</span>
-          <span style="display:flex; align-items:center; gap:0.3rem;"><span style="display:inline-block; width:8px; height:8px; background:#EF4444; border-radius:2px;"></span>Interest</span>
-        </div>
-      </div>
-      <div style="overflow-x:auto; border-radius:0.75rem; border:1.5px solid var(--border);">
-        <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
-          <thead>
-            <tr style="background:var(--bg-surface-2);">
-              <th class="mort-th">Year</th>
-              <th class="mort-th">Principal paid</th>
-              <th class="mort-th">Interest paid</th>
-              <th class="mort-th">Extra paid</th>
-              <th class="mort-th">Balance</th>
-            </tr>
-          </thead>
-          <tbody id="amort-body"></tbody>
-        </table>
-      </div>
+    <div id="schedule-wrap" style="display:none; max-height:280px; overflow-y:auto; border:1.5px solid var(--border); border-radius:0.625rem;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.75rem; font-family:'Fira Code',monospace;">
+        <thead>
+          <tr style="background:var(--bg-surface-2); position:sticky; top:0;">
+            <th style="padding:0.5rem 0.625rem; text-align:right; font-weight:700; color:var(--text-muted); font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid var(--border);">Month</th>
+            <th style="padding:0.5rem 0.625rem; text-align:right; font-weight:700; color:var(--text-muted); font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid var(--border);">Payment</th>
+            <th style="padding:0.5rem 0.625rem; text-align:right; font-weight:700; color:var(--text-muted); font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid var(--border);">Principal</th>
+            <th style="padding:0.5rem 0.625rem; text-align:right; font-weight:700; color:var(--text-muted); font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid var(--border);">Interest</th>
+            <th style="padding:0.5rem 0.625rem; text-align:right; font-weight:700; color:var(--text-muted); font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid var(--border);">Balance</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body"></tbody>
+      </table>
     </div>
 
   </div>
 
-  <!-- ═══ HOW TO USE ═══ -->
   <div slot="how-to-use">
     <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this calculator</h2>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter your loan amount, interest rate, and term. The monthly repayment, total interest, and amortization schedule update instantly. Use the <strong style="color:var(--text-primary);">interest rate slider</strong> to model rate changes — drag it and watch the total interest figure change in real time.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The <strong style="color:var(--text-primary);">extra monthly payment slider</strong> is the key feature. Even a small extra payment — $200 or $500 a month — can cut years off a 30-year mortgage and save tens of thousands in interest. The green savings bar and the chart update instantly to show you exactly how much you save.
+      Enter your loan amount, annual interest rate, and loan term. The <strong>monthly payment</strong>, <strong>total interest</strong>, and <strong>payoff date</strong> update instantly. Drag the <strong>Extra Monthly Payment</strong> slider to see how additional repayments slash your interest bill and shorten your loan term.
     </p>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      The annual schedule table shows year-by-year how your balance reduces, breaking down what goes to principal versus interest each year — and how extra payments accelerate the paydown.
+      Click <strong>Show</strong> under Amortization Schedule to view the full month-by-month breakdown of principal, interest, and remaining balance.
     </p>
   </div>
 
-  <!-- ═══ HOW IT WORKS ═══ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How amortization works</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:1rem;">
-      A standard mortgage uses a fixed monthly payment calculated so that the loan reaches exactly $0 at the end of the term. Early in the loan, most of each payment goes to interest. Over time the split shifts — more goes to principal and less to interest.
-    </p>
-    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:1rem;">
-      {[
-        ['Monthly payment formula', 'M = P × [r(1+r)ⁿ] / [(1+r)ⁿ − 1]', 'P = principal, r = monthly rate (annual ÷ 12), n = total months'],
-        ['Interest portion each month', 'Interest = remaining balance × monthly rate', 'Falls as balance reduces — why early payments have big impact'],
-        ['Principal portion each month', 'Principal = monthly payment − interest', 'Rises over time as interest portion shrinks'],
-        ['Extra payment impact', 'Extra reduces balance directly', 'Every extra dollar paid reduces the balance on which future interest is charged — compounding savings forward'],
-      ].map(([label, formula, note]) => (
-        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.85rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <code style="font-size:0.8rem; color:#1D4ED8; background:#EFF6FF; padding:0.15rem 0.5rem; border-radius:0.25rem; display:inline-block; margin-bottom:0.3rem;">{formula}</code>
-          <p style="font-size:0.78rem; color:var(--text-secondary); margin:0; line-height:1.5;">{note}</p>
-        </div>
-      ))}
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How amortization is calculated</h2>
+    <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:var(--text-primary); line-height:1.9; margin-bottom:0.875rem;">
+      Monthly rate r = Annual rate / 12<br/>
+      n = Total months = Years × 12<br/>
+      Payment M = P × [r(1+r)ⁿ] / [(1+r)ⁿ − 1]<br/>
+      Each month: Interest = Balance × r<br/>
+              Principal = M − Interest + Extra<br/>
+              Balance = Balance − Principal
     </div>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.7;">
+      Extra payments are applied entirely to the principal. Because interest is calculated on the remaining balance each month, reducing the balance earlier means every subsequent month accrues less interest — compounding the savings over time. Even a modest extra payment of $200–$500 per month can save tens of thousands in interest on a typical Australian mortgage.
+    </p>
   </div>
 
-  <!-- ═══ FAQ ═══ -->
   <div slot="faq">
     <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        {
-          q: 'How much do extra repayments really save?',
-          a: 'The savings are surprisingly large. On a $600,000 loan at 6% over 30 years, adding just $500/month extra reduces the term by about 8 years and saves over $150,000 in interest. The savings are largest early in the loan when the balance is highest, because interest is calculated on the remaining balance.',
-        },
-        {
-          q: 'Does it matter when I start making extra payments?',
-          a: 'Yes — the earlier you start, the more you save. Extra payments made in the first few years of a loan save significantly more than the same payments made later, because they reduce the balance on which interest compounds for longer. Every dollar paid early saves more than a dollar paid later.',
-        },
-        {
-          q: 'What is an amortization schedule?',
-          a: 'An amortization schedule is a complete table showing every payment over the life of a loan, broken down into the principal and interest components. It shows how the loan balance reduces over time. This calculator shows an annual summary — the total principal paid, interest paid, and remaining balance at the end of each year.',
-        },
-        {
-          q: 'Can I make extra payments on any mortgage?',
-          a: 'Most Australian variable rate mortgages allow unlimited extra repayments. Fixed rate loans often cap or prohibit extra repayments during the fixed period, or charge break fees if you pay too much extra. Check your loan contract or ask your lender before planning a strategy around large extra payments on a fixed loan.',
-        },
-        {
-          q: 'Is an offset account the same as making extra repayments?',
-          a: 'Functionally similar, but different in structure. An offset account is a savings account linked to your mortgage where the balance reduces the amount of the loan on which interest is charged. It achieves the same interest saving as extra repayments but keeps your money accessible. Extra repayments reduce the loan balance directly, which may be harder to redraw depending on your loan type.',
-        },
-        {
-          q: 'How is the monthly repayment calculated?',
-          a: 'The standard mortgage payment formula is M = P × [r(1+r)ⁿ] / [(1+r)ⁿ − 1], where P is the principal, r is the monthly interest rate (annual rate ÷ 12), and n is the total number of monthly payments. This produces a fixed payment that covers interest charges and reduces the principal to exactly zero by the final payment.',
-        },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+        <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">How much does an extra $500/month save on a $600k mortgage?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">On a $600,000 mortgage at 6% over 30 years, an extra $500 per month reduces the loan term by approximately 8 years and saves roughly $140,000–$160,000 in interest depending on exact rate and timing. Use the extra payment slider to see the precise figure for your scenario.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+        <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">Does this calculator account for offset accounts?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">No — this is a standard principal-and-interest amortization calculator. An offset account functions mathematically like a lump-sum extra payment each month. To approximate an offset, subtract your average offset balance from your loan amount before entering it here.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+        <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">What is the difference between P&amp;I and interest-only loans?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">This calculator models a principal-and-interest (P&amp;I) loan where each payment reduces the outstanding balance. Interest-only loans charge only the interest for an initial period (typically 1–5 years), after which they revert to P&amp;I with higher payments. Interest-only periods dramatically increase total interest paid.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+        <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">Why does the schedule show slightly different numbers to my bank?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">Banks may calculate interest daily rather than monthly, apply rounding differently, or use a 365-day vs 12-equal-month convention. This calculator uses standard monthly compounding. For exact figures, always refer to your lender's official loan statements.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
 </ToolLayout>
 
-<style>
-  /* ── Grid ── */
-  .mort-top-grid { grid-template-columns: 1fr; }
-  @media (min-width: 640px) {
-    .mort-top-grid { grid-template-columns: 1fr 1fr; }
-  }
-
-  /* ── Inputs ── */
-  .mort-field  { display:flex; flex-direction:column; gap:0.3rem; }
-  .mort-label  { font-size:0.78rem; font-weight:600; color:var(--text-muted); }
-  .mort-slider-val { font-size:0.82rem; font-weight:700; font-family:'Fira Code',monospace; color:var(--text-primary); }
-
-  .mort-input-wrap {
-    display:flex; align-items:center;
-    border:1.5px solid var(--border); border-radius:0.5rem;
-    background:var(--bg-surface-2); overflow:hidden;
-    transition:border-color 0.15s;
-  }
-  .mort-input-wrap:focus-within { border-color:#1D4ED8; }
-  .mort-prefix {
-    padding:0 0.6rem; font-size:0.85rem; font-weight:600;
-    color:var(--text-muted); background:var(--bg-surface-3);
-    align-self:stretch; display:flex; align-items:center;
-    border-right:1px solid var(--border); user-select:none;
-  }
-  .mort-input {
-    flex:1; padding:0.55rem 0.75rem; border:none; background:transparent;
-    color:var(--text-primary); font-size:0.9rem; outline:none; min-width:0;
-    font-family:'Fira Code',monospace;
-  }
-  .mort-select {
-    width:100%; padding:0.6rem 0.75rem;
-    border:1.5px solid var(--border); border-radius:0.5rem;
-    background:var(--bg-surface-2); color:var(--text-primary);
-    font-size:0.875rem; outline:none; cursor:pointer;
-    transition:border-color 0.15s;
-  }
-  .mort-select:focus { border-color:#1D4ED8; }
-
-  .mort-range {
-    width:100%; height:4px; cursor:pointer;
-    accent-color:#1D4ED8; margin:0.25rem 0;
-  }
-  .mort-range-ticks {
-    display:flex; justify-content:space-between;
-    font-size:0.7rem; color:var(--text-muted);
-  }
-
-  /* ── KPI cards ── */
-  .mort-kpi {
-    background:var(--bg-surface-2); border:1.5px solid var(--border);
-    border-radius:0.75rem; padding:0.875rem 1rem;
-  }
-  .mort-kpi-label { font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.25rem; }
-  .mort-kpi-val   { font-family:'Sora',sans-serif; font-size:1.35rem; font-weight:700; line-height:1.2; }
-  .mort-kpi-sub   { font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem; }
-
-  /* ── Table ── */
-  .mort-th {
-    padding:0.6rem 0.875rem; text-align:right; font-size:0.75rem;
-    font-weight:700; color:var(--text-secondary); white-space:nowrap;
-    border-bottom:1px solid var(--border);
-  }
-  .mort-th:first-child { text-align:left; }
-  .mort-td {
-    padding:0.5rem 0.875rem; text-align:right;
-    font-family:'Fira Code',monospace; font-size:0.78rem; color:var(--text-secondary);
-    border-bottom:1px solid var(--border);
-  }
-  .mort-td:first-child { text-align:left; font-weight:600; color:var(--text-primary); font-family:'Inter',sans-serif; }
-  .mort-td.extra-paid  { color:#16A34A; font-weight:600; }
-  tbody tr:last-child .mort-td { border-bottom:none; }
-  tbody tr:hover .mort-td { background:var(--bg-surface-2); }
-</style>
-
 <script>
-  // ── Helpers ──────────────────────────────────────────────────
-  const fmt = (n: number) => '$' + Math.round(n).toLocaleString();
-  const fmtD = (n: number) => '$' + n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  // ── Shared state ──────────────────────────────────────────
+  let scheduleData: { mo: number; pmt: number; prin: number; int: number; bal: number }[] = [];
+  let baseScheduleData: typeof scheduleData = [];
 
-  // ── Amortize function ────────────────────────────────────────
-  interface YearRow {
-    year: number;
-    principal: number;
-    interest: number;
-    extra: number;
-    balance: number;
-    balances: number[]; // monthly balances for chart
+  // ── Helpers ───────────────────────────────────────────────
+  function fmtCcy(n: number): string {
+    return '$' + Math.round(n).toLocaleString('en-AU');
   }
 
-  function amortize(
-    principal: number,
-    annualRate: number,
-    termYears: number,
-    extraMonthly: number
-  ): { rows: YearRow[]; totalInterest: number; totalPaid: number; actualMonths: number } {
-    const r = annualRate / 100 / 12;
-    const n = termYears * 12;
-    const M = r === 0
-      ? principal / n
-      : principal * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+  // ── renderChart (declared before calc which calls it) ─────
+  function renderChart(baseData: typeof scheduleData, extraData: typeof scheduleData, P: number): void {
+    const CHART_X0 = 48, CHART_X1 = 598, CHART_Y0 = 10, CHART_Y1 = 170;
+    const W = CHART_X1 - CHART_X0;
+    const H = CHART_Y1 - CHART_Y0;
 
-    let balance = principal;
-    let month = 0;
-    let totalInterest = 0;
-    let totalPaid = 0;
-    const rows: YearRow[] = [];
-
-    while (balance > 0.01 && month < n) {
-      let yPrincipal = 0, yInterest = 0, yExtra = 0;
-      const monthlyBalances: number[] = [];
-
-      for (let m = 0; m < 12 && balance > 0.01 && month < n; m++, month++) {
-        const intCharge = balance * r;
-        const stdPrincipal = Math.min(M - intCharge, balance);
-        const extra = Math.min(extraMonthly, Math.max(0, balance - stdPrincipal));
-        const paid = intCharge + stdPrincipal + extra;
-
-        balance -= (stdPrincipal + extra);
-        if (balance < 0.01) balance = 0;
-
-        yPrincipal  += stdPrincipal;
-        yInterest   += intCharge;
-        yExtra      += extra;
-        totalInterest += intCharge;
-        totalPaid   += paid;
-        monthlyBalances.push(balance);
-      }
-
-      rows.push({
-        year: rows.length + 1,
-        principal: yPrincipal,
-        interest: yInterest,
-        extra: yExtra,
-        balance,
-        balances: monthlyBalances,
-      });
+    function sampleBalances(data: typeof scheduleData, points: number): number[] {
+      if (data.length === 0) return [P, 0];
+      const result: number[] = [P];
+      const step = Math.max(1, Math.floor(data.length / points));
+      for (let i = step - 1; i < data.length; i += step) result.push(data[i].bal);
+      result.push(data[data.length - 1].bal);
+      return result;
     }
 
-    return { rows, totalInterest, totalPaid, actualMonths: month };
-  }
+    const POINTS = 60;
+    const baseSamples  = sampleBalances(baseData,  POINTS);
+    const extraSamples = sampleBalances(extraData, POINTS);
+    const maxLen = Math.max(baseSamples.length, extraSamples.length);
 
-  // ── Canvas chart ─────────────────────────────────────────────
-  function drawChart(
-    baseRows: YearRow[],
-    extraRows: YearRow[],
-    hasExtra: boolean
-  ) {
-    const canvas = document.getElementById('amort-chart') as HTMLCanvasElement;
-    const dpr    = window.devicePixelRatio || 1;
-    const W      = canvas.parentElement!.clientWidth;
-    const H      = Math.max(180, Math.min(260, W * 0.38));
-    canvas.style.height = H + 'px';
-    canvas.width  = W * dpr;
-    canvas.height = H * dpr;
-    const ctx = canvas.getContext('2d')!;
-    ctx.scale(dpr, dpr);
-
-    const ML = 58, MR = 16, MT = 16, MB = 32;
-    const cW = W - ML - MR, cH = H - MT - MB;
-    ctx.clearRect(0, 0, W, H);
-
-    // Dark mode detection
-    const isDark = document.documentElement.classList.contains('dark');
-    const gridColor  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-    const textColor  = isDark ? '#64748B' : '#94A3B8';
-    const baseColor  = isDark ? '#64748B' : '#94A3B8';
-    const extraColor = '#10B981';
-
-    const maxBal = baseRows[0] ? (baseRows[0].balance + baseRows[0].principal + baseRows[0].interest) : 1;
-    // Use total principal as max
-    const principal = baseRows.reduce((s, r) => s + r.principal + (r.extra || 0), 0)
-      + (baseRows[baseRows.length - 1]?.balance || 0);
-
-    const xScale = (i: number, total: number) => ML + (i / total) * cW;
-    const yScale = (v: number) => MT + cH - (v / principal) * cH;
-
-    // Grid lines
-    ctx.font = `11px Inter, sans-serif`;
-    for (let g = 0; g <= 4; g++) {
-      const v = (principal / 4) * g;
-      const y = yScale(v);
-      ctx.beginPath();
-      ctx.strokeStyle = gridColor;
-      ctx.lineWidth = 1;
-      ctx.moveTo(ML, y); ctx.lineTo(ML + cW, y);
-      ctx.stroke();
-      ctx.fillStyle = textColor;
-      ctx.textAlign = 'right';
-      const label = v >= 1e6 ? `$${(v/1e6).toFixed(1)}M` : `$${Math.round(v/1000)}k`;
-      ctx.fillText(label, ML - 6, y + 4);
+    function toSVG(samples: number[], totalPoints: number): { x: number; y: number }[] {
+      return samples.map((bal, i) => ({
+        x: CHART_X0 + (i / Math.max(totalPoints - 1, 1)) * W,
+        y: CHART_Y0 + H - (P > 0 ? (bal / P) * H : 0),
+      }));
     }
 
-    // X axis labels (years)
-    const totalYears = baseRows.length;
-    ctx.textAlign = 'center';
-    ctx.fillStyle = textColor;
-    const step = totalYears <= 15 ? 5 : totalYears <= 25 ? 5 : 10;
-    for (let y = 0; y <= totalYears; y += step) {
-      const x = xScale(y, totalYears);
-      ctx.fillText(`Yr ${y}`, x, H - MB + 16);
+    const basePoints  = toSVG(baseSamples,  maxLen);
+    const extraPoints = toSVG(extraSamples, maxLen);
+
+    function pointsToLine(pts: { x: number; y: number }[]): string {
+      return pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    }
+    function pointsToArea(pts: { x: number; y: number }[], yFloor: number): string {
+      if (pts.length === 0) return '';
+      const lastX  = pts[pts.length - 1].x.toFixed(1);
+      const firstX = pts[0].x.toFixed(1);
+      return `${pointsToLine(pts)} L${lastX},${yFloor} L${firstX},${yFloor} Z`;
     }
 
-    function drawLine(rows: YearRow[], color: string, lineWidth: number) {
-      if (!rows.length) return;
-      ctx.beginPath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = lineWidth;
-      ctx.lineJoin = 'round';
-      // Start at full balance
-      ctx.moveTo(xScale(0, rows.length), yScale(principal));
-      rows.forEach((row, i) => {
-        // Plot end-of-year balance
-        ctx.lineTo(xScale(i + 1, rows.length), yScale(Math.max(0, row.balance)));
-      });
-      ctx.stroke();
+    document.getElementById('chart-base-line')!.setAttribute('d',  pointsToLine(basePoints));
+    document.getElementById('chart-base-area')!.setAttribute('d',  pointsToArea(basePoints, CHART_Y1));
+    document.getElementById('chart-extra-line')!.setAttribute('d', pointsToLine(extraPoints));
+    document.getElementById('chart-extra-area')!.setAttribute('d', pointsToArea(extraPoints, CHART_Y1));
 
-      // Gradient fill
-      const grad = ctx.createLinearGradient(0, MT, 0, MT + cH);
-      grad.addColorStop(0, color + (isDark ? '30' : '20'));
-      grad.addColorStop(1, color + '00');
-      ctx.lineTo(xScale(rows.length, rows.length), yScale(0));
-      ctx.lineTo(xScale(0, rows.length), yScale(0));
-      ctx.closePath();
-      ctx.fillStyle = grad;
-      ctx.fill();
-    }
+    const fmtK = (n: number) => n >= 1_000_000 ? '$' + (n / 1_000_000).toFixed(1) + 'M' : '$' + Math.round(n / 1000) + 'k';
+    (document.getElementById('chart-y-top') as SVGTextElement).textContent = fmtK(P);
+    (document.getElementById('chart-y-mid') as SVGTextElement).textContent = fmtK(P / 2);
 
-    drawLine(baseRows, baseColor, 2);
-    if (hasExtra && extraRows.length) {
-      drawLine(extraRows, extraColor, 2.5);
-    }
-  }
+    const baseTerm  = baseData.length;
+    const extraTerm = extraData.length;
+    (document.getElementById('chart-x-mid') as SVGTextElement).textContent = `Yr ${Math.round(baseTerm / 2 / 12)}`;
+    (document.getElementById('chart-x-end') as SVGTextElement).textContent = `Yr ${Math.ceil(baseTerm / 12)}`;
 
-  // ── Main update ───────────────────────────────────────────────
-  function update() {
-    const principal   = parseFloat((document.getElementById('m-principal') as HTMLInputElement).value) || 0;
-    const rate        = parseFloat((document.getElementById('m-rate') as HTMLInputElement).value) || 0;
-    const term        = parseInt((document.getElementById('m-term') as HTMLSelectElement).value) || 30;
-    const extra       = parseInt((document.getElementById('m-extra') as HTMLInputElement).value) || 0;
-
-    if (principal <= 0) return;
-
-    // Update slider labels
-    document.getElementById('m-rate-val')!.textContent  = `${rate.toFixed(2)}%`;
-    document.getElementById('m-extra-val')!.textContent = extra > 0 ? `$${extra.toLocaleString()}` : '$0';
-
-    // Monthly payment
-    const r = rate / 100 / 12;
-    const n = term * 12;
-    const M = r === 0 ? principal / n
-      : principal * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
-
-    document.getElementById('k-monthly')!.textContent = fmt(M);
-
-    // Base schedule (no extra)
-    const base  = amortize(principal, rate, term, 0);
-    // Extra schedule
-    const xtra  = extra > 0 ? amortize(principal, rate, term, extra) : null;
-
-    // Base KPIs
-    document.getElementById('k-total-base')!.textContent    = fmt(base.totalPaid);
-    document.getElementById('k-interest-base')!.textContent = fmt(base.totalInterest);
-
-    // Extra KPIs
-    const hasExtra = extra > 0 && xtra;
-    const kpiExtraBox   = document.getElementById('kpi-extra-box')!;
-    const kpiSavingBox  = document.getElementById('kpi-saving-box')!;
-    const savingsBar    = document.getElementById('savings-bar')!;
-    const legendExtra   = document.getElementById('legend-extra')!;
-
-    if (hasExtra && xtra) {
-      const interestSaved = base.totalInterest - xtra.totalInterest;
-      const monthsSaved   = base.actualMonths - xtra.actualMonths;
-      const yearsSaved    = monthsSaved / 12;
-      const payoffYear    = new Date().getFullYear() + Math.ceil(xtra.actualMonths / 12);
-
-      kpiExtraBox.style.display  = 'block';
-      kpiSavingBox.style.display = 'block';
-      savingsBar.style.display   = 'block';
-      legendExtra.style.display  = 'flex';
-
-      document.getElementById('k-total-extra')!.textContent  = fmt(xtra.totalPaid);
-      document.getElementById('k-extra-sub')!.textContent    = `saves ${fmt(base.totalPaid - xtra.totalPaid)}`;
-      document.getElementById('k-interest-saved')!.textContent = fmt(interestSaved);
-      document.getElementById('k-years-saved')!.textContent  =
-        yearsSaved >= 1 ? `${yearsSaved.toFixed(1)} yrs shorter` : `${monthsSaved} months shorter`;
-
-      document.getElementById('sb-saved')!.textContent  = fmt(interestSaved);
-      document.getElementById('sb-years')!.textContent  =
-        yearsSaved >= 1 ? `${Math.floor(yearsSaved)} yr${Math.floor(yearsSaved) !== 1 ? 's' : ''} ${Math.round((yearsSaved % 1) * 12)} mo` : `${monthsSaved} mo`;
-      document.getElementById('sb-payoff')!.textContent = payoffYear.toString();
+    const payoffLine  = document.getElementById('chart-payoff-line') as SVGLineElement;
+    const payoffLabel = document.getElementById('chart-payoff-label') as SVGTextElement;
+    if (extraTerm < baseTerm && extraTerm > 0) {
+      const px = (CHART_X0 + (extraTerm / baseTerm) * W).toFixed(1);
+      payoffLine.setAttribute('x1', px); payoffLine.setAttribute('x2', px);
+      payoffLabel.setAttribute('x', px);
+      payoffLabel.textContent = `Yr ${Math.ceil(extraTerm / 12)} paid off`;
+      payoffLine.style.display = ''; payoffLabel.style.display = '';
     } else {
-      kpiExtraBox.style.display  = 'none';
-      kpiSavingBox.style.display = 'none';
-      savingsBar.style.display   = 'none';
-      legendExtra.style.display  = 'none';
-    }
-
-    // Chart
-    drawChart(base.rows, xtra ? xtra.rows : [], !!hasExtra);
-
-    // Table
-    const tbody = document.getElementById('amort-body')!;
-    tbody.innerHTML = '';
-    const baseMap = new Map(base.rows.map(r => [r.year, r]));
-    const extraMap = xtra ? new Map(xtra.rows.map(r => [r.year, r])) : null;
-    const maxYear  = Math.max(base.rows.length, xtra ? xtra.rows.length : 0);
-
-    for (let y = 1; y <= maxYear; y++) {
-      const br = baseMap.get(y);
-      const xr = extraMap ? extraMap.get(y) : null;
-      const row = xr || br;
-      if (!row) continue;
-
-      const tr = document.createElement('tr');
-      const extraPaid = row.extra || 0;
-      tr.innerHTML = `
-        <td class="mort-td">Year ${row.year}</td>
-        <td class="mort-td">${fmt(row.principal)}</td>
-        <td class="mort-td" style="color:#EF4444;">${fmt(row.interest)}</td>
-        <td class="mort-td ${extraPaid > 0 ? 'extra-paid' : ''}">${extraPaid > 0 ? '+' + fmt(extraPaid) : '—'}</td>
-        <td class="mort-td">${row.balance < 1 ? '<span style="color:#16A34A;">Paid off</span>' : fmt(row.balance)}</td>
-      `;
-      tbody.appendChild(tr);
+      payoffLine.style.display = 'none'; payoffLabel.style.display = 'none';
     }
   }
 
-  // ── Wire up all inputs ────────────────────────────────────────
-  ['m-principal','m-rate','m-extra'].forEach(id => {
-    document.getElementById(id)!.addEventListener('input', update);
-  });
-  document.getElementById('m-term')!.addEventListener('change', update);
+  // ── renderSchedule (declared before calc which calls it) ──
+  function renderSchedule(): void {
+    const tbody = document.getElementById('schedule-body')!;
+    tbody.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    scheduleData.forEach(({ mo, pmt, prin, int, bal }) => {
+      const tr = document.createElement('tr');
+      tr.style.borderBottom = '1px solid var(--border)';
+      [
+        { val: String(mo),   color: 'var(--text-muted)' },
+        { val: fmtCcy(pmt),  color: 'var(--text-secondary)' },
+        { val: fmtCcy(prin), color: '#1D4ED8' },
+        { val: fmtCcy(int),  color: '#DC2626' },
+        { val: fmtCcy(bal),  color: 'var(--text-secondary)' },
+      ].forEach(({ val, color }) => {
+        const td = document.createElement('td');
+        td.textContent = val;
+        td.style.cssText = `padding:0.45rem 0.625rem; text-align:right; color:${color};`;
+        tr.appendChild(td);
+      });
+      frag.appendChild(tr);
+    });
+    tbody.appendChild(frag);
+  }
 
-  // Redraw chart on resize
-  let resizeTimer: ReturnType<typeof setTimeout>;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(update, 100);
+  // ── calc (uses renderChart + renderSchedule, so declared after both) ──
+  function calc(): void {
+    const P     = parseFloat((document.getElementById('loan-amount') as HTMLInputElement).value) || 0;
+    const annR  = parseFloat((document.getElementById('interest-rate') as HTMLInputElement).value) || 0;
+    const years = parseInt((document.getElementById('loan-term') as HTMLSelectElement).value) || 30;
+    const extra = parseFloat((document.getElementById('extra-payment') as HTMLInputElement).value) || 0;
+
+    if (P <= 0) return;
+
+    const r = annR / 100 / 12;
+    const n = years * 12;
+    const M = r > 0
+      ? P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)
+      : P / n;
+
+    // Base schedule — no extra payments
+    let balBase = P;
+    let totalIntBase = 0;
+    baseScheduleData = [];
+    for (let i = 0; i < n; i++) {
+      const intPmt  = balBase * r;
+      const prinPmt = M - intPmt;
+      totalIntBase += intPmt;
+      balBase = Math.max(0, balBase - prinPmt);
+      baseScheduleData.push({ mo: i + 1, pmt: M, prin: prinPmt, int: intPmt, bal: balBase });
+    }
+
+    // Extra payment schedule
+    let bal = P;
+    let totalInt = 0;
+    let month = 0;
+    scheduleData = [];
+
+    while (bal > 0.01 && month < n) {
+      const intPmt  = bal * r;
+      const prinPmt = Math.min(bal, M - intPmt + extra);
+      totalInt += intPmt;
+      bal = Math.max(0, bal - prinPmt);
+      month++;
+      scheduleData.push({ mo: month, pmt: M + extra, prin: prinPmt, int: intPmt, bal });
+    }
+
+    const interestSaved = Math.max(0, totalIntBase - totalInt);
+    const monthsSaved   = n - month;
+    const yearsS  = Math.floor(monthsSaved / 12);
+    const mosS    = monthsSaved % 12;
+    const timeSavedStr = monthsSaved <= 0
+      ? '—'
+      : yearsS > 0 ? `${yearsS}y ${mosS}m` : `${mosS} months`;
+
+    const payoffDate = new Date();
+    payoffDate.setMonth(payoffDate.getMonth() + month);
+    const payoffStr = payoffDate.toLocaleDateString('en-AU', { month: 'short', year: 'numeric' });
+
+    (document.getElementById('out-monthly') as HTMLElement).textContent             = fmtCcy(M + extra);
+    (document.getElementById('out-interest-saved') as HTMLElement).textContent      = fmtCcy(interestSaved);
+    (document.getElementById('out-time-saved') as HTMLElement).textContent          = timeSavedStr;
+    (document.getElementById('out-total-interest') as HTMLElement).textContent      = fmtCcy(totalIntBase);
+    (document.getElementById('out-total-interest-extra') as HTMLElement).textContent = fmtCcy(totalInt);
+    (document.getElementById('out-payoff-date') as HTMLElement).textContent         = payoffStr;
+
+    // Render chart
+    renderChart(baseScheduleData, scheduleData, P);
+
+    // Re-render schedule if visible
+    const wrap = document.getElementById('schedule-wrap')!;
+    if (wrap.style.display !== 'none') renderSchedule();
+  }
+
+  // ── Wire up event listeners after all functions are defined ──
+
+  // Interest rate slider
+  const rateSlider   = document.getElementById('interest-rate') as HTMLInputElement;
+  const rateDisplay  = document.getElementById('interest-rate-val')!;
+  rateSlider.addEventListener('input', () => {
+    rateDisplay.textContent = parseFloat(rateSlider.value).toFixed(2) + '%';
+    calc();
   });
 
-  // Initial render
-  update();
+  // Extra payment slider
+  const extraSlider  = document.getElementById('extra-payment') as HTMLInputElement;
+  const extraDisplay = document.getElementById('extra-payment-val')!;
+  extraSlider.addEventListener('input', () => {
+    extraDisplay.textContent = '$' + extraSlider.value;
+    calc();
+  });
+
+  // Number input + select
+  document.getElementById('loan-amount')!.addEventListener('input',  calc);
+  document.getElementById('loan-amount')!.addEventListener('change', calc);
+  document.getElementById('loan-term')!.addEventListener('change',   calc);
+
+  // Schedule toggle
+  const scheduleWrap = document.getElementById('schedule-wrap')!;
+  const toggleBtn    = document.getElementById('btn-toggle-schedule') as HTMLButtonElement;
+  toggleBtn.addEventListener('click', () => {
+    const isHidden = scheduleWrap.style.display === 'none';
+    scheduleWrap.style.display = isHidden ? 'block' : 'none';
+    toggleBtn.textContent = isHidden ? 'Hide' : 'Show';
+    if (isHidden) renderSchedule();
+  });
+
+  // ── Initial render ──
+  calc();
 </script>

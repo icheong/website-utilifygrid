@@ -1,72 +1,80 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import tools from '../../data/tools.json';
-
 const tool = tools.find(t => t.slug === 'csv-to-json-xml-converter')!;
 ---
-
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">CSV Data Converter</h2>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">CSV to JSON &amp; XML Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Paste CSV with a header row to convert it to prettified JSON or XML instantly.</p>
 
-    <div style="display:flex; gap:0.5rem; margin-bottom:0.875rem;">
-      <button id="btn-json" onclick="setMode('json')" style="padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F97316; color:#fff; border:none;">JSON</button>
-      <button id="btn-xml"  onclick="setMode('xml')"  style="padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F1F5F9; color:#64748B; border:1px solid #E2E8F0;">XML</button>
-      <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; color:#475569; margin-left:auto; cursor:pointer;">
-        <input id="has-header" type="checkbox" checked style="accent-color:#F97316;"/> First row is header
-      </label>
+    <!-- Output format toggle -->
+    <div class="toggle-group" style="margin-bottom:1.25rem;" role="group" aria-label="Output format">
+      <button class="toggle-btn active" data-fmt="json" type="button">JSON</button>
+      <button class="toggle-btn"        data-fmt="xml"  type="button">XML</button>
     </div>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;margin-bottom:1rem;">
       <div>
-        <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">CSV Input</div>
-        <textarea id="csv-input" placeholder="name,age,city&#10;Alice,30,Sydney&#10;Bob,25,Melbourne"
-          style="width:100%; height:260px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; resize:none; box-sizing:border-box; outline:none; line-height:1.6;"
-          onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#E2E8F0'"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);">CSV Input</label>
+          <button id="btn-sample" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;">Sample</button>
+        </div>
+        <textarea id="csv-input" class="input-themed"
+          placeholder="name,age,city&#10;Alice,30,Sydney&#10;Bob,25,Melbourne"
+          rows="10"
+          style="width:100%;box-sizing:border-box;resize:vertical;border-radius:0.625rem;padding:0.875rem 1rem;font-family:'Fira Code',monospace;font-size:0.78rem;line-height:1.65;"
+        ></textarea>
       </div>
       <div>
-        <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Output</div>
-        <textarea id="csv-output" readonly placeholder="Output appears here…"
-          style="width:100%; height:260px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; background:#F8FAFC; resize:none; box-sizing:border-box; outline:none; line-height:1.6;"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);">Output</label>
+          <button id="btn-copy" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;">Copy</button>
+        </div>
+        <textarea id="out-area" class="input-themed" readonly rows="10"
+          placeholder="Output will appear here…"
+          style="width:100%;box-sizing:border-box;resize:vertical;border-radius:0.625rem;padding:0.875rem 1rem;font-family:'Fira Code',monospace;font-size:0.78rem;line-height:1.65;background:var(--bg-surface-2);"
+        ></textarea>
       </div>
     </div>
 
-    <div style="display:flex; gap:0.75rem; margin-top:0.875rem;">
-      <button id="copy-btn" style="flex:1; padding:0.625rem; background:#F97316; color:#fff; border:none; border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
-        onmouseover="this.style.background='#EA580C'" onmouseout="this.style.background='#F97316'">Copy Output</button>
-      <button id="clear-btn" style="padding:0.625rem 1.25rem; background:#F1F5F9; color:#475569; border:1px solid #E2E8F0; border-radius:0.625rem; font-size:0.875rem; font-weight:600; cursor:pointer;">Clear</button>
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+      <button id="btn-convert" class="btn-primary" type="button">Convert</button>
+      <button id="btn-clear"   class="btn-secondary" type="button" style="font-size:0.82rem;">Clear</button>
     </div>
-
-    <div id="error-msg" style="display:none; margin-top:0.75rem; padding:0.75rem 1rem; background:#FEF2F2; border:1px solid #FECACA; border-radius:0.625rem; font-size:0.82rem; color:#DC2626;"></div>
+    <p id="csv-error" style="display:none;color:#EF4444;font-size:0.82rem;margin-top:0.75rem;"></p>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the CSV Converter</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste your CSV data into the left panel. If your CSV includes a header row, keep "First row is header" checked — headers become JSON keys or XML tag names. Toggle between JSON and XML output using the buttons above. The output updates as you type.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">For best results, ensure values containing commas are wrapped in double quotes. Empty cells are preserved as empty strings in the output.</p>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the CSV Converter</h2>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">Paste CSV data with a header row into the left panel. The first row is treated as column names. Select JSON or XML output format using the toggle, then click Convert. Results update live as you type.</p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">Quoted fields and commas inside quotes are handled correctly. All processing is client-side — your data never leaves the browser.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How the conversion works</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The parser splits the input on newlines, then splits each row on commas while respecting quoted values. If a header row is present, its values become keys; otherwise keys default to field_0, field_1, etc.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">For JSON, each row becomes an object in an array. For XML, each row becomes an <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">&lt;row&gt;</code> element with child tags named after the headers. All processing happens locally in your browser.</p>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.875rem;">Conversion approach</h2>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Parsing</span><span class="info-value">RFC 4180 CSV — handles quoted fields &amp; embedded commas</span></div>
+      <div class="info-row"><span class="info-label">Headers</span><span class="info-value">First row becomes JSON keys / XML element names</span></div>
+      <div class="info-row"><span class="info-label">JSON output</span><span class="info-value">Array of objects, 2-space indented</span></div>
+      <div class="info-row"><span class="info-label">XML output</span><span class="info-value">&lt;root&gt;&lt;row&gt;…&lt;/row&gt;&lt;/root&gt; with 2-space indent</span></div>
+    </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What CSV formats are supported?', a: 'Standard comma-separated values with an optional header row. Values containing commas must be wrapped in double quotes. Quoted values containing double quotes should escape them as two consecutive double quotes ("").' },
-        { q: 'Are tabs and semicolons supported as delimiters?', a: 'This tool uses comma as the delimiter. For tab-separated (TSV) or semicolon-separated files, manually find and replace the delimiter with commas before pasting, or use a spreadsheet application to re-export as standard CSV.' },
-        { q: 'What happens to numbers and booleans in JSON output?', a: 'Currently all values are output as strings. If you need typed JSON (numbers as integers, booleans as true/false), you can post-process the JSON with a simple script or use a tool like jq to apply type coercion.' },
-        { q: 'How large a file can I convert?', a: 'Since everything runs in your browser, performance depends on your device. Files up to a few hundred thousand rows typically process in under a second. For very large datasets, consider using a server-side tool or command-line utilities like jq or csvtojson.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+        {q:'Does it handle quoted fields with commas inside?',a:'Yes. The parser follows RFC 4180 and correctly handles fields wrapped in double quotes that contain commas or newlines.'},
+        {q:'What delimiter does it use?',a:'Comma by default. If your data uses tabs, semicolons, or pipes, replace the delimiter before pasting — a find/replace in your text editor is the quickest approach.'},
+        {q:'Are numbers converted to JSON number type?',a:'Currently all values are treated as strings for maximum compatibility. If you need numeric types in JSON, post-process the output or use a schema-aware converter.'},
+        {q:'Is there a row limit?',a:'No hard limit — the tool runs entirely in your browser and will process as many rows as your machine can handle in memory. For very large files (100k+ rows), consider a server-side tool.'},
+      ].map(item=>(
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -76,91 +84,77 @@ const tool = tools.find(t => t.slug === 'csv-to-json-xml-converter')!;
 </ToolLayout>
 
 <script>
-  let mode = 'json';
-  function setMode(m: string) {
-    mode = m;
-    (document.getElementById('btn-json') as HTMLElement).style.cssText = m === 'json'
-      ? 'padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F97316; color:#fff; border:none;'
-      : 'padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F1F5F9; color:#64748B; border:1px solid #E2E8F0;';
-    (document.getElementById('btn-xml') as HTMLElement).style.cssText = m === 'xml'
-      ? 'padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F97316; color:#fff; border:none;'
-      : 'padding:0.4rem 1rem; border-radius:0.4rem; font-size:0.82rem; font-weight:600; cursor:pointer; background:#F1F5F9; color:#64748B; border:1px solid #E2E8F0;';
+  const SAMPLE = `name,age,city,active\nAlice,30,Sydney,true\nBob,25,Melbourne,false\nCarol,35,Brisbane,true`;
+  let fmt = 'json';
+
+  const fmtBtns = document.querySelectorAll<HTMLButtonElement>('[data-fmt]');
+  fmtBtns.forEach(btn => btn.addEventListener('click', () => {
+    fmt = btn.dataset.fmt!;
+    fmtBtns.forEach(b => { b.classList.toggle('active', b.dataset.fmt === fmt); });
     convert();
-  }
-  (window as any).setMode = setMode;
+  }));
 
   function parseCSV(text: string): string[][] {
     const rows: string[][] = [];
-    const lines = text.split(/\r?\n/).filter(l => l.trim());
-    for (const line of lines) {
-      const cells: string[] = [];
-      let cur = '', inQ = false;
-      for (let i = 0; i < line.length; i++) {
-        const c = line[i];
-        if (c === '"') { inQ = !inQ; }
-        else if (c === ',' && !inQ) { cells.push(cur); cur = ''; }
-        else cur += c;
+    let field = '', row: string[] = [], inQ = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQ) {
+        if (c === '"' && text[i+1] === '"') { field += '"'; i++; }
+        else if (c === '"') inQ = false;
+        else field += c;
+      } else {
+        if (c === '"') inQ = true;
+        else if (c === ',') { row.push(field); field = ''; }
+        else if (c === '\n') { row.push(field); rows.push(row); field = ''; row = []; }
+        else if (c !== '\r') field += c;
       }
-      cells.push(cur);
-      rows.push(cells);
     }
-    return rows;
+    if (field || row.length) { row.push(field); rows.push(row); }
+    return rows.filter(r => r.some(f => f.trim()));
   }
-
-  function toSafeKey(s: string) { return s.trim().replace(/[^a-zA-Z0-9_]/g, '_') || 'field'; }
 
   function convert() {
-    const raw    = (document.getElementById('csv-input') as HTMLTextAreaElement).value;
-    const hasHdr = (document.getElementById('has-header') as HTMLInputElement).checked;
-    const errEl  = document.getElementById('error-msg')!;
-    const outEl  = document.getElementById('csv-output') as HTMLTextAreaElement;
-    errEl.style.display = 'none';
-
-    if (!raw.trim()) { outEl.value = ''; return; }
+    const raw = (document.getElementById('csv-input') as HTMLTextAreaElement).value;
+    const err = document.getElementById('csv-error')!;
+    const out = document.getElementById('out-area') as HTMLTextAreaElement;
+    err.style.display = 'none';
+    if (!raw.trim()) { out.value = ''; return; }
     try {
-      const rows = parseCSV(raw);
-      let keys: string[];
-      let dataRows: string[][];
-      if (hasHdr && rows.length > 0) { keys = rows[0].map(toSafeKey); dataRows = rows.slice(1); }
-      else { keys = rows[0]?.map((_, i) => 'field_' + i) || []; dataRows = rows; }
-
-      if (mode === 'json') {
-        const arr = dataRows.map(row => {
-          const obj: Record<string, string> = {};
-          keys.forEach((k, i) => { obj[k] = row[i] ?? ''; });
-          return obj;
-        });
-        outEl.value = JSON.stringify(arr, null, 2);
+      const rows = parseCSV(raw.trim());
+      if (rows.length < 2) { err.textContent = 'Need at least a header row and one data row.'; err.style.display='block'; return; }
+      const headers = rows[0];
+      const data = rows.slice(1).map(r => {
+        const obj: Record<string,string> = {};
+        headers.forEach((h,i) => { obj[h.trim()] = (r[i] || '').trim(); });
+        return obj;
+      });
+      if (fmt === 'json') {
+        out.value = JSON.stringify(data, null, 2);
       } else {
-        const lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<data>'];
-        dataRows.forEach(row => {
+        const lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<root>'];
+        data.forEach(obj => {
           lines.push('  <row>');
-          keys.forEach((k, i) => { lines.push(`    <${k}>${(row[i] ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</${k}>`); });
+          Object.entries(obj).forEach(([k,v]) => { lines.push(`    <${k}>${escXml(v)}</${k}>`); });
           lines.push('  </row>');
         });
-        lines.push('</data>');
-        outEl.value = lines.join('\n');
+        lines.push('</root>');
+        out.value = lines.join('\n');
       }
-    } catch (e) {
-      errEl.textContent = 'Parse error: ' + (e as Error).message;
-      errEl.style.display = 'block';
-      outEl.value = '';
-    }
+    } catch(e) { err.textContent = 'Parse error: ' + (e as Error).message; err.style.display='block'; }
   }
 
-  document.getElementById('csv-input')?.addEventListener('input', convert);
-  document.getElementById('has-header')?.addEventListener('change', convert);
-  document.getElementById('copy-btn')?.addEventListener('click', () => {
-    const out = (document.getElementById('csv-output') as HTMLTextAreaElement).value;
-    if (!out) return;
-    navigator.clipboard.writeText(out).then(() => {
-      const btn = document.getElementById('copy-btn')!;
-      btn.textContent = '✓ Copied!';
-      setTimeout(() => { btn.textContent = 'Copy Output'; }, 2000);
+  function escXml(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  document.getElementById('btn-convert')!.addEventListener('click', convert);
+  document.getElementById('csv-input')!.addEventListener('input', convert);
+  document.getElementById('btn-sample')!.addEventListener('click', () => { (document.getElementById('csv-input') as HTMLTextAreaElement).value = SAMPLE; convert(); });
+  document.getElementById('btn-clear')!.addEventListener('click', () => { (document.getElementById('csv-input') as HTMLTextAreaElement).value = ''; (document.getElementById('out-area') as HTMLTextAreaElement).value = ''; });
+  document.getElementById('btn-copy')!.addEventListener('click', () => {
+    const btn = document.getElementById('btn-copy')!;
+    navigator.clipboard.writeText((document.getElementById('out-area') as HTMLTextAreaElement).value).then(() => {
+      btn.textContent='✓ Copied!'; btn.classList.add('btn-success');
+      setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('btn-success'); }, 2000);
     });
-  });
-  document.getElementById('clear-btn')?.addEventListener('click', () => {
-    (document.getElementById('csv-input') as HTMLTextAreaElement).value = '';
-    (document.getElementById('csv-output') as HTMLTextAreaElement).value = '';
   });
 </script>

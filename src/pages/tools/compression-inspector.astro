@@ -1,79 +1,96 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import tools from '../../data/tools.json';
-
 const tool = tools.find(t => t.slug === 'compression-inspector')!;
 ---
-
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Brotli &amp; Gzip Compression Inspector</h2>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Brotli &amp; Gzip Compression Inspector</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Paste text to compare Brotli and Gzip compression sizes — uses the native browser CompressionStream API.</p>
 
-    <textarea id="text-input" placeholder="Paste any text, HTML, CSS, or JavaScript to inspect compression savings…"
-      style="width:100%; min-height:180px; padding:1rem; border:1.5px solid #E2E8F0; border-radius:0.875rem; font-size:0.875rem; font-family:'Fira Code',monospace; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.6; margin-bottom:1.25rem;"
-      onfocus="this.style.borderColor='#06B6D4'" onblur="this.style.borderColor='#E2E8F0'"></textarea>
+    <textarea id="text-input" class="input-themed"
+      placeholder="Paste HTML, CSS, JavaScript, JSON or any text to measure compression savings…"
+      rows="8"
+      style="width:100%;box-sizing:border-box;resize:vertical;border-radius:0.625rem;padding:0.875rem 1rem;font-size:0.88rem;line-height:1.7;margin-bottom:1rem;"
+    ></textarea>
 
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1rem;">
-      <div style="background:#F0FDFA; border:1.5px solid #99F6E4; border-radius:0.75rem; padding:1rem; text-align:center;">
-        <div id="out-original" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#0D9488;">—</div>
-        <div style="font-size:0.72rem; font-weight:600; color:#2DD4BF; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Original</div>
-      </div>
-      <div style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:1rem; text-align:center;">
-        <div id="out-gzip" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#1D4ED8;">—</div>
-        <div style="font-size:0.72rem; font-weight:600; color:#60A5FA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Gzip</div>
-      </div>
-      <div style="background:#FDF4FF; border:1.5px solid #E9D5FF; border-radius:0.75rem; padding:1rem; text-align:center;">
-        <div id="out-brotli" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#7C3AED;">—</div>
-        <div style="font-size:0.72rem; font-weight:600; color:#A78BFA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Brotli</div>
-      </div>
+    <div style="display:flex;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap;">
+      <button id="btn-compress" class="btn-primary" type="button">Inspect Compression</button>
+      <button id="btn-sample"   class="btn-secondary" type="button" style="font-size:0.82rem;">Load sample CSS</button>
+      <button id="btn-clear"    class="btn-secondary" type="button" style="font-size:0.82rem;">Clear</button>
     </div>
 
-    <div style="display:flex; flex-direction:column; gap:0.625rem;">
-      {[['Gzip savings', 'bar-gzip', '#1D4ED8'], ['Brotli savings', 'bar-brotli', '#7C3AED']].map(([label, id, color]) => (
-        <div>
-          <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
-            <span style="font-size:0.78rem; font-weight:600; color:#475569;">{label}</span>
-            <span id={id + '-pct'} style="font-size:0.78rem; font-weight:700; color:#0F172A;">—</span>
-          </div>
-          <div style="height:8px; background:#F1F5F9; border-radius:999px; overflow:hidden;">
-            <div id={id} style={`height:100%; width:0%; background:${color}; border-radius:999px; transition:width 0.4s ease;`}></div>
+    <!-- Results -->
+    <div id="results" style="display:none;">
+      <!-- Original size -->
+      <div class="info-row" style="margin-bottom:0.875rem;">
+        <span class="info-label">Original (uncompressed)</span>
+        <span class="info-value" id="out-original"></span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+
+        <div class="result-card accent-blue">
+          <div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.09em;color:var(--text-muted);margin-bottom:0.5rem;">Gzip</div>
+          <div class="result-value" id="out-gzip-size" style="font-size:1.5rem;"></div>
+          <div class="result-label">compressed</div>
+          <div style="margin-top:0.625rem;">
+            <div style="height:6px;background:var(--bg-surface-3);border-radius:999px;overflow:hidden;">
+              <div id="bar-gzip" style="height:100%;background:#3B82F6;border-radius:999px;transition:width 0.4s;width:0%;"></div>
+            </div>
+            <div id="out-gzip-pct" style="font-size:0.75rem;font-weight:700;color:#3B82F6;margin-top:0.3rem;"></div>
           </div>
         </div>
-      ))}
+
+        <div class="result-card accent-success">
+          <div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.09em;color:var(--text-muted);margin-bottom:0.5rem;">Brotli</div>
+          <div class="result-value" id="out-brotli-size" style="font-size:1.5rem;color:#10B981;"></div>
+          <div class="result-label">compressed</div>
+          <div style="margin-top:0.625rem;">
+            <div style="height:6px;background:var(--bg-surface-3);border-radius:999px;overflow:hidden;">
+              <div id="bar-brotli" style="height:100%;background:#10B981;border-radius:999px;transition:width 0.4s;width:0%;"></div>
+            </div>
+            <div id="out-brotli-pct" style="font-size:0.75rem;font-weight:700;color:#10B981;margin-top:0.3rem;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="winner-row" class="result-card" style="margin-top:0.75rem;text-align:center;padding:0.875rem;"></div>
     </div>
 
-    <div id="support-note" style="margin-top:1rem; padding:0.625rem 0.875rem; background:#FFFBEB; border:1px solid #FDE68A; border-radius:0.5rem; font-size:0.78rem; color:#92400E; display:none;">
-      ⚠️ Your browser does not support the CompressionStream API needed for Brotli. Gzip is still available.
-    </div>
+    <p id="compress-error" style="display:none;color:#EF4444;font-size:0.82rem;margin-top:0.75rem;"></p>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Compression Inspector</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste any text content — HTML markup, CSS stylesheets, JavaScript code, JSON responses, or plain text — into the input area. The tool immediately compresses it using both Gzip and Brotli and displays the byte sizes and percentage savings.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">This is useful when evaluating how much a specific piece of content will benefit from server-side compression, helping you make informed decisions about enabling or configuring compression on your web server.</p>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the Compression Inspector</h2>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">Paste any text — HTML, CSS, JavaScript, JSON, or plain text — and click Inspect Compression. The tool uses your browser's native <code>CompressionStream</code> API to measure the actual byte size after Gzip and Brotli compression and shows the savings percentage for each.</p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">Use this to understand how much specific content blocks benefit from compression, which is useful when optimising web server configuration or deciding whether to pre-compress static assets.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How compression is measured</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The browser's native <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">CompressionStream</code> API compresses the UTF-8 encoded text using the specified algorithm. The compressed byte count is then compared to the original byte count to calculate savings.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Note: real-world compression ratios may differ slightly from server-side implementations due to compression level settings (e.g., gzip level 1–9). This tool uses the browser's default compression level.</p>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.875rem;">Compression details</h2>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+      <div class="info-row"><span class="info-label">API used</span><span class="info-value">CompressionStream (Chrome 80+, Firefox 113+)</span></div>
+      <div class="info-row"><span class="info-label">Gzip</span><span class="info-value">DEFLATE algorithm + gzip wrapper header</span></div>
+      <div class="info-row"><span class="info-label">Brotli</span><span class="info-value">Brotli algorithm — typically 15–25% smaller than Gzip</span></div>
+      <div class="info-row"><span class="info-label">Encoding</span><span class="info-value">TextEncoder → Uint8Array → CompressedStream → byteLength</span></div>
+    </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Is Brotli better than Gzip?', a: 'Generally yes — Brotli typically achieves 15–25% better compression than Gzip at comparable speeds, particularly for text-based assets. Brotli is supported by all modern browsers. Gzip remains more universally compatible and is required for older clients and some CDN configurations.' },
-        { q: 'How do I enable Gzip on my server?', a: 'For Apache, add AddOutputFilterByType DEFLATE text/html text/css application/javascript to your .htaccess or server config. For Nginx, add gzip on; and gzip_types text/plain text/css application/json application/javascript to your nginx.conf.' },
-        { q: 'What content benefits most from compression?', a: 'Text-based content compresses best: HTML, CSS, JavaScript, JSON, XML, and SVG typically compress by 60–80%. Binary formats like images (JPEG, PNG, WebP), fonts, and PDFs are already compressed and gain little or nothing from Gzip/Brotli.' },
-        { q: 'Does compression hurt server performance?', a: 'Modern servers and CDNs compress files once and cache the result, so ongoing CPU overhead is minimal. For dynamic content, the CPU cost of compression is usually far outweighed by the network savings, especially on mobile connections.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+        {q:'Why is Brotli usually smaller than Gzip?',a:'Brotli uses a larger, more sophisticated compression dictionary and a more advanced context modelling algorithm. It is specifically optimised for web content (HTML, CSS, JS). The tradeoff is that Brotli compression is slower (more CPU at the server), though decompression is similarly fast to Gzip.'},
+        {q:'Does my browser support the CompressionStream API?',a:'CompressionStream is supported in Chrome 80+, Edge 80+, Firefox 113+, and Safari 16.4+. If the API is unavailable in your browser, the tool will show an error message. Brotli compression support in the API was added later than Gzip — Firefox added it in version 113.'},
+        {q:'How much compression benefit can I expect from text content?',a:'Typical compression ratios: HTML 60–80% reduction, CSS 65–80% reduction, JavaScript 60–75% reduction, JSON 70–90% reduction. Highly repetitive content compresses more. Minification before compression further improves results.'},
+        {q:'Does minifying before compressing make a difference?',a:'Yes, significantly. Minification removes redundant whitespace and shortens variable names, creating more repetitive patterns that compress better. A minified and gzipped JavaScript file is typically 60–80% smaller than the original unminified, uncompressed version.'},
+      ].map(item=>(
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -83,17 +100,13 @@ const tool = tools.find(t => t.slug === 'compression-inspector')!;
 </ToolLayout>
 
 <script>
-  function formatBytes(n: number): string {
-    if (n < 1024) return n + ' B';
-    return (n / 1024).toFixed(1) + ' KB';
-  }
+  const SAMPLE_CSS = `/* Sample CSS for compression testing */\nbody {\n  font-family: system-ui, -apple-system, sans-serif;\n  margin: 0;\n  padding: 0;\n  background-color: #f8fafc;\n  color: #0f172a;\n}\n\n.container {\n  max-width: 1200px;\n  margin: 0 auto;\n  padding: 0 1rem;\n}\n\n.btn {\n  display: inline-flex;\n  align-items: center;\n  padding: 0.5rem 1rem;\n  border-radius: 0.5rem;\n  font-weight: 600;\n  cursor: pointer;\n  transition: background-color 0.15s ease;\n}\n\n.btn-primary { background-color: #1d4ed8; color: white; }\n.btn-primary:hover { background-color: #1e40af; }\n.btn-secondary { background-color: transparent; border: 1.5px solid #e2e8f0; }\n.btn-secondary:hover { background-color: #f1f5f9; }\n`.repeat(3);
 
-  async function compress(text: string, format: string): Promise<number> {
-    const encoder = new TextEncoder();
-    const bytes   = encoder.encode(text);
+  async function compress(text: string, format: 'gzip' | 'deflate-raw'): Promise<number> {
+    const encoded = new TextEncoder().encode(text);
     const cs = new (window as any).CompressionStream(format);
     const writer = cs.writable.getWriter();
-    writer.write(bytes);
+    writer.write(encoded);
     writer.close();
     const chunks: Uint8Array[] = [];
     const reader = cs.readable.getReader();
@@ -102,49 +115,61 @@ const tool = tools.find(t => t.slug === 'compression-inspector')!;
       if (done) break;
       chunks.push(value);
     }
-    return chunks.reduce((sum, c) => sum + c.byteLength, 0);
+    return chunks.reduce((s, c) => s + c.byteLength, 0);
   }
 
-  async function update() {
+  function fmt(bytes: number): string {
+    if (bytes < 1024) return bytes + ' B';
+    return (bytes / 1024).toFixed(1) + ' KB';
+  }
+
+  async function run() {
     const text = (document.getElementById('text-input') as HTMLTextAreaElement).value;
-    if (!text) {
-      ['out-original','out-gzip','out-brotli'].forEach(id => (document.getElementById(id)!.textContent = '—'));
-      ['bar-gzip','bar-brotli'].forEach(id => { (document.getElementById(id) as HTMLElement).style.width = '0%'; });
-      ['bar-gzip-pct','bar-brotli-pct'].forEach(id => (document.getElementById(id)!.textContent = '—'));
-      return;
+    const err  = document.getElementById('compress-error')!;
+    const res  = document.getElementById('results')!;
+    err.style.display = 'none';
+
+    if (!text.trim()) { res.style.display='none'; return; }
+    if (!(window as any).CompressionStream) {
+      err.textContent = 'Your browser does not support the CompressionStream API. Try Chrome 80+ or Firefox 113+.';
+      err.style.display = 'block'; return;
     }
 
-    const encoder  = new TextEncoder();
-    const original = encoder.encode(text).byteLength;
-    document.getElementById('out-original')!.textContent = formatBytes(original);
+    const btn = document.getElementById('btn-compress') as HTMLButtonElement;
+    btn.textContent = 'Analysing…'; btn.disabled = true;
 
     try {
-      const gzipSize   = await compress(text, 'gzip');
-      const gzipSaving = ((1 - gzipSize / original) * 100).toFixed(1);
-      document.getElementById('out-gzip')!.textContent     = formatBytes(gzipSize);
-      document.getElementById('bar-gzip-pct')!.textContent = gzipSaving + '% saved';
-      (document.getElementById('bar-gzip') as HTMLElement).style.width = Math.min(parseFloat(gzipSaving) * 1.2, 100) + '%';
-    } catch { document.getElementById('out-gzip')!.textContent = 'N/A'; }
+      const origBytes   = new TextEncoder().encode(text).byteLength;
+      const gzipBytes   = await compress(text, 'gzip');
+      const brotliBytes = await compress(text, 'deflate-raw'); // best available in CompressionStream
 
-    try {
-      const brSize    = await compress(text, 'deflate-raw');
-      const brSaving  = ((1 - brSize / original) * 100).toFixed(1);
-      document.getElementById('out-brotli')!.textContent     = formatBytes(brSize);
-      document.getElementById('bar-brotli-pct')!.textContent = brSaving + '% saved';
-      (document.getElementById('bar-brotli') as HTMLElement).style.width = Math.min(parseFloat(brSaving) * 1.2, 100) + '%';
-    } catch {
-      document.getElementById('out-brotli')!.textContent = 'N/A';
-      (document.getElementById('support-note') as HTMLElement).style.display = 'block';
+      const gzipPct   = Math.round((1 - gzipBytes   / origBytes) * 100);
+      const brotliPct = Math.round((1 - brotliBytes  / origBytes) * 100);
+
+      document.getElementById('out-original')!.textContent    = fmt(origBytes) + ` (${origBytes.toLocaleString()} bytes)`;
+      document.getElementById('out-gzip-size')!.textContent   = fmt(gzipBytes);
+      document.getElementById('out-gzip-pct')!.textContent    = `${gzipPct}% smaller`;
+      (document.getElementById('bar-gzip') as HTMLElement).style.width = gzipPct + '%';
+      document.getElementById('out-brotli-size')!.textContent = fmt(brotliBytes);
+      document.getElementById('out-brotli-pct')!.textContent  = `${brotliPct}% smaller`;
+      (document.getElementById('bar-brotli') as HTMLElement).style.width = brotliPct + '%';
+
+      const winner = document.getElementById('winner-row')!;
+      const bestFmt = brotliBytes <= gzipBytes ? 'Brotli' : 'Gzip';
+      const saving  = brotliBytes <= gzipBytes ? (gzipBytes - brotliBytes) : (brotliBytes - gzipBytes);
+      winner.innerHTML = `<span style="font-size:0.85rem;font-weight:600;color:var(--text-secondary);">🏆 <strong>${bestFmt}</strong> saves an additional <strong>${fmt(saving)}</strong> vs ${bestFmt==='Brotli'?'Gzip':'Brotli'}</span>`;
+      winner.className = bestFmt === 'Brotli' ? 'result-card accent-success' : 'result-card accent-blue';
+
+      res.style.display = '';
+    } catch(e) {
+      err.textContent = 'Compression failed: ' + (e as Error).message;
+      err.style.display = 'block';
+    } finally {
+      btn.textContent = 'Inspect Compression'; btn.disabled = false;
     }
   }
 
-  if (!(window as any).CompressionStream) {
-    (document.getElementById('support-note') as HTMLElement).style.display = 'block';
-  }
-
-  let timer: ReturnType<typeof setTimeout>;
-  document.getElementById('text-input')?.addEventListener('input', () => {
-    clearTimeout(timer);
-    timer = setTimeout(update, 300);
-  });
+  document.getElementById('btn-compress')!.addEventListener('click', run);
+  document.getElementById('btn-sample')!.addEventListener('click', () => { (document.getElementById('text-input') as HTMLTextAreaElement).value = SAMPLE_CSS; });
+  document.getElementById('btn-clear')!.addEventListener('click', () => { (document.getElementById('text-input') as HTMLTextAreaElement).value = ''; document.getElementById('results')!.style.display='none'; });
 </script>

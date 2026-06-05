@@ -1,87 +1,95 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import tools from '../../data/tools.json';
-
 const tool = tools.find(t => t.slug === 'unix-timestamp-converter')!;
 ---
-
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Unix Timestamp Converter</h2>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Unix Timestamp Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Convert Unix timestamps to human-readable formats — or get the current timestamp now.</p>
 
-    <div style="display:flex; gap:0.75rem; margin-bottom:1.25rem; align-items:flex-end;">
-      <div style="flex:1;">
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Unix Timestamp</label>
-        <input id="ts-input" type="text" placeholder="e.g. 1748736000 or 1748736000000"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; font-family:'Fira Code',monospace; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#4F46E5'" onblur="this.style.borderColor='#E2E8F0'"/>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.25rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="ts-input">Unix Timestamp</label>
+        <input id="ts-input" type="text" placeholder="e.g. 1735689600 or 1735689600000"
+          class="input-themed"
+          style="width:100%;padding:0.6rem 0.875rem;border-radius:0.5rem;font-size:1rem;font-family:'Fira Code',monospace;font-weight:600;box-sizing:border-box;" />
       </div>
-      <button id="now-btn" style="padding:0.625rem 1rem; background:#EEF2FF; color:#4F46E5; border:1.5px solid #C7D2FE; border-radius:0.625rem; font-size:0.82rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:background 0.15s;"
-        onmouseover="this.style.background='#E0E7FF'" onmouseout="this.style.background='#EEF2FF'">
-        Use Now ↗
-      </button>
+      <button id="btn-now" class="btn-secondary" type="button" style="white-space:nowrap;">Use now</button>
     </div>
 
-    <div id="results" style="display:none; display:flex; flex-direction:column; gap:0.625rem;">
-      {[
-        ['UTC',         'out-utc',       '#4F46E5', '#EEF2FF', '#C7D2FE'],
-        ['ISO 8601',    'out-iso',       '#0369A1', '#EFF6FF', '#BFDBFE'],
-        ['Local Time',  'out-local',     '#059669', '#F0FDF4', '#BBF7D0'],
-        ['Relative',    'out-relative',  '#9333EA', '#FAF5FF', '#E9D5FF'],
-        ['Type',        'out-type',      '#D97706', '#FFFBEB', '#FDE68A'],
-      ].map(([label, id, fg, bg, border]) => (
-        <div style={`background:${bg}; border:1.5px solid ${border}; border-radius:0.75rem; padding:0.875rem 1rem; display:flex; align-items:center; justify-content:space-between; gap:1rem;`}>
-          <span style={`font-size:0.78rem; font-weight:600; color:${fg}; text-transform:uppercase; letter-spacing:0.05em; min-width:80px;`}>{label}</span>
-          <code id={id} style="font-family:'Fira Code',monospace; font-size:0.875rem; color:#0F172A; word-break:break-all; flex:1; text-align:right;"></code>
+    <div id="results" style="display:none;flex-direction:column;gap:0.375rem;">
+      <div class="info-row">
+        <span class="info-label">UTC</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="info-value" id="out-utc"></span>
+          <button class="btn-secondary copy-val" data-target="out-utc" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
         </div>
-      ))}
+      </div>
+      <div class="info-row">
+        <span class="info-label">ISO 8601</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="info-value" id="out-iso"></span>
+          <button class="btn-secondary copy-val" data-target="out-iso" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Local time</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="info-value" id="out-local"></span>
+          <button class="btn-secondary copy-val" data-target="out-local" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Relative</span>
+        <span class="info-value" id="out-relative"></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Day of week</span>
+        <span class="info-value" id="out-dow"></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Milliseconds</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="info-value" id="out-ms"></span>
+          <button class="btn-secondary copy-val" data-target="out-ms" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      </div>
     </div>
 
-    <div id="empty-state" style="text-align:center; padding:2rem; color:#94A3B8; font-size:0.875rem;">
-      Enter a Unix timestamp above or click "Use Now" to convert the current time.
-    </div>
+    <p id="ts-error" style="display:none;color:#EF4444;font-size:0.82rem;margin-top:0.75rem;"></p>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Timestamp Converter</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste any Unix timestamp — in seconds (10 digits) or milliseconds (13 digits) — into the input. The converter automatically detects whether the value is in seconds or milliseconds and displays all formats simultaneously.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Click "Use Now" to instantly convert the current date and time to all formats. This is useful when you need to quickly check what the current timestamp looks like across different format standards.</p>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the Unix Timestamp Converter</h2>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">Type or paste a Unix timestamp (in seconds or milliseconds) into the field. The tool auto-detects the unit based on the magnitude of the value. Results update instantly. Click <strong>Use now</strong> to convert the current moment.</p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">Copy buttons are provided for each format for quick pasting into code, docs, or databases.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">Format explanations</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Unix Seconds', '10-digit integer. Seconds since the Unix epoch: January 1, 1970 00:00:00 UTC. Standard in most server-side languages.'],
-        ['Unix Milliseconds', '13-digit integer. Used in JavaScript (Date.now()), Java, and most browser APIs.'],
-        ['UTC', 'Coordinated Universal Time — the same moment displayed without any timezone offset.'],
-        ['ISO 8601', 'International standard format: YYYY-MM-DDTHH:mm:ss.sssZ. Sortable, unambiguous, and widely supported by APIs and databases.'],
-        ['Local Time', 'The timestamp converted to the viewer\'s local browser timezone, with timezone abbreviation.'],
-        ['Relative', 'A human-readable description of how long ago or in the future the timestamp falls: "3 hours ago", "in 2 days".'],
-      ].map(([label, desc]) => (
-        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.875rem;">Format reference</h2>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Seconds</span><span class="info-value">Values &lt; 10¹² treated as seconds</span></div>
+      <div class="info-row"><span class="info-label">Milliseconds</span><span class="info-value">Values ≥ 10¹² treated as milliseconds</span></div>
+      <div class="info-row"><span class="info-label">Unix epoch</span><span class="info-value">Seconds since 1970-01-01T00:00:00Z</span></div>
+      <div class="info-row"><span class="info-label">ISO 8601</span><span class="info-value">YYYY-MM-DDTHH:mm:ss.sssZ</span></div>
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is a Unix timestamp?', a: 'A Unix timestamp is the number of seconds (or milliseconds) that have elapsed since the Unix epoch — midnight on January 1, 1970 UTC. It is a universal, timezone-independent way to represent a specific point in time used by virtually all programming languages and operating systems.' },
-        { q: 'How do I get the current Unix timestamp in JavaScript?', a: 'Use Date.now() for milliseconds or Math.floor(Date.now() / 1000) for seconds. In Node.js, process.hrtime() gives higher resolution. In most Unix shells, run: date +%s' },
-        { q: 'What is the Year 2038 problem?', a: 'Many older 32-bit systems store Unix timestamps as a signed 32-bit integer, which overflows on January 19, 2038 at 03:14:07 UTC. Modern 64-bit systems are not affected. Most current software uses 64-bit timestamps that will not overflow for billions of years.' },
-        { q: 'What is the difference between epoch seconds and epoch milliseconds?', a: 'Seconds have 10 digits for modern dates; milliseconds have 13 digits. JavaScript natively uses milliseconds. Most other languages and system calls use seconds. When debugging, check the digit count: if it is 13+ digits, divide by 1,000 to get seconds.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+        {q:'How do I know if my timestamp is in seconds or milliseconds?',a:'Timestamps in seconds are typically 10 digits (e.g. 1735689600). Millisecond timestamps are 13 digits (e.g. 1735689600000). This tool detects the unit automatically based on the magnitude.'},
+        {q:'What is the Unix epoch?',a:'The Unix epoch is the starting point for Unix timestamps: midnight UTC on 1 January 1970 (1970-01-01T00:00:00Z). All Unix timestamps count seconds (or milliseconds) from this reference point.'},
+        {q:'Why does my timestamp show a different local time?',a:'Local time is displayed in your browser\'s configured timezone. If you are in UTC+10 (Sydney), a UTC timestamp of 12:00 will show as 22:00 local. The UTC and ISO fields are always timezone-independent.'},
+        {q:'What is the maximum date this can convert?',a:'JavaScript\'s Date object supports values up to approximately 8640000000000000 ms, which corresponds to September 13, 275760 CE. Values outside this range are not supported.'},
+      ].map(item=>(
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -91,46 +99,55 @@ const tool = tools.find(t => t.slug === 'unix-timestamp-converter')!;
 </ToolLayout>
 
 <script>
+  const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
   function relativeTime(ms: number): string {
     const diff = ms - Date.now();
     const abs  = Math.abs(diff);
-    const past = diff < 0;
-    const units: [number, string][] = [[31536000000,'year'],[2592000000,'month'],[86400000,'day'],[3600000,'hour'],[60000,'minute'],[1000,'second']];
-    for (const [unit, name] of units) {
-      const val = Math.round(abs / unit);
-      if (val >= 1) return past ? `${val} ${name}${val > 1 ? 's' : ''} ago` : `in ${val} ${name}${val > 1 ? 's' : ''}`;
-    }
-    return 'just now';
+    const future = diff > 0;
+    if (abs < 60000)    return 'just now';
+    if (abs < 3600000)  return `${Math.round(abs/60000)} min ${future?'from now':'ago'}`;
+    if (abs < 86400000) return `${Math.round(abs/3600000)} hr ${future?'from now':'ago'}`;
+    return `${Math.round(abs/86400000)} days ${future?'from now':'ago'}`;
   }
 
-  function convert(raw: string) {
-    const n    = parseInt(raw.trim());
-    const res  = document.getElementById('results')!;
-    const emp  = document.getElementById('empty-state')!;
-    if (isNaN(n) || raw.trim() === '') { res.style.display = 'none'; emp.style.display = 'block'; return; }
+  function decode(raw: string) {
+    const err = document.getElementById('ts-error')!;
+    const res = document.getElementById('results')!;
+    err.style.display = 'none';
+    if (!raw.trim()) { res.style.display = 'none'; return; }
 
-    const isMs = raw.trim().length >= 13;
-    const ms   = isMs ? n : n * 1000;
-    const d    = new Date(ms);
-    if (isNaN(d.getTime())) { res.style.display = 'none'; emp.style.display = 'block'; return; }
+    const n = parseFloat(raw.trim());
+    if (isNaN(n)) { err.textContent = 'Enter a numeric Unix timestamp.'; err.style.display='block'; res.style.display='none'; return; }
+
+    const ms = n >= 1e12 ? n : n * 1000;
+    const d  = new Date(ms);
+    if (isNaN(d.getTime())) { err.textContent = 'Timestamp out of range.'; err.style.display='block'; res.style.display='none'; return; }
+
+    (document.getElementById('out-utc')!)      .textContent = d.toUTCString();
+    (document.getElementById('out-iso')!)      .textContent = d.toISOString();
+    (document.getElementById('out-local')!)    .textContent = d.toLocaleString();
+    (document.getElementById('out-relative')!) .textContent = relativeTime(ms);
+    (document.getElementById('out-dow')!)      .textContent = DAYS[d.getUTCDay()];
+    (document.getElementById('out-ms')!)       .textContent = String(ms);
 
     res.style.display = 'flex';
-    emp.style.display = 'none';
-
-    (document.getElementById('out-utc') as HTMLElement).textContent      = d.toUTCString();
-    (document.getElementById('out-iso') as HTMLElement).textContent      = d.toISOString();
-    (document.getElementById('out-local') as HTMLElement).textContent    = d.toLocaleString('en-US', { timeZoneName: 'short' });
-    (document.getElementById('out-relative') as HTMLElement).textContent = relativeTime(ms);
-    (document.getElementById('out-type') as HTMLElement).textContent     = isMs ? 'Milliseconds (13 digits)' : 'Seconds (10 digits)';
   }
 
-  document.getElementById('ts-input')?.addEventListener('input', (e) => {
-    convert((e.target as HTMLInputElement).value);
+  document.getElementById('ts-input')!.addEventListener('input', e => decode((e.target as HTMLInputElement).value));
+  document.getElementById('btn-now')!.addEventListener('click', () => {
+    const now = String(Math.floor(Date.now()/1000));
+    (document.getElementById('ts-input') as HTMLInputElement).value = now;
+    decode(now);
   });
 
-  document.getElementById('now-btn')?.addEventListener('click', () => {
-    const ts = String(Date.now());
-    (document.getElementById('ts-input') as HTMLInputElement).value = ts;
-    convert(ts);
+  document.querySelectorAll<HTMLButtonElement>('.copy-val').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const text = document.getElementById(btn.dataset.target!)?.textContent || '';
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent='✓'; btn.classList.add('btn-success');
+        setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('btn-success'); }, 2000);
+      });
+    });
   });
 </script>

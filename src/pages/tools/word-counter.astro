@@ -7,338 +7,216 @@ const tool = tools.find(t => t.slug === 'word-counter')!;
 
 <ToolLayout tool={tool}>
 
-  <!-- ═══ THE TOOL ═══ -->
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
-      Paste or type your text
-    </h2>
-
-    <!-- Stat cards — live update as user types -->
-    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.625rem; margin-bottom:1.25rem;" id="stats-grid">
-
-      <div class="stat-card" style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:0.875rem 1rem; text-align:center;">
-        <div id="stat-words" style="font-family:'Sora',sans-serif; font-size:1.75rem; font-weight:700; color:#1D4ED8; line-height:1;">0</div>
-        <div style="font-size:0.75rem; font-weight:600; color:#60A5FA; margin-top:0.3rem; text-transform:uppercase; letter-spacing:0.05em;">Words</div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.875rem; flex-wrap:wrap; gap:0.5rem;">
+      <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0;">
+        Word Counter
+      </h2>
+      <div style="display:flex; gap:0.5rem;">
+        <button id="btn-copy" class="btn-secondary" type="button" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+          Copy text
+        </button>
+        <button id="btn-clear" class="btn-secondary" type="button" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+          Clear
+        </button>
       </div>
-
-      <div class="stat-card" style="background:#FFF7ED; border:1.5px solid #FED7AA; border-radius:0.75rem; padding:0.875rem 1rem; text-align:center;">
-        <div id="stat-chars" style="font-family:'Sora',sans-serif; font-size:1.75rem; font-weight:700; color:#EA580C; line-height:1;">0</div>
-        <div style="font-size:0.75rem; font-weight:600; color:#FB923C; margin-top:0.3rem; text-transform:uppercase; letter-spacing:0.05em;">Characters</div>
-      </div>
-
-      <div class="stat-card" style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:0.875rem 1rem; text-align:center;">
-        <div id="stat-chars-no-space" style="font-family:'Sora',sans-serif; font-size:1.75rem; font-weight:700; color:#16A34A; line-height:1;">0</div>
-        <div style="font-size:0.75rem; font-weight:600; color:#4ADE80; margin-top:0.3rem; text-transform:uppercase; letter-spacing:0.05em;">No Spaces</div>
-      </div>
-
-      <div class="stat-card" style="background:#FDF4FF; border:1.5px solid #E9D5FF; border-radius:0.75rem; padding:0.875rem 1rem; text-align:center;">
-        <div id="stat-sentences" style="font-family:'Sora',sans-serif; font-size:1.75rem; font-weight:700; color:#7C3AED; line-height:1;">0</div>
-        <div style="font-size:0.75rem; font-weight:600; color:#A78BFA; margin-top:0.3rem; text-transform:uppercase; letter-spacing:0.05em;">Sentences</div>
-      </div>
-
-      <div class="stat-card" style="background:#FFF1F2; border:1.5px solid #FECDD3; border-radius:0.75rem; padding:0.875rem 1rem; text-align:center;">
-        <div id="stat-paragraphs" style="font-family:'Sora',sans-serif; font-size:1.75rem; font-weight:700; color:#E11D48; line-height:1;">0</div>
-        <div style="font-size:0.75rem; font-weight:600; color:#FB7185; margin-top:0.3rem; text-transform:uppercase; letter-spacing:0.05em;">Paragraphs</div>
-      </div>
-
-      <div class="stat-card" style="background:#F0FDFA; border:1.5px solid #99F6E4; border-radius:0.75rem; padding:0.875rem 1rem; text-align:center;">
-        <div id="stat-reading-time" style="font-family:'Sora',sans-serif; font-size:1.75rem; font-weight:700; color:#0D9488; line-height:1;">0<span style="font-size:1rem;">m</span></div>
-        <div style="font-size:0.75rem; font-weight:600; color:#2DD4BF; margin-top:0.3rem; text-transform:uppercase; letter-spacing:0.05em;">Read Time</div>
-      </div>
-
     </div>
 
     <!-- Textarea -->
-    <div style="position:relative;">
-      <textarea
-        id="word-input"
-        placeholder="Start typing or paste your text here — word count updates as you type…"
-        style="width:100%; min-height:220px; padding:1rem; border:1.5px solid #E2E8F0; border-radius:0.875rem; font-size:0.95rem; font-family:'Inter',sans-serif; color:#0F172A; line-height:1.7; resize:vertical; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
-        onfocus="this.style.borderColor='#1D4ED8';"
-        onblur="this.style.borderColor='#E2E8F0';"
-      ></textarea>
+    <textarea
+      id="wc-input"
+      placeholder="Paste or type your text here…"
+      class="input-themed"
+      style="width:100%; min-height:180px; padding:0.875rem 1rem; border-radius:0.625rem; font-size:0.9rem; line-height:1.7; resize:vertical; box-sizing:border-box; font-family:'Inter',sans-serif;"
+    ></textarea>
 
-      <!-- Clear button — only visible when there's text -->
-      <button
-        id="clear-btn"
-        style="display:none; position:absolute; top:0.75rem; right:0.75rem; padding:0.25rem 0.75rem; border:1px solid #E2E8F0; border-radius:0.4rem; font-size:0.78rem; font-weight:500; color:#94A3B8; background:#fff; cursor:pointer; transition:all 0.15s;"
-        onmouseover="this.style.background='#FEF2F2'; this.style.color='#DC2626'; this.style.borderColor='#FECACA';"
-        onmouseout="this.style.background='#fff'; this.style.color='#94A3B8'; this.style.borderColor='#E2E8F0';"
-      >
-        ✕ Clear
-      </button>
+    <!-- Stats grid — .result-card based -->
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:0.625rem; margin-top:1rem;">
+
+      <div class="result-card accent-blue" style="text-align:center; padding:0.875rem;">
+        <div class="result-value" id="stat-words" style="font-size:1.75rem;">0</div>
+        <div class="result-label">Words</div>
+      </div>
+
+      <div class="result-card" style="text-align:center; padding:0.875rem;">
+        <div class="result-value" id="stat-chars" style="font-size:1.75rem; color:var(--text-primary);">0</div>
+        <div class="result-label">Characters</div>
+      </div>
+
+      <div class="result-card" style="text-align:center; padding:0.875rem;">
+        <div class="result-value" id="stat-nospace" style="font-size:1.75rem; color:var(--text-primary);">0</div>
+        <div class="result-label">Chars (no spaces)</div>
+      </div>
+
+      <div class="result-card" style="text-align:center; padding:0.875rem;">
+        <div class="result-value" id="stat-sentences" style="font-size:1.75rem; color:var(--text-primary);">0</div>
+        <div class="result-label">Sentences</div>
+      </div>
+
+      <div class="result-card" style="text-align:center; padding:0.875rem;">
+        <div class="result-value" id="stat-paragraphs" style="font-size:1.75rem; color:var(--text-primary);">0</div>
+        <div class="result-label">Paragraphs</div>
+      </div>
+
+      <div class="result-card" style="text-align:center; padding:0.875rem;">
+        <div class="result-value" id="stat-reading" style="font-size:1.75rem; color:var(--text-primary);">0 min</div>
+        <div class="result-label">Reading time</div>
+      </div>
     </div>
 
     <!-- Platform limits bar -->
-    <div style="margin-top:1.25rem;">
-      <div style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.6rem;">
-        Platform character limits
-      </div>
-      <div style="display:flex; flex-direction:column; gap:0.5rem;" id="limit-bars">
-
+    <div style="margin-top:1rem;">
+      <div style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-muted); margin-bottom:0.5rem;">Platform limits</div>
+      <div style="display:flex; flex-direction:column; gap:0.375rem;">
         {[
-          { label: 'X (Twitter) post',       limit: 280,   color: '#1D9BF0' },
-          { label: 'Google meta description', limit: 160,   color: '#EA4335' },
-          { label: 'Google page title',       limit: 60,    color: '#FBBC04' },
-          { label: 'LinkedIn post',           limit: 3000,  color: '#0A66C2' },
-          { label: 'Instagram caption',       limit: 2200,  color: '#E1306C' },
-        ].map(({ label, limit, color }) => (
-          <div style="display:flex; align-items:center; gap:0.75rem;">
-            <span style="font-size:0.78rem; color:#64748B; min-width:175px; flex-shrink:0;">{label}</span>
-            <div style="flex:1; height:6px; background:#F1F5F9; border-radius:999px; overflow:hidden;">
-              <div
-                class="limit-bar-fill"
-                data-limit={limit}
-                style={`height:100%; width:0%; background:${color}; border-radius:999px; transition:width 0.3s ease;`}
-              ></div>
+          { label: 'Twitter / X',   max: 280,   id: 'lim-twitter' },
+          { label: 'LinkedIn post', max: 3000,  id: 'lim-linkedin' },
+          { label: 'SMS',           max: 160,   id: 'lim-sms' },
+          { label: 'Meta title',    max: 60,    id: 'lim-meta' },
+        ].map(p => (
+          <div style="display:flex; align-items:center; gap:0.625rem;">
+            <span style="font-size:0.72rem; font-weight:600; color:var(--text-secondary); min-width:6.5rem;">{p.label}</span>
+            <div style="flex:1; height:6px; background:var(--bg-surface-3); border-radius:999px; overflow:hidden;">
+              <div id={p.id + '-bar'} style="height:100%; width:0%; border-radius:999px; transition:width 0.25s, background 0.25s;"></div>
             </div>
-            <span class="limit-count" data-limit={limit} style="font-size:0.75rem; font-family:'Fira Code',monospace; color:#94A3B8; min-width:65px; text-align:right;">
-              0 / {limit}
-            </span>
+            <span id={p.id + '-lbl'} style="font-size:0.72rem; font-family:'Fira Code',monospace; color:var(--text-muted); min-width:4.5rem; text-align:right;">0 / {p.max}</span>
           </div>
         ))}
-
       </div>
     </div>
-
-    <!-- Top keywords -->
-    <div id="keywords-section" style="display:none; margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid #F1F5F9;">
-      <div style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.6rem;">
-        Top keywords
-      </div>
-      <div id="keywords-list" style="display:flex; flex-wrap:wrap; gap:0.5rem;"></div>
-    </div>
-
   </div>
 
-  <!-- ═══ HOW TO USE ═══ -->
+  <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
-      How to use the Word Counter
-    </h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Type directly into the text area or paste any content — an essay, article, social media post, email, or any other writing. All six statistics update instantly as you type, with no need to click a button.
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Word Counter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste or type any text into the box. Word count, character count, sentence count, paragraph count, and estimated reading time update instantly as you type. No button to press — results are always live.
     </p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The <strong style="color:#0F172A;">platform limits</strong> section below the text area shows progress bars for common publishing constraints — Twitter's 280-character limit, Google's recommended meta description length, and others. Bars turn full when you reach the limit, making it easy to see at a glance whether your text fits.
-    </p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">
-      Once your text is long enough, a <strong style="color:#0F172A;">top keywords</strong> section appears showing the most frequently used meaningful words. This is useful for SEO writing — you can quickly see which terms are being emphasised and whether they match your intended focus.
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      The platform limits bar shows how close your character count is to common social media and SEO character limits. Green means within budget; amber means close; red means over.
     </p>
   </div>
 
-  <!-- ═══ HOW IT WORKS ═══ -->
+  <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
-      How each statistic is counted
-    </h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1rem;">
-      {[
-        ['Words',            'Text is split on whitespace. Consecutive spaces, tabs, and line breaks are collapsed so they count as a single separator. Each resulting non-empty token is one word.'],
-        ['Characters',       'Total character count including spaces, punctuation, and line breaks — equivalent to the length of the raw string.'],
-        ['Characters (no spaces)', 'Same as above but with all whitespace characters removed before counting. This is the metric most useful for SEO tools and publishing platforms.'],
-        ['Sentences',        'Counted by splitting on sentence-ending punctuation (. ! ?) followed by whitespace or end of text. Abbreviations and decimal numbers are not counted as sentence endings.'],
-        ['Paragraphs',       'Counted by splitting on one or more consecutive blank lines. Single line breaks within a block of text do not start a new paragraph.'],
-        ['Reading time',     'Calculated at 200 words per minute — a commonly cited average adult reading speed. The result is rounded up to the nearest minute; texts under 60 seconds show the estimated seconds instead.'],
-      ].map(([label, desc]) => (
-        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How counts are calculated</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row">
+        <span class="info-label">Words</span>
+        <span class="info-value">Split on whitespace, filter empty tokens</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Characters</span>
+        <span class="info-value">Total Unicode code points (includes spaces)</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Sentences</span>
+        <span class="info-value">Split on . ! ? terminators</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Reading time</span>
+        <span class="info-value">Word count ÷ 200 wpm, rounded up</span>
+      </div>
     </div>
-    <p style="color:#64748B; font-size:0.82rem; line-height:1.6;">
-      All counting happens locally in your browser. Text is never sent to any server.
-    </p>
   </div>
 
-  <!-- ═══ FAQ ═══ -->
+  <!-- FAQ ─────────────────────────────────────── -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
-      Frequently asked questions
-    </h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-
       {[
         {
-          q: 'How many words should a blog post be?',
-          a: 'There is no single correct answer, but research consistently shows that longer, in-depth posts tend to rank better in search engines. A general guideline is 1,500–2,500 words for a standard article, with pillar or cornerstone content often exceeding 3,000 words. More important than hitting a number is covering the topic thoroughly enough to be genuinely useful.',
+          q: "Does this word counter count hyphenated words as one or two?",
+          a: "Hyphenated words (e.g. well-known) are counted as a single word because they are separated by a hyphen, not whitespace. If you want to count each part separately, replace hyphens with spaces before pasting."
         },
         {
-          q: 'What is the Twitter (X) character limit?',
-          a: 'The standard character limit for a post on X (formerly Twitter) is 280 characters. This includes spaces and punctuation but not URLs, which are always shortened to 23 characters regardless of their actual length. X Premium subscribers on certain tiers have access to longer posts.',
+          q: "How is reading time calculated?",
+          a: "Reading time is estimated at 200 words per minute, which is a conservative average for general text comprehension. Academic or technical text is typically read at 100–150 wpm; quick skimming can reach 300 wpm or more."
         },
         {
-          q: 'How long should a Google meta description be?',
-          a: 'Google recommends keeping meta descriptions under 160 characters. Descriptions longer than this are truncated in search results, cutting off your message. Shorter descriptions of 120–155 characters tend to display in full on both desktop and mobile.',
+          q: "Does the character count include spaces?",
+          a: "The main character count includes all characters including spaces. A separate 'Characters (no spaces)' count is provided, which is what most social media platforms use when displaying remaining character counts."
         },
         {
-          q: 'How is reading time calculated?',
-          a: 'This tool estimates reading time at 200 words per minute, which is a widely cited average for adult reading comprehension of general content. Academic or technical content is typically read more slowly; simple or familiar content may be read faster. The estimate is a rough guide, not a precise measurement.',
-        },
-        {
-          q: 'What counts as a word?',
-          a: 'Any sequence of non-whitespace characters separated by a space, tab, or line break counts as one word. This means hyphenated words like "well-known" count as one word, and contractions like "don\'t" also count as one word. Numbers and punctuation attached to a word (e.g. "2025,") count as part of that token.',
-        },
-        {
-          q: 'How many words is a standard page?',
-          a: 'A standard typed or printed page at 12pt font with standard margins contains approximately 250–300 words. A double-spaced academic page is typically around 250 words. This varies with font size, line spacing, and margins, so word count is a more reliable measure than page count for any serious purpose.',
-        },
+          q: "How do I check my text against SEO title length limits?",
+          a: "Use the Meta title bar in the platform limits section. Google typically displays the first 50–60 characters of a page title in search results — the bar turns red when you exceed 60 characters."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
-
     </div>
   </div>
 
 </ToolLayout>
 
 <script>
-  const textarea     = document.getElementById('word-input')     as HTMLTextAreaElement;
-  const clearBtn     = document.getElementById('clear-btn')      as HTMLButtonElement;
-  const statWords    = document.getElementById('stat-words')!;
-  const statChars    = document.getElementById('stat-chars')!;
-  const statCharsNS  = document.getElementById('stat-chars-no-space')!;
-  const statSents    = document.getElementById('stat-sentences')!;
-  const statParas    = document.getElementById('stat-paragraphs')!;
-  const statRead     = document.getElementById('stat-reading-time')!;
-  const keySection   = document.getElementById('keywords-section')!;
-  const keyList      = document.getElementById('keywords-list')!;
-  const limitFills   = document.querySelectorAll<HTMLElement>('.limit-bar-fill');
-  const limitCounts  = document.querySelectorAll<HTMLElement>('.limit-count');
+  const input = document.getElementById('wc-input') as HTMLTextAreaElement;
 
-  // Words to exclude from keyword frequency
-  const STOP_WORDS = new Set([
-    'the','a','an','and','or','but','in','on','at','to','for','of','with',
-    'is','are','was','were','be','been','being','have','has','had','do',
-    'does','did','will','would','could','should','may','might','shall',
-    'it','its','this','that','these','those','i','you','he','she','we',
-    'they','me','him','her','us','them','my','your','his','our','their',
-    'what','which','who','whom','how','when','where','why','not','no',
-    'so','if','as','by','from','up','out','about','into','than','then',
-    'just','more','also','can','all','any','one','two','new','get','s',
-  ]);
-
-  function countWords(text: string): number {
-    return text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
-  }
-
-  function countSentences(text: string): number {
-    if (!text.trim()) return 0;
-    const matches = text.match(/[^.!?]*[.!?]+/g);
-    return matches ? matches.filter(s => s.trim().length > 1).length : (text.trim().length > 0 ? 1 : 0);
-  }
-
-  function countParagraphs(text: string): number {
-    if (!text.trim()) return 0;
-    return text.split(/\n\s*\n/).filter(p => p.trim().length > 0).length;
-  }
-
-  function readingTime(words: number): string {
-    if (words === 0) return '0<span style="font-size:1rem;">m</span>';
-    const seconds = Math.round((words / 200) * 60);
-    if (seconds < 60) return `${seconds}<span style="font-size:1rem;">s</span>`;
-    const mins = Math.ceil(words / 200);
-    return `${mins}<span style="font-size:1rem;">m</span>`;
-  }
-
-  function topKeywords(text: string, n = 8): [string, number][] {
-    if (!text.trim()) return [];
-    const words = text.toLowerCase().match(/\b[a-z]{3,}\b/g) || [];
-    const freq: Record<string, number> = {};
-    words.forEach(w => {
-      if (!STOP_WORDS.has(w)) freq[w] = (freq[w] || 0) + 1;
-    });
-    return Object.entries(freq)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, n);
-  }
-
-  function animateValue(el: HTMLElement, newVal: string) {
-    if (el.dataset.val === newVal) return;
-    el.dataset.val = newVal;
-    el.style.transform = 'scale(1.12)';
-    el.style.transition = 'transform 0.12s ease';
-    setTimeout(() => { el.style.transform = 'scale(1)'; }, 120);
-    el.innerHTML = newVal;
-  }
+  const LIMITS = [
+    { id: 'lim-twitter',  max: 280 },
+    { id: 'lim-linkedin', max: 3000 },
+    { id: 'lim-sms',      max: 160 },
+    { id: 'lim-meta',     max: 60 },
+  ];
 
   function update() {
-    const text  = textarea.value;
-    const words = countWords(text);
-    const chars = text.length;
-    const charsNS = text.replace(/\s/g, '').length;
-    const sents = countSentences(text);
-    const paras = countParagraphs(text);
+    const text  = input.value;
+    const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).filter(Boolean).length;
+    const chars      = text.length;
+    const nospace    = text.replace(/\s/g, '').length;
+    const sentences  = text === '' ? 0 : text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+    const paragraphs = text === '' ? 0 : text.split(/\n{2,}/).filter(p => p.trim().length > 0).length;
+    const readMins   = Math.ceil(words / 200);
 
-    animateValue(statWords,   words.toString());
-    animateValue(statChars,   chars.toString());
-    animateValue(statCharsNS, charsNS.toString());
-    animateValue(statSents,   sents.toString());
-    animateValue(statParas,   paras.toString());
-    statRead.innerHTML = readingTime(words);
+    (document.getElementById('stat-words')!)     .textContent = words.toLocaleString();
+    (document.getElementById('stat-chars')!)     .textContent = chars.toLocaleString();
+    (document.getElementById('stat-nospace')!)   .textContent = nospace.toLocaleString();
+    (document.getElementById('stat-sentences')!) .textContent = sentences.toLocaleString();
+    (document.getElementById('stat-paragraphs')!).textContent = paragraphs.toLocaleString();
+    (document.getElementById('stat-reading')!)   .textContent = readMins + ' min';
 
     // Platform limit bars
-    limitFills.forEach(bar => {
-      const limit = parseInt(bar.dataset.limit!);
-      const pct = Math.min((chars / limit) * 100, 100);
-      bar.style.width = `${pct}%`;
-      // Turn amber > 90%, red at 100%
-      if (chars > limit) bar.style.background = '#DC2626';
-      else if (chars > limit * 0.9) bar.style.background = '#F59E0B';
-      else bar.style.background = bar.style.background || '#1D4ED8';
+    LIMITS.forEach(({ id, max }) => {
+      const bar  = document.getElementById(id + '-bar')!;
+      const lbl  = document.getElementById(id + '-lbl')!;
+      const pct  = Math.min((chars / max) * 100, 100);
+      const over = chars > max;
+      bar.style.width = pct + '%';
+      // Use CSS-var-compatible colours for the bar fill (these are SVG/canvas-equivalent data)
+      bar.style.background = over ? '#EF4444' : pct >= 85 ? '#F59E0B' : '#10B981';
+      lbl.textContent = `${chars.toLocaleString()} / ${max}`;
+      lbl.style.color = over ? '#EF4444' : 'var(--text-muted)';
     });
-
-    limitCounts.forEach(span => {
-      const limit = parseInt(span.dataset.limit!);
-      const over = chars > limit;
-      span.innerHTML = `<span style="color:${over ? '#DC2626' : '#94A3B8'};">${chars}</span> / ${limit}`;
-    });
-
-    // Keywords
-    const kws = topKeywords(text);
-    if (kws.length > 0) {
-      keySection.style.display = 'block';
-      keyList.innerHTML = '';
-      const maxCount = kws[0][1];
-      kws.forEach(([word, count]) => {
-        const intensity = count / maxCount;
-        const bg = intensity > 0.7 ? '#1D4ED8' : intensity > 0.4 ? '#3B82F6' : '#BFDBFE';
-        const color = intensity > 0.4 ? '#fff' : '#1D4ED8';
-        const tag = document.createElement('span');
-        tag.style.cssText = `display:inline-flex; align-items:center; gap:0.35rem; padding:0.25rem 0.7rem; border-radius:999px; font-size:0.8rem; font-weight:500; background:${bg}; color:${color};`;
-        tag.textContent = `${word} ${count}`;
-        keyList.appendChild(tag);
-      });
-    } else {
-      keySection.style.display = 'none';
-    }
-
-    // Show/hide clear button
-    clearBtn.style.display = text.length > 0 ? 'block' : 'none';
   }
 
-  textarea.addEventListener('input', update);
-
-  clearBtn.addEventListener('click', () => {
-    textarea.value = '';
-    update();
-    textarea.focus();
-  });
-
-  // Reset limit bar colours on init
-  limitFills.forEach((bar, i) => {
-    const colours = ['#1D9BF0','#EA4335','#FBBC04','#0A66C2','#E1306C'];
-    bar.dataset.baseColor = colours[i] || '#1D4ED8';
-    bar.style.background = colours[i] || '#1D4ED8';
-  });
-
-  // Run once on load
+  input.addEventListener('input', update);
   update();
+
+  // Copy text
+  document.getElementById('btn-copy')!.addEventListener('click', () => {
+    const btn = document.getElementById('btn-copy')!;
+    navigator.clipboard.writeText(input.value).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('btn-success');
+      setTimeout(() => {
+        btn.textContent = 'Copy text';
+        btn.classList.remove('btn-success');
+      }, 2000);
+    });
+  });
+
+  // Clear
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    input.value = '';
+    update();
+  });
 </script>

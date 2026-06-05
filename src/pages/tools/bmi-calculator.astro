@@ -7,111 +7,126 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
 
 <ToolLayout tool={tool}>
 
-  <!-- THE TOOL -->
+  <!-- ══════════════════════════════════════════════
+       TOOL SLOT
+  ══════════════════════════════════════════════ -->
   <div slot="tool">
-    <h2 class="text-lg font-semibold text-gray-900 mb-5">Calculate Your BMI</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">
+      Calculate Your BMI
+    </h2>
 
-    <!-- Unit toggle -->
-    <div class="flex bg-gray-100 rounded-lg p-1 w-fit mb-6">
-      <button id="btn-metric" class="unit-btn px-4 py-1.5 rounded-md text-sm font-medium bg-white shadow text-gray-900 transition-all">
+    <!-- Unit toggle — standardised .toggle-group / .toggle-btn -->
+    <div class="toggle-group" style="margin-bottom:1.5rem;" role="group" aria-label="Unit system">
+      <button id="btn-metric" class="toggle-btn active" aria-pressed="true" type="button">
         Metric (kg / cm)
       </button>
-      <button id="btn-imperial" class="unit-btn px-4 py-1.5 rounded-md text-sm font-medium text-gray-500 transition-all">
+      <button id="btn-imperial" class="toggle-btn" aria-pressed="false" type="button">
         Imperial (lbs / in)
       </button>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
 
       <!-- Metric inputs -->
       <div id="metric-inputs">
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="weight-kg">Weight (kg)</label>
+        <div style="margin-bottom:0.875rem;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;" for="weight-kg">Weight (kg)</label>
           <input id="weight-kg" type="number" min="1" max="500" placeholder="e.g. 70"
-            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 outline-none transition" />
+            class="input-themed"
+            style="width:100%; padding:0.6rem 0.875rem; border-radius:0.5rem; font-size:0.95rem; box-sizing:border-box;" />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="height-cm">Height (cm)</label>
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;" for="height-cm">Height (cm)</label>
           <input id="height-cm" type="number" min="1" max="300" placeholder="e.g. 175"
-            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 outline-none transition" />
+            class="input-themed"
+            style="width:100%; padding:0.6rem 0.875rem; border-radius:0.5rem; font-size:0.95rem; box-sizing:border-box;" />
         </div>
       </div>
 
       <!-- Imperial inputs -->
-      <div id="imperial-inputs" class="hidden">
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="weight-lbs">Weight (lbs)</label>
+      <div id="imperial-inputs" style="display:none;">
+        <div style="margin-bottom:0.875rem;">
+          <label style="display:block; font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;" for="weight-lbs">Weight (lbs)</label>
           <input id="weight-lbs" type="number" min="1" max="1100" placeholder="e.g. 154"
-            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 outline-none transition" />
+            class="input-themed"
+            style="width:100%; padding:0.6rem 0.875rem; border-radius:0.5rem; font-size:0.95rem; box-sizing:border-box;" />
         </div>
-        <div class="grid grid-cols-2 gap-2">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="height-ft">Feet</label>
+            <label style="display:block; font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;" for="height-ft">Feet</label>
             <input id="height-ft" type="number" min="1" max="9" placeholder="5"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 outline-none transition" />
+              class="input-themed"
+              style="width:100%; padding:0.6rem 0.875rem; border-radius:0.5rem; font-size:0.95rem; box-sizing:border-box;" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="height-in">Inches</label>
+            <label style="display:block; font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;" for="height-in">Inches</label>
             <input id="height-in" type="number" min="0" max="11" placeholder="9"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 outline-none transition" />
+              class="input-themed"
+              style="width:100%; padding:0.6rem 0.875rem; border-radius:0.5rem; font-size:0.95rem; box-sizing:border-box;" />
           </div>
         </div>
       </div>
 
-      <!-- Result panel -->
-      <div class="sm:col-span-1">
-        <div id="result-panel" class="hidden bg-indigo-50 rounded-xl p-5 h-full flex flex-col justify-center">
-          <div class="text-center">
-            <div id="bmi-value" class="text-5xl font-bold text-indigo-700 font-mono mb-1"></div>
-            <div class="text-sm text-gray-500 mb-3">Your BMI</div>
-            <div id="bmi-category" class="inline-block px-4 py-1.5 rounded-full text-sm font-semibold"></div>
+      <!-- Result panel — standardised .result-card -->
+      <div>
+        <div id="result-panel" style="display:none;">
+          <div class="result-card accent-blue" style="height:100%; display:flex; flex-direction:column; justify-content:center; text-align:center;">
+            <div id="bmi-value" class="result-value" style="font-size:3rem; text-align:center;"></div>
+            <div class="result-label" style="text-align:center; margin-bottom:0.75rem;">Your BMI</div>
+            <div id="bmi-category" style="display:inline-block; align-self:center; padding:0.3rem 1rem; border-radius:999px; font-size:0.8rem; font-weight:600;"></div>
           </div>
         </div>
 
-        <div id="empty-panel" class="bg-gray-50 rounded-xl p-5 h-full flex flex-col justify-center items-center text-center text-gray-400 border-2 border-dashed border-gray-200">
-          <div class="text-3xl mb-2">⚖️</div>
-          <p class="text-sm">Enter your details to calculate your BMI</p>
+        <div id="empty-panel" class="result-card" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; border-style:dashed;">
+          <div style="font-size:2.5rem; margin-bottom:0.5rem;">⚖️</div>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">Enter your details to calculate your BMI</p>
         </div>
       </div>
+
     </div>
 
-    <button id="calculate-btn"
-      class="w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors shadow-sm">
-      Calculate BMI
-    </button>
+    <!-- Actions row -->
+    <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+      <button id="calculate-btn" class="btn-primary" type="button">
+        Calculate BMI
+      </button>
+      <button id="reset-btn" class="btn-secondary" type="button">
+        Reset
+      </button>
+    </div>
 
-    <p id="error-msg" class="hidden text-red-500 text-sm mt-3"></p>
+    <p id="error-msg" style="display:none; color:#EF4444; font-size:0.82rem; margin-top:0.75rem;"></p>
   </div>
 
-  <!-- HOW TO USE (SEO content) -->
+  <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 class="text-xl font-bold text-gray-900 mb-3">How to use the BMI Calculator</h2>
-    <p class="text-gray-600 leading-relaxed mb-3">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the BMI Calculator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
       Using this BMI calculator is simple. Select your preferred unit system — metric (kilograms and centimetres) or imperial (pounds and inches). Enter your weight and height, then click <strong>Calculate BMI</strong>. Your BMI score and category will appear instantly.
     </p>
-    <p class="text-gray-600 leading-relaxed">
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
       This tool works entirely in your browser. No data is sent to any server, and no account is required.
     </p>
   </div>
 
-  <!-- HOW IT WORKS (SEO + credibility) -->
+  <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 class="text-xl font-bold text-gray-900 mb-3">How BMI is calculated</h2>
-    <p class="text-gray-700 leading-relaxed mb-3">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How BMI is calculated</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
       Body Mass Index (BMI) is calculated by dividing your weight in kilograms by the square of your height in metres:
     </p>
-    <div class="bg-white rounded-lg p-4 border border-gray-200 font-mono text-center text-gray-800 mb-4">
-      BMI = weight (kg) ÷ height² (m)
+    <div class="info-row" style="justify-content:center; margin-bottom:1rem;">
+      <span class="info-value" style="text-align:center;">BMI = weight (kg) ÷ height² (m)</span>
     </div>
-    <p class="text-gray-600 text-sm leading-relaxed">
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
       The World Health Organisation (WHO) defines the following BMI categories for adults: Underweight (below 18.5), Normal weight (18.5–24.9), Overweight (25–29.9), and Obese (30 and above). BMI is a screening tool, not a diagnostic measure — always consult a healthcare professional for personalised health advice.
     </p>
   </div>
 
-  <!-- FAQ (featured snippet bait) -->
+  <!-- FAQ ─────────────────────────────────────── -->
   <div slot="faq">
-    <h2 class="text-xl font-bold text-gray-900 mb-5">Frequently Asked Questions</h2>
-    <div class="space-y-4" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
           q: "What is a healthy BMI?",
@@ -130,10 +145,11 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
           a: "For most adults, checking BMI every few months is sufficient, or whenever you experience significant weight changes. BMI is just one indicator of health — it doesn't account for muscle mass, bone density, age, or fat distribution."
         }
       ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="bg-white rounded-xl border border-gray-200 p-5">
-          <h3 class="font-semibold text-gray-900 mb-2" itemprop="name">{item.q}</h3>
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p class="text-gray-600 text-sm leading-relaxed" itemprop="text">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -143,67 +159,69 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
 </ToolLayout>
 
 <script>
-  const btnMetric = document.getElementById('btn-metric')!;
-  const btnImperial = document.getElementById('btn-imperial')!;
-  const metricInputs = document.getElementById('metric-inputs')!;
-  const imperialInputs = document.getElementById('imperial-inputs')!;
-  const calcBtn = document.getElementById('calculate-btn')!;
-  const resultPanel = document.getElementById('result-panel')!;
-  const emptyPanel = document.getElementById('empty-panel')!;
-  const bmiValue = document.getElementById('bmi-value')!;
-  const bmiCategory = document.getElementById('bmi-category')!;
-  const errorMsg = document.getElementById('error-msg')!;
+  const btnMetric     = document.getElementById('btn-metric')!;
+  const btnImperial   = document.getElementById('btn-imperial')!;
+  const metricInputs  = document.getElementById('metric-inputs')!;
+  const imperialInputs= document.getElementById('imperial-inputs')!;
+  const calcBtn       = document.getElementById('calculate-btn')!;
+  const resetBtn      = document.getElementById('reset-btn')!;
+  const resultPanel   = document.getElementById('result-panel')!;
+  const emptyPanel    = document.getElementById('empty-panel')!;
+  const bmiValue      = document.getElementById('bmi-value')!;
+  const bmiCategory   = document.getElementById('bmi-category')!;
+  const errorMsg      = document.getElementById('error-msg')!;
 
   let isMetric = true;
 
   function switchUnit(metric: boolean) {
     isMetric = metric;
-    metricInputs.classList.toggle('hidden', !metric);
-    imperialInputs.classList.toggle('hidden', metric);
-    btnMetric.classList.toggle('bg-white', metric);
-    btnMetric.classList.toggle('shadow', metric);
-    btnMetric.classList.toggle('text-gray-900', metric);
-    btnMetric.classList.toggle('text-gray-500', !metric);
-    btnImperial.classList.toggle('bg-white', !metric);
-    btnImperial.classList.toggle('shadow', !metric);
-    btnImperial.classList.toggle('text-gray-900', !metric);
-    btnImperial.classList.toggle('text-gray-500', metric);
+    metricInputs.style.display  = metric ? '' : 'none';
+    imperialInputs.style.display= metric ? 'none' : '';
+
+    btnMetric.classList.toggle('active', metric);
+    btnMetric.setAttribute('aria-pressed', String(metric));
+    btnImperial.classList.toggle('active', !metric);
+    btnImperial.setAttribute('aria-pressed', String(!metric));
   }
 
   btnMetric.addEventListener('click', () => switchUnit(true));
   btnImperial.addEventListener('click', () => switchUnit(false));
 
-  function getCategory(bmi: number) {
-    if (bmi < 18.5) return { label: 'Underweight', color: 'bg-blue-100 text-blue-800' };
-    if (bmi < 25)   return { label: 'Healthy Weight', color: 'bg-green-100 text-green-800' };
-    if (bmi < 30)   return { label: 'Overweight', color: 'bg-yellow-100 text-yellow-800' };
-    return { label: 'Obese', color: 'bg-red-100 text-red-800' };
+  interface Category {
+    label: string;
+    bg: string;
+    color: string;
+    accent: string;
+  }
+
+  function getCategory(bmi: number): Category {
+    if (bmi < 18.5) return { label: 'Underweight',    bg: 'rgba(59,130,246,0.12)',  color: '#2563EB', accent: 'accent-blue' };
+    if (bmi < 25)   return { label: 'Healthy Weight', bg: 'rgba(16,185,129,0.12)', color: '#059669', accent: 'accent-success' };
+    if (bmi < 30)   return { label: 'Overweight',     bg: 'rgba(245,158,11,0.12)', color: '#D97706', accent: 'accent-warning' };
+    return             { label: 'Obese',           bg: 'rgba(239,68,68,0.12)',  color: '#DC2626', accent: 'accent-red' };
   }
 
   calcBtn.addEventListener('click', () => {
-    errorMsg.classList.add('hidden');
+    errorMsg.style.display = 'none';
     let bmi: number;
 
     if (isMetric) {
-      const weight = parseFloat((document.getElementById('weight-kg') as HTMLInputElement).value);
+      const weight   = parseFloat((document.getElementById('weight-kg') as HTMLInputElement).value);
       const heightCm = parseFloat((document.getElementById('height-cm') as HTMLInputElement).value);
-
       if (!weight || !heightCm) {
         errorMsg.textContent = 'Please enter both weight and height.';
-        errorMsg.classList.remove('hidden');
+        errorMsg.style.display = 'block';
         return;
       }
-      const heightM = heightCm / 100;
-      bmi = weight / (heightM * heightM);
+      bmi = weight / Math.pow(heightCm / 100, 2);
     } else {
-      const weightLbs = parseFloat((document.getElementById('weight-lbs') as HTMLInputElement).value);
-      const ft = parseFloat((document.getElementById('height-ft') as HTMLInputElement).value) || 0;
-      const inches = parseFloat((document.getElementById('height-in') as HTMLInputElement).value) || 0;
-      const totalInches = ft * 12 + inches;
-
+      const weightLbs  = parseFloat((document.getElementById('weight-lbs') as HTMLInputElement).value);
+      const ft         = parseFloat((document.getElementById('height-ft') as HTMLInputElement).value) || 0;
+      const inches     = parseFloat((document.getElementById('height-in') as HTMLInputElement).value) || 0;
+      const totalInches= ft * 12 + inches;
       if (!weightLbs || !totalInches) {
         errorMsg.textContent = 'Please enter both weight and height.';
-        errorMsg.classList.remove('hidden');
+        errorMsg.style.display = 'block';
         return;
       }
       bmi = (weightLbs / (totalInches * totalInches)) * 703;
@@ -211,21 +229,28 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
 
     const cat = getCategory(bmi);
     bmiValue.textContent = bmi.toFixed(1);
+
+    // Update result card accent class
+    const card = resultPanel.querySelector('.result-card')!;
+    card.classList.remove('accent-blue','accent-success','accent-warning','accent-red');
+    card.classList.add(cat.accent);
+
+    // Update bmi-value colour inline (canvas/SVG-level colour — only place hex is acceptable)
+    (bmiValue as HTMLElement).style.color = cat.color;
+
     bmiCategory.textContent = cat.label;
-    bmiCategory.className = `inline-block px-4 py-1.5 rounded-full text-sm font-semibold ${cat.color}`;
-    resultPanel.classList.remove('hidden');
-    emptyPanel.classList.add('hidden');
+    bmiCategory.style.background = cat.bg;
+    bmiCategory.style.color      = cat.color;
+
+    resultPanel.style.display = '';
+    emptyPanel.style.display  = 'none';
   });
 
-
   resetBtn.addEventListener('click', () => {
-    errorMsg.classList.add('hidden');
-    const inputs = Array.from(document.querySelectorAll('input[type="number"]'));
-    inputs.forEach((el) => { el.value = el.defaultValue; });
-    resultPanel.classList.add('hidden');
-    emptyPanel.classList.remove('hidden');
-    resultValue.textContent = '';
-    resultBadge.textContent = '';
-    resultBreakdown.innerHTML = '';
+    errorMsg.style.display = 'none';
+    document.querySelectorAll<HTMLInputElement>('.tool-card-surface input[type="number"]')
+      .forEach(el => { el.value = ''; });
+    resultPanel.style.display = 'none';
+    emptyPanel.style.display  = '';
   });
 </script>

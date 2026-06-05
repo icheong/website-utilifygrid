@@ -269,11 +269,8 @@ const structuredData = {
     color: #60A5FA;
   }
 
-  /* ── Dark mode overrides for tool page inline styles ─────────
-     Tool pages use inline style= attributes with hardcoded light
-     colours. These selectors override the most common ones.     */
+  /* ── Dark mode overrides for tool page inline styles ───── */
 
-  /* Generic white backgrounds inside tool workspace */
   :root.dark .tool-card-surface [style*="background:#fff"],
   :root.dark .tool-card-surface [style*="background: #fff"],
   :root.dark .tool-card-surface [style*="background:#FFFFFF"],
@@ -287,7 +284,6 @@ const structuredData = {
     border-color: var(--border) !important;
   }
 
-  /* Light surface backgrounds used for info rows / formula rows */
   :root.dark .tool-card-surface [style*="background:#F8FAFC"],
   :root.dark .tool-card-surface [style*="background: #F8FAFC"],
   :root.dark .tool-card-surface [style*="background:#F1F5F9"],
@@ -297,7 +293,6 @@ const structuredData = {
     border-color: var(--border) !important;
   }
 
-  /* Dark text on light backgrounds — flip to theme variable */
   :root.dark .tool-card-surface [style*="color:#0F172A"],
   :root.dark .tool-card-surface [style*="color: #0F172A"],
   :root.dark .tool-card-surface [style*="color:#1E293B"],
@@ -307,7 +302,6 @@ const structuredData = {
     color: var(--text-primary) !important;
   }
 
-  /* Mid-grey text — flip to theme secondary */
   :root.dark .tool-card-surface [style*="color:#475569"],
   :root.dark .tool-card-surface [style*="color:#64748B"],
   :root.dark .seo-section       [style*="color:#475569"],
@@ -317,7 +311,6 @@ const structuredData = {
     color: var(--text-secondary) !important;
   }
 
-  /* Light border colours */
   :root.dark .tool-card-surface [style*="border:1px solid #E2E8F0"],
   :root.dark .tool-card-surface [style*="border: 1px solid #E2E8F0"],
   :root.dark .tool-card-surface [style*="border:1.5px solid #E2E8F0"],
@@ -352,12 +345,10 @@ const structuredData = {
     border-color: var(--border) !important;
   }
 
-  /* Output/result readonly textareas (e.g. JSON→TS) */
   :root.dark .tool-card-surface textarea[readonly] {
     background: var(--bg-surface-3) !important;
   }
 
-  /* Mode/toggle buttons in tool pages */
   :root.dark .tool-card-surface button[style*="background:#fff"],
   :root.dark .tool-card-surface button[style*="background: #fff"],
   :root.dark .tool-card-surface button[style*="background:#FFFFFF"] {
@@ -366,13 +357,11 @@ const structuredData = {
     color: var(--text-secondary) !important;
   }
 
-  /* Options/settings rows */
   :root.dark .tool-card-surface [style*="background:#F8FAFC"][style*="border:1px"] {
     background: var(--bg-surface-2) !important;
     border-color: var(--border) !important;
   }
 
-  /* Headings inside tool cards */
   :root.dark .tool-card-surface h2,
   :root.dark .tool-card-surface h3,
   :root.dark .seo-section h2,
@@ -382,7 +371,7 @@ const structuredData = {
     color: var(--text-primary) !important;
   }
 
-  /* ── FAQ schema markup items ─── */
+  /* FAQ schema markup items */
   :root.dark [itemtype*="Question"] {
     background: var(--bg-surface-2) !important;
     border-color: var(--border) !important;
@@ -393,10 +382,70 @@ const structuredData = {
   :root.dark [itemtype*="Question"] p {
     color: var(--text-secondary) !important;
   }
+
+  /* Result card — always theme-aware (never hardcoded) */
+  :root.dark .tool-card-surface .result-card {
+    background: var(--bg-surface-2) !important;
+    border-color: var(--border) !important;
+  }
+  :root.dark .tool-card-surface .result-card .result-value {
+    color: #60A5FA !important;
+  }
+
+  /* Standardised btn in dark workspace */
+  :root.dark .tool-card-surface .btn-primary { background: #3B82F6; }
+  :root.dark .tool-card-surface .btn-primary:hover { background: #2563EB; }
+  :root.dark .tool-card-surface .btn-secondary { border-color: var(--border); color: var(--text-secondary); }
+  :root.dark .tool-card-surface .btn-secondary:hover { background: var(--bg-surface-3); }
+
+  /* toggle-group / toggle-btn dark workspace */
+  :root.dark .tool-card-surface .toggle-group {
+    background: var(--bg-surface-3);
+    border-color: var(--border);
+  }
+  :root.dark .tool-card-surface .toggle-btn { color: var(--text-secondary); }
+  :root.dark .tool-card-surface .toggle-btn.active { background: #3B82F6; color: #fff; }
+  :root.dark .tool-card-surface .toggle-btn:not(.active):hover {
+    background: var(--bg-surface-2);
+    color: var(--text-primary);
+  }
+
+  /* info-row dark workspace */
+  :root.dark .tool-card-surface .info-row,
+  :root.dark .seo-section-alt .info-row {
+    background: var(--bg-surface-3) !important;
+    border-color: var(--border) !important;
+  }
+  :root.dark .tool-card-surface .info-row .info-value,
+  :root.dark .seo-section-alt .info-row .info-value {
+    color: var(--text-primary) !important;
+  }
 </style>
 
 <script>
+  // ── AdSense ───────────────────────────────────────────────
   document.querySelectorAll('.adsbygoogle').forEach(() => {
     (window.adsbygoogle = window.adsbygoogle || []).push({});
   });
+
+  // ── Shared copy-to-clipboard helper ───────────────────────
+  // Available to all tool pages via window.initCopyBtn(selector, getTextFn?)
+  (window as any).initCopyBtn = function(selector: string, getTextFn?: (btn: HTMLButtonElement) => string) {
+    document.querySelectorAll<HTMLButtonElement>(selector).forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const text = typeof getTextFn === 'function'
+          ? getTextFn(btn)
+          : (btn.dataset.copy || '');
+        if (!text) return;
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent || 'Copy';
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('btn-success');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('btn-success');
+        }, 2000);
+      });
+    });
+  };
 </script>
