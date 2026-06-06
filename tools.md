@@ -14,8 +14,6 @@ compression-inspector
 css-flexbox-grid-sandbox
 ev-novated-lease-calculator
 mortgage-calculator
-
-### Style Initial
 compound-interest-retirement
 regex-visual-explainer
 crontab-expression-visualizer
@@ -23,6 +21,9 @@ sql-to-nosql
 git-command-flow-builder
 cpm-ad-spend-calculator
 compound-interest-wealth-calculator
+
+### Style Initial
+
 saas-churn-ltv-cac-calculator
 car-loan-amortization-calculator
 freelance-invoice-tax-calculator
