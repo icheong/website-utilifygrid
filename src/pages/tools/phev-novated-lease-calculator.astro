@@ -2,7 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import tools from '../../data/tools.json';
 
-const tool = tools.find(t => t.slug === 'ev-novated-lease-calculator')!;
+const tool = tools.find(t => t.slug === 'phev-novated-lease-calculator')!;
 
 const FYS = [
   { value: '2022-23', label: 'FY 2022-23', threshold: 84916 },
@@ -16,14 +16,15 @@ const FYS = [
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:0.25rem;">EV Novated Lease Calculator</h2>
-    <p style="font-size:0.82rem; color:#475569; margin-bottom:1.25rem;">Compare salary packaging an EV vs buying out-of-pocket under Australia's FBT exemption rules — with LCT threshold check, smart running cost estimator, lease hidden costs, and opportunity-cost comparison against using your own cash or housing equity.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:0.25rem;">PHEV Novated Lease Calculator</h2>
+    <p style="font-size:0.82rem; color:#475569; margin-bottom:1.25rem;">Model the true cost of salary packaging a plug-in hybrid (PHEV) under current Australian policy — including the standard FBT cost (PHEVs lost the FBT exemption from 1 Apr 2025), LCT threshold check, dual-fuel running cost estimator, lease hidden costs, and opportunity-cost comparison against using your own cash.</p>
 
     <!-- SECTION 1: POLICY & COMPLIANCE -->
     <div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE); border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:1rem 1.1rem; margin-bottom:1rem;">
       <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
         <span style="font-size:0.95rem;">🛡️</span>
         <h3 style="font-family:'Sora',sans-serif; font-size:0.78rem; font-weight:700; color:#1E40AF; text-transform:uppercase; letter-spacing:0.07em; margin:0;">Policy &amp; Compliance</h3>
+        <span style="font-size:0.66rem; color:#1E40AF; background:#DBEAFE; padding:0.15rem 0.55rem; border-radius:999px; margin-left:auto; font-weight:700; letter-spacing:0.04em;">PHEV ≠ BEV</span>
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
@@ -44,7 +45,7 @@ const FYS = [
       </div>
 
       <div id="lct-status" style="display:flex; align-items:center; justify-content:space-between; padding:0.625rem 0.875rem; background:#fff; border:1px solid #E2E8F0; border-radius:0.5rem; font-size:0.78rem; flex-wrap:wrap; gap:0.5rem;">
-        <span style="color:#475569;">LCT &amp; FBT eligibility:</span>
+        <span style="color:#475569;">LCT &amp; FBT status:</span>
         <span id="lct-badge" style="font-family:'Fira Code',monospace; font-weight:700; font-size:0.85rem;">—</span>
       </div>
     </div>
@@ -62,12 +63,12 @@ const FYS = [
       </div>
     </div>
 
-    <!-- SECTION 3: SMART RUNNING COST ESTIMATOR -->
+    <!-- SECTION 3: SMART PHEV RUNNING COST ESTIMATOR -->
     <div style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7); border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem 1.1rem; margin-bottom:1rem;">
       <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
-        <span style="font-size:0.95rem;">⚡</span>
-        <h3 style="font-family:'Sora',sans-serif; font-size:0.78rem; font-weight:700; color:#065F46; text-transform:uppercase; letter-spacing:0.07em; margin:0;">Smart Running Cost Estimator</h3>
-        <span style="font-size:0.66rem; color:#065F46; background:#D1FAE5; padding:0.15rem 0.55rem; border-radius:999px; margin-left:auto; font-weight:700; letter-spacing:0.04em;">DATA-DRIVEN</span>
+        <span style="font-size:0.95rem;">⚡⛽</span>
+        <h3 style="font-family:'Sora',sans-serif; font-size:0.78rem; font-weight:700; color:#065F46; text-transform:uppercase; letter-spacing:0.07em; margin:0;">Smart PHEV Running Cost Estimator</h3>
+        <span style="font-size:0.66rem; color:#065F46; background:#D1FAE5; padding:0.15rem 0.55rem; border-radius:999px; margin-left:auto; font-weight:700; letter-spacing:0.04em;">DUAL-FUEL</span>
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
@@ -76,11 +77,36 @@ const FYS = [
           <input id="km" type="number" value="15000" min="0" step="500" class="input-themed" style="width:100%; padding:0.5rem 0.75rem; border-radius:0.5rem; font-size:0.875rem; box-sizing:border-box;"/>
         </div>
         <div>
-          <label style="font-size:0.7rem; font-weight:700; color:#065F46; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.3rem;">EV Efficiency (kWh/100km)</label>
+          <label style="font-size:0.7rem; font-weight:700; color:#065F46; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.3rem;">Electric Range (km/full charge)</label>
           <div style="display:flex; align-items:center; gap:0.5rem; height:2.25rem; padding:0 0.5rem 0 0.75rem; background:#fff; border:1.5px solid #E2E8F0; border-radius:0.5rem; box-sizing:border-box;">
-            <input id="efficiency" type="range" min="12" max="25" value="18" step="0.5" style="flex:1; accent-color:#10B981;"/>
-            <span id="efficiency-val" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:#065F46; min-width:2.5rem; text-align:right;">18.0</span>
+            <input id="ev-range" type="range" min="30" max="120" value="60" step="5" style="flex:1; accent-color:#10B981;"/>
+            <span id="ev-range-val" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:#065F46; min-width:2.5rem; text-align:right;">60</span>
           </div>
+        </div>
+        <div>
+          <label style="font-size:0.7rem; font-weight:700; color:#065F46; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.3rem;">Full Charges per Week</label>
+          <div style="display:flex; align-items:center; gap:0.5rem; height:2.25rem; padding:0 0.5rem 0 0.75rem; background:#fff; border:1.5px solid #E2E8F0; border-radius:0.5rem; box-sizing:border-box;">
+            <input id="charge-freq" type="range" min="0" max="14" value="5" step="1" style="flex:1; accent-color:#10B981;"/>
+            <span id="charge-freq-val" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:#065F46; min-width:2.5rem; text-align:right;">5</span>
+          </div>
+        </div>
+        <div>
+          <label style="font-size:0.7rem; font-weight:700; color:#065F46; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.3rem;">Electric Efficiency (kWh/100km)</label>
+          <div style="display:flex; align-items:center; gap:0.5rem; height:2.25rem; padding:0 0.5rem 0 0.75rem; background:#fff; border:1.5px solid #E2E8F0; border-radius:0.5rem; box-sizing:border-box;">
+            <input id="ev-eff" type="range" min="14" max="25" value="17" step="0.5" style="flex:1; accent-color:#10B981;"/>
+            <span id="ev-eff-val" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:#065F46; min-width:2.5rem; text-align:right;">17.0</span>
+          </div>
+        </div>
+        <div>
+          <label style="font-size:0.7rem; font-weight:700; color:#065F46; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.3rem;">Petrol Efficiency (L/100km)</label>
+          <div style="display:flex; align-items:center; gap:0.5rem; height:2.25rem; padding:0 0.5rem 0 0.75rem; background:#fff; border:1.5px solid #E2E8F0; border-radius:0.5rem; box-sizing:border-box;">
+            <input id="petrol-eff" type="range" min="1.5" max="8" value="5" step="0.1" style="flex:1; accent-color:#F59E0B;"/>
+            <span id="petrol-eff-val" style="font-family:'Fira Code',monospace; font-size:0.85rem; font-weight:700; color:#92400E; min-width:2.5rem; text-align:right;">5.0</span>
+          </div>
+        </div>
+        <div>
+          <label style="font-size:0.7rem; font-weight:700; color:#065F46; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.3rem;">Petrol Price ($/L)</label>
+          <input id="petrol-price" type="number" value="1.80" min="0" step="0.01" class="input-themed" style="width:100%; padding:0.5rem 0.75rem; border-radius:0.5rem; font-size:0.875rem; box-sizing:border-box;"/>
         </div>
         <div>
           <label style="font-size:0.7rem; font-weight:700; color:#065F46; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.3rem;">Home Charging ($/kWh)</label>
@@ -199,11 +225,11 @@ const FYS = [
             <span style="color:#64748B;">Tax saved/yr</span>
             <span id="out-tax-saved" style="font-family:'Fira Code',monospace; font-weight:700; color:#16A34A;">—</span>
           </div>
-          <div id="fbt-row" style="display:none; justify-content:space-between;">
+          <div style="display:flex; justify-content:space-between;">
             <span style="color:#64748B;">FBT payable/yr</span>
             <span id="out-fbt" style="font-family:'Fira Code',monospace; font-weight:700; color:#DC2626;">—</span>
           </div>
-          <div id="net-benefit-row" style="display:none; justify-content:space-between; padding-top:0.375rem; border-top:1px dashed #E2E8F0;">
+          <div style="display:flex; justify-content:space-between; padding-top:0.375rem; border-top:1px dashed #E2E8F0;">
             <span style="color:#475569; font-weight:600;">Net tax benefit/yr</span>
             <span id="out-net-benefit" style="font-family:'Fira Code',monospace; font-weight:700; color:#16A34A;">—</span>
           </div>
@@ -268,16 +294,16 @@ const FYS = [
       Start by selecting the <strong>Financial Year</strong> for your lease — this auto-loads the corresponding LCT threshold for fuel-efficient vehicles. Enter your gross salary and the vehicle's drive-away price; the LCT validator will instantly flag whether any luxury car tax applies and add it to the effective cost.
     </p>
     <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The <strong>FBT exemption is policy-driven</strong>: if your vehicle sits under the LCT threshold it qualifies for a full FBT exemption (0% FBT); if it breaches the threshold, the exemption is lost and standard FBT (~37.7% of the taxable value, after Type 1 gross-up) applies. The Novated Lease result card dynamically surfaces the FBT cost and net tax benefit whenever the vehicle is over the LCT threshold.
+      <strong>Important PHEV policy difference:</strong> from 1 April 2025, plug-in hybrids are <em>no longer eligible for the FBT exemption</em> — only zero-emission vehicles (BEVs and FCEVs) are. The Novated Lease result card therefore always surfaces the FBT payable, regardless of price, and the LCT/FBT badge makes this explicit. The pre-tax salary sacrifice still reduces your taxable income, but standard FBT (~37.7% of the taxable value, after Type 1 gross-up) is now part of the true cost.
     </p>
     <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Use the <strong>Smart Running Cost Estimator</strong> to derive your real annual running cost from real-world EV data: enter your annual km, the vehicle's efficiency in kWh/100km, your home and public electricity rates, and the share of charging done at home. Add any fixed costs (insurance, rego, tyres, servicing) on top — the total flows automatically into the lease comparison.
+      Use the <strong>Smart PHEV Running Cost Estimator</strong> to derive your real annual running cost from dual-fuel data: enter your annual km, the vehicle's electric range per full charge, how many times you fully charge per week, electric efficiency (kWh/100km), petrol efficiency (L/100km), petrol price, and your home/public electricity rates. The estimator splits your annual km into electric vs petrol based on charging frequency, then totals both fuel costs and adds fixed costs (insurance, rego, tyres, servicing).
     </p>
     <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      In the <strong>Lease Terms &amp; Hidden Costs</strong> section, add the monthly provider admin fee and any upfront setup fee. These are easy-to-miss line items that materially affect your net saving.
+      In the <strong>Lease Terms &amp; Hidden Costs</strong> section, add the monthly provider admin fee and any upfront setup fee. These are easy-to-miss line items that materially affect your net saving — and are especially important for PHEVs where the FBT cost already narrows the margin.
     </p>
     <p style="color:#475569; font-size:0.9rem; line-height:1.75;">
-      Toggle the <strong>Alternative Cash / Housing Equity</strong> comparison on to model what would happen if you bought the car outright instead — including the opportunity cost of the offset interest your cash would otherwise have saved. This tells you whether leasing genuinely beats leaving your money in the offset account.
+      Toggle the <strong>Alternative Cash / Housing Equity</strong> comparison on to model what would happen if you bought the PHEV outright instead — including the opportunity cost of the offset interest your cash would otherwise have saved. This tells you whether the novated-lease tax advantage (now reduced by FBT) still beats leaving your money in the offset account.
     </p>
   </div>
 
@@ -288,14 +314,18 @@ const FYS = [
       LCT = max(0, (Price − LCT threshold) × 33%)<br/>
       Effective price = Price + LCT<br/>
       <br/>
-      Energy kWh/yr = (km × Efficiency) ÷ 100<br/>
-      Energy $/yr = Home kWh × Home rate + Public kWh × Public rate<br/>
-      Running cost/yr = Energy + Other fixed costs<br/>
+      Electric km/yr = min(annual km, charges/wk × range × 52)<br/>
+      Petrol km/yr = annual km − Electric km<br/>
+      Electric kWh/yr = (Electric km × Electric eff) ÷ 100<br/>
+      Electric $/yr = Electric kWh × weighted rate (home% × home + public% × public)<br/>
+      Petrol L/yr = (Petrol km × Petrol eff) ÷ 100<br/>
+      Petrol $/yr = Petrol L × Petrol price<br/>
+      Running cost/yr = Electric + Petrol + Other fixed costs<br/>
       <br/>
       Annual lease = (Effective price − Residual) ÷ Term + Interest<br/>
       Annual pre-tax = Lease + (Admin × 12) + Running<br/>
       Tax saved/yr = Annual pre-tax × Marginal rate<br/>
-      FBT cost/yr = Annual pre-tax × FBT rate (0% if under LCT / 37.7% if over LCT)<br/>
+      FBT cost/yr = Annual pre-tax × 37.7% (PHEVs always pay full FBT)<br/>
       Net tax benefit/yr = Tax saved − FBT cost<br/>
       Net novated cost = (Pre-tax × Term) × (1 − Marginal) + (FBT × Term) + Setup × (1 − Marginal) + Residual<br/>
       <br/>
@@ -304,7 +334,7 @@ const FYS = [
     </div>
 
     <p style="color:#475569; font-size:0.85rem; line-height:1.7; margin-bottom:0.5rem;">
-      <strong>LCT (Luxury Car Tax):</strong> 33% applies to the amount above the fuel-efficient threshold for the chosen financial year ($84,916 in 2022-23, $89,332 in 2023-24, $91,387 in 2024-25 and 2025-26, $91,661 in 2026-27). Unlike FBT, LCT is <em>not</em> exempt for EVs — it is added to the effective vehicle cost. A proposed new $120,000 ZEV-only threshold from FY 2027-28 (A–EU FTA, signed 24 Mar 2026) is not yet legislated and is therefore not modelled here.
+      <strong>LCT (Luxury Car Tax):</strong> 33% applies to the amount above the fuel-efficient threshold for the chosen financial year ($84,916 in 2022-23, $89,332 in 2023-24, $91,387 in 2024-25 and 2025-26, $91,661 in 2026-27). PHEVs must meet the ≤3.5L/100km combined fuel consumption test to use the higher fuel-efficient threshold; otherwise the $80,567 other-vehicles threshold applies. LCT is <em>not</em> waived for PHEVs and is added to the effective vehicle cost.
     </p>
     <p style="color:#475569; font-size:0.85rem; line-height:1.7; margin-bottom:0.5rem;">
       <strong>Marginal tax rates</strong> used: ≤$18,200 → 0%, $18,201–$45,000 → 19%, $45,001–$120,000 → 32.5%, $120,001–$180,000 → 37%, &gt;$180,000 → 45% (excluding Medicare levy). This is a simplified estimate — actual savings depend on your employer's novated lease arrangements, Reportable Fringe Benefits Amount (RFBA) impact, and GST treatment.
@@ -318,13 +348,13 @@ const FYS = [
     <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Which vehicles qualify for the FBT exemption?', a: 'As of 2024–25, the FBT exemption applies to battery electric vehicles (BEVs), hydrogen fuel cell vehicles, and plug-in hybrid electric vehicles (PHEVs) with a drive-away price below the LCT threshold (currently $91,387 for fuel-efficient vehicles in FY 2024-25). PHEVs only qualified for new leases entered into before 1 April 2025.' },
-        { q: 'What is the LCT threshold and how does it affect my novated lease?', a: 'Luxury Car Tax (LCT) is 33% on the amount above the fuel-efficient threshold. Unlike the FBT exemption, LCT is not waived for EVs — it is added to your vehicle cost before calculating the lease. The threshold changes each financial year (e.g., $89,332 in 2023-24 → $91,387 in 2024-25 → $95,000 in 2025-26). This calculator validates your price against the chosen FY and adds the correct LCT automatically.' },
-        { q: 'How does the LCT threshold affect my FBT exemption?', a: 'The LCT threshold is the hard eligibility ceiling for the EV FBT exemption — there is no partial FBT exemption; you either qualify for the full exemption (and pay 0% FBT on the novated-lease pre-tax deduction) or you do not (and pay the full FBT, ~37.7% of the taxable value after the Type 1 gross-up). If your vehicle sits under the threshold for the chosen financial year, the calculator applies the full exemption. If it exceeds the threshold (and LCT is therefore payable), the calculator removes the FBT exemption and shows the FBT cost and net tax benefit on the Novated Lease result card. From 1 April 2025, only zero-emission vehicles (BEVs and FCEVs) qualify for the exemption — PHEVs do not.' },
-        { q: 'How much do hidden lease fees (admin + setup) cost over a term?', a: 'A typical $8/month admin fee adds $96/year, or $288 over a 3-year term. A $350 setup fee is usually charged once but is pre-tax deductible, so its net cost is reduced by your marginal tax rate. These line items are easy to miss in provider quotes but materially reduce your saving — always confirm the full fee schedule before signing.' },
-        { q: 'How is the smart running cost estimator calculated?', a: 'Energy use = annual km × efficiency (kWh/100km) ÷ 100. The total kWh is split by your home vs public charging ratio, then multiplied by the relevant per-kWh rate. The energy cost is added to your other fixed costs (insurance, rego, tyres, servicing). Typical EVs use 15–22 kWh/100km; Australian home electricity averages $0.25–$0.35/kWh; public fast-charging averages $0.50–$0.70/kWh.' },
-        { q: 'Should I use my own cash or housing equity instead of leasing?', a: 'It depends on the opportunity cost. If your cash sits in an offset account saving 5.5% mortgage interest, spending it on a $65,000 car costs you ~$10,725 in lost interest over a 3-year term. A novated lease typically beats this by 3–7% in effective discount (your marginal tax rate), but admin fees, setup fees, and LCT can narrow or even reverse the gap. Use the "Alternative Cash" comparison to see the true net cost in your specific scenario.' },
-        { q: 'Does the FBT exemption affect my reportable fringe benefits?', a: 'Yes. Even though eligible EVs are FBT-exempt, the pre-tax amount is still recorded as a Reportable Fringe Benefit Amount (RFBA) on your payment summary. This can affect income-tested thresholds for Medicare levy surcharge, HECS/HELP repayments, childcare subsidy, and certain Centrelink payments. Factor this into your personal assessment.' },
+        { q: 'Do PHEVs still qualify for the FBT exemption in Australia?', a: 'No — from 1 April 2025, plug-in hybrid electric vehicles (PHEVs) are no longer eligible for the FBT exemption on novated leases. Only zero-emission vehicles (battery electric vehicles and hydrogen fuel cell vehicles) qualify. PHEVs entered into a novated lease before 1 April 2025 remain grandfathered under the old exemption rules for the life of that lease, but no new FBT-exempt PHEV leases can be entered into. This calculator models the current policy: PHEVs always pay standard FBT.' },
+        { q: 'What is the LCT threshold and how does it affect my PHEV novated lease?', a: 'Luxury Car Tax (LCT) is 33% on the amount above the fuel-efficient threshold. PHEVs with a combined fuel consumption of ≤3.5L/100km (as rated under the Road Vehicle Standards Act 2018) qualify for the higher fuel-efficient threshold ($91,387 in 2024-25; $91,661 in 2026-27). PHEVs that exceed 3.5L/100km fall to the lower $80,567 other-vehicles threshold. LCT is added to your vehicle cost before calculating the lease, regardless of FBT treatment.' },
+        { q: 'How does the LCT threshold interact with FBT for PHEVs?', a: 'For PHEVs, the LCT threshold and the FBT exemption are now decoupled. Previously (before 1 April 2025) a sub-LCT PHEV would qualify for the FBT exemption; now PHEVs pay standard FBT no matter where they sit relative to the LCT threshold. LCT is still added to the effective vehicle cost, but breaching the threshold no longer changes your FBT treatment (since PHEVs are ineligible for any FBT exemption either way).' },
+        { q: 'How is the smart PHEV running cost estimator calculated?', a: 'Electric km = min(annual km, charges-per-week × electric range × 52). Petrol km = annual km − electric km. Electric kWh = electric km × electric efficiency ÷ 100. Petrol litres = petrol km × petrol efficiency ÷ 100. The electric kWh is split by your home vs public charging ratio, then multiplied by the relevant per-kWh rate. Petrol cost is litres × petrol price. Both fuel costs are added to your other fixed costs. Typical PHEVs have 40–90 km of electric range, 15–20 kWh/100km electric efficiency, and 4–7 L/100km petrol efficiency when running on the ICE.' },
+        { q: 'How much do hidden lease fees (admin + setup) cost over a term?', a: 'A typical $8/month admin fee adds $96/year, or $288 over a 3-year term. A $350 setup fee is usually charged once but is pre-tax deductible, so its net cost is reduced by your marginal tax rate. These line items are easy to miss in provider quotes but materially reduce your saving — and are especially important for PHEVs where the FBT cost already narrows the margin.' },
+        { q: 'Should I use my own cash or housing equity instead of leasing a PHEV?', a: 'It depends on the opportunity cost. If your cash sits in an offset account saving 5.5% mortgage interest, spending it on a $65,000 car costs you ~$10,725 in lost interest over a 3-year term. A novated PHEV lease is far less advantageous than a novated BEV lease (because the FBT cost now applies), but it can still beat a cash purchase if your marginal tax rate exceeds the offset rate by enough. Use the "Alternative Cash" comparison to see the true net cost in your specific scenario.' },
+        { q: 'Does the FBT exemption affect my reportable fringe benefits?', a: 'Yes — even though PHEVs no longer get the FBT exemption, the pre-tax amount is still recorded as a Reportable Fringe Benefit Amount (RFBA) on your payment summary (the FBT itself is reported separately on the FBT return). This can affect income-tested thresholds for Medicare levy surcharge, HECS/HELP repayments, childcare subsidy, and certain Centrelink payments. Factor this into your personal assessment.' },
         { q: 'What is a residual value?', a: 'The residual value (also called guaranteed future value) is the agreed value of the vehicle at the end of the lease term, set as a percentage of the effective (LCT-inclusive) price. ATO minimum residuals range from ~65.63% for a 1-year lease to ~28.13% for a 5-year lease. You can pay the residual to own the vehicle, re-finance it, or trade in.' },
         { q: 'Can I include GST savings in the calculation?', a: 'Yes — one significant benefit of novated leasing is that your employer can claim back the GST on the vehicle purchase and running costs, effectively reducing the cost by 1/11th. This calculator uses pre-GST running cost inputs; if your provider quotes inclusive figures, divide by 1.1 before entering them here for a more accurate result.' },
       ].map(item => (
@@ -350,15 +380,15 @@ const FYS = [
     '2026-27': 91661,
   };
   const LCT_RATE = 0.33;
+  const FBT_STATUTORY = 0.20;
+  const FBT_GROSSUP   = 1.8868;
+  const PHEV_FBT_RATE = FBT_STATUTORY * FBT_GROSSUP;
 
   function fmt(n: number) {
     return Math.round(n).toLocaleString('en-AU');
   }
   function money(n: number) {
     return '$' + Math.round(n).toLocaleString('en-AU');
-  }
-  function money1(n: number) {
-    return '$' + n.toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
   function getMarginalRate(salary: number): number {
@@ -375,36 +405,46 @@ const FYS = [
     const fy          = (document.getElementById('fy') as HTMLSelectElement).value;
     const threshold   = LCT_FY[fy] ?? 91387;
 
-    const lctAmount     = Math.max(0, (price - threshold) * LCT_RATE);
+    const lctAmount      = Math.max(0, (price - threshold) * LCT_RATE);
     const effectivePrice = price + lctAmount;
 
     (document.getElementById('lct-threshold') as HTMLElement).textContent = threshold.toLocaleString('en-AU');
     const lctBadge = document.getElementById('lct-badge')!;
-    const fbtExempt = lctAmount === 0;
     if (lctAmount > 0) {
-      lctBadge.innerHTML = `<span style="color:#D97706;">+${money(lctAmount)} LCT</span> <span style="color:#64748B; font-weight:500;">(${(price > 0 ? ((lctAmount / price) * 100).toFixed(1) : '0.0')}% of price)</span> <span style="color:#DC2626;">· ✗ Over LCT → no FBT exemption</span>`;
+      lctBadge.innerHTML = `<span style="color:#D97706;">+${money(lctAmount)} LCT</span> <span style="color:#64748B; font-weight:500;">(${(price > 0 ? ((lctAmount / price) * 100).toFixed(1) : '0.0')}% of price)</span> <span style="color:#DC2626;">· ✗ PHEV pays FBT</span>`;
     } else {
-      lctBadge.innerHTML = `<span style="color:#16A34A;">$0 LCT · ✓ Under LCT → Full FBT Exemption applies</span>`;
+      lctBadge.innerHTML = `<span style="color:#16A34A;">$0 LCT ✓ Under threshold</span> <span style="color:#DC2626;">· ✗ PHEVs ineligible for FBT exemption (from 1 Apr 2025) — standard FBT applies</span>`;
     }
 
-    const km          = parseFloat((document.getElementById('km') as HTMLInputElement).value) || 0;
-    const efficiency  = parseFloat((document.getElementById('efficiency') as HTMLInputElement).value) || 0;
-    const homeRate    = parseFloat((document.getElementById('home-rate') as HTMLInputElement).value) || 0;
-    const publicRate  = parseFloat((document.getElementById('public-rate') as HTMLInputElement).value) || 0;
-    const homeRatio   = parseInt((document.getElementById('home-ratio') as HTMLInputElement).value) / 100;
-    const otherCosts  = parseFloat((document.getElementById('other-costs') as HTMLInputElement).value) || 0;
+    const km           = parseFloat((document.getElementById('km') as HTMLInputElement).value) || 0;
+    const evRange      = parseInt((document.getElementById('ev-range') as HTMLInputElement).value) || 0;
+    const chargeFreq   = parseInt((document.getElementById('charge-freq') as HTMLInputElement).value) || 0;
+    const evEff        = parseFloat((document.getElementById('ev-eff') as HTMLInputElement).value) || 0;
+    const petrolEff    = parseFloat((document.getElementById('petrol-eff') as HTMLInputElement).value) || 0;
+    const petrolPrice  = parseFloat((document.getElementById('petrol-price') as HTMLInputElement).value) || 0;
+    const homeRate     = parseFloat((document.getElementById('home-rate') as HTMLInputElement).value) || 0;
+    const publicRate   = parseFloat((document.getElementById('public-rate') as HTMLInputElement).value) || 0;
+    const homeRatio    = parseInt((document.getElementById('home-ratio') as HTMLInputElement).value) / 100;
+    const otherCosts   = parseFloat((document.getElementById('other-costs') as HTMLInputElement).value) || 0;
 
-    const totalKwh    = (km * efficiency) / 100;
-    const homeKwh     = totalKwh * homeRatio;
-    const publicKwh   = totalKwh * (1 - homeRatio);
-    const energyCost  = homeKwh * homeRate + publicKwh * publicRate;
-    const running     = energyCost + otherCosts;
+    const electricKm   = Math.min(km, chargeFreq * evRange * 52);
+    const petrolKm     = Math.max(0, km - electricKm);
+    const totalKwh     = (electricKm * evEff) / 100;
+    const homeKwh      = totalKwh * homeRatio;
+    const publicKwh    = totalKwh * (1 - homeRatio);
+    const electricCost = homeKwh * homeRate + publicKwh * publicRate;
+    const petrolLitres = (petrolKm * petrolEff) / 100;
+    const petrolCost   = petrolLitres * petrolPrice;
+    const running      = electricCost + petrolCost + otherCosts;
 
-    (document.getElementById('efficiency-val') as HTMLElement).textContent = efficiency.toFixed(1);
-    (document.getElementById('home-ratio-val') as HTMLElement).textContent =
+    (document.getElementById('ev-range-val') as HTMLElement).textContent     = String(evRange);
+    (document.getElementById('charge-freq-val') as HTMLElement).textContent  = String(chargeFreq);
+    (document.getElementById('ev-eff-val') as HTMLElement).textContent       = evEff.toFixed(1);
+    (document.getElementById('petrol-eff-val') as HTMLElement).textContent   = petrolEff.toFixed(1);
+    (document.getElementById('home-ratio-val') as HTMLElement).textContent   =
       `${Math.round(homeRatio * 100)}% home / ${Math.round((1 - homeRatio) * 100)}% public`;
     (document.getElementById('energy-detail') as HTMLElement).textContent =
-      `${fmt(totalKwh)} kWh/yr · $${energyCost.toFixed(0)} energy + $${otherCosts.toFixed(0)} fixed`;
+      `${fmt(electricKm)} km elec ($${electricCost.toFixed(0)}) · ${fmt(petrolKm)} km petrol ($${petrolCost.toFixed(0)}) + $${otherCosts.toFixed(0)} fixed`;
     (document.getElementById('running-total') as HTMLElement).textContent = fmt(running);
 
     const term        = parseInt((document.getElementById('lease-term') as HTMLSelectElement).value) || 3;
@@ -432,10 +472,6 @@ const FYS = [
       cashCard.style.display = 'none';
     }
 
-    const FBT_STATUTORY = 0.20;
-    const FBT_GROSSUP   = 1.8868;
-    const fbtCostRate   = fbtExempt ? 0 : FBT_STATUTORY * FBT_GROSSUP;
-
     const annualAdmin    = adminFee * 12;
     const residualAmt    = effectivePrice * residualPct;
     const loanAmt        = effectivePrice - residualAmt;
@@ -444,12 +480,12 @@ const FYS = [
     const annualPreTax   = annualLease + annualAdmin + running;
     const marginalRate   = getMarginalRate(salary);
     const taxSavedAnnual = annualPreTax * marginalRate;
-    const fbtAnnual      = annualPreTax * fbtCostRate;
+    const fbtAnnual      = annualPreTax * PHEV_FBT_RATE;
     const netBenefitYr   = taxSavedAnnual - fbtAnnual;
 
     const totalPreTax    = annualPreTax * term + setupFee;
     const totalTaxSaved  = totalPreTax * marginalRate;
-    const totalFbt       = totalPreTax * fbtCostRate;
+    const totalFbt       = totalPreTax * PHEV_FBT_RATE;
     const leaseNetTotal  = totalPreTax - totalTaxSaved + totalFbt + residualAmt;
 
     const oopRunning     = running * term;
@@ -462,19 +498,9 @@ const FYS = [
 
     (document.getElementById('out-pretax') as HTMLElement).textContent       = money(annualPreTax);
     (document.getElementById('out-tax-saved') as HTMLElement).textContent    = money(taxSavedAnnual);
+    (document.getElementById('out-fbt') as HTMLElement).textContent          = '−' + money(fbtAnnual);
+    (document.getElementById('out-net-benefit') as HTMLElement).textContent  = (netBenefitYr >= 0 ? '+' : '') + money(netBenefitYr);
     (document.getElementById('out-lease-net') as HTMLElement).textContent    = money(leaseNetTotal);
-
-    const fbtRow = document.getElementById('fbt-row')! as HTMLElement;
-    const netBenefitRow = document.getElementById('net-benefit-row')! as HTMLElement;
-    if (fbtAnnual > 0) {
-      fbtRow.style.display = 'flex';
-      netBenefitRow.style.display = 'flex';
-      (document.getElementById('out-fbt') as HTMLElement).textContent = '−' + money(fbtAnnual);
-      (document.getElementById('out-net-benefit') as HTMLElement).textContent = (netBenefitYr >= 0 ? '+' : '') + money(netBenefitYr);
-    } else {
-      fbtRow.style.display = 'none';
-      netBenefitRow.style.display = 'none';
-    }
     (document.getElementById('out-purchase') as HTMLElement).textContent     = money(effectivePrice);
     (document.getElementById('out-running-total') as HTMLElement).textContent = money(oopRunning);
     (document.getElementById('out-oop-net') as HTMLElement).textContent      = money(oopTotal);
@@ -503,7 +529,7 @@ const FYS = [
       cashEnabled ? `Estimated Saving (Novated ${altLabel})` : 'Estimated Saving with Novated Lease';
   }
 
-  ['fy','salary','vehicle-price','km','efficiency','home-rate','public-rate','home-ratio','other-costs',
+  ['fy','salary','vehicle-price','km','ev-range','charge-freq','ev-eff','petrol-eff','petrol-price','home-rate','public-rate','home-ratio','other-costs',
    'lease-term','residual','finance-rate','admin-fee','setup-fee','cash-available','offset-rate'].forEach(id => {
     document.getElementById(id)?.addEventListener('input', calc);
   });

@@ -23,6 +23,7 @@ cpm-ad-spend-calculator
 compound-interest-wealth-calculator
 saas-churn-ltv-cac-calculator
 car-loan-amortization-calculator
+phev-novated-lease-calculator
 
 ### Style Initial
 freelance-invoice-tax-calculator
