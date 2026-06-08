@@ -1,0 +1,274 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'currency-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Currency Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter an amount and select a currency — see the value in all others instantly using live exchange rates.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="cur-input">Amount</label>
+        <input id="cur-input" type="number" value="1" min="0" step="any" placeholder="Enter amount"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="cur-unit">Currency</label>
+        <select id="cur-unit" class="select-themed" style="min-width:10rem;">
+          <option value="USD" selected>USD — US Dollar</option>
+          <option value="EUR">EUR — Euro</option>
+          <option value="GBP">GBP — British Pound</option>
+          <option value="JPY">JPY — Japanese Yen</option>
+          <option value="AUD">AUD — Australian Dollar</option>
+          <option value="CAD">CAD — Canadian Dollar</option>
+          <option value="CHF">CHF — Swiss Franc</option>
+          <option value="CNY">CNY — Chinese Yuan</option>
+          <option value="INR">INR — Indian Rupee</option>
+          <option value="SGD">SGD — Singapore Dollar</option>
+          <option value="HKD">HKD — Hong Kong Dollar</option>
+          <option value="NOK">NOK — Norwegian Krone</option>
+          <option value="KRW">KRW — South Korean Won</option>
+          <option value="TRY">TRY — Turkish Lira</option>
+          <option value="RUB">RUB — Russian Ruble</option>
+          <option value="BRL">BRL — Brazilian Real</option>
+          <option value="ZAR">ZAR — South African Rand</option>
+          <option value="MXN">MXN — Mexican Peso</option>
+          <option value="SEK">SEK — Swedish Krona</option>
+          <option value="NZD">NZD — New Zealand Dollar</option>
+          <option value="THB">THB — Thai Baht</option>
+          <option value="PLN">PLN — Polish Zloty</option>
+          <option value="TWD">TWD — Taiwan Dollar</option>
+          <option value="IDR">IDR — Indonesian Rupiah</option>
+          <option value="MYR">MYR — Malaysian Ringgit</option>
+          <option value="PHP">PHP — Philippine Peso</option>
+          <option value="CZK">CZK — Czech Koruna</option>
+          <option value="ILS">ILS — Israeli Shekel</option>
+          <option value="AED">AED — UAE Dirham</option>
+          <option value="SAR">SAR — Saudi Riyal</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div id="rate-status" style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1rem;display:none;"></div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Currency Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric amount</strong> and select its <strong>currency</strong> from the dropdown. All other currency values update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports <strong>30 major world currencies</strong> including USD, EUR, GBP, JPY, and currencies from Asia, Europe, Oceania, and the Americas. Exchange rates are fetched from a live API on page load.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that currency's value to your clipboard. Rates are fetched once when the page loads and cached for the session.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How currency conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      The converter fetches live exchange rates from a free API using USD as the base currency. All conversions route through USD:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">To convert A → B:
+
+Result = Amount × (RateB / RateA)
+
+Example: 100 EUR → JPY
+  Rate_EUR = 1.0912 (per USD)
+  Rate_JPY = 149.53 (per USD)
+  Result   = 100 × (149.53 / 1.0912)
+           = 13,703.81 JPY</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Rates are sourced from a free, open exchange-rate API and are indicative mid-market rates. Actual exchange rates used by banks and money transfer services include a margin/spread. All calculations run in your browser — no data is sent anywhere.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Are the exchange rates accurate?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The rates shown are mid-market indicative rates from a free exchange-rate API. They are suitable for reference and comparison but may differ slightly from the rates offered by banks or money transfer services, which include a spread." }
+        },
+        {
+          "@type": "Question",
+          "name": "How often are the rates updated?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Exchange rates are fetched once when the page loads and cached for your session. For live trading or international transfers, always check a real-time financial data source." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which currencies are supported?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The converter supports 30 major world currencies: USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY, INR, SGD, HKD, NOK, KRW, TRY, RUB, BRL, ZAR, MXN, SEK, NZD, THB, PLN, TWD, IDR, MYR, PHP, CZK, ILS, AED, and SAR." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why are some values rounded?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Currency values are rounded to 2 decimal places for most currencies (or to the smallest practical unit). This matches the standard practice for financial display. Currencies like JPY and KRW are displayed as whole numbers since they have no sub-unit in common use." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this work offline?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Exchange rates require an internet connection to fetch on first load. Once loaded, the rates are cached and conversions work offline for the rest of your session. If the API is unavailable, the tool will not display results." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Are the exchange rates accurate?', a: 'The rates shown are mid-market indicative rates from a free exchange-rate API. They are suitable for reference and comparison but may differ slightly from the rates offered by banks or money transfer services, which include a spread.' },
+        { q: 'How often are the rates updated?', a: 'Exchange rates are fetched once when the page loads and cached for your session. For live trading or international transfers, always check a real-time financial data source.' },
+        { q: 'Which currencies are supported?', a: 'The converter supports 30 major world currencies: USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY, INR, SGD, HKD, NOK, KRW, TRY, RUB, BRL, ZAR, MXN, SEK, NZD, THB, PLN, TWD, IDR, MYR, PHP, CZK, ILS, AED, and SAR.' },
+        { q: 'Why are some values rounded?', a: 'Currency values are rounded to 2 decimal places for most currencies (or to the smallest practical unit). This matches the standard practice for financial display. Currencies like JPY and KRW are displayed as whole numbers since they have no sub-unit in common use.' },
+        { q: 'Does this work offline?', a: 'Exchange rates require an internet connection to fetch on first load. Once loaded, the rates are cached and conversions work offline for the rest of your session. If the API is unavailable, the tool will not display results.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  const CURRENCIES = [
+    { code: 'USD', name: 'US Dollar' },
+    { code: 'EUR', name: 'Euro' },
+    { code: 'GBP', name: 'British Pound' },
+    { code: 'JPY', name: 'Japanese Yen' },
+    { code: 'AUD', name: 'Australian Dollar' },
+    { code: 'CAD', name: 'Canadian Dollar' },
+    { code: 'CHF', name: 'Swiss Franc' },
+    { code: 'CNY', name: 'Chinese Yuan' },
+    { code: 'INR', name: 'Indian Rupee' },
+    { code: 'SGD', name: 'Singapore Dollar' },
+    { code: 'HKD', name: 'Hong Kong Dollar' },
+    { code: 'NOK', name: 'Norwegian Krone' },
+    { code: 'KRW', name: 'South Korean Won' },
+    { code: 'TRY', name: 'Turkish Lira' },
+    { code: 'RUB', name: 'Russian Ruble' },
+    { code: 'BRL', name: 'Brazilian Real' },
+    { code: 'ZAR', name: 'South African Rand' },
+    { code: 'MXN', name: 'Mexican Peso' },
+    { code: 'SEK', name: 'Swedish Krona' },
+    { code: 'NZD', name: 'New Zealand Dollar' },
+    { code: 'THB', name: 'Thai Baht' },
+    { code: 'PLN', name: 'Polish Zloty' },
+    { code: 'TWD', name: 'Taiwan Dollar' },
+    { code: 'IDR', name: 'Indonesian Rupiah' },
+    { code: 'MYR', name: 'Malaysian Ringgit' },
+    { code: 'PHP', name: 'Philippine Peso' },
+    { code: 'CZK', name: 'Czech Koruna' },
+    { code: 'ILS', name: 'Israeli Shekel' },
+    { code: 'AED', name: 'UAE Dirham' },
+    { code: 'SAR', name: 'Saudi Riyal' },
+  ];
+
+  const ROUND_ZERO = new Set(['JPY', 'KRW', 'IDR', 'VND']);
+
+  // Fallback rates (relative to USD) if API is unavailable
+  const FALLBACK: Record<string, number> = {
+    USD: 1, EUR: 0.916, GBP: 0.788, JPY: 149.53, AUD: 1.534, CAD: 1.365,
+    CHF: 0.884, CNY: 7.246, INR: 83.42, SGD: 1.342, HKD: 7.810,
+    NOK: 10.72, KRW: 1328.5, TRY: 34.25, RUB: 91.50, BRL: 4.972,
+    ZAR: 18.94, MXN: 17.15, SEK: 10.42, NZD: 1.648, THB: 35.78,
+    PLN: 3.982, TWD: 31.52, IDR: 15680, MYR: 4.712, PHP: 56.12,
+    CZK: 22.85, ILS: 3.672, AED: 3.672, SAR: 3.750,
+  };
+
+  const input  = document.getElementById('cur-input') as HTMLInputElement;
+  const select = document.getElementById('cur-unit') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const status = document.getElementById('rate-status')!;
+
+  let rates: Record<string, number> = { ...FALLBACK };
+
+  function fmt(value: number, code: string): string {
+    if (Number.isNaN(value)) return '—';
+    if (ROUND_ZERO.has(code)) return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromCode = select.value;
+    const fromRate = rates[fromCode];
+
+    grid.innerHTML = '';
+
+    CURRENCIES.forEach(c => {
+      if (c.code === fromCode) return;
+      const converted = val * (rates[c.code] / fromRate);
+      const display = fmt(converted, c.code);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${c.code}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+  }
+
+  async function fetchRates() {
+    try {
+      status.style.display = 'block';
+      status.textContent = 'Fetching live exchange rates…';
+      const res = await fetch('https://open.er-api.com/v6/latest/USD');
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      if (data && data.rates) {
+        rates = data.rates;
+        const ts = new Date(data.time_last_update_utc || Date.now()).toLocaleString();
+        status.textContent = `Live rates updated ${ts} (source: exchangerate-api.com)`;
+        status.style.color = 'var(--text-muted)';
+        update();
+      } else {
+        throw new Error('No rates');
+      }
+    } catch {
+      status.textContent = 'Using fallback rates — API unavailable';
+      status.style.color = 'var(--text-muted)';
+    }
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+  fetchRates();
+})();
+</script>

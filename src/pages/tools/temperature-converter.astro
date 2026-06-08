@@ -1,0 +1,216 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'temperature-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Temperature Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a temperature in any scale — see the conversion in the others instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="temp-input">Temperature</label>
+        <input id="temp-input" type="number" value="100" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="temp-unit">Scale</label>
+        <select id="temp-unit" class="select-themed" style="min-width:10rem;">
+          <option value="c" selected>Celsius (°C)</option>
+          <option value="f">Fahrenheit (°F)</option>
+          <option value="k">Kelvin (K)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Common Reference Points</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Temperature Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric temperature</strong> and select its <strong>scale</strong> (Celsius, Fahrenheit, or Kelvin) from the dropdown. The other two scales update instantly — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports the three most commonly used temperature scales. <strong>Celsius</strong> is used worldwide for weather and cooking. <strong>Fahrenheit</strong> is primarily used in the United States. <strong>Kelvin</strong> is the SI absolute temperature scale used in science.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that scale's result to your clipboard. Common reference points are shown below the results for quick comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How temperature conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      Unlike length or weight, temperature scales have different zero points and intervals, so conversions use linear formulas rather than simple multiplication factors:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Celsius to Fahrenheit:  °F = (°C × 9/5) + 32
+Fahrenheit to Celsius:  °C = (°F − 32) × 5/9
+Celsius to Kelvin:      K  = °C + 273.15
+Kelvin to Celsius:      °C = K − 273.15
+Fahrenheit to Kelvin:   K  = (°F − 32) × 5/9 + 273.15
+Kelvin to Fahrenheit:   °F = (K − 273.15) × 9/5 + 32</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      The Celsius and Kelvin scales share the same interval size (1 degree = 1 kelvin), so converting between them only requires an offset of 273.15. Fahrenheit uses a different interval (180 degrees between freezing and boiling vs. 100 for Celsius), hence the 9/5 multiplier. All calculations run in your browser — no data is sent anywhere.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the formula to convert Celsius to Fahrenheit?",
+          "acceptedAnswer": { "@type": "Answer", "text": "To convert Celsius to Fahrenheit, multiply by 9/5 (or 1.8) and add 32: °F = (°C × 9/5) + 32. For example, 25°C equals 77°F." }
+        },
+        {
+          "@type": "Question",
+          "name": "At what temperature are Celsius and Fahrenheit equal?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Celsius and Fahrenheit are equal at −40 degrees. At that point, −40°C = −40°F. This is the only temperature where both scales read the same value." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is Kelvin used for?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Kelvin is the SI unit of temperature used in science and engineering. It is an absolute scale where 0 K (absolute zero) is the lowest possible temperature. It is commonly used in physics, chemistry, and thermodynamics." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does the US use Fahrenheit?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Fahrenheit was developed by Daniel Gabriel Fahrenheit in 1724 and was the first standardized temperature scale. The US adopted it early and kept it for everyday use. Most other countries switched to Celsius during metrication in the 20th century." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is absolute zero?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Absolute zero is the lowest possible temperature: 0 K, −273.15°C, or −459.67°F. At this point, all molecular motion theoretically stops. It has never been reached in practice, though scientists have come within billionths of a degree." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is the formula to convert Celsius to Fahrenheit?', a: 'To convert Celsius to Fahrenheit, multiply by 9/5 (or 1.8) and add 32: °F = (°C × 9/5) + 32. For example, 25°C equals 77°F.' },
+        { q: 'At what temperature are Celsius and Fahrenheit equal?', a: 'Celsius and Fahrenheit are equal at −40 degrees. At that point, −40°C = −40°F. This is the only temperature where both scales read the same value.' },
+        { q: 'What is Kelvin used for?', a: 'Kelvin is the SI unit of temperature used in science and engineering. It is an absolute scale where 0 K (absolute zero) is the lowest possible temperature. It is commonly used in physics, chemistry, and thermodynamics.' },
+        { q: 'Why does the US use Fahrenheit?', a: 'Fahrenheit was developed by Daniel Gabriel Fahrenheit in 1724 and was the first standardized temperature scale. The US adopted it early and kept it for everyday use. Most other countries switched to Celsius during metrication in the 20th century.' },
+        { q: 'What is absolute zero?', a: 'Absolute zero is the lowest possible temperature: 0 K, −273.15°C, or −459.67°F. At this point, all molecular motion theoretically stops. It has never been reached in practice, though scientists have come within billionths of a degree.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion functions ─────────────────────────────────────────
+  const CONV = {
+    c: { f: v => v * 9/5 + 32,       k: v => v + 273.15 },
+    f: { c: v => (v - 32) * 5/9,     k: v => (v - 32) * 5/9 + 273.15 },
+    k: { c: v => v - 273.15,         f: v => (v - 273.15) * 9/5 + 32 },
+  };
+
+  const SCALES = [
+    { id: 'c', label: 'Celsius',    abbr: '°C',  decimals: 2 },
+    { id: 'f', label: 'Fahrenheit', abbr: '°F',  decimals: 2 },
+    { id: 'k', label: 'Kelvin',     abbr: 'K',   decimals: 2 },
+  ];
+
+  const input  = document.getElementById('temp-input') as HTMLInputElement;
+  const select = document.getElementById('temp-unit') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const refs   = document.getElementById('refs')!;
+
+  // ── Quick-reference temperatures (stored in °C) ────────────────
+  const REFS = [
+    { name: 'Absolute Zero',      c: -273.15 },
+    { name: 'Liquid Nitrogen',    c: -195.79 },
+    { name: 'Water Freezes',      c: 0 },
+    { name: 'Fridge Temperature', c: 4 },
+    { name: 'Room Temperature',   c: 20 },
+    { name: 'Body Temperature',   c: 37 },
+    { name: 'Oven Baking',        c: 180 },
+    { name: 'Water Boils',        c: 100 },
+  ];
+
+  function formatResult(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    return value.toFixed(2);
+  }
+
+  function update() {
+    const val = parseFloat(input.value);
+    const fromUnit = select.value;
+
+    grid.innerHTML = '';
+
+    SCALES.forEach(scale => {
+      if (scale.id === fromUnit) return;
+      const converted = CONV[fromUnit][scale.id](val);
+      const display = formatResult(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${scale.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitAbbr = SCALES.find(s => s.id === fromUnit)!.abbr;
+    refs.innerHTML = '';
+    REFS.forEach(r => {
+      const toTarget = { c: r.c, f: r.c * 9/5 + 32, k: r.c + 273.15 };
+      const value = toTarget[fromUnit];
+      const display = formatResult(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitAbbr}</span>
+      `;
+      refs.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

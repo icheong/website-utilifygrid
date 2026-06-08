@@ -1,0 +1,316 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'moment-of-inertia-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Moment of Inertia Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a moment of inertia and select its unit — all other units update instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="moi-input">Moment of Inertia</label>
+        <input id="moi-input" type="number" value="1" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="moi-unit">Unit</label>
+        <select id="moi-unit" class="select-themed" style="min-width:12rem;">
+          <option value="kgm2" selected>kg·m²</option>
+          <option value="gcm2">g·cm²</option>
+          <option value="kgcm2">kg·cm²</option>
+          <option value="slugft2">slug·ft²</option>
+          <option value="slugin2">slug·in²</option>
+          <option value="lbft2">lb·ft²</option>
+          <option value="lbin2">lb·in²</option>
+          <option value="ozin2">oz·in²</option>
+          <option value="ozft2">oz·ft²</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results grid -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Mass Distribution Concept Visualisation -->
+    <style>
+      @keyframes orbitSpin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+      }
+      #orbit-group {
+        transform-origin: 110px 145px;
+        animation: orbitSpin 4s linear infinite;
+      }
+    </style>
+    <div style="margin-top:1.5rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.25rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem;">Why Mass Farther From the Axis Matters More — I = Σmr²</p>
+      <div style="display:flex;align-items:flex-start;justify-content:center;gap:2rem;flex-wrap:wrap;">
+        <!-- Left: rotating mass distribution -->
+        <div style="text-align:center;">
+          <svg width="260" height="290" viewBox="0 0 260 290" id="concept-svg">
+            <!-- Axis label -->
+            <text x="110" y="18" text-anchor="middle" font-size="10" font-weight="600" fill="var(--text-muted)" font-family="'Sora',sans-serif">ROTATION AXIS</text>
+            <line x1="110" y1="22" x2="110" y2="268" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="4 3" opacity="0.4"/>
+            <!-- Rotating particles -->
+            <g id="orbit-group">
+              <!-- Particle at r -->
+              <line x1="110" y1="145" x2="170" y2="145" stroke="#3B82F6" stroke-width="2" opacity="0.5"/>
+              <circle cx="170" cy="145" r="14" fill="#3B82F6" opacity="0.9"/>
+              <text x="170" y="149" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="'Fira Code',monospace">m</text>
+              <!-- Particle at 2r -->
+              <line x1="110" y1="145" x2="230" y2="145" stroke="#EF4444" stroke-width="2" opacity="0.5"/>
+              <circle cx="230" cy="145" r="14" fill="#EF4444" opacity="0.9"/>
+              <text x="230" y="149" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="'Fira Code',monospace">m</text>
+              <!-- Particle at 0.5r -->
+              <line x1="110" y1="145" x2="140" y2="145" stroke="#10B981" stroke-width="2" opacity="0.5"/>
+              <circle cx="140" cy="145" r="10" fill="#10B981" opacity="0.9"/>
+              <text x="140" y="149" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="'Fira Code',monospace">m</text>
+              <!-- Center hub -->
+              <circle cx="110" cy="145" r="6" fill="var(--text-muted)" opacity="0.5"/>
+            </g>
+            <!-- Radius labels (static) -->
+            <text x="140" y="168" text-anchor="middle" font-size="9" font-weight="600" fill="#10B981" font-family="'Fira Code',monospace">0.5r</text>
+            <text x="170" y="168" text-anchor="middle" font-size="9" font-weight="600" fill="#3B82F6" font-family="'Fira Code',monospace">r</text>
+            <text x="230" y="168" text-anchor="middle" font-size="9" font-weight="600" fill="#EF4444" font-family="'Fira Code',monospace">2r</text>
+          </svg>
+          <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.25rem;">Same mass <strong>m</strong> at different distances — all rotate together</p>
+        </div>
+        <!-- Right: contribution bar chart -->
+        <div style="flex:1;min-width:200px;max-width:280px;">
+          <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.75rem;">Each particle's contribution to I:</p>
+          <svg width="100%" viewBox="0 0 260 180" id="bar-svg">
+            <!-- Bar: 0.5r particle -->
+            <rect x="0" y="10" width="16" height="24" rx="4" fill="#10B981"/>
+            <text x="24" y="27" font-size="10" font-weight="600" fill="var(--text-primary)" font-family="'Fira Code',monospace">0.25 mr²</text>
+            <text x="24" y="41" font-size="9" fill="var(--text-muted)" font-family="'Sora',sans-serif">(0.5r)² = 0.25</text>
+            <!-- Bar: r particle -->
+            <rect x="0" y="60" width="64" height="24" rx="4" fill="#3B82F6"/>
+            <text x="72" y="77" font-size="10" font-weight="600" fill="var(--text-primary)" font-family="'Fira Code',monospace">1 mr²</text>
+            <text x="72" y="91" font-size="9" fill="var(--text-muted)" font-family="'Sora',sans-serif">(r)² = 1</text>
+            <!-- Bar: 2r particle -->
+            <rect x="0" y="110" width="256" height="24" rx="4" fill="#EF4444"/>
+            <text x="0" y="152" font-size="10" font-weight="600" fill="#EF4444" font-family="'Fira Code',monospace">4 mr²</text>
+            <text x="0" y="166" font-size="9" fill="var(--text-muted)" font-family="'Sora',sans-serif">(2r)² = 4 — 4× the contribution!</text>
+            <!-- Grid lines -->
+            <line x1="64" y1="8" x2="64" y2="136" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2 2"/>
+            <line x1="256" y1="8" x2="256" y2="136" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2 2"/>
+          </svg>
+        </div>
+      </div>
+      <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:1rem;line-height:1.6;">
+        Total I = 0.25mr² + 1mr² + 4mr² = <strong style="color:var(--text-primary);">5.25 mr²</strong> —
+        the particle at <strong style="color:#EF4444;">2r</strong> alone contributes <strong style="color:#EF4444;">76%</strong> of the total.
+      </p>
+    </div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Common Moment of Inertia Values</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Moment of Inertia Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric moment of inertia value</strong> and select its <strong>unit</strong> from the dropdown. All other units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 9 units: <strong>kg·m²</strong>, <strong>g·cm²</strong>, <strong>kg·cm²</strong>, <strong>slug·ft²</strong>, <strong>slug·in²</strong>, <strong>lb·ft²</strong>, <strong>lb·in²</strong>, <strong>oz·in²</strong>, and <strong>oz·ft²</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. The flywheel visualisation below the results shows a rotating disk to illustrate the concept.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How moment of inertia conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      Moment of inertia depends on both the <strong>mass</strong> and <strong>distribution</strong> of that mass relative to the rotation axis. All conversions use <strong>kg·m²</strong> as the base unit:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 g·cm²    = 1 × 10⁻⁷ kg·m²
+1 kg·cm²    = 1 × 10⁻⁴ kg·m²
+1 slug·ft²  = 1.35581796 kg·m²
+1 slug·in²  = 0.094154025 kg·m²
+1 lb·ft²    = 0.0421401101 kg·m²
+1 lb·in²    = 0.0029263965 kg·m²
+1 oz·in²    = 0.0001828998 kg·m²
+1 oz·ft²    = 0.002633756 kg·m²
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      For a solid disk: I = ½mr². For a thin hoop: I = mr². The <strong>shape</strong> of the object determines how mass is distributed — a hoop has twice the moment of inertia of a disk of the same mass and radius because all its mass is at the rim.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is moment of inertia?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Moment of inertia (I) measures an object's resistance to changes in its rotational motion. It depends on both the mass and how that mass is distributed relative to the rotation axis. More mass concentrated farther from the axis means higher moment of inertia." }
+        },
+        {
+          "@type": "Question",
+          "name": "How is moment of inertia different from mass?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Mass (m) is a scalar that resists linear acceleration. Moment of inertia (I) is the rotational analog — it resists angular acceleration. An object can have the same mass but different moments of inertia depending on how mass is distributed. A hollow cylinder has higher I than a solid cylinder of the same mass and radius." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the unit of moment of inertia?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The SI unit is kg·m² (kilogram-meter squared). In the imperial system, slug·ft² and lb·ft² are also used. In CGS, g·cm² is common. All of these can be converted using this tool." }
+        },
+        {
+          "@type": "Question",
+          "name": "What are common moment of inertia values?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A tennis ball has about 0.000005 kg·m², a bicycle wheel about 0.1 kg·m², and a car flywheel about 0.35 kg·m². Earth has an enormous moment of inertia of about 8 × 10³⁷ kg·m²." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the parallel axis theorem?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The parallel axis theorem states: I = I_cm + Md², where I_cm is the moment of inertia about the center of mass, M is the total mass, and d is the distance between the two parallel axes. This lets you calculate I about any axis if you know it about the center of mass." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is moment of inertia?', a: 'Moment of inertia (I) measures an object\'s resistance to changes in its rotational motion. It depends on both the mass and how that mass is distributed relative to the rotation axis. More mass concentrated farther from the axis means higher moment of inertia.' },
+        { q: 'How is moment of inertia different from mass?', a: 'Mass (m) is a scalar that resists linear acceleration. Moment of inertia (I) is the rotational analog — it resists angular acceleration. An object can have the same mass but different moments of inertia depending on how mass is distributed. A hollow cylinder has higher I than a solid cylinder of the same mass and radius.' },
+        { q: 'What is the unit of moment of inertia?', a: 'The SI unit is kg·m² (kilogram-meter squared). In the imperial system, slug·ft² and lb·ft² are also used. In CGS, g·cm² is common. All of these can be converted using this tool.' },
+        { q: 'What are common moment of inertia values?', a: 'A tennis ball has about 0.000005 kg·m², a bicycle wheel about 0.1 kg·m², and a car flywheel about 0.35 kg·m². Earth has an enormous moment of inertia of about 8 × 10³⁷ kg·m².' },
+        { q: 'What is the parallel axis theorem?', a: 'The parallel axis theorem states: I = I_cm + Md², where I_cm is the moment of inertia about the center of mass, M is the total mass, and d is the distance between the two parallel axes. This lets you calculate I about any axis if you know it about the center of mass.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to kg·m² ────────────────────────────────
+  const TO_KGM2 = {
+    kgm2:   1,
+    gcm2:   1e-7,
+    kgcm2:  1e-4,
+    slugft2: 1.35581796192,
+    slugin2: 0.094154025129,
+    lbft2:  0.04214011009,
+    lbin2:  0.00292639653,
+    ozin2:  0.00018289979,
+    ozft2:  0.002633756,
+  };
+
+  const UNITS = [
+    { id: 'kgm2',   label: 'kg·m²',   name: 'Kilogram-meter²' },
+    { id: 'gcm2',   label: 'g·cm²',   name: 'Gram-centimeter²' },
+    { id: 'kgcm2',  label: 'kg·cm²',  name: 'Kilogram-centimeter²' },
+    { id: 'slugft2', label: 'slug·ft²', name: 'Slug-foot²' },
+    { id: 'slugin2', label: 'slug·in²', name: 'Slug-inch²' },
+    { id: 'lbft2',  label: 'lb·ft²',  name: 'Pound-foot²' },
+    { id: 'lbin2',  label: 'lb·in²',  name: 'Pound-inch²' },
+    { id: 'ozin2',  label: 'oz·in²',  name: 'Ounce-inch²' },
+    { id: 'ozft2',  label: 'oz·ft²',  name: 'Ounce-foot²' },
+  ];
+
+  const REFS = [
+    { name: 'Tennis Ball',      kgm2: 5.0e-6 },
+    { name: 'Badminton Shuttle', kgm2: 1.7e-6 },
+    { name: 'Bowling Ball',     kgm2: 0.063 },
+    { name: 'Bicycle Wheel',    kgm2: 0.10 },
+    { name: 'Car Flywheel',     kgm2: 0.35 },
+    { name: 'CD/DVD Disc',      kgm2: 0.000075 },
+    { name: 'Figure Skater',    kgm2: 0.80 },
+    { name: 'Earth',            kgm2: 8.0e37 },
+  ];
+
+  const input    = document.getElementById('moi-input') as HTMLInputElement;
+  const select   = document.getElementById('moi-unit') as HTMLSelectElement;
+  const grid     = document.getElementById('results')!;
+  const refsDiv  = document.getElementById('refs')!;
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e30) return value.toExponential(4);
+    if (abs >= 1e20) return value.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 1e-6)  return value.toLocaleString('en-US', { maximumFractionDigits: 12 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const kgm2     = val * TO_KGM2[fromUnit];
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = kgm2 / TO_KGM2[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    refsDiv.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.kgm2 / TO_KGM2[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refsDiv.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

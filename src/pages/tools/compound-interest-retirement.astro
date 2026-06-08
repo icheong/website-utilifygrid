@@ -118,21 +118,33 @@ const tool = tools.find(t => t.slug === 'compound-interest-retirement')!;
 
   <!-- ── HOW TO USE ────────────────────────────────────────────────── -->
   <div slot="how-to-use">
-    <p>Set your <strong>current age</strong> and <strong>current savings</strong> to establish your starting point. Then dial in your <strong>monthly contribution</strong> — the amount you invest each month after expenses. Adjust the <strong>expected annual return</strong> to reflect your portfolio's projected growth rate (7% is a common long-run stock market estimate after inflation).</p>
-    <p>Enter your estimated <strong>monthly expenses at retirement</strong> — the lifestyle cost you'll need your portfolio to cover. Finally, set your <strong>safe withdrawal rate (SWR)</strong>: the percentage of your portfolio you can withdraw annually without running out of money. The widely-cited 4% rule (from the Trinity Study) is the default.</p>
-    <p>The chart updates instantly. The vertical crossover point — where the green passive income line meets the orange expenses threshold — is your <strong>FIRE date</strong>. The KPI cards above show your projected FIRE age, years remaining, portfolio size at that moment, and the monthly income it would generate.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Retirement Visualizer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Set your <strong>current age</strong> and <strong>current savings</strong> to establish your starting point. Then dial in your <strong>monthly contribution</strong> — the amount you invest each month after expenses. Adjust the <strong>expected annual return</strong> to reflect your portfolio's projected growth rate (7% is a common long-run stock market estimate after inflation).
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter your estimated <strong>monthly expenses at retirement</strong> — the lifestyle cost you'll need your portfolio to cover. Finally, set your <strong>safe withdrawal rate (SWR)</strong>: the percentage of your portfolio you can withdraw annually without running out of money. The widely-cited 4% rule (from the Trinity Study) is the default.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      The chart updates instantly. The vertical crossover point — where the green passive income line meets the orange expenses threshold — is your <strong>FIRE date</strong>. The KPI cards above show your projected FIRE age, years remaining, portfolio size at that moment, and the monthly income it would generate.
+    </p>
   </div>
 
   <!-- ── HOW IT WORKS ──────────────────────────────────────────────── -->
   <div slot="how-it-works">
-    <p>The portfolio at any point in time is calculated using the standard future value of a lump sum plus a recurring contribution series:</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the retirement calculation works</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      The portfolio at any point in time is calculated using the standard future value of a lump sum plus a recurring contribution series:
+    </p>
     <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Portfolio(t) = S × (1 + r/12)^(12t)
              + C × [((1 + r/12)^(12t) − 1) / (r/12)]
 
 Monthly Passive Income(t) = Portfolio(t) × SWR / 12
 
 FIRE crossover when: MonthlyPassiveIncome(t) ≥ MonthlyExpenses</pre>
-    <p>Where <strong>S</strong> is current savings, <strong>r</strong> is the annual return rate as a decimal, <strong>t</strong> is years elapsed, <strong>C</strong> is monthly contribution, and <strong>SWR</strong> is the safe withdrawal rate as a decimal. The model compounds monthly for precision. All calculations run entirely in your browser — no data is sent anywhere.</p>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Where <strong>S</strong> is current savings, <strong>r</strong> is the annual return rate as a decimal, <strong>t</strong> is years elapsed, <strong>C</strong> is monthly contribution, and <strong>SWR</strong> is the safe withdrawal rate as a decimal. The model compounds monthly for precision. All calculations run entirely in your browser — no data is sent anywhere.
+    </p>
   </div>
 
   <!-- ── FAQ ──────────────────────────────────────────────────────── -->
@@ -176,30 +188,25 @@ FIRE crossover when: MonthlyPassiveIncome(t) ≥ MonthlyExpenses</pre>
     }
     </script>
 
-    <details open>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What is FIRE?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">FIRE stands for Financial Independence, Retire Early. It describes the point at which your invested assets generate enough passive income to cover living expenses indefinitely, freeing you from the need to work for money.</p>
-    </details>
-    <details>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What is the 4% rule?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">The 4% rule originates from the 1998 Trinity Study, which found that a retirement portfolio could sustain a 4% annual withdrawal rate over a 30-year horizon with a high probability of not running out of money. Some advisors recommend 3–3.5% for longer early-retirement periods.</p>
-    </details>
-    <details>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">Is a 7% annual return realistic?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">The US stock market has returned roughly 7% annually after inflation over the long run. It's a commonly used real return estimate for a diversified equity portfolio. Your actual returns will vary year to year.</p>
-    </details>
-    <details>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">Does this account for inflation?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">Not automatically. To account for it, use an inflation-adjusted return rate (e.g. 7% real rather than 10% nominal) and enter expenses in today's dollars. This gives a conservative, inflation-adjusted crossover estimate.</p>
-    </details>
-    <details>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">How do I factor in superannuation or government pension?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">Reduce your monthly expenses by the expected pension or super drawdown. If you need $4,000/month total and expect $1,000 from super, enter $3,000 as monthly expenses — the gap your personal portfolio needs to cover.</p>
-    </details>
-    <details>
-      <summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:.5rem 0;">What if I plan to increase contributions over time?</summary>
-      <p style="color:var(--text-secondary);margin-top:.5rem;">This tool models a fixed monthly contribution. To approximate stepped increases, run the tool to a mid-point age, note the portfolio value, then re-run using that as starting savings with a higher contribution rate.</p>
-    </details>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is FIRE?', a: 'FIRE stands for Financial Independence, Retire Early. It describes the point at which your invested assets generate enough passive income to cover living expenses indefinitely, freeing you from the need to work for money.' },
+        { q: 'What is the 4% rule?', a: 'The 4% rule originates from the 1998 Trinity Study, which found that a retirement portfolio could sustain a 4% annual withdrawal rate over a 30-year horizon with a high probability of not running out of money. Some advisors recommend 3–3.5% for longer early-retirement periods.' },
+        { q: 'Is a 7% annual return realistic?', a: 'The US stock market has returned roughly 7% annually after inflation over the long run. It\'s a commonly used real return estimate for a diversified equity portfolio. Your actual returns will vary year to year.' },
+        { q: 'Does this account for inflation?', a: 'Not automatically. To account for it, use an inflation-adjusted return rate (e.g. 7% real rather than 10% nominal) and enter expenses in today\'s dollars. This gives a conservative, inflation-adjusted crossover estimate.' },
+        { q: 'How do I factor in superannuation or government pension?', a: 'Reduce your monthly expenses by the expected pension or super drawdown. If you need $4,000/month total and expect $1,000 from super, enter $3,000 as monthly expenses — the gap your personal portfolio needs to cover.' },
+        { q: 'What if I plan to increase contributions over time?', a: 'This tool models a fixed monthly contribution. To approximate stepped increases, run the tool to a mid-point age, note the portfolio value, then re-run using that as starting savings with a higher contribution rate.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
   </div>
 
 </ToolLayout>

@@ -1,0 +1,240 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'area-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Area Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter an area value and select its unit — all other units update instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="area-input">Area</label>
+        <input id="area-input" type="number" value="1000" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="area-unit">Unit</label>
+        <select id="area-unit" class="select-themed" style="min-width:10rem;">
+          <option value="m2" selected>square meter (m²)</option>
+          <option value="cm2">square centimeter (cm²)</option>
+          <option value="mm2">square millimeter (mm²)</option>
+          <option value="km2">square kilometer (km²)</option>
+          <option value="ha">hectare (ha)</option>
+          <option value="in2">square inch (in²)</option>
+          <option value="ft2">square foot (ft²)</option>
+          <option value="yd2">square yard (yd²)</option>
+          <option value="ac">acre (ac)</option>
+          <option value="mi2">square mile (mi²)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Area Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric area value</strong> and select its <strong>unit</strong> from the dropdown. All other area units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 10 standard area units from both metric and imperial systems: <strong>mm²</strong>, <strong>cm²</strong>, <strong>m²</strong>, <strong>km²</strong>, <strong>hectares</strong>, <strong>in²</strong>, <strong>ft²</strong>, <strong>yd²</strong>, <strong>acres</strong>, and <strong>mi²</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common reference objects are shown below the results for quick visual comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How area conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions use <strong>square meters (m²)</strong> as the base unit. Each unit defines its factor relative to m²:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 cm²      = 0.0001 m²
+1 mm²      = 0.000001 m²
+1 km²      = 1,000,000 m²
+1 ha       = 10,000 m²
+1 in²      = 0.00064516 m²
+1 ft²      = 0.09290304 m²
+1 yd²      = 0.83612736 m²
+1 acre     = 4,046.8564224 m²
+1 mi²      = 2,589,988.110336 m²</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      To convert from one unit to another, the input is first multiplied by its base factor to get m², then divided by the target unit's factor. All calculations run in your browser with full double-precision floating-point accuracy.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How many square feet are in a square meter?",
+          "acceptedAnswer": { "@type": "Answer", "text": "One square meter equals approximately 10.7639 square feet. This is the most common conversion when comparing metric and imperial room measurements." }
+        },
+        {
+          "@type": "Question",
+          "name": "How many acres are in a hectare?",
+          "acceptedAnswer": { "@type": "Answer", "text": "One hectare equals approximately 2.47105 acres. Conversely, one acre equals about 0.4047 hectares. This conversion is widely used in agriculture and land measurement." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a hectare?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A hectare is a metric unit of area equal to 10,000 square meters (100m × 100m). It is commonly used for measuring agricultural land and is about the size of a standard rugby field." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do you convert square meters to square feet?",
+          "acceptedAnswer": { "@type": "Answer", "text": "To convert square meters to square feet, multiply the area by 10.7639. For example, 100 m² equals 1,076.39 ft²." }
+        },
+        {
+          "@type": "Question",
+          "name": "What unit is best for measuring a house?",
+          "acceptedAnswer": { "@type": "Answer", "text": "In most countries, house floor area is measured in square meters (m²). In the US and UK, square feet (ft²) is more common for residential property. For land plots, acres or hectares are typically used." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'How many square feet are in a square meter?', a: 'One square meter equals approximately 10.7639 square feet. This is the most common conversion when comparing metric and imperial room measurements.' },
+        { q: 'How many acres are in a hectare?', a: 'One hectare equals approximately 2.47105 acres. Conversely, one acre equals about 0.4047 hectares. This conversion is widely used in agriculture and land measurement.' },
+        { q: 'What is a hectare?', a: 'A hectare is a metric unit of area equal to 10,000 square meters (100m × 100m). It is commonly used for measuring agricultural land and is about the size of a standard rugby field.' },
+        { q: 'How do you convert square meters to square feet?', a: 'To convert square meters to square feet, multiply the area by 10.7639. For example, 100 m² equals 1,076.39 ft².' },
+        { q: 'What unit is best for measuring a house?', a: 'In most countries, house floor area is measured in square meters (m²). In the US and UK, square feet (ft²) is more common for residential property. For land plots, acres or hectares are typically used.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to m² ────────────────────────────────────
+  const TO_M2 = {
+    mm2: 1e-6,
+    cm2: 1e-4,
+    m2:  1,
+    km2: 1e6,
+    ha:  10_000,
+    in2: 0.00064516,
+    ft2: 0.09290304,
+    yd2: 0.83612736,
+    ac:  4046.8564224,
+    mi2: 2_589_988.110336,
+  };
+
+  const UNITS = [
+    { id: 'mm2', label: 'mm²',  name: 'Square Millimeter', decimals: 4 },
+    { id: 'cm2', label: 'cm²',  name: 'Square Centimeter', decimals: 4 },
+    { id: 'm2',  label: 'm²',   name: 'Square Meter',      decimals: 4 },
+    { id: 'km2', label: 'km²',  name: 'Square Kilometer',  decimals: 6 },
+    { id: 'ha',  label: 'ha',   name: 'Hectare',           decimals: 4 },
+    { id: 'in2', label: 'in²',  name: 'Square Inch',       decimals: 4 },
+    { id: 'ft2', label: 'ft²',  name: 'Square Foot',       decimals: 4 },
+    { id: 'yd2', label: 'yd²',  name: 'Square Yard',       decimals: 4 },
+    { id: 'ac',  label: 'ac',   name: 'Acre',              decimals: 4 },
+    { id: 'mi2', label: 'mi²',  name: 'Square Mile',       decimals: 6 },
+  ];
+
+  const input  = document.getElementById('area-input') as HTMLInputElement;
+  const select = document.getElementById('area-unit') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const refs   = document.getElementById('refs')!;
+
+  // ── Quick-reference objects (stored in m²) ──────────────────────
+  const REFS = [
+    { name: 'Parking Space',  m2: 12 },
+    { name: 'Typical Bedroom',m2: 14 },
+    { name: 'Tennis Court',   m2: 260.87 },
+    { name: 'Basketball Court',m2: 420 },
+    { name: 'Soccer Pitch',   m2: 7_140 },
+    { name: 'Football Field', m2: 5_351 },
+    { name: 'Typical House Lot', m2: 800 },
+    { name: 'City Block',     m2: 10_000 },
+  ];
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+  }
+
+  function update() {
+    const val     = parseFloat(input.value);
+    const fromUnit = select.value;
+    const m2Val    = val * TO_M2[fromUnit];
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = m2Val / TO_M2[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    refs.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.m2 / TO_M2[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refs.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

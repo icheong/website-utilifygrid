@@ -1,0 +1,249 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'specific-volume-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Specific Volume Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a specific volume and select its unit — all other units update instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sv-input">Specific Volume</label>
+        <input id="sv-input" type="number" value="0.001" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sv-unit">Unit</label>
+        <select id="sv-unit" class="select-themed" style="min-width:12rem;">
+          <option value="m3kg" selected>m³/kg</option>
+          <option value="cm3g">cm³/g</option>
+          <option value="mLg">mL/g</option>
+          <option value="Lkg">L/kg</option>
+          <option value="Lg">L/g</option>
+          <option value="ft3lb">ft³/lb</option>
+          <option value="in3lb">in³/lb</option>
+          <option value="galb">US gal/lb</option>
+          <option value="igalb">Imp gal/lb</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Material Specific Volumes</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Specific Volume Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric specific volume value</strong> and select its <strong>unit</strong> from the dropdown. All other units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 9 specific volume units: <strong>m³/kg</strong>, <strong>cm³/g</strong>, <strong>mL/g</strong>, <strong>L/kg</strong>, <strong>L/g</strong>, <strong>ft³/lb</strong>, <strong>in³/lb</strong>, <strong>US gal/lb</strong>, and <strong>Imp gal/lb</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common material specific volumes are shown below for quick comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How specific volume conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      Specific volume is the <strong>inverse of density</strong>: v = 1/ρ. All conversions use <strong>m³/kg</strong> as the base unit:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 cm³/g   = 0.001 m³/kg
+1 mL/g     = 0.001 m³/kg
+1 L/kg     = 0.001 m³/kg
+1 L/g      = 1 m³/kg
+1 ft³/lb   = 0.062428 m³/kg
+1 in³/lb   = 0.036127 m³/kg
+1 US gal/lb = 0.008345 m³/kg
+1 Imp gal/lb = 0.010022 m³/kg
+
+v (m³/kg) = 1 / ρ (kg/m³)
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      For example, water has a density of 1,000 kg/m³, so its specific volume is 1/1000 = 0.001 m³/kg = 1 cm³/g = 1 mL/g. This is why cm³/g, mL/g, and L/kg all have the same conversion factor to m³/kg.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is specific volume?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Specific volume is the volume occupied by a unit mass of a substance. It is the reciprocal of density (v = 1/ρ). For example, water has a specific volume of 0.001 m³/kg, meaning 1 kg of water occupies 0.001 m³ (1 liter)." }
+        },
+        {
+          "@type": "Question",
+          "name": "How is specific volume different from density?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Density = mass/volume (kg/m³). Specific volume = volume/mass (m³/kg). They are mathematical reciprocals. High density means low specific volume and vice versa. Gold has high density (19,300 kg/m³) and low specific volume (0.0000518 m³/kg)." }
+        },
+        {
+          "@type": "Question",
+          "name": "Where is specific volume used?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Specific volume is commonly used in thermodynamics and fluid mechanics. It appears in steam tables, ideal gas calculations (v = RT/P), and HVAC system design. Engineers use it to determine how much space a given mass of fluid occupies." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the specific volume of air?",
+          "acceptedAnswer": { "@type": "Answer", "text": "At sea level and 15°C, air has a density of about 1.225 kg/m³, giving a specific volume of about 0.816 m³/kg. This means 1 kg of air occupies about 816 liters — air is much less dense than water (0.001 m³/kg)." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why are cm³/g, mL/g, and L/kg the same value?",
+          "acceptedAnswer": { "@type": "Answer", "text": "All three units equal 0.001 m³/kg because 1 cm³ = 1 mL = 0.001 L = 0.001 dm³, and 1 kg = 1000 g. So 1 cm³/g = (0.001 m³)/(1 kg) × (1000 g/1 kg)⁻¹ × (100 cm/m)³⁻¹ = 0.001 m³/kg. Similarly for mL/g and L/kg." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is specific volume?', a: 'Specific volume is the volume occupied by a unit mass of a substance. It is the reciprocal of density (v = 1/ρ). For example, water has a specific volume of 0.001 m³/kg, meaning 1 kg of water occupies 0.001 m³ (1 liter).' },
+        { q: 'How is specific volume different from density?', a: 'Density = mass/volume (kg/m³). Specific volume = volume/mass (m³/kg). They are mathematical reciprocals. High density means low specific volume and vice versa. Gold has high density (19,300 kg/m³) and low specific volume (0.0000518 m³/kg).' },
+        { q: 'Where is specific volume used?', a: 'Specific volume is commonly used in thermodynamics and fluid mechanics. It appears in steam tables, ideal gas calculations (v = RT/P), and HVAC system design. Engineers use it to determine how much space a given mass of fluid occupies.' },
+        { q: 'What is the specific volume of air?', a: 'At sea level and 15°C, air has a density of about 1.225 kg/m³, giving a specific volume of about 0.816 m³/kg. This means 1 kg of air occupies about 816 liters — air is much less dense than water (0.001 m³/kg).' },
+        { q: 'Why are cm³/g, mL/g, and L/kg the same value?', a: 'All three units equal 0.001 m³/kg because 1 cm³ = 1 mL = 0.001 L = 0.001 dm³, and 1 kg = 1000 g. So 1 cm³/g = (0.001 m³)/(1 kg) × (1000 g/1 kg)⁻¹ × (100 cm/m)³⁻¹ = 0.001 m³/kg. Similarly for mL/g and L/kg.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to m³/kg ─────────────────────────────────
+  const TO_M3KG = {
+    m3kg:  1,
+    cm3g:  0.001,
+    mLg:   0.001,
+    Lkg:   0.001,
+    Lg:    1,
+    ft3lb: 0.0624279606,
+    in3lb: 0.0361272867,
+    galb:  0.0083454045,
+    igalb: 0.0100224129,
+  };
+
+  const UNITS = [
+    { id: 'm3kg',  label: 'm³/kg',    name: 'Cubic Meter per kg' },
+    { id: 'cm3g',  label: 'cm³/g',    name: 'Cubic cm per gram' },
+    { id: 'mLg',   label: 'mL/g',     name: 'Milliliter per gram' },
+    { id: 'Lkg',   label: 'L/kg',     name: 'Liter per kilogram' },
+    { id: 'Lg',    label: 'L/g',      name: 'Liter per gram' },
+    { id: 'ft3lb', label: 'ft³/lb',   name: 'Cubic foot per pound' },
+    { id: 'in3lb', label: 'in³/lb',   name: 'Cubic inch per pound' },
+    { id: 'galb',  label: 'gal/lb',   name: 'US Gallon per pound' },
+    { id: 'igalb', label: 'igal/lb',  name: 'Imp Gallon per pound' },
+  ];
+
+  const REFS = [
+    { name: 'Air (15°C)',      m3kg: 0.816 },
+    { name: 'Styrofoam',        m3kg: 0.033 },
+    { name: 'Oak Wood',         m3kg: 0.00133 },
+    { name: 'Ice',              m3kg: 0.00109 },
+    { name: 'Water (4°C)',      m3kg: 0.001 },
+    { name: 'Seawater',         m3kg: 0.000976 },
+    { name: 'Aluminum',         m3kg: 0.00037 },
+    { name: 'Iron',             m3kg: 0.000127 },
+    { name: 'Copper',           m3kg: 0.000112 },
+    { name: 'Gold',             m3kg: 0.0000518 },
+    { name: 'Lead',             m3kg: 0.0000882 },
+    { name: 'Osmium',           m3kg: 0.0000443 },
+  ];
+
+  const input    = document.getElementById('sv-input') as HTMLInputElement;
+  const select   = document.getElementById('sv-unit') as HTMLSelectElement;
+  const grid     = document.getElementById('results')!;
+  const refsDiv  = document.getElementById('refs')!;
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 0.000001) return value.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const m3kg     = val * TO_M3KG[fromUnit];
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = m3kg / TO_M3KG[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    refsDiv.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.m3kg / TO_M3KG[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refsDiv.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

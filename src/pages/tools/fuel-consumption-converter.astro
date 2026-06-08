@@ -1,0 +1,264 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'fuel-consumption-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Fuel Consumption Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a fuel economy value and select its unit — all other units update instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="fuel-input">Fuel Economy</label>
+        <input id="fuel-input" type="number" value="8" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="fuel-unit">Unit</label>
+        <select id="fuel-unit" class="select-themed" style="min-width:12rem;">
+          <option value="l100" selected>L/100km (lower = better)</option>
+          <option value="kml">km/L (higher = better)</option>
+          <option value="mpgus">US mpg (higher = better)</option>
+          <option value="mpguk">UK mpg (higher = better)</option>
+          <option value="ml100">mL/100m (lower = better)</option>
+          <option value="mpml">m/mL (higher = better)</option>
+          <option value="migal">mi/US gal (higher = better)</option>
+          <option value="miigal">mi/imp gal (higher = better)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Direction hint -->
+    <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1rem;">
+      L/100km, mL/100m: <strong>lower is better</strong> · All others: <strong>higher is better</strong>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Fuel Consumption Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric fuel economy value</strong> and select its <strong>unit</strong> from the dropdown. All other units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 8 fuel consumption units from both metric and imperial systems. <strong>L/100km</strong> and <strong>mL/100m</strong> are "lower is better" — all others are "higher is better."
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common vehicle fuel economy values are shown below the results for quick comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How fuel consumption conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      Fuel consumption is expressed in two ways: <strong>volume per distance</strong> (L/100km) where lower is better, and <strong>distance per volume</strong> (km/L, mpg) where higher is better. Converting between these requires a <strong>reciprocal</strong> operation:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">From L/100km → km/L:
+  km/L = 100 ÷ L_per_100km
+
+From km/L → L/100km:
+  L/100km = 100 ÷ km_per_L
+
+From L/100km → US mpg:
+  US mpg = 235.215 ÷ L_per_100km
+
+From L/100km → UK mpg:
+  UK mpg = 282.481 ÷ L_per_100km
+
+1 US gal = 3.78541 L    1 imp gal = 4.54609 L
+1 mile   = 1.60934 km</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      The conversion between "lower is better" and "higher is better" units always involves a division (reciprocal). All calculations run in your browser with full double-precision floating-point accuracy.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the difference between US mpg and UK mpg?",
+          "acceptedAnswer": { "@type": "Answer", "text": "US mpg uses US gallons (3.785 L) while UK mpg uses imperial gallons (4.546 L). Since an imperial gallon is about 20% larger, the same car will show a higher UK mpg number than US mpg. For example, 30 US mpg ≈ 36 UK mpg." }
+        },
+        {
+          "@type": "Question",
+          "name": "What does L/100km mean?",
+          "acceptedAnswer": { "@type": "Answer", "text": "L/100km (liters per 100 kilometers) measures how many liters of fuel a vehicle consumes to travel 100 km. Lower values mean better fuel efficiency. It is the standard metric used in most countries worldwide." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is higher mpg always better?",
+          "acceptedAnswer": { "@type": "Answer", "text": "For distance-per-volume units (mpg, km/L), yes — higher means the vehicle travels further on the same amount of fuel. For volume-per-distance units (L/100km, mL/100m), lower is better because it means less fuel is consumed per distance." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I convert km/L to L/100km?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Divide 100 by the km/L value: L/100km = 100 ÷ km/L. For example, a car that gets 12.5 km/L consumes 8 L/100km (100 ÷ 12.5 = 8)." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a good fuel economy value?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A compact car typically gets 5–7 L/100km (35–50 US mpg). SUVs and trucks use 9–15 L/100km (16–26 US mpg). Hybrid cars can achieve 3–4 L/100km (58–78 US mpg). Electric vehicles don't use fuel but consume about 15–20 kWh/100km." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is the difference between US mpg and UK mpg?', a: 'US mpg uses US gallons (3.785 L) while UK mpg uses imperial gallons (4.546 L). Since an imperial gallon is about 20% larger, the same car will show a higher UK mpg number than US mpg. For example, 30 US mpg ≈ 36 UK mpg.' },
+        { q: 'What does L/100km mean?', a: 'L/100km (liters per 100 kilometers) measures how many liters of fuel a vehicle consumes to travel 100 km. Lower values mean better fuel efficiency. It is the standard metric used in most countries worldwide.' },
+        { q: 'Is higher mpg always better?', a: 'For distance-per-volume units (mpg, km/L), yes — higher means the vehicle travels further on the same amount of fuel. For volume-per-distance units (L/100km, mL/100m), lower is better because it means less fuel is consumed per distance.' },
+        { q: 'How do I convert km/L to L/100km?', a: 'Divide 100 by the km/L value: L/100km = 100 ÷ km/L. For example, a car that gets 12.5 km/L consumes 8 L/100km (100 ÷ 12.5 = 8).' },
+        { q: 'What is a good fuel economy value?', a: 'A compact car typically gets 5–7 L/100km (35–50 US mpg). SUVs and trucks use 9–15 L/100km (16–26 US mpg). Hybrid cars can achieve 3–4 L/100km (58–78 US mpg). Electric vehicles don\'t use fuel but consume about 15–20 kWh/100km.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors: all relative to km/L (distance per volume) ──
+  // For "higher is better" units, factor = how many km/L that unit equals
+  // For "lower is better" units, factor = 100 / (how many L per 100km that unit equals)
+  const TO_KML = {
+    kml:   1,                                    // 1 km/L = 1 km/L
+    l100:  -1,                                   // special: reciprocal
+    mpgus: 2.352145833,                          // 1 US mpg → km/L: 235.215 / value
+    mpguk: 2.824809703,                          // 1 UK mpg → km/L: 282.481 / value
+    ml100: -1,                                   // special: reciprocal
+    mpml:  1,                                    // 1 m/mL = 1 km/L
+    migal: 0.425143707,                          // 1 mi/US gal → km/L: 1.60934 / 3.78541
+    miigal: 0.354006044,                         // 1 mi/imp gal → km/L: 1.60934 / 4.54609
+  };
+
+  const UNITS = [
+    { id: 'l100',   label: 'L/100km',    name: 'Liters per 100 km',  reciprocal: true },
+    { id: 'kml',    label: 'km/L',        name: 'Kilometers per Liter', reciprocal: false },
+    { id: 'mpgus',  label: 'US mpg',      name: 'Miles per US Gallon', reciprocal: false },
+    { id: 'mpguk',  label: 'UK mpg',      name: 'Miles per Imp Gallon', reciprocal: false },
+    { id: 'ml100',  label: 'mL/100m',     name: 'mL per 100 m',       reciprocal: true },
+    { id: 'mpml',   label: 'm/mL',        name: 'Meters per mL',      reciprocal: false },
+    { id: 'migal',  label: 'mi/US gal',   name: 'Miles per US Gallon', reciprocal: false },
+    { id: 'miigal', label: 'mi/imp gal',  name: 'Miles per Imp Gallon', reciprocal: false },
+  ];
+
+  // ── Quick-reference vehicles (stored as L/100km) ────────────────
+  const REFS = [
+    { name: 'Toyota Prius (Hybrid)',   l100: 3.4 },
+    { name: 'Honda Civic',             l100: 6.2 },
+    { name: 'Toyota Camry',            l100: 7.4 },
+    { name: 'Tesla Model 3 (equiv.)',  l100: 1.7 },
+    { name: 'Ford F-150',              l100: 12.4 },
+    { name: 'Jeep Wrangler',           l100: 13.8 },
+    { name: 'Chevrolet Suburban',      l100: 14.7 },
+    { name: 'Bugatti Chiron',          l100: 22.5 },
+  ];
+
+  const input  = document.getElementById('fuel-input') as HTMLInputElement;
+  const select = document.getElementById('fuel-unit') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const refs   = document.getElementById('refs')!;
+
+  function toKML(val: number, fromId: string): number {
+    if (fromId === 'l100') return val > 0 ? 100 / val : 0;
+    if (fromId === 'ml100') return val > 0 ? 100_000 / val : 0;
+    if (fromId === 'mpgus') return val * 2.352145833;
+    if (fromId === 'mpguk') return val * 2.824809703;
+    return val * TO_KML[fromId];
+  }
+
+  function fromKML(kml: number, toId: string): number {
+    if (toId === 'l100') return kml > 0 ? 100 / kml : 0;
+    if (toId === 'ml100') return kml > 0 ? 100_000 / kml : 0;
+    if (toId === 'mpgus') return kml > 0 ? kml / 2.352145833 : 0;
+    if (toId === 'mpguk') return kml > 0 ? kml / 2.824809703 : 0;
+    return kml / TO_KML[toId];
+  }
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value) || !isFinite(value)) return '—';
+    if (value === 0) return '0';
+    return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const kml      = toKML(val, fromUnit);
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = fromKML(kml, u.id);
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    refs.innerHTML = '';
+    REFS.forEach(r => {
+      const targetKml = toKML(r.l100, 'l100');
+      const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+      const converted = fromKML(targetKml, fromUnit);
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refs.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

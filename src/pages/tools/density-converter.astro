@@ -1,0 +1,256 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'density-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Density Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a density value and select its unit — all other units update instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.25rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="dens-input">Density</label>
+        <input id="dens-input" type="number" value="1000" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="dens-unit">Unit</label>
+        <select id="dens-unit" class="select-themed" style="min-width:12rem;">
+          <option value="kgm3" selected>kg/m³</option>
+          <option value="gcm3">g/cm³</option>
+          <option value="gmL">g/mL</option>
+          <option value="kgl">kg/L</option>
+          <option value="gl">g/L</option>
+          <option value="lbft3">lb/ft³</option>
+          <option value="lbin3">lb/in³</option>
+          <option value="lbgal">lb/US gal</option>
+          <option value="lbigal">lb/imp gal</option>
+          <option value="sg">Specific Gravity</option>
+          <option value="slugsft3">slugs/ft³</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Material Densities</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Density Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric density value</strong> and select its <strong>unit</strong> from the dropdown. All other density units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 11 density units across metric, imperial, and dimensionless systems: <strong>kg/m³</strong>, <strong>g/cm³</strong>, <strong>g/mL</strong>, <strong>kg/L</strong>, <strong>g/L</strong>, <strong>lb/ft³</strong>, <strong>lb/in³</strong>, <strong>lb/gal</strong>, <strong>lb/imp gal</strong>, <strong>Specific Gravity</strong>, and <strong>slugs/ft³</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common material densities are shown below for quick comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How density conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions use <strong>kg/m³</strong> as the base unit. Each unit has a fixed factor relative to one kg/m³:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 g/cm³   = 1,000 kg/m³
+1 g/mL     = 1,000 kg/m³
+1 kg/L     = 1,000 kg/m³
+1 g/L      = 1 kg/m³
+1 lb/ft³   = 16.0185 kg/m³
+1 lb/in³   = 27,679.9 kg/m³
+1 lb/gal   = 119.826 kg/m³
+1 lb/imp gal = 99.776 kg/m³
+1 SG       = 1,000 kg/m³  (relative to water at 4°C)
+1 slug/ft³ = 515.379 kg/m³
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Specific Gravity (SG) is dimensionless — it compares a substance's density to that of water (1,000 kg/m³). So SG = 2 means the substance is twice as dense as water. The slug is the imperial unit of mass, defined as the mass accelerated by 1 ft/s² under 1 lbf.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is density?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Density is the mass per unit volume of a substance. It is typically expressed as kg/m³ or g/cm³. Water has a density of 1,000 kg/m³ (1 g/cm³). Denser materials sink in less dense ones." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is Specific Gravity?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Specific Gravity (SG) is the ratio of a substance's density to that of water at 4°C (1,000 kg/m³). It is dimensionless. SG < 1 means it floats on water; SG > 1 means it sinks. Oil (SG ≈ 0.92) floats; iron (SG ≈ 7.87) sinks." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the densest material on Earth?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Osmium is the densest naturally occurring element at 22,590 kg/m³ (22.59 g/cm³). Iridium is close at 22,560 kg/m³. For comparison, gold is 19,300 kg/m³ and lead is 11,340 kg/m³." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does ice float on water?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Ice has a density of about 917 kg/m³, which is less than water's 1,000 kg/m³. This is because water expands when it freezes, increasing its volume while keeping the same mass. This property is unusual — most substances are denser as solids." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a slug?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A slug is the imperial unit of mass, equal to about 14.594 kg. It is defined as the mass that accelerates at 1 ft/s² when a force of 1 lbf is applied. Slugs are used in engineering contexts where the foot-pound-second system is standard." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is density?', a: 'Density is the mass per unit volume of a substance. It is typically expressed as kg/m³ or g/cm³. Water has a density of 1,000 kg/m³ (1 g/cm³). Denser materials sink in less dense ones.' },
+        { q: 'What is Specific Gravity?', a: 'Specific Gravity (SG) is the ratio of a substance\'s density to that of water at 4°C (1,000 kg/m³). It is dimensionless. SG < 1 means it floats on water; SG > 1 means it sinks. Oil (SG ≈ 0.92) floats; iron (SG ≈ 7.87) sinks.' },
+        { q: 'What is the densest material on Earth?', a: 'Osmium is the densest naturally occurring element at 22,590 kg/m³ (22.59 g/cm³). Iridium is close at 22,560 kg/m³. For comparison, gold is 19,300 kg/m³ and lead is 11,340 kg/m³.' },
+        { q: 'Why does ice float on water?', a: 'Ice has a density of about 917 kg/m³, which is less than water\'s 1,000 kg/m³. This is because water expands when it freezes, increasing its volume while keeping the same mass. This property is unusual — most substances are denser as solids.' },
+        { q: 'What is a slug?', a: 'A slug is the imperial unit of mass, equal to about 14.594 kg. It is defined as the mass that accelerates at 1 ft/s² when a force of 1 lbf is applied. Slugs are used in engineering contexts where the foot-pound-second system is standard.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to kg/m³ ─────────────────────────────────
+  const TO_KGM3 = {
+    kgm3:    1,
+    gcm3:    1000,
+    gmL:     1000,
+    kgl:     1000,
+    gl:      1,
+    lbft3:   16.0184634,
+    lbin3:   27679.90471,
+    lbgal:   119.826,
+    lbigal:  99.7763177,
+    sg:      1000,
+    slugsft3: 515.3788184,
+  };
+
+  const UNITS = [
+    { id: 'kgm3',    label: 'kg/m³',   name: 'Kilogram per m³' },
+    { id: 'gcm3',    label: 'g/cm³',   name: 'Gram per cm³' },
+    { id: 'gmL',     label: 'g/mL',    name: 'Gram per mL' },
+    { id: 'kgl',     label: 'kg/L',    name: 'Kilogram per Liter' },
+    { id: 'gl',      label: 'g/L',     name: 'Gram per Liter' },
+    { id: 'lbft3',   label: 'lb/ft³',  name: 'Pound per ft³' },
+    { id: 'lbin3',   label: 'lb/in³',  name: 'Pound per in³' },
+    { id: 'lbgal',   label: 'lb/gal',  name: 'Pound per US gal' },
+    { id: 'lbigal',  label: 'lb/igal', name: 'Pound per imp gal' },
+    { id: 'sg',      label: 'SG',      name: 'Specific Gravity' },
+    { id: 'slugsft3',label: 'slug/ft³', name: 'Slug per ft³' },
+  ];
+
+  const REFS = [
+    { name: 'Air (sea level)',     kgm3: 1.225 },
+    { name: 'Oak Wood',            kgm3: 750 },
+    { name: 'Ice',                 kgm3: 917 },
+    { name: 'Water (4°C)',         kgm3: 1000 },
+    { name: 'Seawater',            kgm3: 1025 },
+    { name: 'Aluminum',            kgm3: 2700 },
+    { name: 'Iron',                kgm3: 7874 },
+    { name: 'Copper',              kgm3: 8960 },
+    { name: 'Silver',              kgm3: 10490 },
+    { name: 'Gold',                kgm3: 19300 },
+    { name: 'Lead',                kgm3: 11340 },
+    { name: 'Osmium',              kgm3: 22590 },
+  ];
+
+  const input    = document.getElementById('dens-input') as HTMLInputElement;
+  const select   = document.getElementById('dens-unit') as HTMLSelectElement;
+  const grid     = document.getElementById('results')!;
+  const refsDiv  = document.getElementById('refs')!;
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1e6) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const kgm3     = val * TO_KGM3[fromUnit];
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = kgm3 / TO_KGM3[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    refsDiv.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.kgm3 / TO_KGM3[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refsDiv.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

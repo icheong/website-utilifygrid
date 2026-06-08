@@ -1,0 +1,563 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'kids-savings-compound-interest-visualizer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ── INTERACTIVE TOOL ─────────────────────────────────────────── -->
+  <div slot="tool">
+    <div class="tool-card-surface" style="display:flex;flex-direction:column;gap:1.5rem;">
+
+      <!-- Inputs grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;">
+
+        <!-- Your Age -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-age" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Your Age</label>
+            <output id="out-age" class="input-badge">8</output>
+          </div>
+          <input id="inp-age" type="range" min="1" max="18" value="8" class="ctrl-slider" aria-label="Your age">
+          <div class="range-bounds"><span>1</span><span>18</span></div>
+        </div>
+
+        <!-- Starting Savings -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-savings" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Starting Savings</label>
+            <output id="out-savings" class="input-badge">$50</output>
+          </div>
+          <input id="inp-savings" type="range" min="0" max="5000" step="5" value="50" class="ctrl-slider" aria-label="Starting savings">
+          <div class="range-bounds"><span>$0</span><span>$5,000</span></div>
+        </div>
+
+        <!-- Pocket Money Each Month -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-contrib" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Pocket Money Each Month</label>
+            <output id="out-contrib" class="input-badge">$20</output>
+          </div>
+          <input id="inp-contrib" type="range" min="0" max="500" step="0.5" value="20" class="ctrl-slider" aria-label="Monthly pocket money">
+          <div class="range-bounds"><span>$0</span><span>$500</span></div>
+        </div>
+
+        <!-- Interest Rate -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-return" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Interest Rate (per year)</label>
+            <output id="out-return" class="input-badge">5%</output>
+          </div>
+          <input id="inp-return" type="range" min="0.5" max="15" step="0.5" value="5" class="ctrl-slider" aria-label="Annual interest rate">
+          <div class="range-bounds"><span>0.5%</span><span>15%</span></div>
+        </div>
+
+        <!-- Target Savings Goal -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-goal" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Target Savings Goal</label>
+            <output id="out-goal" class="input-badge">$1,000</output>
+          </div>
+          <input id="inp-goal" type="range" min="100" max="100000" step="100" value="1000" class="ctrl-slider" aria-label="Target savings goal">
+          <div class="range-bounds"><span>$100</span><span>$100k</span></div>
+        </div>
+
+        <!-- Years to Save -->
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="inp-years" style="color:var(--text-secondary);font-size:.875rem;font-weight:600;">Years to Save</label>
+            <output id="out-years" class="input-badge">10</output>
+          </div>
+          <input id="inp-years" type="range" min="1" max="30" value="10" class="ctrl-slider" aria-label="Years to save">
+          <div class="range-bounds"><span>1</span><span>30</span></div>
+        </div>
+
+      </div>
+
+      <!-- KPI cards -->
+      <div id="kpi-row" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;">
+        <div class="kpi-card">
+          <div id="kpi-final" class="kpi-value" style="color:var(--text-primary);">—</div>
+          <div class="kpi-label">Savings at End</div>
+        </div>
+        <div class="kpi-card">
+          <div id="kpi-contrib" class="kpi-value" style="color:var(--text-primary);">—</div>
+          <div class="kpi-label">Total Pocket Money</div>
+        </div>
+        <div class="kpi-card">
+          <div id="kpi-interest" class="kpi-value" style="color:var(--text-primary);">—</div>
+          <div class="kpi-label">Interest Earned</div>
+        </div>
+        <div class="kpi-card">
+          <div id="kpi-goal" class="kpi-value" style="color:var(--text-primary);">—</div>
+          <div class="kpi-label">Goal Status</div>
+        </div>
+      </div>
+
+      <!-- Goal not reached warning -->
+      <div id="no-goal-msg" style="display:none;padding:.75rem 1rem;border-radius:.5rem;background:color-mix(in srgb,var(--text-muted) 10%,transparent);color:var(--text-muted);font-size:.875rem;">
+        ⚠️ Goal not reached yet! Try adding more pocket money each month or saving for longer.
+      </div>
+
+      <!-- Chart -->
+      <div style="position:relative;">
+        <canvas id="savings-chart" height="320" style="width:100%;display:block;border-radius:.5rem;"></canvas>
+        <div id="chart-tooltip" style="position:absolute;pointer-events:none;opacity:0;transition:opacity .15s;background:var(--bg-surface);border:1px solid var(--border);border-radius:.5rem;padding:.6rem .85rem;font-size:.8rem;color:var(--text-primary);min-width:180px;line-height:1.7;z-index:10;"></div>
+      </div>
+
+      <!-- Legend -->
+      <div style="display:flex;flex-wrap:wrap;gap:1.25rem;font-size:.8rem;color:var(--text-secondary);">
+        <span style="display:flex;align-items:center;gap:.4rem;"><span style="width:12px;height:12px;border-radius:3px;background:#6366f1;flex-shrink:0;"></span>Your Savings Growing</span>
+        <span style="display:flex;align-items:center;gap:.4rem;"><span style="width:12px;height:4px;background:#f59e0b;flex-shrink:0;border-radius:2px;"></span>Your Goal</span>
+        <span style="display:flex;align-items:center;gap:.4rem;"><span style="width:12px;height:12px;border-radius:50%;background:#10b981;flex-shrink:0;"></span>Goal Reached!</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── HOW TO USE ────────────────────────────────────────────────── -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Kids Savings Visualizer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Set your <strong>age</strong> and any <strong>starting savings</strong> you already have — maybe from a birthday or holiday gift. Choose how much <strong>pocket money</strong> you get each month to put into your savings account.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Pick an <strong>interest rate</strong> — this is like your bank paying you extra money for keeping your savings there. A savings account might give you 4–5% per year. Set a <strong>target goal</strong> — maybe it's for a new bike, a gaming console, or something really special.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      The chart shows your savings growing over time. When the savings line crosses your goal line, you've hit your target! 🎉
+    </p>
+  </div>
+
+  <!-- ── HOW IT WORKS ──────────────────────────────────────────────── -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How compound interest works</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      Your savings grow using compound interest. Each month, you add your pocket money, and the bank adds interest on top. Over time, you earn interest on your interest — that's the magic of compounding!
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Savings(t) = S × (1 + r/12)^(12t)
+           + C × [((1 + r/12)^(12t) − 1) / (r/12)]
+
+Where:
+  S = Starting Savings
+  r = Annual interest rate (as a decimal)
+  t = Number of years
+  C = Monthly pocket money contribution</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      The formula compounds monthly for precision. All calculations run entirely in your browser — no data is sent anywhere.
+    </p>
+  </div>
+
+  <!-- ── FAQ ──────────────────────────────────────────────────────── -->
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is compound interest?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Compound interest is when your savings earn interest, and then that interest also earns interest. It's like a snowball that gets bigger and bigger as it rolls downhill. The longer you save, the faster your money grows!" }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does starting to save early matter?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The earlier you start saving, the more time your money has to grow. Even small amounts can become really big over many years thanks to compound interest. A kid who saves $20/month from age 8 can have more than an adult who saves $50/month starting at age 30!" }
+        },
+        {
+          "@type": "Question",
+          "name": "What interest rate will I get?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on where you keep your money. A regular savings account might give you 3–5% per year. A term deposit (where you lock your money away for a while) might give a bit more. Investment returns can be higher but also go up and down." }
+        },
+        {
+          "@type": "Question",
+          "name": "What if I want to add extra money sometimes?",
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool shows what happens with a fixed monthly amount. If you get extra money from birthdays or holidays, you could run the tool again with your new starting savings to see how it changes your goal date!" }
+        },
+        {
+          "@type": "Question",
+          "name": "What if I don't reach my goal in time?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Try adding more pocket money each month, saving for a longer time, or picking a smaller goal. You can play with the sliders to see what combination works for you!" }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is compound interest?', a: 'Compound interest is when your savings earn interest, and then that interest also earns interest. It\'s like a snowball that gets bigger and bigger as it rolls downhill. The longer you save, the faster your money grows!' },
+        { q: 'Why does starting to save early matter?', a: 'The earlier you start saving, the more time your money has to grow. Even small amounts can become really big over many years thanks to compound interest. A kid who saves $20/month from age 8 can have more than an adult who saves $50/month starting at age 30!' },
+        { q: 'What interest rate will I get?', a: 'It depends on where you keep your money. A regular savings account might give you 3–5% per year. A term deposit (where you lock your money away for a while) might give a bit more. Investment returns can be higher but also go up and down.' },
+        { q: 'What if I want to add extra money sometimes?', a: 'This tool shows what happens with a fixed monthly amount. If you get extra money from birthdays or holidays, you could run the tool again with your new starting savings to see how it changes your goal date!' },
+        { q: 'What if I don\'t reach my goal in time?', a: 'Try adding more pocket money each month, saving for a longer time, or picking a smaller goal. You can play with the sliders to see what combination works for you!' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  .input-group { display: flex; flex-direction: column; gap: .4rem; }
+  .input-label-row { display: flex; justify-content: space-between; align-items: center; }
+  .input-badge {
+    font-family: 'Fira Code', monospace;
+    font-size: .8rem;
+    font-weight: 700;
+    padding: .15rem .5rem;
+    border-radius: .375rem;
+    background: color-mix(in srgb, var(--text-muted) 15%, transparent);
+    color: var(--text-primary);
+    min-width: 70px;
+    text-align: right;
+  }
+  .ctrl-slider {
+    width: 100%;
+    accent-color: #6366f1;
+    cursor: pointer;
+  }
+  .range-bounds {
+    display: flex;
+    justify-content: space-between;
+    font-size: .72rem;
+    color: var(--text-muted);
+  }
+  .kpi-card {
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: .75rem;
+    padding: 1rem;
+    text-align: center;
+  }
+  .kpi-value {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .kpi-label {
+    font-size: .75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-top: .25rem;
+  }
+  details { border-top: 1px solid var(--border); }
+  details:last-child { border-bottom: 1px solid var(--border); }
+  details summary { list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+</style>
+
+<script>
+(function () {
+  // ── Helpers ──────────────────────────────────────────────────────
+  const fmtUSD = (n) =>
+    n >= 1_000_000
+      ? '$' + (n / 1_000_000).toFixed(2) + 'M'
+      : n >= 1_000
+      ? '$' + (n / 1_000).toFixed(1) + 'k'
+      : '$' + Math.round(n).toLocaleString();
+
+  const fmtFull = (n) =>
+    '$' + Math.round(n).toLocaleString();
+
+  // ── DOM refs ──────────────────────────────────────────────────────
+  const sliders = {
+    age:      document.getElementById('inp-age'),
+    savings:  document.getElementById('inp-savings'),
+    contrib:  document.getElementById('inp-contrib'),
+    ret:      document.getElementById('inp-return'),
+    goal:     document.getElementById('inp-goal'),
+    years:    document.getElementById('inp-years'),
+  };
+  const outputs = {
+    age:      document.getElementById('out-age'),
+    savings:  document.getElementById('out-savings'),
+    contrib:  document.getElementById('out-contrib'),
+    ret:      document.getElementById('out-return'),
+    goal:     document.getElementById('out-goal'),
+    years:    document.getElementById('out-years'),
+  };
+  const kpi = {
+    final:   document.getElementById('kpi-final'),
+    contrib: document.getElementById('kpi-contrib'),
+    interest:document.getElementById('kpi-interest'),
+    goal:    document.getElementById('kpi-goal'),
+  };
+  const noGoalMsg = document.getElementById('no-goal-msg');
+  const canvas    = document.getElementById('savings-chart');
+  const tooltip   = document.getElementById('chart-tooltip');
+  const ctx       = canvas.getContext('2d');
+
+  // ── Model ─────────────────────────────────────────────────────────
+  function buildSeries(age, savings, contrib, annualReturn, goal, maxYears) {
+    const r      = annualReturn / 100;
+    const points = [];
+
+    for (let t = 0; t <= maxYears; t++) {
+      const months   = t * 12;
+      const factor   = Math.pow(1 + r / 12, months);
+      const portfolio =
+        savings * factor +
+        (r === 0
+          ? contrib * months
+          : contrib * ((factor - 1) / (r / 12)));
+      const interestEarned = portfolio - savings - contrib * months;
+      points.push({ age: age + t, t, portfolio, interestEarned });
+    }
+
+    let goalReached = null;
+    for (let i = 1; i < points.length; i++) {
+      if (points[i].portfolio >= goal) {
+        goalReached = points[i];
+        break;
+      }
+    }
+
+    return { points, goalReached, goal };
+  }
+
+  // ── Chart ─────────────────────────────────────────────────────────
+  const C = {
+    savings: '#6366f1',
+    goal:    '#f59e0b',
+    success: '#10b981',
+    grid:    'rgba(255,255,255,0.06)',
+    tick:    '#9ca3af',
+    bg:      'transparent',
+  };
+
+  let lastPoints = [];
+
+  function drawChart(points, goalReached, goal) {
+    lastPoints = points;
+    const dpr  = window.devicePixelRatio || 1;
+    const W    = canvas.parentElement.clientWidth;
+    const H    = 320;
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const ML = 72, MR = 20, MT = 20, MB = 36;
+    const cW = W - ML - MR;
+    const cH = H - MT - MB;
+    const n  = points.length;
+
+    // Y axis: scale on savings value
+    const maxSavings = Math.max(...points.map(p => p.portfolio), goal * 1.2);
+
+    const xOf = (i) => ML + (i / (n - 1)) * cW;
+    const yOf = (v) => MT + cH - (v / maxSavings) * cH;
+
+    // Grid
+    ctx.font = "11px 'Inter',sans-serif";
+    for (let g = 0; g <= 4; g++) {
+      const v = (maxSavings / 4) * g;
+      const y = yOf(v);
+      ctx.beginPath();
+      ctx.strokeStyle = C.grid;
+      ctx.lineWidth   = 1;
+      ctx.moveTo(ML, y);
+      ctx.lineTo(ML + cW, y);
+      ctx.stroke();
+      ctx.fillStyle   = C.tick;
+      ctx.textAlign   = 'right';
+      ctx.fillText(fmtUSD(v), ML - 6, y + 4);
+    }
+
+    // X axis labels
+    ctx.textAlign   = 'center';
+    ctx.fillStyle   = C.tick;
+    const step = Math.ceil(n / 10);
+    points.forEach((p, i) => {
+      if (i % step !== 0 && i !== n - 1) return;
+      ctx.fillText('Age ' + p.age, xOf(i), H - MB + 16);
+    });
+
+    // Axis lines
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth   = 1;
+    ctx.moveTo(ML, MT);
+    ctx.lineTo(ML, MT + cH);
+    ctx.lineTo(ML + cW, MT + cH);
+    ctx.stroke();
+
+    // Savings area + line
+    ctx.beginPath();
+    ctx.moveTo(xOf(0), yOf(points[0].portfolio));
+    points.forEach((p, i) => ctx.lineTo(xOf(i), yOf(p.portfolio)));
+    ctx.lineTo(xOf(n - 1), MT + cH);
+    ctx.lineTo(xOf(0), MT + cH);
+    ctx.closePath();
+    const gradP = ctx.createLinearGradient(0, MT, 0, MT + cH);
+    gradP.addColorStop(0, 'rgba(99,102,241,0.25)');
+    gradP.addColorStop(1, 'rgba(99,102,241,0.02)');
+    ctx.fillStyle = gradP;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.strokeStyle = C.savings;
+    ctx.lineWidth   = 2;
+    ctx.lineJoin    = 'round';
+    points.forEach((p, i) => i === 0 ? ctx.moveTo(xOf(i), yOf(p.portfolio)) : ctx.lineTo(xOf(i), yOf(p.portfolio)));
+    ctx.stroke();
+
+    // Goal dashed line
+    const yGoal = yOf(goal);
+    ctx.beginPath();
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = C.goal;
+    ctx.lineWidth   = 1.5;
+    ctx.moveTo(ML, yGoal);
+    ctx.lineTo(ML + cW, yGoal);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle  = C.goal;
+    ctx.textAlign  = 'left';
+    ctx.font       = "10px 'Inter',sans-serif";
+    ctx.fillText('Goal: ' + fmtFull(goal), ML + 4, yGoal - 5);
+
+    // Dots on savings line
+    points.forEach((p, i) => {
+      if (i % step !== 0 && i !== n - 1) return;
+      ctx.beginPath();
+      ctx.arc(xOf(i), yOf(p.portfolio), 3, 0, Math.PI * 2);
+      ctx.fillStyle   = C.savings;
+      ctx.fill();
+      ctx.strokeStyle = 'var(--bg-surface)';
+      ctx.lineWidth   = 1.5;
+      ctx.stroke();
+    });
+
+    // Goal reached marker
+    if (goalReached) {
+      const cx = xOf(goalReached.t);
+      const cy = yOf(goalReached.portfolio);
+
+      // Green circle
+      ctx.beginPath();
+      ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+      ctx.fillStyle   = C.success;
+      ctx.fill();
+      ctx.strokeStyle = 'var(--bg-surface)';
+      ctx.lineWidth   = 2;
+      ctx.stroke();
+
+      // Star inside
+      ctx.fillStyle = '#fff';
+      ctx.font      = "bold 11px 'Sora',sans-serif";
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('★', cx, cy);
+      ctx.textBaseline = 'alphabetic';
+
+      // Label
+      ctx.fillStyle  = C.success;
+      ctx.font       = "bold 11px 'Sora',sans-serif";
+      ctx.textAlign  = cx > W - 120 ? 'right' : 'left';
+      ctx.fillText('Goal Reached! 🎉', cx + (ctx.textAlign === 'right' ? -16 : 16), cy - 14);
+    }
+
+    // Tooltip on mousemove
+    canvas.onmousemove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx   = e.clientX - rect.left;
+      let   best = -1, bd = Infinity;
+      points.forEach((p, i) => {
+        const d = Math.abs(xOf(i) - mx);
+        if (d < bd) { bd = d; best = i; }
+      });
+      if (best === -1 || bd > cW / n) { tooltip.style.opacity = '0'; return; }
+      const p  = points[best];
+      const tx = xOf(best);
+      const ty = yOf(p.portfolio);
+      const remaining = Math.max(0, goal - p.portfolio);
+      tooltip.innerHTML = `
+        <strong style="color:var(--text-primary);">Age ${p.age}</strong><br>
+        <span style="color:${C.savings};">■</span> Savings: ${fmtFull(p.portfolio)}<br>
+        <span style="color:${C.savings};">↑</span> Interest earned: ${fmtFull(p.interestEarned)}<br>
+        <span style="color:${C.goal};">—</span> Goal: ${fmtFull(goal)}${remaining > 0 ? '<br><span style="color:var(--text-muted);">$' + Math.round(remaining).toLocaleString() + ' to go</span>' : ''}
+      `;
+      const tW = 200, tH = 90;
+      let left = tx + 14, top = ty - tH / 2;
+      if (left + tW > W) left = tx - tW - 14;
+      if (top < 0) top = 4;
+      tooltip.style.left    = left + 'px';
+      tooltip.style.top     = top + 'px';
+      tooltip.style.opacity = '1';
+    };
+    canvas.onmouseleave = () => { tooltip.style.opacity = '0'; };
+  }
+
+  // ── Update ────────────────────────────────────────────────────────
+  function update() {
+    const age      = parseInt(sliders.age.value, 10);
+    const savings  = parseFloat(sliders.savings.value);
+    const contrib  = parseFloat(sliders.contrib.value);
+    const ret      = parseFloat(sliders.ret.value);
+    const goal     = parseFloat(sliders.goal.value);
+    const years    = parseInt(sliders.years.value, 10);
+
+    // Update output badges
+    outputs.age.value      = age;
+    outputs.savings.value  = fmtFull(savings);
+    outputs.contrib.value  = fmtFull(contrib);
+    outputs.ret.value      = ret + '%';
+    outputs.goal.value     = fmtFull(goal);
+    outputs.years.value    = years;
+
+    const { points, goalReached } = buildSeries(age, savings, contrib, ret, goal, years);
+
+    const totalContrib = contrib * years * 12;
+    const finalSavings = points[points.length - 1].portfolio;
+    const totalInterest = finalSavings - savings - totalContrib;
+
+    if (goalReached) {
+      noGoalMsg.style.display      = 'none';
+      kpi.final.textContent        = fmtFull(finalSavings);
+      kpi.contrib.textContent      = fmtFull(totalContrib);
+      kpi.interest.textContent     = fmtFull(totalInterest);
+      kpi.goal.textContent         = '✓ Reached!';
+      kpi.final.style.color        = C.savings;
+      kpi.contrib.style.color      = 'var(--text-primary)';
+      kpi.interest.style.color     = C.success;
+      kpi.goal.style.color         = C.success;
+    } else {
+      noGoalMsg.style.display      = 'block';
+      kpi.final.textContent        = fmtFull(finalSavings);
+      kpi.contrib.textContent      = fmtFull(totalContrib);
+      kpi.interest.textContent     = fmtFull(totalInterest);
+      kpi.goal.textContent         = '$' + Math.max(0, Math.round(goal - finalSavings)).toLocaleString() + ' to go';
+      kpi.final.style.color        = 'var(--text-muted)';
+      kpi.contrib.style.color      = 'var(--text-muted)';
+      kpi.interest.style.color     = 'var(--text-muted)';
+      kpi.goal.style.color         = '#f59e0b';
+    }
+
+    drawChart(points, goalReached, goal);
+  }
+
+  // ── Wire up sliders ───────────────────────────────────────────────
+  Object.values(sliders).forEach(s => s.addEventListener('input', update));
+
+  // ── Resize ────────────────────────────────────────────────────────
+  window.addEventListener('resize', update);
+
+  // ── Init ──────────────────────────────────────────────────────────
+  update();
+})();
+</script>

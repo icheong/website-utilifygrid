@@ -1,0 +1,374 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import tools from '../data/tools.json';
+import categories from '../data/categories.json';
+
+/* All tools metadata passed to client — same shape as BaseLayout uses */
+const toolsMeta = tools.map(t => ({
+  slug: t.slug,
+  name: t.name,
+  icon: t.icon,
+  category: t.category,
+  shortDescription: t.shortDescription,
+  tags: t.tags,
+}));
+
+const categoryMap = Object.fromEntries(categories.map(c => [c.slug, c]));
+---
+
+<BaseLayout
+  title="My Favourite Tools | UtilifyGrid"
+  description="Your personally saved UtilifyGrid tools, stored locally in your browser. One-click access to the utilities you use most."
+  canonicalUrl="/favourites"
+>
+  <div style="max-width:72rem; margin:0 auto; padding:2.5rem 1rem 4rem;">
+
+    <!-- Breadcrumb -->
+    <nav style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.75rem;" aria-label="Breadcrumb">
+      <ol style="display:flex; align-items:center; gap:0.5rem; list-style:none; padding:0; margin:0;">
+        <li><a href="/" style="color:var(--text-secondary); text-decoration:none; transition:color 0.15s;" onmouseover="this.style.color='#1D4ED8';" onmouseout="this.style.color='var(--text-secondary)';">Home</a></li>
+        <li style="color:var(--text-muted);">›</li>
+        <li style="color:var(--text-primary); font-weight:500;">Favourites</li>
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:2rem;">
+      <div>
+        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+          <div style="width:2.5rem; height:2.5rem; border-radius:0.625rem; background:rgba(245,158,11,0.15); border:1.5px solid rgba(245,158,11,0.3); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 1.5l2.22 4.52 4.99.72-3.61 3.52.85 4.97L9 12.77l-4.45 2.46.85-4.97L1.79 6.74l4.99-.72L9 1.5z"/>
+            </svg>
+          </div>
+          <h1 style="font-family:'Sora',sans-serif; font-size:clamp(1.4rem,3vw,1.9rem); font-weight:700; color:var(--text-primary); margin:0;">My Favourites</h1>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-secondary); margin:0;">
+          Saved locally in your browser — no account needed.
+          <span id="fav-count-label" style="color:var(--text-muted); font-size:0.82rem;"></span>
+        </p>
+      </div>
+
+      <!-- Controls: sort + clear -->
+      <div style="display:flex; align-items:center; gap:0.625rem; flex-wrap:wrap;">
+        <label style="font-size:0.78rem; color:var(--text-muted); font-weight:500; white-space:nowrap;">Sort by</label>
+        <select id="fav-sort" class="select-themed" style="padding:0.4rem 2rem 0.4rem 0.75rem; border-radius:0.5rem; font-size:0.82rem; min-width:130px;">
+          <option value="saved">Recently saved</option>
+          <option value="alpha">A – Z</option>
+          <option value="category">Category</option>
+        </select>
+        <button id="fav-clear-all" class="btn-secondary" style="font-size:0.8rem; padding:0.4rem 0.875rem; color:#EF4444; border-color:rgba(239,68,68,0.3);"
+          onmouseover="this.style.background='rgba(239,68,68,0.06)'" onmouseout="this.style.background='transparent'">
+          Clear all
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty state (shown when no favourites) -->
+    <div id="fav-empty" style="display:none; text-align:center; padding:5rem 1rem;">
+      <div style="width:5rem; height:5rem; border-radius:1.25rem; background:var(--bg-surface-2); border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">
+        <svg width="32" height="32" viewBox="0 0 18 18" fill="none" stroke="var(--text-muted)" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 1.5l2.22 4.52 4.99.72-3.61 3.52.85 4.97L9 12.77l-4.45 2.46.85-4.97L1.79 6.74l4.99-.72L9 1.5z"/>
+        </svg>
+      </div>
+      <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin:0 0 0.5rem;">No favourites yet</h2>
+      <p style="font-size:0.9rem; color:var(--text-secondary); max-width:28rem; margin:0 auto 1.75rem; line-height:1.65;">
+        Click the ☆ star on any tool to save it here for quick access — no account or sign-up required.
+      </p>
+      <a href="/" class="btn-primary" style="text-decoration:none;">Browse all tools</a>
+    </div>
+
+    <!-- Favourites grid (populated by JS) -->
+    <div id="fav-grid" style="display:none;">
+
+      <!-- Category grouping view (used when sort=category) -->
+      <div id="fav-by-category" style="display:none;"></div>
+
+      <!-- Flat grid view (used for saved/alpha sort) -->
+      <div id="fav-flat-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1rem;"></div>
+
+    </div>
+
+    <!-- Suggestions when few favourites -->
+    <div id="fav-suggestions" style="display:none; margin-top:3rem; padding-top:2.5rem; border-top:1px solid var(--border);">
+      <h2 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.375rem;">Discover more tools</h2>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem;">Browse by category to find tools you'll love</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px,1fr)); gap:0.75rem;">
+        {categories.map(cat => (
+          <a href={`/category/${cat.slug}`} class="tool-card-themed"
+            style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:1rem 0.75rem; text-decoration:none; gap:0.35rem;">
+            <span style="font-size:1.75rem; line-height:1;">{cat.icon}</span>
+            <span style="font-size:0.78rem; font-weight:600; color:var(--text-primary); line-height:1.3;">{cat.name}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style>
+  /* Fav card */
+  .fav-card {
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    border-radius: 1rem;
+    padding: 1rem 1.125rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    position: relative;
+  }
+  .fav-card:hover {
+    border-color: #1D4ED8;
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+  :root.dark .fav-card:hover { border-color: #3B82F6; }
+
+  .fav-card-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    text-decoration: none;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Remove button */
+  .fav-remove-btn {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .fav-card:hover .fav-remove-btn { opacity: 1; }
+  .fav-remove-btn:hover {
+    background: rgba(239,68,68,0.1);
+    color: #EF4444;
+  }
+
+  /* Card exit animation */
+  .fav-card.removing {
+    animation: cardExit 0.25s ease forwards;
+  }
+  @keyframes cardExit {
+    to { opacity: 0; transform: scale(0.92); }
+  }
+
+  /* Category group header */
+  .fav-cat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 0.875rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1.5px solid var(--border);
+  }
+
+  /* Sort/clear controls */
+  #fav-clear-all:hover { background: rgba(239,68,68,0.06) !important; }
+
+  /* Confirm dialog */
+  #fav-confirm-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+  }
+  #fav-confirm-box {
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    max-width: 360px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+</style>
+
+<script define:vars={{ toolsMeta, categoryMap }}>
+  // Wait for favourites.js utility to be ready
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+
+  ready(() => {
+    const favs = window.UGFavs;
+    const sortEl = document.getElementById('fav-sort');
+    const clearBtn = document.getElementById('fav-clear-all');
+    const emptyEl = document.getElementById('fav-empty');
+    const gridEl = document.getElementById('fav-grid');
+    const flatGrid = document.getElementById('fav-flat-grid');
+    const catGrid = document.getElementById('fav-by-category');
+    const suggestEl = document.getElementById('fav-suggestions');
+    const countLabel = document.getElementById('fav-count-label');
+
+    function getSort() { return sortEl?.value || 'saved'; }
+
+    function buildCard(tool) {
+      const cat = categoryMap[tool.category];
+      const div = document.createElement('div');
+      div.className = 'fav-card';
+      div.dataset.slug = tool.slug;
+      div.innerHTML = `
+        <a href="/tools/${tool.slug}" class="fav-card-link" aria-label="${tool.name}">
+          <span style="font-size:2rem; line-height:1; flex-shrink:0;">${tool.icon}</span>
+          <div style="min-width:0;">
+            <div style="font-weight:600; color:var(--text-primary); font-size:0.9rem; line-height:1.3; margin-bottom:0.25rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${tool.name}</div>
+            <p style="font-size:0.78rem; color:var(--text-secondary); margin:0; line-height:1.5; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${tool.shortDescription || ''}</p>
+            <span style="display:inline-flex; align-items:center; gap:0.25rem; margin-top:0.5rem; font-size:0.7rem; color:var(--text-muted); font-weight:500;">
+              ${cat ? cat.icon : ''} ${cat ? cat.name : tool.category}
+            </span>
+          </div>
+        </a>
+        <button class="fav-remove-btn" data-slug="${tool.slug}" aria-label="Remove ${tool.name} from favourites" title="Remove">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M1.5 1.5l8 8M9.5 1.5l-8 8"/>
+          </svg>
+        </button>
+      `;
+      // Remove button
+      div.querySelector('.fav-remove-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        removeWithAnimation(div, tool.slug);
+      });
+      return div;
+    }
+
+    function removeWithAnimation(cardEl, slug) {
+      cardEl.classList.add('removing');
+      cardEl.addEventListener('animationend', () => {
+        favs.remove(slug);
+        render();
+      }, { once: true });
+    }
+
+    function render() {
+      const slugs = favs.all();
+      const matched = slugs
+        .map(s => toolsMeta.find(t => t.slug === s))
+        .filter(Boolean);
+
+      // Update count label
+      if (countLabel) {
+        countLabel.textContent = matched.length > 0 ? ` · ${matched.length} tool${matched.length !== 1 ? 's' : ''}` : '';
+      }
+
+      if (matched.length === 0) {
+        emptyEl.style.display = 'block';
+        gridEl.style.display = 'none';
+        suggestEl.style.display = 'block';
+        return;
+      }
+
+      emptyEl.style.display = 'none';
+      gridEl.style.display = 'block';
+      suggestEl.style.display = matched.length < 5 ? 'block' : 'none';
+
+      const sort = getSort();
+
+      if (sort === 'category') {
+        flatGrid.style.display = 'none';
+        catGrid.style.display = 'block';
+        catGrid.innerHTML = '';
+
+        // Group by category
+        const groups = {};
+        matched.forEach(t => {
+          if (!groups[t.category]) groups[t.category] = [];
+          groups[t.category].push(t);
+        });
+
+        Object.entries(groups).forEach(([catSlug, groupTools]) => {
+          const cat = categoryMap[catSlug];
+          const section = document.createElement('div');
+          section.style.marginBottom = '2rem';
+
+          const header = document.createElement('div');
+          header.className = 'fav-cat-header';
+          header.innerHTML = `
+            <span style="font-size:1.25rem;">${cat ? cat.icon : '📁'}</span>
+            <a href="/category/${catSlug}" style="font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:700; color:var(--text-primary); text-decoration:none; transition:color 0.15s;"
+               onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='var(--text-primary)'">${cat ? cat.name : catSlug}</a>
+            <span style="font-size:0.72rem; color:var(--text-muted); font-weight:500;">${groupTools.length} saved</span>
+          `;
+          section.appendChild(header);
+
+          const grid = document.createElement('div');
+          grid.style.cssText = 'display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:0.875rem;';
+          groupTools.forEach(t => grid.appendChild(buildCard(t)));
+          section.appendChild(grid);
+          catGrid.appendChild(section);
+        });
+
+      } else {
+        flatGrid.style.display = 'grid';
+        catGrid.style.display = 'none';
+        flatGrid.innerHTML = '';
+
+        let sorted = [...matched];
+        if (sort === 'alpha') sorted.sort((a, b) => a.name.localeCompare(b.name));
+        // 'saved' order = localStorage order (already in slugs order)
+
+        sorted.forEach(t => flatGrid.appendChild(buildCard(t)));
+      }
+    }
+
+    // Sort change
+    sortEl?.addEventListener('change', render);
+
+    // Clear all with confirm
+    clearBtn?.addEventListener('click', () => {
+      if (favs.count() === 0) return;
+
+      // Inline confirm overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'fav-confirm-overlay';
+      overlay.innerHTML = `
+        <div id="fav-confirm-box">
+          <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.5rem;">Clear all favourites?</h3>
+          <p style="font-size:0.875rem; color:var(--text-secondary); margin:0 0 1.25rem; line-height:1.6;">This will remove all ${favs.count()} saved tool${favs.count() !== 1 ? 's' : ''} from your favourites. This cannot be undone.</p>
+          <div style="display:flex; gap:0.625rem; justify-content:flex-end;">
+            <button id="fav-confirm-cancel" class="btn-secondary" style="font-size:0.875rem;">Cancel</button>
+            <button id="fav-confirm-ok" style="padding:0.5rem 1.125rem; background:#EF4444; color:#fff; border:none; border-radius:0.5rem; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
+              onmouseover="this.style.background='#DC2626'" onmouseout="this.style.background='#EF4444'">Clear all</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+      document.getElementById('fav-confirm-cancel').addEventListener('click', () => overlay.remove());
+      document.getElementById('fav-confirm-ok').addEventListener('click', () => {
+        // Clear with staggered exit animations
+        document.querySelectorAll('.fav-card').forEach((card, i) => {
+          setTimeout(() => card.classList.add('removing'), i * 40);
+        });
+        setTimeout(() => {
+          favs.all().forEach(s => favs.remove(s));
+          overlay.remove();
+          render();
+        }, document.querySelectorAll('.fav-card').length * 40 + 300);
+      });
+    });
+
+    // Re-render when favourites change (e.g. user stars a tool then comes back)
+    window.addEventListener('ug:favs-changed', render);
+
+    // Initial render
+    render();
+  });
+</script>

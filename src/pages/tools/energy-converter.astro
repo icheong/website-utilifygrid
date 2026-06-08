@@ -1,0 +1,254 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'energy-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Energy Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter an energy value and select its unit — all other units update instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="energy-input">Energy</label>
+        <input id="energy-input" type="number" value="1000" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="energy-unit">Unit</label>
+        <select id="energy-unit" class="select-themed" style="min-width:10rem;">
+          <option value="j" selected>Joule (J)</option>
+          <option value="kj">Kilojoule (kJ)</option>
+          <option value="mj">Megajoule (MJ)</option>
+          <option value="cal">Calorie (cal)</option>
+          <option value="kcal">Kilocalorie (kcal)</option>
+          <option value="wh">Watt-hour (Wh)</option>
+          <option value="kwh">Kilowatt-hour (kWh)</option>
+          <option value="ev">Electronvolt (eV)</option>
+          <option value="btu">BTU</option>
+          <option value="therm">Therm</option>
+          <option value="ftlb">Foot-pound (ft·lb)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Energy Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric energy value</strong> and select its <strong>unit</strong> from the dropdown. All other energy units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 11 standard energy units across SI, scientific, electrical, and imperial systems: <strong>J</strong>, <strong>kJ</strong>, <strong>MJ</strong>, <strong>cal</strong>, <strong>kcal</strong>, <strong>Wh</strong>, <strong>kWh</strong>, <strong>eV</strong>, <strong>BTU</strong>, <strong>therm</strong>, and <strong>ft·lb</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common real-world energy values are shown below for quick comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How energy conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions use <strong>joules (J)</strong> as the base unit. Each unit has a fixed factor relative to one joule:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 cal     = 4.184 J         (exact)
+1 kcal    = 4,184 J         (exact)
+1 eV      = 1.602176634×10⁻¹⁹ J  (exact)
+1 Wh      = 3,600 J         (exact)
+1 kWh     = 3,600,000 J     (exact)
+1 kJ      = 1,000 J
+1 MJ      = 1,000,000 J
+1 BTU     ≈ 1,055.06 J
+1 therm   ≈ 105,506,000 J
+1 ft·lb   ≈ 1.35582 J
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      The calorie-to-joule conversion (4.184) is exact by the thermochemical calorie definition. The electronvolt is exact by definition of the elementary charge. BTU and therm values use the ISO standard. All calculations run in your browser with full double-precision floating-point accuracy.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the difference between a calorie and a kilocalorie?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A calorie (cal) is the energy needed to raise 1 gram of water by 1°C. A kilocalorie (kcal) equals 1,000 calories and is what food labels call a 'Calorie' (capital C). One kcal equals 4,184 joules or about 3.968 BTU." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a kilowatt-hour?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A kilowatt-hour (kWh) is the energy consumed by a 1,000-watt device running for one hour. It equals 3.6 million joules and is the unit your electric utility uses to bill you. Running a 100W light bulb for 10 hours uses 1 kWh." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is an electronvolt?",
+          "acceptedAnswer": { "@type": "Answer", "text": "An electronvolt (eV) is the energy gained by an electron moving through a potential difference of one volt. It equals about 1.602 × 10⁻¹⁹ joules and is commonly used in atomic, nuclear, and particle physics." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a BTU?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A BTU (British thermal unit) is the energy needed to raise the temperature of one pound of water by one degree Fahrenheit. It equals about 1,055 joules. BTUs are commonly used to rate furnaces, air conditioners, and the energy content of natural gas." }
+        },
+        {
+          "@type": "Question",
+          "name": "How many calories are in a food Calorie?",
+          "acceptedAnswer": { "@type": "Answer", "text": "One food Calorie (with a capital C) is actually one kilocalorie (kcal) = 1,000 thermochemical calories. So a 200 kcal snack contains 200,000 small calories. Food labels use the term 'Calorie' to mean kilocalorie." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is the difference between a calorie and a kilocalorie?', a: 'A calorie (cal) is the energy needed to raise 1 gram of water by 1°C. A kilocalorie (kcal) equals 1,000 calories and is what food labels call a \'Calorie\' (capital C). One kcal equals 4,184 joules or about 3.968 BTU.' },
+        { q: 'What is a kilowatt-hour?', a: 'A kilowatt-hour (kWh) is the energy consumed by a 1,000-watt device running for one hour. It equals 3.6 million joules and is the unit your electric utility uses to bill you. Running a 100W light bulb for 10 hours uses 1 kWh.' },
+        { q: 'What is an electronvolt?', a: 'An electronvolt (eV) is the energy gained by an electron moving through a potential difference of one volt. It equals about 1.602 × 10⁻¹⁹ joules and is commonly used in atomic, nuclear, and particle physics.' },
+        { q: 'What is a BTU?', a: 'A BTU (British thermal unit) is the energy needed to raise the temperature of one pound of water by one degree Fahrenheit. It equals about 1,055 joules. BTUs are commonly used to rate furnaces, air conditioners, and the energy content of natural gas.' },
+        { q: 'How many calories are in a food Calorie?', a: 'One food Calorie (with a capital C) is actually one kilocalorie (kcal) = 1,000 thermochemical calories. So a 200 kcal snack contains 200,000 small calories. Food labels use the term \'Calorie\' to mean kilocalorie.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to joules ────────────────────────────────
+  const TO_J = {
+    j:     1,
+    kj:    1_000,
+    mj:    1_000_000,
+    cal:   4.184,
+    kcal:  4_184,
+    wh:    3_600,
+    kwh:   3_600_000,
+    ev:    1.602176634e-19,
+    btu:   1055.06,
+    therm: 105_506_000,
+    ftlb:  1.355818,
+  };
+
+  const UNITS = [
+    { id: 'j',     label: 'J',     name: 'Joule',            decimals: 2 },
+    { id: 'kj',    label: 'kJ',    name: 'Kilojoule',        decimals: 4 },
+    { id: 'mj',    label: 'MJ',    name: 'Megajoule',        decimals: 6 },
+    { id: 'cal',   label: 'cal',   name: 'Calorie',          decimals: 2 },
+    { id: 'kcal',  label: 'kcal',  name: 'Kilocalorie',      decimals: 4 },
+    { id: 'wh',    label: 'Wh',    name: 'Watt-hour',        decimals: 4 },
+    { id: 'kwh',   label: 'kWh',   name: 'Kilowatt-hour',    decimals: 6 },
+    { id: 'ev',    label: 'eV',    name: 'Electronvolt',      decimals: 2 },
+    { id: 'btu',   label: 'BTU',   name: 'British Thermal Unit', decimals: 4 },
+    { id: 'therm', label: 'therm', name: 'Therm',            decimals: 6 },
+    { id: 'ftlb',  label: 'ft·lb', name: 'Foot-pound',       decimals: 4 },
+  ];
+
+  // ── Quick-reference objects (stored in joules) ──────────────────
+  const REFS = [
+    { name: 'LED Bulb (1 hr)',          j: 36_000 },
+    { name: 'AA Battery',               j: 10_800 },
+    { name: 'Food Calorie (1 kcal)',    j: 4_184 },
+    { name: 'Smartphone Charge',        j: 36_000 },
+    { name: '1 kWh (Utility Billing)',  j: 3_600_000 },
+    { name: 'Gasoline Gallon',          j: 120_000_000 },
+    { name: 'Ton of TNT',               j: 4_184_000_000 },
+    { name: 'Nuclear Bomb (1 MT)',      j: 4_184_000_000_000_000 },
+  ];
+
+  const input  = document.getElementById('energy-input') as HTMLInputElement;
+  const select = document.getElementById('energy-unit') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const refs   = document.getElementById('refs')!;
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e15) return value.toExponential(4);
+    if (abs >= 1e9)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1e6)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const jVal     = val * TO_J[fromUnit];
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = jVal / TO_J[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    refs.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.j / TO_J[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refs.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

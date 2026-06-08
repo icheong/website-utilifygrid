@@ -1,0 +1,252 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'pressure-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Pressure Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a pressure value and select its unit — all other units update instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="pres-input">Pressure</label>
+        <input id="pres-input" type="number" value="101325" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="pres-unit">Unit</label>
+        <select id="pres-unit" class="select-themed" style="min-width:10rem;">
+          <option value="pa" selected>Pascal (Pa)</option>
+          <option value="kpa">Kilopascal (kPa)</option>
+          <option value="mpa">Megapascal (MPa)</option>
+          <option value="bar">Bar</option>
+          <option value="mbar">Millibar (mbar)</option>
+          <option value="atm">Atmosphere (atm)</option>
+          <option value="psi">PSI (lbf/in²)</option>
+          <option value="mmhg">mmHg / Torr</option>
+          <option value="inhg">Inches of Mercury</option>
+          <option value="cmh2o">cm Water Column</option>
+          <option value="inh2o">Inches of Water Column</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Pressure Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric pressure value</strong> and select its <strong>unit</strong> from the dropdown. All other pressure units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 11 standard pressure units from SI, metric, and imperial systems: <strong>Pa</strong>, <strong>kPa</strong>, <strong>MPa</strong>, <strong>bar</strong>, <strong>mbar</strong>, <strong>atm</strong>, <strong>PSI</strong>, <strong>mmHg</strong>, <strong>inHg</strong>, <strong>cmH₂O</strong>, and <strong>inH₂O</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common reference pressures are shown below the results for quick comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How pressure conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions use <strong>pascals (Pa)</strong> as the base unit. Each unit defines its factor relative to 1 Pa:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 kPa      = 1,000 Pa
+1 MPa       = 1,000,000 Pa
+1 bar       = 100,000 Pa
+1 mbar      = 100 Pa
+1 atm       = 101,325 Pa       (exact)
+1 PSI       = 6,894.757 Pa
+1 mmHg      = 133.3224 Pa
+1 inHg      = 3,386.389 Pa
+1 cmH₂O    = 98.0665 Pa
+1 inH₂O    = 249.0889 Pa
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      The standard atmosphere (1 atm = 101,325 Pa exactly) is defined by international agreement. PSI (pounds-force per square inch) is derived from the pound-force and the inch. All calculations run in your browser with full double-precision floating-point accuracy.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the difference between PSI and bar?",
+          "acceptedAnswer": { "@type": "Answer", "text": "1 bar equals approximately 14.504 PSI. The bar is a metric unit widely used in Europe for tire pressure and weather. PSI (pounds per square inch) is the imperial unit commonly used in the US for tire pressure, plumbing, and industrial applications." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is standard atmospheric pressure?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Standard atmospheric pressure at sea level is 101,325 Pa (1013.25 hPa), which equals 1 atm, 14.696 PSI, 760 mmHg, or 29.92 inHg. This is the reference pressure used as a baseline for weather reports and altitude calculations." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a Pascal?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A Pascal (Pa) is the SI unit of pressure, defined as one newton of force applied per square meter (1 Pa = 1 N/m²). It is a very small unit, so kilopascals (kPa) and megapascals (MPa) are commonly used in engineering and science." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is mmHg used in medicine?",
+          "acceptedAnswer": { "@type": "Answer", "text": "mmHg (millimeters of mercury) is used in medicine because blood pressure was traditionally measured with a mercury column. 1 mmHg equals approximately 133.322 Pa. Blood pressure readings like 120/80 mmHg are universally understood by medical professionals." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the typical pressure of a car tire?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Most car tires are inflated to 30–35 PSI (207–241 kPa or 2.0–2.4 bar). Under-inflation reduces fuel efficiency and handling, while over-inflation can cause blowouts. Always check your vehicle's recommended tire pressure on the door jamb sticker." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is the difference between PSI and bar?', a: '1 bar equals approximately 14.504 PSI. The bar is a metric unit widely used in Europe for tire pressure and weather. PSI (pounds per square inch) is the imperial unit commonly used in the US for tire pressure, plumbing, and industrial applications.' },
+        { q: 'What is standard atmospheric pressure?', a: 'Standard atmospheric pressure at sea level is 101,325 Pa (1013.25 hPa), which equals 1 atm, 14.696 PSI, 760 mmHg, or 29.92 inHg. This is the reference pressure used as a baseline for weather reports and altitude calculations.' },
+        { q: 'What is a Pascal?', a: 'A Pascal (Pa) is the SI unit of pressure, defined as one newton of force applied per square meter (1 Pa = 1 N/m²). It is a very small unit, so kilopascals (kPa) and megapascals (MPa) are commonly used in engineering and science.' },
+        { q: 'Why is mmHg used in medicine?', a: 'mmHg (millimeters of mercury) is used in medicine because blood pressure was traditionally measured with a mercury column. 1 mmHg equals approximately 133.322 Pa. Blood pressure readings like 120/80 mmHg are universally understood by medical professionals.' },
+        { q: 'What is the typical pressure of a car tire?', a: 'Most car tires are inflated to 30–35 PSI (207–241 kPa or 2.0–2.4 bar). Under-inflation reduces fuel efficiency and handling, while over-inflation can cause blowouts. Always check your vehicle\'s recommended tire pressure on the door jamb sticker.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to Pa ────────────────────────────────────
+  const TO_PA = {
+    pa:   1,
+    kpa:  1_000,
+    mpa:  1_000_000,
+    bar:  100_000,
+    mbar: 100,
+    atm:  101_325,
+    psi:  6894.757,
+    mmhg: 133.3224,
+    inhg: 3386.389,
+    cmh2o: 98.0665,
+    inh2o: 249.0889,
+  };
+
+  const UNITS = [
+    { id: 'pa',    label: 'Pa',      name: 'Pascal',              decimals: 2 },
+    { id: 'kpa',   label: 'kPa',     name: 'Kilopascal',          decimals: 4 },
+    { id: 'mpa',   label: 'MPa',     name: 'Megapascal',          decimals: 6 },
+    { id: 'bar',   label: 'bar',     name: 'Bar',                 decimals: 6 },
+    { id: 'mbar',  label: 'mbar',    name: 'Millibar',            decimals: 4 },
+    { id: 'atm',   label: 'atm',     name: 'Atmosphere',          decimals: 6 },
+    { id: 'psi',   label: 'PSI',     name: 'Pounds per Sq Inch',  decimals: 4 },
+    { id: 'mmhg',  label: 'mmHg',    name: 'Millimeters of Mercury', decimals: 2 },
+    { id: 'inhg',  label: 'inHg',    name: 'Inches of Mercury',   decimals: 4 },
+    { id: 'cmh2o', label: 'cmH₂O',   name: 'Centimeters of Water', decimals: 4 },
+    { id: 'inh2o', label: 'inH₂O',   name: 'Inches of Water',     decimals: 4 },
+  ];
+
+  // ── Quick-reference objects (stored in Pa) ──────────────────────
+  const REFS = [
+    { name: 'Human Breath (inhale)',  pa: 100_100 },
+    { name: 'Vacuum Cleaner',         pa: 97_000 },
+    { name: 'Sea-Level Atmosphere',   pa: 101_325 },
+    { name: 'Car Tire (32 PSI)',      pa: 220_632 },
+    { name: 'Pressure Cooker',        pa: 200_000 },
+    { name: 'SCUBA Tank (3000 PSI)',  pa: 20_684_270 },
+    { name: 'Hydraulic Press',        pa: 30_000_000 },
+    { name: 'Diamond Formation',      pa: 5_000_000_000 },
+  ];
+
+  const input  = document.getElementById('pres-input') as HTMLInputElement;
+  const select = document.getElementById('pres-unit') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const refs   = document.getElementById('refs')!;
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9)  return value.toExponential(4);
+    if (abs >= 1e6)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const paVal    = val * TO_PA[fromUnit];
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = paVal / TO_PA[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    refs.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.pa / TO_PA[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refs.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

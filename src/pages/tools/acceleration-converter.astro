@@ -1,0 +1,341 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'acceleration-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Acceleration Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter an acceleration and select its unit — all others update instantly with a comparative bar chart.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.25rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="acc-input">Acceleration</label>
+        <input id="acc-input" type="number" value="9.80665" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="acc-unit">Unit</label>
+        <select id="acc-unit" class="select-themed" style="min-width:10rem;">
+          <option value="ms2" selected>m/s²</option>
+          <option value="g">g (gravity)</option>
+          <option value="ft2">ft/s²</option>
+          <option value="in2">in/s²</option>
+          <option value="cm2">cm/s² (Gal)</option>
+          <option value="km2">km/s²</option>
+          <option value="kmhs">km/h/s</option>
+          <option value="mphs">mph/s</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bar chart -->
+    <div style="margin-bottom:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Magnitude Comparison (m/s²)</p>
+      <svg id="acc-chart" viewBox="0 0 600 290" width="100%" height="290" style="display:block;border-radius:0.5rem;background:var(--bg-surface);border:1.5px solid var(--border);"></svg>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Acceleration Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric acceleration value</strong> and select its <strong>unit</strong> from the dropdown. All other acceleration units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 8 acceleration units: <strong>m/s²</strong>, <strong>g</strong>, <strong>ft/s²</strong>, <strong>in/s²</strong>, <strong>cm/s²</strong> (Gal), <strong>km/s²</strong>, <strong>km/h/s</strong>, and <strong>mph/s</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      The bar chart shows your value alongside common real-world accelerations for visual comparison. Click any <strong>Copy</strong> button to copy that unit's result.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How acceleration conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions use <strong>meters per second squared (m/s²)</strong> as the base unit. Each unit has a fixed factor relative to one m/s²:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 g       = 9.80665 m/s²      (standard gravity)
+1 ft/s²   = 0.3048 m/s²
+1 in/s²   = 0.0254 m/s²
+1 cm/s²   = 0.01 m/s² (= 1 Gal)
+1 km/s²   = 1,000 m/s²
+1 km/h/s  = 0.27778 m/s²
+1 mph/s   = 0.44704 m/s²
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Standard gravity (1 g = 9.80665 m/s²) is defined as the acceleration due to Earth's gravitational pull at sea level. The Gal (cm/s²) is used in seismology. All calculations run in your browser.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is 1 g of acceleration?",
+          "acceptedAnswer": { "@type": "Answer", "text": "1 g equals 9.80665 m/s², which is the acceleration due to Earth's gravity at sea level. When you drop an object, it accelerates at 1 g. Astronauts on the ISS experience 1 g from Earth's gravity but are in free fall." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the acceleration of a sports car?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A typical sports car accelerates from 0–60 mph in about 3–4 seconds, which is roughly 6.7–8.9 m/s² (0.68–0.91 g). A Tesla Model S Plaid achieves about 1.2 g. Formula 1 cars can exceed 2 g during acceleration." }
+        },
+        {
+          "@type": "Question",
+          "name": "How much g-force can a human survive?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Humans can survive about 5 g sustained for short periods. Fighter pilots train to withstand 9 g with g-suits. In car crashes, forces can reach 50–100 g for milliseconds. NASA's centrifuge tests subjects at up to 10 g." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a Gal?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A Gal (galileo) equals 1 cm/s² or 0.01 m/s². It is named after Galileo and is commonly used in seismology to measure ground acceleration during earthquakes. Strong earthquakes can produce accelerations of 1,000–3,000 Gal." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the acceleration due to gravity on other planets?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Mars: 3.72 m/s² (0.38 g), Moon: 1.62 m/s² (0.17 g), Jupiter: 24.79 m/s² (2.53 g), Venus: 8.87 m/s² (0.90 g). An object weighs about 38% of its Earth weight on Mars and about 17% on the Moon." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is 1 g of acceleration?', a: '1 g equals 9.80665 m/s², which is the acceleration due to Earth\'s gravity at sea level. When you drop an object, it accelerates at 1 g. Astronauts on the ISS experience 1 g from Earth\'s gravity but are in free fall.' },
+        { q: 'What is the acceleration of a sports car?', a: 'A typical sports car accelerates from 0–60 mph in about 3–4 seconds, which is roughly 6.7–8.9 m/s² (0.68–0.91 g). A Tesla Model S Plaid achieves about 1.2 g. Formula 1 cars can exceed 2 g during acceleration.' },
+        { q: 'How much g-force can a human survive?', a: 'Humans can survive about 5 g sustained for short periods. Fighter pilots train to withstand 9 g with g-suits. In car crashes, forces can reach 50–100 g for milliseconds. NASA\'s centrifuge tests subjects at up to 10 g.' },
+        { q: 'What is a Gal?', a: 'A Gal (galileo) equals 1 cm/s² or 0.01 m/s². It is named after Galileo and is commonly used in seismology to measure ground acceleration during earthquakes. Strong earthquakes can produce accelerations of 1,000–3,000 Gal.' },
+        { q: 'What is the acceleration due to gravity on other planets?', a: 'Mars: 3.72 m/s² (0.38 g), Moon: 1.62 m/s² (0.17 g), Jupiter: 24.79 m/s² (2.53 g), Venus: 8.87 m/s² (0.90 g). An object weighs about 38% of its Earth weight on Mars and about 17% on the Moon.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to m/s² ──────────────────────────────────
+  const TO_MS2 = {
+    ms2:  1,
+    g:    9.80665,
+    ft2:  0.3048,
+    in2:  0.0254,
+    cm2:  0.01,
+    km2:  1000,
+    kmhs: 1 / 3.6,
+    mphs: 0.44704,
+  };
+
+  const UNITS = [
+    { id: 'ms2',  label: 'm/s²',   name: 'Meter per Second²' },
+    { id: 'g',    label: 'g',       name: 'Standard Gravity' },
+    { id: 'ft2',  label: 'ft/s²',   name: 'Foot per Second²' },
+    { id: 'in2',  label: 'in/s²',   name: 'Inch per Second²' },
+    { id: 'cm2',  label: 'cm/s²',   name: 'Gal' },
+    { id: 'km2',  label: 'km/s²',   name: 'Kilometer per Second²' },
+    { id: 'kmhs', label: 'km/h/s',  name: 'km/h per Second' },
+    { id: 'mphs', label: 'mph/s',   name: 'mph per Second' },
+  ];
+
+  // ── Quick-reference objects (stored in m/s²) ────────────────────
+  const REFS = [
+    { name: 'Moon Gravity',           ms2: 1.62 },
+    { name: 'Mars Gravity',           ms2: 3.72 },
+    { name: 'Earth Gravity',          ms2: 9.80665 },
+    { name: 'Jupiter Gravity',        ms2: 24.79 },
+    { name: 'Elevator (typical)',     ms2: 1.5 },
+    { name: 'Car 0–60 mph (4 sec)',   ms2: 6.7 },
+    { name: 'Sports Car (3 sec)',     ms2: 8.9 },
+    { name: 'Formula 1 Car',          ms2: 19.6 },
+  ];
+
+  const BAR_DATA = [
+    { name: 'Elevator',        ms2: 1.5 },
+    { name: 'Car (4s)',        ms2: 6.7 },
+    { name: 'Sports Car',      ms2: 8.9 },
+    { name: 'Earth g',         ms2: 9.80665 },
+    { name: 'F1 Car',          ms2: 19.6 },
+    { name: 'Fighter Jet',     ms2: 29.4 },
+  ];
+
+  const input    = document.getElementById('acc-input') as HTMLInputElement;
+  const select   = document.getElementById('acc-unit') as HTMLSelectElement;
+  const grid     = document.getElementById('results')!;
+  const refsDiv  = document.getElementById('refs')!;
+  const chart    = document.getElementById('acc-chart')!;
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1e6) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    return value.toExponential(4);
+  }
+
+  function drawChart(userMs2: number) {
+    chart.innerHTML = '';
+    const pad = { top: 10, bottom: 10, left: 130, right: 60 };
+    const svgW = 600;
+    const svgH = 290;
+    const w = svgW - pad.left - pad.right;
+    const rows = BAR_DATA.length + 1; // user + references
+    const rowH = (svgH - pad.top - pad.bottom) / rows;
+    const barH = rowH * 0.55;
+
+    const maxVal = Math.max(userMs2, ...BAR_DATA.map(b => b.ms2)) * 1.2;
+
+    function yPos(i: number) {
+      return pad.top + i * rowH + (rowH - barH) / 2;
+    }
+
+    // User bar (index 0)
+    const uW = Math.max((userMs2 / maxVal) * w, 2);
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', String(pad.left));
+    rect.setAttribute('y', String(yPos(0)));
+    rect.setAttribute('width', String(uW));
+    rect.setAttribute('height', String(barH));
+    rect.setAttribute('rx', '3');
+    rect.setAttribute('fill', 'var(--color-brand-blue)');
+    chart.appendChild(rect);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', String(pad.left - 8));
+    label.setAttribute('y', String(yPos(0) + barH / 2 + 4));
+    label.setAttribute('text-anchor', 'end');
+    label.setAttribute('fill', 'var(--color-brand-blue)');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('font-weight', '600');
+    label.setAttribute('font-family', 'Sora, sans-serif');
+    label.textContent = 'Your Value';
+    chart.appendChild(label);
+
+    const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    valText.setAttribute('x', String(pad.left + uW + 6));
+    valText.setAttribute('y', String(yPos(0) + barH / 2 + 4));
+    valText.setAttribute('fill', 'var(--text-secondary)');
+    valText.setAttribute('font-size', '10');
+    valText.setAttribute('font-family', 'Fira Code, monospace');
+    valText.textContent = fmt(userMs2) + ' m/s²';
+    chart.appendChild(valText);
+
+    // Reference bars
+    BAR_DATA.forEach((b, i) => {
+      const idx = i + 1;
+      const bw = Math.max((b.ms2 / maxVal) * w, 2);
+
+      const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      r.setAttribute('x', String(pad.left));
+      r.setAttribute('y', String(yPos(idx)));
+      r.setAttribute('width', String(bw));
+      r.setAttribute('height', String(barH));
+      r.setAttribute('rx', '3');
+      r.setAttribute('fill', 'var(--border)');
+      chart.appendChild(r);
+
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('x', String(pad.left - 8));
+      t.setAttribute('y', String(yPos(idx) + barH / 2 + 4));
+      t.setAttribute('text-anchor', 'end');
+      t.setAttribute('fill', 'var(--text-secondary)');
+      t.setAttribute('font-size', '10');
+      t.setAttribute('font-family', 'Sora, sans-serif');
+      t.textContent = b.name;
+      chart.appendChild(t);
+
+      const v = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      v.setAttribute('x', String(pad.left + bw + 6));
+      v.setAttribute('y', String(yPos(idx) + barH / 2 + 4));
+      v.setAttribute('fill', 'var(--text-muted)');
+      v.setAttribute('font-size', '9');
+      v.setAttribute('font-family', 'Fira Code, monospace');
+      v.textContent = fmt(b.ms2) + ' m/s²';
+      chart.appendChild(v);
+    });
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const ms2      = val * TO_MS2[fromUnit];
+
+    drawChart(ms2);
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = ms2 / TO_MS2[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    refsDiv.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.ms2 / TO_MS2[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refsDiv.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

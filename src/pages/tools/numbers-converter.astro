@@ -1,0 +1,250 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'numbers-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Number Base Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a number in any base — see its representation in all others instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="num-input">Number</label>
+        <input id="num-input" type="text" value="255" placeholder="Enter number"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="num-base">Base</label>
+        <select id="num-base" class="select-themed" style="min-width:10rem;">
+          <option value="2">Binary (base 2)</option>
+          <option value="3">Ternary (base 3)</option>
+          <option value="4">Quaternary (base 4)</option>
+          <option value="5">Quinary (base 5)</option>
+          <option value="6">Senary (base 6)</option>
+          <option value="7">Septenary (base 7)</option>
+          <option value="8">Octal (base 8)</option>
+          <option value="9">Nonary (base 9)</option>
+          <option value="10" selected>Decimal (base 10)</option>
+          <option value="11">Undecimal (base 11)</option>
+          <option value="12">Duodecimal (base 12)</option>
+          <option value="16">Hexadecimal (base 16)</option>
+          <option value="20">Vigesimal (base 20)</option>
+          <option value="32">Base 32</option>
+          <option value="36">Base 36</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div id="error-msg" style="font-size:0.82rem;color:#ef4444;margin-bottom:0.75rem;display:none;"></div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.5rem;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Number Base Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>number</strong> and select its <strong>base</strong> from the dropdown. All other base representations update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports <strong>15 common bases</strong>: binary through hexadecimal, plus ternary, quinary, senary, septenary, nonary, undecimal, duodecimal, vigesimal, base 32, and base 36.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Digits above 9 use letters A–Z (case-insensitive). Click any <strong>Copy</strong> button to copy that base's result to your clipboard.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How number base conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      A number's value is the same regardless of base. For example, decimal <strong>255</strong> = binary <strong>11111111</strong> = hex <strong>FF</strong> = octal <strong>377</strong>. The conversion works by decomposing the number into powers of the base:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Binary 11111111:
+  1×2⁷ + 1×2⁶ + 1×2⁵ + 1×2⁴ + 1×2³ + 1×2² + 1×2¹ + 1×2⁰
+= 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1
+= 255 (decimal)
+
+Hexadecimal FF:
+  15×16¹ + 15×16⁰ = 240 + 15 = 255</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      The converter first parses the input into a JavaScript integer, then formats it into each target base. Bases above 16 use letters A–Z for digit values 10–35. JavaScript integers can safely represent values up to 2⁵³ − 1 (about 9 × 10¹⁵).
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is a number base?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A number base (or radix) is the number of unique digits used to represent values. Base 10 (decimal) uses digits 0–9. Base 2 (binary) uses only 0 and 1. Base 16 (hexadecimal) uses 0–9 and A–F. The base determines how many digits are needed before carrying over to the next position." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is binary used in computers?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Computers use binary because their hardware consists of transistors that have two states: on and off, represented as 1 and 0. This makes binary the most natural number system for electronic circuits. All data — numbers, text, images — is ultimately stored as binary." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is hexadecimal used in programming?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Hexadecimal (base 16) is compact: one hex digit represents exactly 4 binary digits (bits). This makes it easy to read and write binary values. For example, binary 11111111 = hex FF = decimal 255. Hex is used for memory addresses, color codes, and binary data display." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the maximum number I can convert?",
+          "acceptedAnswer": { "@type": "Answer", "text": "This converter uses JavaScript's safe integer range: up to 2⁵³ − 1 = 9,007,199,254,740,991 (about 9 × 10¹⁵). Input values larger than this may lose precision. Negative numbers and decimal fractions are not currently supported." }
+        },
+        {
+          "@type": "Question",
+          "name": "What letters are used for digits above 9?",
+          "acceptedAnswer": { "@type": "Answer", "text": "For bases above 10, letters A through Z represent digit values 10 through 35. For example, in hexadecimal (base 16): A=10, B=11, C=12, D=13, E=14, F=15. In base 36: Z=35. The converter accepts both uppercase and lowercase input." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is a number base?', a: 'A number base (or radix) is the number of unique digits used to represent values. Base 10 (decimal) uses digits 0–9. Base 2 (binary) uses only 0 and 1. Base 16 (hexadecimal) uses 0–9 and A–F. The base determines how many digits are needed before carrying over to the next position.' },
+        { q: 'Why is binary used in computers?', a: 'Computers use binary because their hardware consists of transistors that have two states: on and off, represented as 1 and 0. This makes binary the most natural number system for electronic circuits. All data — numbers, text, images — is ultimately stored as binary.' },
+        { q: 'Why is hexadecimal used in programming?', a: 'Hexadecimal (base 16) is compact: one hex digit represents exactly 4 binary digits (bits). This makes it easy to read and write binary values. For example, binary 11111111 = hex FF = decimal 255. Hex is used for memory addresses, color codes, and binary data display.' },
+        { q: 'What is the maximum number I can convert?', a: 'This converter uses JavaScript\'s safe integer range: up to 2⁵³ − 1 = 9,007,199,254,740,991 (about 9 × 10¹⁵). Input values larger than this may lose precision. Negative numbers and decimal fractions are not currently supported.' },
+        { q: 'What letters are used for digits above 9?', a: 'For bases above 10, letters A through Z represent digit values 10 through 35. For example, in hexadecimal (base 16): A=10, B=11, C=12, D=13, E=14, F=15. In base 36: Z=35. The converter accepts both uppercase and lowercase input.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  const DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  const BASES = [
+    { base: 2,  label: 'Binary',      abbr: 'bin' },
+    { base: 3,  label: 'Ternary',     abbr: 'tern' },
+    { base: 4,  label: 'Quaternary',  abbr: 'quart' },
+    { base: 5,  label: 'Quinary',     abbr: 'quin' },
+    { base: 6,  label: 'Senary',      abbr: 'sen' },
+    { base: 7,  label: 'Septenary',   abbr: 'sept' },
+    { base: 8,  label: 'Octal',       abbr: 'oct' },
+    { base: 9,  label: 'Nonary',      abbr: 'non' },
+    { base: 10, label: 'Decimal',     abbr: 'dec' },
+    { base: 11, label: 'Undecimal',   abbr: 'und' },
+    { base: 12, label: 'Duodecimal',  abbr: 'duo' },
+    { base: 16, label: 'Hexadecimal', abbr: 'hex' },
+    { base: 20, label: 'Vigesimal',   abbr: 'vig' },
+    { base: 32, label: 'Base 32',     abbr: 'b32' },
+    { base: 36, label: 'Base 36',     abbr: 'b36' },
+  ];
+
+  const input  = document.getElementById('num-input') as HTMLInputElement;
+  const select = document.getElementById('num-base') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const errMsg = document.getElementById('error-msg')!;
+
+  function toBase(num: number, base: number): string {
+    if (num === 0) return '0';
+    const isNeg = num < 0;
+    num = Math.abs(num);
+    let result = '';
+    while (num > 0) {
+      result = DIGITS[num % base] + result;
+      num = Math.floor(num / base);
+    }
+    return isNeg ? '-' + result : result;
+  }
+
+  function isValidForBase(ch: string, base: number): boolean {
+    const idx = DIGITS.indexOf(ch.toUpperCase());
+    return idx >= 0 && idx < base;
+  }
+
+  function validateInput(value: string, base: number): boolean {
+    const clean = value.replace(/^-/, '');
+    if (clean.length === 0) return false;
+    for (const ch of clean) {
+      if (!isValidForBase(ch, base)) return false;
+    }
+    return true;
+  }
+
+  function update() {
+    const raw    = input.value.trim();
+    const base   = parseInt(select.value);
+
+    grid.innerHTML = '';
+    errMsg.style.display = 'none';
+
+    if (!raw) {
+      errMsg.textContent = 'Enter a number to convert.';
+      errMsg.style.display = 'block';
+      return;
+    }
+
+    if (!validateInput(raw, base)) {
+      errMsg.textContent = `Invalid digit for base ${base}.`;
+      errMsg.style.display = 'block';
+      return;
+    }
+
+    const decimal = parseInt(raw, base);
+
+    if (Number.isNaN(decimal)) {
+      errMsg.textContent = 'Invalid number.';
+      errMsg.style.display = 'block';
+      return;
+    }
+
+    if (decimal > Number.MAX_SAFE_INTEGER || decimal < Number.MIN_SAFE_INTEGER) {
+      errMsg.textContent = 'Number exceeds safe integer range (2⁵³ − 1).';
+      errMsg.style.display = 'block';
+      return;
+    }
+
+    BASES.forEach(b => {
+      const converted = toBase(decimal, b.base);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${b.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;font-family:'Fira Code',monospace;font-size:0.85rem;" data-val="${converted}">${converted}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(converted).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

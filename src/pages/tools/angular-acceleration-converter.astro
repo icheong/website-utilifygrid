@@ -1,0 +1,386 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'angular-acceleration-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Angular Acceleration Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter an angular acceleration and select its unit — all others update instantly with visual gauges.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.25rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="angacc-input">Angular Acceleration</label>
+        <input id="angacc-input" type="number" value="31.4159" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="angacc-unit">Unit</label>
+        <select id="angacc-unit" class="select-themed" style="min-width:10rem;">
+          <option value="rads2" selected>rad/s²</option>
+          <option value="degs2">°/s²</option>
+          <option value="rpms">RPM/s</option>
+          <option value="revs2">rev/s²</option>
+          <option value="hzs">Hz/s</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Visual gauges -->
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <!-- Tachometer gauge -->
+      <svg viewBox="0 0 200 130" width="200" height="130" style="flex-shrink:0;">
+        <defs>
+          <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#22c55e" />
+            <stop offset="60%" stop-color="#eab308" />
+            <stop offset="100%" stop-color="#ef4444" />
+          </linearGradient>
+        </defs>
+        <!-- Background arc -->
+        <path d="M 20 115 A 80 80 0 0 1 180 115" fill="none" stroke="var(--border)" stroke-width="12" stroke-linecap="round" />
+        <!-- Colored arc -->
+        <path id="gauge-fill" d="M 20 115 A 80 80 0 0 1 180 115" fill="none" stroke="url(#gaugeGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+        <!-- Needle -->
+        <line id="gauge-needle" x1="100" y1="115" x2="100" y2="40" stroke="var(--text-primary)" stroke-width="2.5" stroke-linecap="round" />
+        <circle cx="100" cy="115" r="5" fill="var(--text-primary)" />
+        <!-- Value label -->
+        <text id="gauge-val" x="100" y="108" text-anchor="middle" font-family="Fira Code, monospace" font-size="14" font-weight="700" fill="var(--text-primary)">0</text>
+      </svg>
+      <div style="min-width:0;">
+        <p id="angacc-display" style="font-size:1.6rem;font-weight:700;font-family:'Fira Code',monospace;color:var(--text-primary);margin-bottom:0.25rem;">31.42 rad/s²</p>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0;">= <span id="angacc-rads2">31.4159</span> rad/s²</p>
+        <p style="font-size:0.78rem;color:var(--text-muted);">= <span id="angacc-degs">1800</span> °/s²</p>
+      </div>
+    </div>
+
+    <!-- Bar chart -->
+    <div style="margin-bottom:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Magnitude Comparison (rad/s²)</p>
+      <svg id="angacc-chart" viewBox="0 0 600 250" width="100%" height="250" style="display:block;border-radius:0.5rem;background:var(--bg-surface);border:1.5px solid var(--border);"></svg>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Angular Acceleration Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric angular acceleration</strong> and select its <strong>unit</strong> from the dropdown. All other units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 5 angular acceleration units: <strong>rad/s²</strong>, <strong>°/s²</strong>, <strong>RPM/s</strong>, <strong>rev/s²</strong>, and <strong>Hz/s</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      The tachometer gauge shows the magnitude visually, and the bar chart compares your value against common rotational accelerations. Click any <strong>Copy</strong> button to copy that unit's result.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How angular acceleration conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions use <strong>radians per second squared (rad/s²)</strong> as the base unit. Each unit has a fixed factor relative to one rad/s²:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 °/s²   = π/180 rad/s²    ≈ 0.01745 rad/s²
+1 RPM/s   = 2π/60 rad/s²   ≈ 0.10472 rad/s²
+1 rev/s²  = 2π rad/s²       ≈ 6.28319 rad/s²
+1 Hz/s    = 2π rad/s²       ≈ 6.28319 rad/s²
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Angular acceleration is the rate of change of angular velocity. If a spinning object increases its speed by 2π rad/s each second, its angular acceleration is 1 rev/s² = 1 Hz/s = 2π rad/s².
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is angular acceleration?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Angular acceleration is the rate at which angular velocity changes over time. It measures how quickly a rotating object speeds up or slows down. Its SI unit is radians per second squared (rad/s²)." }
+        },
+        {
+          "@type": "Question",
+          "name": "How is angular acceleration different from linear acceleration?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Linear acceleration describes changes in straight-line speed (m/s²). Angular acceleration describes changes in rotational speed (rad/s²). They are related by a = α × r, where a is linear acceleration, α is angular acceleration, and r is the radius." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a good example of angular acceleration?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A car engine accelerating from idle (1000 RPM) to redline (7000 RPM) in 3 seconds has an angular acceleration of about 2000 RPM/s ≈ 209 rad/s². A centrifuge spinning up from rest to 50,000 RPM in 30 seconds has about 1667 RPM/s ≈ 175 rad/s²." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the relationship between Hz/s and rad/s²?",
+          "acceptedAnswer": { "@type": "Answer", "text": "1 Hz/s = 1 revolution per second per second = 2π radians per second per second. So Hz/s and rev/s² are numerically equal, and both equal 2π rad/s². This is because one full revolution is exactly 2π radians." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is torque and how does it relate to angular acceleration?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Torque is the rotational equivalent of force. The relationship is τ = I × α, where τ is torque, I is moment of inertia (rotational mass), and α is angular acceleration. A larger torque or smaller moment of inertia produces greater angular acceleration." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is angular acceleration?', a: 'Angular acceleration is the rate at which angular velocity changes over time. It measures how quickly a rotating object speeds up or slows down. Its SI unit is radians per second squared (rad/s²).' },
+        { q: 'How is angular acceleration different from linear acceleration?', a: 'Linear acceleration describes changes in straight-line speed (m/s²). Angular acceleration describes changes in rotational speed (rad/s²). They are related by a = α × r, where a is linear acceleration, α is angular acceleration, and r is the radius.' },
+        { q: 'What is a good example of angular acceleration?', a: 'A car engine accelerating from idle (1000 RPM) to redline (7000 RPM) in 3 seconds has an angular acceleration of about 2000 RPM/s ≈ 209 rad/s². A centrifuge spinning up from rest to 50,000 RPM in 30 seconds has about 1667 RPM/s ≈ 175 rad/s².' },
+        { q: 'What is the relationship between Hz/s and rad/s²?', a: '1 Hz/s = 1 revolution per second per second = 2π radians per second per second. So Hz/s and rev/s² are numerically equal, and both equal 2π rad/s². This is because one full revolution is exactly 2π radians.' },
+        { q: 'What is torque and how does it relate to angular acceleration?', a: 'Torque is the rotational equivalent of force. The relationship is τ = I × α, where τ is torque, I is moment of inertia (rotational mass), and α is angular acceleration. A larger torque or smaller moment of inertia produces greater angular acceleration.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to rad/s² ────────────────────────────────
+  const TO_RADS2 = {
+    rads2: 1,
+    degs2: Math.PI / 180,
+    rpms:  (2 * Math.PI) / 60,
+    revs2: 2 * Math.PI,
+    hzs:   2 * Math.PI,
+  };
+
+  const UNITS = [
+    { id: 'rads2', label: 'rad/s²',  name: 'Radian per Second²' },
+    { id: 'degs2', label: '°/s²',    name: 'Degree per Second²' },
+    { id: 'rpms',  label: 'RPM/s',   name: 'RPM per Second' },
+    { id: 'revs2', label: 'rev/s²',  name: 'Revolution per Second²' },
+    { id: 'hzs',   label: 'Hz/s',    name: 'Hertz per Second' },
+  ];
+
+  const REFS = [
+    { name: 'Earth Rotation Speedup',  rads2: 0.000073 },
+    { name: 'Turntable (start)',        rads2: 0.5 },
+    { name: 'Blender (start)',          rads2: 150 },
+    { name: 'Car Engine (idle→redline)',rads2: 209 },
+    { name: 'Centrifuge (spin-up)',     rads2: 175 },
+    { name: 'Jet Turbine (start)',      rads2: 2500 },
+    { name: 'Drill (start)',            rads2: 15000 },
+    { name: 'Hard Drive (start)',       rads2: 45000 },
+  ];
+
+  const BAR_DATA = [
+    { name: 'Turntable',      rads2: 0.5 },
+    { name: 'Blender',        rads2: 150 },
+    { name: 'Car Engine',     rads2: 209 },
+    { name: 'Centrifuge',     rads2: 175 },
+    { name: 'Jet Turbine',    rads2: 2500 },
+    { name: 'Hard Drive',     rads2: 45000 },
+  ];
+
+  const input    = document.getElementById('angacc-input') as HTMLInputElement;
+  const select   = document.getElementById('angacc-unit') as HTMLSelectElement;
+  const grid     = document.getElementById('results')!;
+  const refsDiv  = document.getElementById('refs')!;
+  const chart    = document.getElementById('angacc-chart')!;
+  const gaugeFill = document.getElementById('gauge-fill')!;
+  const gaugeNeedle = document.getElementById('gauge-needle')!;
+  const gaugeVal = document.getElementById('gauge-val')!;
+  const angaccDisp = document.getElementById('angacc-display')!;
+  const angaccRads = document.getElementById('angacc-rads2')!;
+  const angaccDegs = document.getElementById('angacc-degs')!;
+
+  const ARC_TOTAL = 251.2; // approximate arc length of semicircle r=80
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e12) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1e6)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    return value.toExponential(4);
+  }
+
+  function drawGauge(rads2: number) {
+    const maxRef = Math.max(...REFS.map(r => r.rads2), rads2) * 1.2;
+    const fraction = Math.min(rads2 / maxRef, 1);
+    const offset = ARC_TOTAL * (1 - fraction);
+    gaugeFill.setAttribute('stroke-dashoffset', String(offset));
+
+    // Needle rotation: -90 (left) to +90 (right)
+    const angle = -90 + fraction * 180;
+    const rad = angle * Math.PI / 180;
+    const nx = 100 + 70 * Math.sin(rad);
+    const ny = 115 - 70 * Math.cos(rad);
+    gaugeNeedle.setAttribute('x2', String(nx));
+    gaugeNeedle.setAttribute('y2', String(ny));
+
+    gaugeVal.textContent = fmt(rads2);
+  }
+
+  function drawChart(userRads2: number) {
+    chart.innerHTML = '';
+    const pad = { top: 10, bottom: 10, left: 130, right: 60 };
+    const svgW = 600;
+    const svgH = 250;
+    const w = svgW - pad.left - pad.right;
+    const rows = BAR_DATA.length + 1;
+    const rowH = (svgH - pad.top - pad.bottom) / rows;
+    const barH = rowH * 0.55;
+
+    const maxVal = Math.max(userRads2, ...BAR_DATA.map(b => b.rads2)) * 1.2;
+
+    function yPos(i: number) {
+      return pad.top + i * rowH + (rowH - barH) / 2;
+    }
+
+    // User bar
+    const uW = Math.max((userRads2 / maxVal) * w, 2);
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', String(pad.left));
+    rect.setAttribute('y', String(yPos(0)));
+    rect.setAttribute('width', String(uW));
+    rect.setAttribute('height', String(barH));
+    rect.setAttribute('rx', '3');
+    rect.setAttribute('fill', 'var(--color-brand-blue)');
+    chart.appendChild(rect);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', String(pad.left - 8));
+    label.setAttribute('y', String(yPos(0) + barH / 2 + 4));
+    label.setAttribute('text-anchor', 'end');
+    label.setAttribute('fill', 'var(--color-brand-blue)');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('font-weight', '600');
+    label.setAttribute('font-family', 'Sora, sans-serif');
+    label.textContent = 'Your Value';
+    chart.appendChild(label);
+
+    const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    valText.setAttribute('x', String(pad.left + uW + 6));
+    valText.setAttribute('y', String(yPos(0) + barH / 2 + 4));
+    valText.setAttribute('fill', 'var(--text-secondary)');
+    valText.setAttribute('font-size', '10');
+    valText.setAttribute('font-family', 'Fira Code, monospace');
+    valText.textContent = fmt(userRads2) + ' rad/s²';
+    chart.appendChild(valText);
+
+    // Reference bars
+    BAR_DATA.forEach((b, i) => {
+      const idx = i + 1;
+      const bw = Math.max((b.rads2 / maxVal) * w, 2);
+
+      const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      r.setAttribute('x', String(pad.left));
+      r.setAttribute('y', String(yPos(idx)));
+      r.setAttribute('width', String(bw));
+      r.setAttribute('height', String(barH));
+      r.setAttribute('rx', '3');
+      r.setAttribute('fill', 'var(--border)');
+      chart.appendChild(r);
+
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('x', String(pad.left - 8));
+      t.setAttribute('y', String(yPos(idx) + barH / 2 + 4));
+      t.setAttribute('text-anchor', 'end');
+      t.setAttribute('fill', 'var(--text-secondary)');
+      t.setAttribute('font-size', '10');
+      t.setAttribute('font-family', 'Sora, sans-serif');
+      t.textContent = b.name;
+      chart.appendChild(t);
+
+      const v = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      v.setAttribute('x', String(pad.left + bw + 6));
+      v.setAttribute('y', String(yPos(idx) + barH / 2 + 4));
+      v.setAttribute('fill', 'var(--text-muted)');
+      v.setAttribute('font-size', '9');
+      v.setAttribute('font-family', 'Fira Code, monospace');
+      v.textContent = fmt(b.rads2) + ' rad/s²';
+      chart.appendChild(v);
+    });
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const rads2    = val * TO_RADS2[fromUnit];
+
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    angaccDisp.textContent = `${fmt(val)} ${unitLabel}`;
+    angaccRads.textContent = fmt(rads2);
+    angaccDegs.textContent = fmt(rads2 * 180 / Math.PI);
+
+    drawGauge(rads2);
+    drawChart(rads2);
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = rads2 / TO_RADS2[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // Quick references
+    refsDiv.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.rads2 / TO_RADS2[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refsDiv.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

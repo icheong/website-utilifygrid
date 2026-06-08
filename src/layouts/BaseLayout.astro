@@ -1,5 +1,6 @@
 ---
 import categories from '../data/categories.json';
+import tools from '../data/tools.json';
 import '../styles/global.css';
 
 interface Props {
@@ -10,18 +11,15 @@ interface Props {
   structuredData?: object;
 }
 
-const {
-  title,
-  description,
-  canonicalUrl,
-  ogType = 'website',
-  structuredData,
-} = Astro.props;
+const { title, description, canonicalUrl, ogType = 'website', structuredData } = Astro.props;
 
-const siteUrl  = 'https://utilifygrid.com';
-const siteName = 'UtilifyGrid';
+const siteUrl   = 'https://utilifygrid.com';
+const siteName  = 'UtilifyGrid';
 const adsenseId = 'ca-pub-7704630721055432';
 const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
+
+/* Pass all tool metadata to the client for the favourites dropdown */
+const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, category: t.category }));
 ---
 
 <!DOCTYPE html>
@@ -29,61 +27,29 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Primary SEO -->
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={fullCanonical} />
-
-  <!-- Open Graph -->
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:type" content={ogType} />
   <meta property="og:url" content={fullCanonical} />
   <meta property="og:site_name" content={siteName} />
-
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-
-  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
-
-  <!-- Google AdSense -->
   <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`} crossorigin="anonymous"></script>
-
-  <!-- Structured Data -->
-  {structuredData && (
-    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
-  )}
+  {structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
   <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": siteName,
-    "url": siteUrl,
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": `${siteUrl}/?search={search_term_string}`,
-      "query-input": "required name=search_term_string"
-    }
+    "@context": "https://schema.org", "@type": "WebSite", "name": siteName, "url": siteUrl,
+    "potentialAction": { "@type": "SearchAction", "target": `${siteUrl}/?search={search_term_string}`, "query-input": "required name=search_term_string" }
   })} />
-
   <script is:inline>
-    (function () {
-      try {
-        const saved = localStorage.getItem('ug-theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (saved === 'dark' || (!saved && prefersDark)) {
-          document.documentElement.classList.add('dark');
-        }
-      } catch (_) {}
-    })();
+    (function(){try{const s=localStorage.getItem('ug-theme'),d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');}catch(_){}})();
   </script>
 </head>
 
@@ -92,7 +58,7 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
   <!-- Header -->
   <header class="sticky top-0 z-50 shadow-md" style="background:#1E3A8A; border-bottom:3px solid #F59E0B;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 gap-4">
+      <div class="flex items-center justify-between h-16 gap-3">
 
         <!-- Logo -->
         <a href="/" class="flex items-center gap-2.5 shrink-0" aria-label="UtilifyGrid home">
@@ -107,18 +73,13 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
           </span>
         </a>
 
-        <!-- Desktop nav: mega menu trigger + quick links -->
+        <!-- Desktop nav -->
         <nav class="hidden md:flex items-center gap-1 text-sm font-medium flex-1 justify-center" role="navigation" aria-label="Main navigation">
 
-          <!-- Mega menu wrapper -->
+          <!-- Mega menu -->
           <div class="mega-wrapper" id="mega-wrapper">
-            <button
-              id="mega-trigger"
-              aria-haspopup="true"
-              aria-expanded="false"
-              aria-controls="mega-panel"
-              style="display:flex; align-items:center; gap:0.375rem; padding:0.45rem 0.875rem; border-radius:0.5rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); cursor:pointer; font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:#FFF; transition:all 0.15s; white-space:nowrap;"
-            >
+            <button id="mega-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="mega-panel"
+              style="display:flex; align-items:center; gap:0.375rem; padding:0.45rem 0.875rem; border-radius:0.5rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); cursor:pointer; font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:#FFF; transition:all 0.15s; white-space:nowrap;">
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true" style="flex-shrink:0;">
                 <rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor" opacity="0.9"/>
                 <rect x="9" y="1" width="5" height="5" rx="1" fill="currentColor" opacity="0.7"/>
@@ -131,30 +92,8 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
               </svg>
             </button>
 
-            <!-- Mega panel: all category links in DOM at all times for SEO -->
-            <div
-              id="mega-panel"
-              role="region"
-              aria-label="Tool categories"
-              style="
-                visibility:hidden;
-                opacity:0;
-                pointer-events:none;
-                position:absolute;
-                top:calc(100% + 3px);
-                left:50%;
-                transform:translateX(-50%) translateY(-8px);
-                background:#0F2855;
-                border:1px solid rgba(255,255,255,0.12);
-                border-top:3px solid #F59E0B;
-                border-radius:0 0 0.875rem 0.875rem;
-                padding:1.25rem 1.375rem 1.375rem;
-                min-width:560px;
-                box-shadow:0 20px 60px rgba(0,0,0,0.5);
-                z-index:200;
-                transition:opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
-              "
-            >
+            <div id="mega-panel" role="region" aria-label="Tool categories"
+              style="visibility:hidden; opacity:0; pointer-events:none; position:absolute; top:calc(100% + 3px); left:50%; transform:translateX(-50%) translateY(-8px); background:#0F2855; border:1px solid rgba(255,255,255,0.12); border-top:3px solid #F59E0B; border-radius:0 0 0.875rem 0.875rem; padding:1.25rem 1.375rem 1.375rem; min-width:560px; box-shadow:0 20px 60px rgba(0,0,0,0.5); z-index:200; transition:opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;">
               <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.875rem; padding-bottom:0.75rem; border-bottom:1px solid rgba(255,255,255,0.08);">
                 <span style="font-family:'Sora',sans-serif; font-size:0.68rem; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.1em;">Browse Categories</span>
                 <a href="/" style="font-size:0.75rem; color:#F59E0B; text-decoration:none; font-weight:600; display:flex; align-items:center; gap:0.25rem; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
@@ -162,14 +101,10 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M2 5h6M5 2l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
               </div>
-
               <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.3rem;">
                 {categories.map(cat => (
-                  <a
-                    href={`/category/${cat.slug}`}
-                    class="mega-cat-link"
-                    style="display:flex; align-items:flex-start; gap:0.625rem; padding:0.6rem 0.7rem; border-radius:0.5rem; text-decoration:none; transition:background 0.12s;"
-                  >
+                  <a href={`/category/${cat.slug}`} class="mega-cat-link"
+                    style="display:flex; align-items:flex-start; gap:0.625rem; padding:0.6rem 0.7rem; border-radius:0.5rem; text-decoration:none; transition:background 0.12s;">
                     <span style="font-size:1.25rem; line-height:1; flex-shrink:0; margin-top:0.05rem;">{cat.icon}</span>
                     <div style="min-width:0;">
                       <div style="font-size:0.8rem; font-weight:600; color:#F1F5F9; line-height:1.25; margin-bottom:0.15rem;">{cat.name}</div>
@@ -181,15 +116,13 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
             </div>
           </div>
 
-          <!-- Quick-access category pills (first 4, always visible on desktop) -->
+          <!-- Quick-access pills -->
           <div class="hidden lg:flex items-center" style="gap:0.125rem; margin-left:0.375rem; padding-left:0.75rem; border-left:1px solid rgba(255,255,255,0.15);">
             {categories.slice(0, 4).map(cat => (
-              <a
-                href={`/category/${cat.slug}`}
+              <a href={`/category/${cat.slug}`}
                 style="display:flex; align-items:center; gap:0.35rem; padding:0.4rem 0.7rem; border-radius:0.5rem; font-size:0.82rem; color:#BFDBFE; text-decoration:none; transition:all 0.15s; white-space:nowrap;"
                 onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='#FFF';"
-                onmouseout="this.style.background='transparent';this.style.color='#BFDBFE';"
-              >
+                onmouseout="this.style.background='transparent';this.style.color='#BFDBFE';">
                 <span style="font-size:0.9rem; line-height:1;">{cat.icon}</span>
                 {cat.name}
               </a>
@@ -197,8 +130,69 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
           </div>
         </nav>
 
-        <!-- Right: theme toggle + mobile hamburger -->
-        <div class="flex items-center gap-2">
+        <!-- Right controls -->
+        <div class="flex items-center gap-1.5">
+
+          <!-- ★ Favourites button + dropdown -->
+          <div class="fav-nav-wrapper" id="fav-nav-wrapper">
+            <button id="fav-nav-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="fav-nav-panel"
+              aria-label="My favourites"
+              title="My favourites"
+              style="position:relative; width:2.25rem; height:2.25rem; border-radius:0.5rem; border:1.5px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08); color:#BFDBFE; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; flex-shrink:0;">
+              <!-- Star icon -->
+              <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M8.5 1.5l2.09 4.26 4.71.68-3.4 3.32.8 4.69L8.5 12.1l-4.2 2.35.8-4.69L1.7 6.44l4.71-.68L8.5 1.5z"/>
+              </svg>
+              <!-- Badge -->
+              <span id="fav-badge"
+                style="display:none; position:absolute; top:-5px; right:-5px; min-width:16px; height:16px; background:#F59E0B; color:#0B1120; font-size:0.6rem; font-weight:800; border-radius:999px; align-items:center; justify-content:center; padding:0 3px; line-height:1; font-family:'Inter',sans-serif;">
+                0
+              </span>
+            </button>
+
+            <!-- Favourites dropdown panel -->
+            <div id="fav-nav-panel" role="region" aria-label="Favourite tools"
+              style="visibility:hidden; opacity:0; pointer-events:none; position:absolute; top:calc(100% + 3px); right:0; width:300px; background:var(--fav-panel-bg, #0F2855); border:1px solid rgba(255,255,255,0.12); border-top:3px solid #F59E0B; border-radius:0 0 0.875rem 0.875rem; box-shadow:0 20px 60px rgba(0,0,0,0.5); z-index:200; overflow:hidden; transition:opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s; transform:translateY(-8px);">
+
+              <!-- Panel header -->
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:0.875rem 1rem 0.75rem; border-bottom:1px solid rgba(255,255,255,0.08);">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <svg width="14" height="14" viewBox="0 0 17 17" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" aria-hidden="true">
+                    <path d="M8.5 1.5l2.09 4.26 4.71.68-3.4 3.32.8 4.69L8.5 12.1l-4.2 2.35.8-4.69L1.7 6.44l4.71-.68L8.5 1.5z"/>
+                  </svg>
+                  <span style="font-family:'Sora',sans-serif; font-size:0.78rem; font-weight:700; color:#F1F5F9;">Favourites</span>
+                </div>
+                <a href="/favourites" style="font-size:0.72rem; color:#F59E0B; text-decoration:none; font-weight:600; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+                  View all →
+                </a>
+              </div>
+
+              <!-- Tool list (populated by JS) -->
+              <div id="fav-panel-list" style="max-height:320px; overflow-y:auto; padding:0.5rem 0;">
+                <!-- JS fills this -->
+              </div>
+
+              <!-- Empty state (shown when no favs) -->
+              <div id="fav-panel-empty" style="display:none; padding:2rem 1rem; text-align:center;">
+                <svg width="32" height="32" viewBox="0 0 17 17" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" style="margin:0 auto 0.75rem; display:block;" aria-hidden="true">
+                  <path d="M8.5 1.5l2.09 4.26 4.71.68-3.4 3.32.8 4.69L8.5 12.1l-4.2 2.35.8-4.69L1.7 6.44l4.71-.68L8.5 1.5z"/>
+                </svg>
+                <p style="font-size:0.8rem; color:#64748B; margin:0 0 0.25rem;">No favourites yet</p>
+                <p style="font-size:0.72rem; color:#475569; margin:0;">Click ☆ on any tool to save it here</p>
+              </div>
+
+              <!-- Footer link -->
+              <div id="fav-panel-footer" style="display:none; padding:0.625rem 1rem; border-top:1px solid rgba(255,255,255,0.08);">
+                <a href="/favourites" style="display:flex; align-items:center; justify-content:center; gap:0.375rem; padding:0.5rem; border-radius:0.5rem; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); font-size:0.78rem; font-weight:600; color:#F59E0B; text-decoration:none; transition:background 0.15s;"
+                  onmouseover="this.style.background='rgba(245,158,11,0.2)'" onmouseout="this.style.background='rgba(245,158,11,0.12)'">
+                  Manage all favourites
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Theme toggle -->
           <button id="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle theme">
             <svg id="icon-sun" class="w-5 h-5" style="display:none;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="5"/>
@@ -209,14 +203,9 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
             </svg>
           </button>
 
-          <button
-            id="mobile-menu-btn"
-            style="color:#BFDBFE; padding:0.5rem; border-radius:0.375rem;"
-            class="md:hidden"
-            aria-label="Open menu"
-            aria-expanded="false"
-            aria-controls="mobile-menu"
-          >
+          <!-- Mobile hamburger -->
+          <button id="mobile-menu-btn" style="color:#BFDBFE; padding:0.5rem; border-radius:0.375rem;" class="md:hidden"
+            aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
@@ -224,19 +213,23 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
         </div>
       </div>
 
-      <!-- Mobile nav: full category grid -->
+      <!-- Mobile nav -->
       <div id="mobile-menu" class="hidden md:hidden pb-4 pt-1">
-        <div style="margin-bottom:0.625rem; padding-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08);">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.625rem; padding-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08);">
           <span style="font-size:0.68rem; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.1em;">Categories</span>
+          <a href="/favourites" style="display:flex; align-items:center; gap:0.375rem; font-size:0.78rem; color:#F59E0B; text-decoration:none; font-weight:600;">
+            <svg width="13" height="13" viewBox="0 0 17 17" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" aria-hidden="true">
+              <path d="M8.5 1.5l2.09 4.26 4.71.68-3.4 3.32.8 4.69L8.5 12.1l-4.2 2.35.8-4.69L1.7 6.44l4.71-.68L8.5 1.5z"/>
+            </svg>
+            Favourites
+          </a>
         </div>
         <div class="grid grid-cols-2 gap-0.5">
           {categories.map(cat => (
-            <a
-              href={`/category/${cat.slug}`}
+            <a href={`/category/${cat.slug}`}
               style="display:flex; align-items:center; gap:0.5rem; padding:0.55rem 0.75rem; border-radius:0.5rem; font-size:0.85rem; color:#BFDBFE; text-decoration:none; transition:background 0.12s;"
               onmouseover="this.style.background='rgba(255,255,255,0.08)';"
-              onmouseout="this.style.background='transparent';"
-            >
+              onmouseout="this.style.background='transparent';">
               <span style="font-size:1rem;">{cat.icon}</span>
               <span>{cat.name}</span>
             </a>
@@ -246,31 +239,20 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
     </div>
   </header>
 
-  <!-- Top Leaderboard Ad -->
+  <!-- Leaderboard Ad -->
   <div style="background:var(--ad-bg); border-bottom:1px solid var(--border);">
     <div class="max-w-7xl mx-auto px-4 py-2 flex justify-center">
-      <ins
-        class="adsbygoogle"
-        style="display:block"
-        data-ad-client={adsenseId}
-        data-ad-slot="1234567890"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-        aria-label="Advertisement"
-      ></ins>
+      <ins class="adsbygoogle" style="display:block" data-ad-client={adsenseId}
+        data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true" aria-label="Advertisement"></ins>
     </div>
   </div>
 
-  <!-- Main content -->
-  <main class="flex-1">
-    <slot />
-  </main>
+  <main class="flex-1"><slot /></main>
 
-  <!-- Footer: complete crawlable sitemap of all categories -->
+  <!-- Footer -->
   <footer style="background:#0B1120; color:#94A3B8; margin-top:5rem; border-top:1px solid rgba(255,255,255,0.06);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-10">
-
         <div class="col-span-2 md:col-span-1">
           <div class="flex items-center gap-2 mb-3">
             <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
@@ -279,15 +261,10 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
               <rect y="18" width="14" height="14" rx="3" fill="#3B82F6" opacity="0.9"/>
               <rect x="18" y="18" width="14" height="14" rx="3" fill="#F59E0B" opacity="0.7"/>
             </svg>
-            <span style="font-family:'Sora',sans-serif; font-weight:700; color:#FFF; font-size:1.1rem;">
-              Utilify<span style="color:#F59E0B;">Grid</span>
-            </span>
+            <span style="font-family:'Sora',sans-serif; font-weight:700; color:#FFF; font-size:1.1rem;">Utilify<span style="color:#F59E0B;">Grid</span></span>
           </div>
-          <p style="font-size:0.875rem; line-height:1.6; color:#64748B;">
-            Practical tools for everyday tasks. No accounts, no downloads — just straightforward utilities that work in your browser.
-          </p>
+          <p style="font-size:0.875rem; line-height:1.6; color:#64748B;">Practical tools for everyday tasks. No accounts, no downloads — just straightforward utilities that work in your browser.</p>
         </div>
-
         <div>
           <h3 style="color:#F1F5F9; font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.75rem;">Categories</h3>
           <ul style="font-size:0.875rem; list-style:none; padding:0; margin:0;">
@@ -299,19 +276,17 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
             ))}
           </ul>
         </div>
-
         <div>
           <h3 style="color:#F1F5F9; font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.75rem;">Site</h3>
           <ul style="font-size:0.875rem; list-style:none; padding:0; margin:0;">
-            {[['About','about'],['Contact','contact'],['Privacy Policy','privacy-policy'],['Sitemap','sitemap.xml']].map(([label, href]) => (
+            {[['Favourites','/favourites'],['About','/about'],['Contact','/contact'],['Privacy Policy','/privacy-policy'],['Sitemap','/sitemap.xml']].map(([label, href]) => (
               <li style="margin-bottom:0.5rem;">
-                <a href={`/${href}`} style="color:#94A3B8; text-decoration:none; transition:color 0.15s;"
+                <a href={href} style="color:#94A3B8; text-decoration:none; transition:color 0.15s;"
                   onmouseover="this.style.color='#F59E0B';" onmouseout="this.style.color='#94A3B8';">{label}</a>
               </li>
             ))}
           </ul>
         </div>
-
         <div>
           <h3 style="color:#F1F5F9; font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.75rem;">Popular Tools</h3>
           <ul style="font-size:0.875rem; list-style:none; padding:0; margin:0;">
@@ -323,103 +298,184 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
             ))}
           </ul>
         </div>
-
       </div>
-
       <div style="border-top:1px solid #1E293B; padding-top:1.5rem; font-size:0.8rem; color:#475569; text-align:center;">
         © {new Date().getFullYear()} UtilifyGrid. Built for the web, by people who use the web.
       </div>
     </div>
   </footer>
 
-  <style>
-    /* Mega wrapper positioning context */
-    .mega-wrapper { position: relative; }
+  <!-- Favourites utility (must load before page scripts) -->
+  <script src="/favourites.js" is:inline></script>
+  <!-- Pass all tool metadata to client -->
+  <script define:vars={{ toolsMeta }}>
+    window.__UG_TOOLS__ = toolsMeta;
+  </script>
 
-    /* Panel open state */
-    #mega-panel.is-open {
+  <style>
+    .mega-wrapper, .fav-nav-wrapper { position: relative; }
+
+    #mega-panel.is-open, #fav-nav-panel.is-open {
       visibility: visible !important;
       opacity: 1 !important;
       pointer-events: auto !important;
-      transform: translateX(-50%) translateY(0) !important;
+      transform: translateY(0) !important;
       transition: opacity 0.15s ease, transform 0.15s ease !important;
     }
+    #fav-nav-panel.is-open { transform: translateY(0) !important; }
 
-    /* Category link hover in panel */
-    .mega-cat-link:hover {
-      background: rgba(255,255,255,0.07) !important;
+    .mega-cat-link:hover { background: rgba(255,255,255,0.07) !important; }
+    .mega-cat-link:hover div div:first-child { color: #F59E0B !important; }
+
+    #mega-trigger[aria-expanded="true"] { background: rgba(255,255,255,0.18) !important; }
+    #mega-trigger[aria-expanded="true"] #mega-chevron { transform: rotate(180deg); }
+    #mega-chevron { transition: transform 0.2s; }
+
+    #fav-nav-trigger:hover,
+    #fav-nav-trigger[aria-expanded="true"] {
+      background: rgba(255,255,255,0.18) !important;
+      color: #FFF !important;
+      border-color: rgba(255,255,255,0.35) !important;
     }
-    .mega-cat-link:hover .mega-cat-name {
+    #fav-nav-trigger[aria-expanded="true"] {
       color: #F59E0B !important;
     }
 
-    /* Trigger open state */
-    #mega-trigger[aria-expanded="true"] {
-      background: rgba(255,255,255,0.18) !important;
+    /* Fav panel list items */
+    .fav-panel-item {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      transition: background 0.12s;
     }
-    #mega-trigger[aria-expanded="true"] #mega-chevron {
-      transform: rotate(180deg);
-    }
+    .fav-panel-item:hover { background: rgba(255,255,255,0.06); }
+    .fav-panel-item:hover .fav-panel-name { color: #F59E0B !important; }
+
+    /* Fav panel scrollbar */
+    #fav-panel-list::-webkit-scrollbar { width: 4px; }
+    #fav-panel-list::-webkit-scrollbar-track { background: transparent; }
+    #fav-panel-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
   </style>
 
   <script>
-    // Mobile menu
+    /* ── Mobile menu ── */
     const mobileBtn  = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     mobileBtn?.addEventListener('click', () => {
-      const isOpen = !mobileMenu?.classList.contains('hidden');
+      const open = !mobileMenu?.classList.contains('hidden');
       mobileMenu?.classList.toggle('hidden');
-      mobileBtn?.setAttribute('aria-expanded', String(!isOpen));
+      mobileBtn?.setAttribute('aria-expanded', String(!open));
     });
 
-    // Mega menu
-    const trigger = document.getElementById('mega-trigger') as HTMLButtonElement | null;
-    const panel   = document.getElementById('mega-panel')   as HTMLElement | null;
-    const wrapper = document.getElementById('mega-wrapper') as HTMLElement | null;
-    let closeTimer: ReturnType<typeof setTimeout> | null = null;
+    /* ── Mega menu ── */
+    const megaTrigger = document.getElementById('mega-trigger') as HTMLButtonElement | null;
+    const megaPanel   = document.getElementById('mega-panel')   as HTMLElement | null;
+    const megaWrapper = document.getElementById('mega-wrapper') as HTMLElement | null;
+    let megaClose: ReturnType<typeof setTimeout> | null = null;
 
-    function openMega() {
-      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
-      panel?.classList.add('is-open');
-      trigger?.setAttribute('aria-expanded', 'true');
-    }
-    function closeMega(delay = 0) {
-      if (delay) {
-        closeTimer = setTimeout(() => {
-          panel?.classList.remove('is-open');
-          trigger?.setAttribute('aria-expanded', 'false');
-        }, delay);
-      } else {
-        panel?.classList.remove('is-open');
-        trigger?.setAttribute('aria-expanded', 'false');
+    function openMega()        { if (megaClose) { clearTimeout(megaClose); megaClose = null; } megaPanel?.classList.add('is-open'); megaTrigger?.setAttribute('aria-expanded','true'); }
+    function closeMega(d=0)    { if (d) { megaClose = setTimeout(() => { megaPanel?.classList.remove('is-open'); megaTrigger?.setAttribute('aria-expanded','false'); }, d); } else { megaPanel?.classList.remove('is-open'); megaTrigger?.setAttribute('aria-expanded','false'); } }
+
+    megaTrigger?.addEventListener('click', e => { e.stopPropagation(); megaPanel?.classList.contains('is-open') ? closeMega() : openMega(); });
+    megaWrapper?.addEventListener('mouseenter', () => openMega());
+    megaWrapper?.addEventListener('mouseleave', () => closeMega(120));
+    document.addEventListener('keydown',  e => { if (e.key === 'Escape') closeMega(); });
+    document.addEventListener('click',    e => { if (megaWrapper && !megaWrapper.contains(e.target as Node)) closeMega(); });
+
+    /* ── Favourites dropdown ── */
+    const favTrigger = document.getElementById('fav-nav-trigger') as HTMLButtonElement | null;
+    const favPanel   = document.getElementById('fav-nav-panel')   as HTMLElement | null;
+    const favWrapper = document.getElementById('fav-nav-wrapper') as HTMLElement | null;
+    let favClose: ReturnType<typeof setTimeout> | null = null;
+
+    function openFav()      { if (favClose) { clearTimeout(favClose); favClose = null; } renderFavPanel(); favPanel?.classList.add('is-open'); favTrigger?.setAttribute('aria-expanded','true'); }
+    function closeFav(d=0)  { if (d) { favClose = setTimeout(() => { favPanel?.classList.remove('is-open'); favTrigger?.setAttribute('aria-expanded','false'); }, d); } else { favPanel?.classList.remove('is-open'); favTrigger?.setAttribute('aria-expanded','false'); } }
+
+    favTrigger?.addEventListener('click', e => { e.stopPropagation(); favPanel?.classList.contains('is-open') ? closeFav() : openFav(); });
+    favWrapper?.addEventListener('mouseenter', () => openFav());
+    favWrapper?.addEventListener('mouseleave', () => closeFav(150));
+    document.addEventListener('keydown',  e => { if (e.key === 'Escape') closeFav(); });
+    document.addEventListener('click',    e => { if (favWrapper && !favWrapper.contains(e.target as Node)) closeFav(); });
+
+    /* Re-render panel when favs change */
+    window.addEventListener('ug:favs-changed', () => { if (favPanel?.classList.contains('is-open')) renderFavPanel(); });
+
+    function renderFavPanel() {
+      const list    = document.getElementById('fav-panel-list')!;
+      const empty   = document.getElementById('fav-panel-empty')!;
+      const footer  = document.getElementById('fav-panel-footer')!;
+      const favs    = (window as any).UGFavs?.all() ?? [];
+      const allTools: {slug:string;name:string;icon:string;category:string}[] = (window as any).__UG_TOOLS__ ?? [];
+
+      if (favs.length === 0) {
+        list.innerHTML = '';
+        empty.style.display  = 'block';
+        footer.style.display = 'none';
+        return;
       }
+      empty.style.display  = 'none';
+      footer.style.display = 'block';
+
+      const matched = favs
+        .map((slug: string) => allTools.find(t => t.slug === slug))
+        .filter(Boolean);
+
+      // Build DOM nodes instead of innerHTML so addEventListener works reliably
+      list.innerHTML = '';
+      matched.forEach((t: {slug:string;name:string;icon:string;category:string}) => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex; align-items:center; gap:0.625rem; padding:0.45rem 1rem; transition:background 0.12s;';
+        row.onmouseenter = () => row.style.background = 'rgba(255,255,255,0.06)';
+        row.onmouseleave = () => row.style.background = 'transparent';
+
+        // Link takes up all space except the remove button
+        const link = document.createElement('a');
+        link.href = `/tools/${t.slug}`;
+        link.style.cssText = 'display:flex; align-items:center; gap:0.625rem; text-decoration:none; flex:1; min-width:0; overflow:hidden;';
+
+        const icon = document.createElement('span');
+        icon.style.cssText = 'font-size:1.2rem; flex-shrink:0; line-height:1;';
+        icon.textContent = t.icon;
+
+        const name = document.createElement('span');
+        name.className = 'fav-panel-name';
+        name.style.cssText = 'font-size:0.82rem; font-weight:500; color:#F1F5F9; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;';
+        name.textContent = t.name;
+        link.onmouseenter = () => name.style.color = '#F59E0B';
+        link.onmouseleave = () => name.style.color = '#F1F5F9';
+
+        link.appendChild(icon);
+        link.appendChild(name);
+
+        // Remove button — flex-shrink:0 keeps it from collapsing
+        const removeBtn = document.createElement('button');
+        removeBtn.style.cssText = 'flex-shrink:0; width:22px; height:22px; border-radius:50%; border:none; background:rgba(255,255,255,0.06); color:#64748B; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.12s, color 0.12s;';
+        removeBtn.setAttribute('aria-label', `Remove ${t.name} from favourites`);
+        removeBtn.title = 'Remove';
+        removeBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 2l6 6M8 2L2 8"/></svg>`;
+        removeBtn.onmouseenter = () => { removeBtn.style.background = 'rgba(239,68,68,0.2)'; removeBtn.style.color = '#EF4444'; };
+        removeBtn.onmouseleave = () => { removeBtn.style.background = 'rgba(255,255,255,0.06)'; removeBtn.style.color = '#64748B'; };
+        removeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          (window as any).UGFavs?.remove(t.slug);
+          renderFavPanel();
+        });
+
+        row.appendChild(link);
+        row.appendChild(removeBtn);
+        list.appendChild(row);
+      });
     }
 
-    // Click toggle
-    trigger?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      panel?.classList.contains('is-open') ? closeMega() : openMega();
-    });
-
-    // Hover intent with small delay on leave so cursor can reach panel
-    wrapper?.addEventListener('mouseenter', () => openMega());
-    wrapper?.addEventListener('mouseleave', () => closeMega(120));
-
-    // Escape key
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMega(); });
-
-    // Click outside
-    document.addEventListener('click', (e) => {
-      if (wrapper && !wrapper.contains(e.target as Node)) closeMega();
-    });
-
-    // Theme toggle
+    /* ── Theme toggle ── */
     const html      = document.documentElement;
     const toggleBtn = document.getElementById('theme-toggle')!;
     const iconSun   = document.getElementById('icon-sun')   as HTMLElement;
     const iconMoon  = document.getElementById('icon-moon')  as HTMLElement;
-
-    function isDark() { return html.classList.contains('dark'); }
+    function isDark()          { return html.classList.contains('dark'); }
     function applyTheme(dark: boolean) {
       html.classList.toggle('dark', dark);
       iconSun.style.display  = dark ? 'block' : 'none';
@@ -432,7 +488,7 @@ const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
       try { localStorage.setItem('ug-theme', going ? 'dark' : 'light'); } catch (_) {}
     });
 
-    // AdSense
+    /* ── AdSense ── */
     (window.adsbygoogle = window.adsbygoogle || []).push({});
   </script>
 

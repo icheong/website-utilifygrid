@@ -1,0 +1,250 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'force-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Force Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a force value and select its unit — all other units update instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="force-input">Force</label>
+        <input id="force-input" type="number" value="100" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="force-unit">Unit</label>
+        <select id="force-unit" class="select-themed" style="min-width:10rem;">
+          <option value="n" selected>Newton (N)</option>
+          <option value="kn">Kilonewton (kN)</option>
+          <option value="mn">Meganewton (MN)</option>
+          <option value="dyn">Dyne (dyn)</option>
+          <option value="lbf">Pound-force (lbf)</option>
+          <option value="ozf">Ounce-force (ozf)</option>
+          <option value="kgf">Kilogram-force (kgf)</option>
+          <option value="gf">Gram-force (gf)</option>
+          <option value="pdl">Poundal (pdl)</option>
+          <option value="kip">Kip</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Force Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric force value</strong> and select its <strong>unit</strong> from the dropdown. All other force units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 10 standard force units across SI, CGS, and imperial systems: <strong>N</strong>, <strong>kN</strong>, <strong>MN</strong>, <strong>dyn</strong>, <strong>lbf</strong>, <strong>ozf</strong>, <strong>kgf</strong>, <strong>gf</strong>, <strong>pdl</strong>, and <strong>kip</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common real-world force values are shown below the results for quick comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How force conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions use <strong>newtons (N)</strong> as the base unit. Each unit has a fixed factor relative to one newton:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 kN      = 1,000 N
+1 MN      = 1,000,000 N
+1 dyn     = 0.00001 N
+1 lbf     = 4.448221615 N
+1 ozf     = 0.27801385 N
+1 kgf     = 9.80665 N        (exact, standard gravity)
+1 gf      = 0.00980665 N
+1 pdl     = 0.138254954 N
+1 kip     = 4,448.221615 N
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      The kilogram-force (kgf) is defined as the force exerted by one kilogram under standard gravity (9.80665 m/s²), which is why it is exact. The pound-force (lbf) is similarly derived from one pound-mass under standard gravity. All calculations run in your browser with full double-precision floating-point accuracy.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the difference between a newton and a kilogram-force?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A newton (N) is the SI unit of force: the force needed to accelerate 1 kg at 1 m/s². A kilogram-force (kgf) is the force of gravity on 1 kg at standard gravity: 1 kgf = 9.80665 N. They measure the same thing but use different reference frames." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a dyne?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A dyne (dyn) is the CGS unit of force: the force needed to accelerate 1 gram at 1 cm/s². It equals 0.00001 newtons. Dynes are used in physics and engineering where very small forces are measured." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a kip?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A kip is a unit of force equal to 1,000 pound-force (lbf), or approximately 4,448 newtons. It is commonly used in structural engineering in the United States to express building loads and structural member capacities." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is pound-force?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Pound-force (lbf) is the force exerted by gravity on one pound-mass at standard gravity (9.80665 m/s²). It equals about 4.448 newtons. It is the most commonly used force unit in US engineering." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the average human bite force?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The average human bite force is about 162 newtons (36 lbf) for incisors and 720 newns (162 lbf) for molars. Some studies record up to 700 N for a strong bite. For comparison, a lion's bite force is about 4,450 N." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is the difference between a newton and a kilogram-force?', a: 'A newton (N) is the SI unit of force: the force needed to accelerate 1 kg at 1 m/s². A kilogram-force (kgf) is the force of gravity on 1 kg at standard gravity: 1 kgf = 9.80665 N. They measure the same thing but use different reference frames.' },
+        { q: 'What is a dyne?', a: 'A dyne (dyn) is the CGS unit of force: the force needed to accelerate 1 gram at 1 cm/s². It equals 0.00001 newtons. Dynes are used in physics and engineering where very small forces are measured.' },
+        { q: 'What is a kip?', a: 'A kip is a unit of force equal to 1,000 pound-force (lbf), or approximately 4,448 newtons. It is commonly used in structural engineering in the United States to express building loads and structural member capacities.' },
+        { q: 'What is pound-force?', a: 'Pound-force (lbf) is the force exerted by gravity on one pound-mass at standard gravity (9.80665 m/s²). It equals about 4.448 newtons. It is the most commonly used force unit in US engineering.' },
+        { q: 'What is the average human bite force?', a: 'The average human bite force is about 162 newtons (36 lbf) for incisors and 720 newtons (162 lbf) for molars. Some studies record up to 700 N for a strong bite. For comparison, a lion\'s bite force is about 4,450 N.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to newtons ───────────────────────────────
+  const TO_N = {
+    n:   1,
+    kn:  1_000,
+    mn:  1_000_000,
+    dyn: 0.00001,
+    lbf: 4.4482216152605,
+    ozf: 0.27801385095378125,
+    kgf: 9.80665,
+    gf:  0.00980665,
+    pdl: 0.138254954376,
+    kip: 4448.2216152605,
+  };
+
+  const UNITS = [
+    { id: 'n',   label: 'N',    name: 'Newton' },
+    { id: 'kn',  label: 'kN',   name: 'Kilonewton' },
+    { id: 'mn',  label: 'MN',   name: 'Meganewton' },
+    { id: 'dyn', label: 'dyn',  name: 'Dyne' },
+    { id: 'lbf', label: 'lbf',  name: 'Pound-force' },
+    { id: 'ozf', label: 'ozf',  name: 'Ounce-force' },
+    { id: 'kgf', label: 'kgf',  name: 'Kilogram-force' },
+    { id: 'gf',  label: 'gf',   name: 'Gram-force' },
+    { id: 'pdl', label: 'pdl',  name: 'Poundal' },
+    { id: 'kip', label: 'kip',  name: 'Kip' },
+  ];
+
+  // ── Quick-reference objects (stored in newtons) ─────────────────
+  const REFS = [
+    { name: 'Apple (weight)',            n: 1.0 },
+    { name: 'Human Bite (incisors)',     n: 162 },
+    { name: 'Human Bite (molars)',       n: 720 },
+    { name: 'Boxing Punch (pro)',        n: 5_000 },
+    { name: 'Car Tire Tension',          n: 2_200 },
+    { name: 'Average Person (70 kg)',    n: 686.5 },
+    { name: 'Lion Bite Force',           n: 4_450 },
+    { name: 'Rocket (SpaceX Merlin)',    n: 845_000 },
+  ];
+
+  const input  = document.getElementById('force-input') as HTMLInputElement;
+  const select = document.getElementById('force-unit') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const refs   = document.getElementById('refs')!;
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e12) return value.toExponential(4);
+    if (abs >= 1e9)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1e6)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const nVal     = val * TO_N[fromUnit];
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = nVal / TO_N[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    refs.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.n / TO_N[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refs.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

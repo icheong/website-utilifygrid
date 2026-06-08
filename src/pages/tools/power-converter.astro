@@ -1,0 +1,266 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'power-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Power Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a power value and select its unit — all other units update instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="pwr-input">Power</label>
+        <input id="pwr-input" type="number" value="1000" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="pwr-unit">Unit</label>
+        <select id="pwr-unit" class="select-themed" style="min-width:10rem;">
+          <option value="w" selected>Watt (W)</option>
+          <option value="mw">Milliwatt (mW)</option>
+          <option value="kw">Kilowatt (kW)</option>
+          <option value="mwatt">Megawatt (MW)</option>
+          <option value="gw">Gigawatt (GW)</option>
+          <option value="hp-mech">Horsepower (mech)</option>
+          <option value="hp-metric">Horsepower (metric)</option>
+          <option value="hp-elec">Horsepower (elec)</option>
+          <option value="btu-hr">BTU/hr</option>
+          <option value="btu-min">BTU/min</option>
+          <option value="ton-ref">Ton of Refrigeration</option>
+          <option value="kcal-hr">kcal/hr</option>
+          <option value="ftlb-s">ft·lb/s</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Power Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric power value</strong> and select its <strong>unit</strong> from the dropdown. All other power units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 13 standard power units across SI, imperial, and thermal systems: <strong>W</strong>, <strong>mW</strong>, <strong>kW</strong>, <strong>MW</strong>, <strong>GW</strong>, <strong>hp</strong> (3 types), <strong>BTU/hr</strong>, <strong>BTU/min</strong>, <strong>ton of refrigeration</strong>, <strong>kcal/hr</strong>, and <strong>ft·lb/s</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common reference powers are shown below the results for quick comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How power conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions use <strong>watts (W)</strong> as the base unit. Each unit has a fixed factor relative to one watt:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 mW       = 0.001 W
+1 kW       = 1,000 W
+1 MW       = 1,000,000 W
+1 GW       = 1,000,000,000 W
+1 hp (mech)= 745.7 W
+1 hp (met) = 735.499 W
+1 hp (elec)= 746 W          (exact)
+1 BTU/hr   = 0.293071 W
+1 BTU/min  = 17.58426 W
+1 ton ref  = 3,516.853 W
+1 kcal/hr  = 1.163 W
+1 ft·lb/s  = 1.35582 W
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Horsepower exists in three common variants: <strong>mechanical/imperial</strong> (745.7 W, used in US automotive), <strong>metric</strong> (735.5 W, used in Europe), and <strong>electrical</strong> (746 W exactly, used for electric motors). The ton of refrigeration is the power needed to freeze one ton of water in 24 hours (12,000 BTU/hr). All calculations run in your browser.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the difference between mechanical and metric horsepower?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Mechanical horsepower (hp) = 745.7 W, used in the US and UK. Metric horsepower (PS or CV) = 735.5 W, used in Europe. The difference is about 1.4%. A car rated at 100 hp (mech) would be 101.4 PS (metric)." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a ton of refrigeration?",
+          "acceptedAnswer": { "@type": "Answer", "text": "One ton of refrigeration equals 12,000 BTU/hr or about 3,517 watts. It represents the cooling power needed to freeze one short ton (2,000 lb) of water at 0°C in 24 hours. Air conditioners are commonly rated in tons." }
+        },
+        {
+          "@type": "Question",
+          "name": "How many watts is a horsepower?",
+          "acceptedAnswer": { "@type": "Answer", "text": "One mechanical horsepower equals 745.7 watts. One metric horsepower equals 735.5 watts. One electrical horsepower equals 746 watts exactly. The value depends on which definition of horsepower you use." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between power and energy?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Power is the rate of energy transfer, measured in watts (W). Energy is the total amount of work done, measured in joules (J) or watt-hours (Wh). A 100W bulb running for 1 hour uses 100 Wh of energy." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a BTU per hour?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A BTU/hr is a unit of power used in HVAC and heating. One BTU/hr equals about 0.293 watts. Furnaces and air conditioners are often rated in BTU/hr. 12,000 BTU/hr equals one ton of refrigeration." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is the difference between mechanical and metric horsepower?', a: 'Mechanical horsepower (hp) = 745.7 W, used in the US and UK. Metric horsepower (PS or CV) = 735.5 W, used in Europe. The difference is about 1.4%. A car rated at 100 hp (mech) would be 101.4 PS (metric).' },
+        { q: 'What is a ton of refrigeration?', a: 'One ton of refrigeration equals 12,000 BTU/hr or about 3,517 watts. It represents the cooling power needed to freeze one short ton (2,000 lb) of water at 0°C in 24 hours. Air conditioners are commonly rated in tons.' },
+        { q: 'How many watts is a horsepower?', a: 'One mechanical horsepower equals 745.7 watts. One metric horsepower equals 735.5 watts. One electrical horsepower equals 746 watts exactly. The value depends on which definition of horsepower you use.' },
+        { q: 'What is the difference between power and energy?', a: 'Power is the rate of energy transfer, measured in watts (W). Energy is the total amount of work done, measured in joules (J) or watt-hours (Wh). A 100W bulb running for 1 hour uses 100 Wh of energy.' },
+        { q: 'What is a BTU per hour?', a: 'A BTU/hr is a unit of power used in HVAC and heating. One BTU/hr equals about 0.293 watts. Furnaces and air conditioners are often rated in BTU/hr. 12,000 BTU/hr equals one ton of refrigeration.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to watts ─────────────────────────────────
+  const TO_W = {
+    w:        1,
+    mw:       0.001,
+    kw:       1_000,
+    mwatt:    1_000_000,
+    gw:       1_000_000_000,
+    'hp-mech': 745.7,
+    'hp-metric': 735.49875,
+    'hp-elec': 746,
+    'btu-hr': 0.29307107,
+    'btu-min': 17.5842642,
+    'ton-ref': 3516.85284,
+    'kcal-hr': 1.163,
+    'ftlb-s': 1.35581795,
+  };
+
+  const UNITS = [
+    { id: 'w',         label: 'W',     name: 'Watt' },
+    { id: 'mw',        label: 'mW',    name: 'Milliwatt' },
+    { id: 'kw',        label: 'kW',    name: 'Kilowatt' },
+    { id: 'mwatt',     label: 'MW',    name: 'Megawatt' },
+    { id: 'gw',        label: 'GW',    name: 'Gigawatt' },
+    { id: 'hp-mech',   label: 'hp',    name: 'Horsepower (mech)' },
+    { id: 'hp-metric', label: 'PS',    name: 'Horsepower (metric)' },
+    { id: 'hp-elec',   label: 'hp(e)', name: 'Horsepower (elec)' },
+    { id: 'btu-hr',    label: 'BTU/h', name: 'BTU per Hour' },
+    { id: 'btu-min',   label: 'BTU/m', name: 'BTU per Minute' },
+    { id: 'ton-ref',   label: 'TR',    name: 'Ton of Refrigeration' },
+    { id: 'kcal-hr',   label: 'kcal/h',name: 'Kilocalorie per Hour' },
+    { id: 'ftlb-s',    label: 'ft·lb/s', name: 'Foot-pound per Second' },
+  ];
+
+  // ── Quick-reference objects (stored in watts) ───────────────────
+  const REFS = [
+    { name: 'Smartphone Charger',     w: 5 },
+    { name: 'LED Bulb',               w: 10 },
+    { name: 'Laptop Charger',         w: 65 },
+    { name: 'Desktop PC',             w: 300 },
+    { name: 'Microwave Oven',         w: 1_000 },
+    { name: 'Vacuum Cleaner',         w: 1_400 },
+    { name: 'Hair Dryer',             w: 1_875 },
+    { name: 'Electric Kettle',        w: 2_200 },
+    { name: 'Space Heater',           w: 1_500 },
+    { name: 'Window AC Unit',         w: 1_200 },
+    { name: 'Car Engine (150 hp)',    w: 111_855 },
+    { name: 'Locomotive (4,400 hp)',  w: 3_280_680 },
+  ];
+
+  const input  = document.getElementById('pwr-input') as HTMLInputElement;
+  const select = document.getElementById('pwr-unit') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const refs   = document.getElementById('refs')!;
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e12) return value.toExponential(4);
+    if (abs >= 1e9)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1e6)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const wVal     = val * TO_W[fromUnit];
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = wVal / TO_W[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    refs.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.w / TO_W[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refs.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

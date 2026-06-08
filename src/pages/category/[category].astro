@@ -55,25 +55,36 @@ const structuredData = {
       <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">{categoryTools.length} tool{categoryTools.length !== 1 ? 's' : ''} available</p>
     </div>
 
-    <!-- Tools grid — using tool-card-themed for dark-mode compatibility -->
+    <!-- Tools grid -->
     {categoryTools.length > 0 ? (
       <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:1.125rem;">
         {categoryTools.map(tool => (
-          <a
-            href={`/tools/${tool.slug}`}
-            class="tool-card-themed"
-            style="display:flex; align-items:flex-start; gap:1rem; padding:1.125rem 1.25rem; text-decoration:none;"
-          >
-            <span style="font-size:2rem; flex-shrink:0; line-height:1;">{tool.icon}</span>
-            <div>
-              <div style="font-weight:600; color:var(--text-primary); font-size:0.925rem; line-height:1.3; margin-bottom:0.3rem;">
-                {tool.name}
+          <div style="position:relative;">
+            <a
+              href={`/tools/${tool.slug}`}
+              class="tool-card-themed"
+              style="display:flex; align-items:flex-start; gap:1rem; padding:1.125rem 1.25rem; text-decoration:none; padding-right:2.75rem;"
+            >
+              <span style="font-size:2rem; flex-shrink:0; line-height:1;">{tool.icon}</span>
+              <div>
+                <div style="font-weight:600; color:var(--text-primary); font-size:0.925rem; line-height:1.3; margin-bottom:0.3rem;">{tool.name}</div>
+                <p style="font-size:0.8rem; color:var(--text-secondary); margin:0; line-height:1.5;">{tool.shortDescription}</p>
               </div>
-              <p style="font-size:0.8rem; color:var(--text-secondary); margin:0; line-height:1.5;">
-                {tool.shortDescription}
-              </p>
-            </div>
-          </a>
+            </a>
+            <!-- Star button — top-right of card -->
+            <button
+              class="card-fav-btn cat-star-btn"
+              data-fav-slug={tool.slug}
+              data-tool-name={tool.name}
+              aria-pressed="false"
+              aria-label={`Save ${tool.name} to favourites`}
+              title="Save to favourites"
+            >
+              <svg width="14" height="14" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 1.5l2.22 4.52 4.99.72-3.61 3.52.85 4.97L9 12.77l-4.45 2.46.85-4.97L1.79 6.74l4.99-.72L9 1.5z"/>
+              </svg>
+            </button>
+          </div>
         ))}
       </div>
     ) : (
@@ -84,7 +95,7 @@ const structuredData = {
       </div>
     )}
 
-    <!-- Other categories — tool-card-themed -->
+    <!-- Other categories -->
     <div style="margin-top:3.5rem; padding-top:2rem; border-top:1px solid var(--border);">
       <h2 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Browse Other Categories</h2>
       <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px,1fr)); gap:0.75rem;">
@@ -105,3 +116,64 @@ const structuredData = {
 
   </div>
 </BaseLayout>
+
+<style>
+  /* Star button on category cards */
+  .cat-star-btn {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    width: 28px;
+    height: 28px;
+    border-radius: 0.4rem;
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s, background 0.15s, transform 0.15s;
+  }
+  div:hover > .cat-star-btn,
+  .cat-star-btn.fav-active {
+    opacity: 1;
+  }
+  .cat-star-btn:hover {
+    color: #F59E0B;
+    background: rgba(245,158,11,0.08);
+    border-color: rgba(245,158,11,0.4);
+    transform: scale(1.1);
+  }
+  .cat-star-btn.fav-active {
+    color: #F59E0B;
+    background: rgba(245,158,11,0.1);
+    border-color: rgba(245,158,11,0.4);
+  }
+  .cat-star-btn.fav-active svg { fill: #F59E0B; }
+
+  @keyframes favPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.35); }
+    70%  { transform: scale(0.9); }
+    100% { transform: scale(1); }
+  }
+  .fav-pop { animation: favPop 0.35s ease; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.cat-star-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const favs = (window as any).UGFavs;
+      if (!favs) return;
+      favs.toggle(btn.dataset.favSlug!);
+      btn.classList.remove('fav-pop');
+      void (btn as HTMLElement).offsetWidth;
+      btn.classList.add('fav-pop');
+      btn.addEventListener('animationend', () => btn.classList.remove('fav-pop'), { once: true });
+    });
+  });
+</script>

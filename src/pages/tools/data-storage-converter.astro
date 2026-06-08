@@ -1,0 +1,270 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'data-storage-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Data Storage Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a data size and select its unit — all other units update instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="data-input">Data Size</label>
+        <input id="data-input" type="number" value="1" min="0" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="data-unit">Unit</label>
+        <select id="data-unit" class="select-themed" style="min-width:10rem;">
+          <option value="bit">Bit</option>
+          <option value="kb">Kilobit (kb)</option>
+          <option value="mb">Megabit (Mb)</option>
+          <option value="gb">Gigabit (Gb)</option>
+          <option value="tb">Terabit (Tb)</option>
+          <option value="b" selected>Byte (B)</option>
+          <option value="kb2">Kilobyte (KB)</option>
+          <option value="mb2">Megabyte (MB)</option>
+          <option value="gb2">Gigabyte (GB)</option>
+          <option value="tb2">Terabyte (TB)</option>
+          <option value="pb2">Petabyte (PB)</option>
+          <option value="kib">Kibibyte (KiB)</option>
+          <option value="mib">Mebibyte (MiB)</option>
+          <option value="gib">Gibibyte (GiB)</option>
+          <option value="tib">Tebibyte (TiB)</option>
+          <option value="pib">Pebibyte (PiB)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Data Storage Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric data size</strong> and select its <strong>unit</strong> from the dropdown. All other storage units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 16 data storage units: <strong>bits</strong>, <strong>bytes</strong>, and their kilo/mega/giga/tera/peta prefixes in both <strong>decimal (SI)</strong> and <strong>binary (IEC)</strong> systems.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common file sizes are shown below the results for quick comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How data storage conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      There are two different systems for data storage prefixes. <strong>Decimal (SI)</strong> uses powers of 1000. <strong>Binary (IEC)</strong> uses powers of 1024. All conversions use <strong>bytes</strong> as the base unit:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">── Decimal (SI) ──────────────    ── Binary (IEC) ──────────────
+1 KB  = 1,000 bytes              1 KiB = 1,024 bytes
+1 MB  = 1,000,000 bytes          1 MiB = 1,048,576 bytes
+1 GB  = 10⁹ bytes               1 GiB = 1,073,741,824 bytes
+1 TB  = 10¹² bytes              1 TiB = 1,099,511,627,776 bytes
+1 PB  = 10¹⁵ bytes              1 PiB = 1,125,899,906,842,624 bytes
+
+1 bit = 1/8 byte
+1 kb  = 125 bytes     (1000 ÷ 8)
+1 Mb  = 125,000 bytes (10⁶ ÷ 8)
+1 Gb  = 125,000,000 bytes (10⁹ ÷ 8)
+1 Tb  = 125,000,000,000 bytes (10¹² ÷ 8)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Storage manufacturers use decimal (SI) units, so a "1 TB" hard drive holds 10¹² bytes. Operating systems use binary units, so they report that same drive as ~931 GiB. This is why a 1 TB drive shows as about 931 GB in your OS.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why does my 1 TB hard drive show as 931 GB?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Manufacturers use decimal (SI) prefixes where 1 TB = 10¹² bytes. Your OS uses binary (IEC) where 1 GiB = 2³⁰ bytes = 1,073,741,824 bytes. So 10¹² ÷ 1,073,741,824 ≈ 931 GiB. The capacity is the same; only the labeling differs." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between a bit and a byte?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A bit is the smallest unit of data: a single 0 or 1. A byte is 8 bits. Network speeds are measured in bits per second (Mbps), while file sizes are measured in bytes (KB, MB, GB). To convert, divide bits by 8 to get bytes." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a kibibyte?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A kibibyte (KiB) is a binary unit equal to 1,024 bytes (2¹⁰). It was created by the IEC to distinguish from the kilobyte (KB) which is exactly 1,000 bytes. KiB, MiB, GiB, TiB, and PiB are the binary equivalents of KB, MB, GB, TB, and PB." }
+        },
+        {
+          "@type": "Question",
+          "name": "How many bits are in a byte?",
+          "acceptedAnswer": { "@type": "Answer", "text": "There are exactly 8 bits in one byte. This has been the standard since the 1960s. A byte can represent values from 0 to 255, which is enough to encode a single ASCII character." }
+        },
+        {
+          "@type": "Question",
+          "name": "How much storage does a 2-hour movie need?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A compressed 1080p movie is typically 2–5 GB. A 4K movie is 15–50 GB. A Blu-ray disc holds 25–50 GB. The exact size depends on the codec, bitrate, and audio quality." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Why does my 1 TB hard drive show as 931 GB?', a: 'Manufacturers use decimal (SI) prefixes where 1 TB = 10¹² bytes. Your OS uses binary (IEC) where 1 GiB = 2³⁰ bytes = 1,073,741,824 bytes. So 10¹² ÷ 1,073,741,824 ≈ 931 GiB. The capacity is the same; only the labeling differs.' },
+        { q: 'What is the difference between a bit and a byte?', a: 'A bit is the smallest unit of data: a single 0 or 1. A byte is 8 bits. Network speeds are measured in bits per second (Mbps), while file sizes are measured in bytes (KB, MB, GB). To convert, divide bits by 8 to get bytes.' },
+        { q: 'What is a kibibyte?', a: 'A kibibyte (KiB) is a binary unit equal to 1,024 bytes (2¹⁰). It was created by the IEC to distinguish from the kilobyte (KB) which is exactly 1,000 bytes. KiB, MiB, GiB, TiB, and PiB are the binary equivalents of KB, MB, GB, TB, and PB.' },
+        { q: 'How many bits are in a byte?', a: 'There are exactly 8 bits in one byte. This has been the standard since the 1960s. A byte can represent values from 0 to 255, which is enough to encode a single ASCII character.' },
+        { q: 'How much storage does a 2-hour movie need?', a: 'A compressed 1080p movie is typically 2–5 GB. A 4K movie is 15–50 GB. A Blu-ray disc holds 25–50 GB. The exact size depends on the codec, bitrate, and audio quality.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── All values relative to bytes ────────────────────────────────
+  const TO_B = {
+    bit:  1 / 8,
+    kb:   125,          // 1000 / 8
+    mb:   125_000,      // 10⁶ / 8
+    gb:   125_000_000,  // 10⁹ / 8
+    tb:   125_000_000_000, // 10¹² / 8
+    b:    1,
+    kb2:  1_000,
+    mb2:  1_000_000,
+    gb2:  1_000_000_000,
+    tb2:  1_000_000_000_000,
+    pb2:  1_000_000_000_000_000,
+    kib:  1024,
+    mib:  1_048_576,
+    gib:  1_073_741_824,
+    tib:  1_099_511_627_776,
+    pib:  1_125_899_906_842_624,
+  };
+
+  const UNITS = [
+    { id: 'bit', label: 'bit',  name: 'Bit' },
+    { id: 'kb',  label: 'kb',   name: 'Kilobit' },
+    { id: 'mb',  label: 'Mb',   name: 'Megabit' },
+    { id: 'gb',  label: 'Gb',   name: 'Gigabit' },
+    { id: 'tb',  label: 'Tb',   name: 'Terabit' },
+    { id: 'b',   label: 'B',    name: 'Byte' },
+    { id: 'kb2', label: 'KB',   name: 'Kilobyte (SI)' },
+    { id: 'mb2', label: 'MB',   name: 'Megabyte (SI)' },
+    { id: 'gb2', label: 'GB',   name: 'Gigabyte (SI)' },
+    { id: 'tb2', label: 'TB',   name: 'Terabyte (SI)' },
+    { id: 'pb2', label: 'PB',   name: 'Petabyte (SI)' },
+    { id: 'kib', label: 'KiB',  name: 'Kibibyte' },
+    { id: 'mib', label: 'MiB',  name: 'Mebibyte' },
+    { id: 'gib', label: 'GiB',  name: 'Gibibyte' },
+    { id: 'tib', label: 'TiB',  name: 'Tebibyte' },
+    { id: 'pib', label: 'PiB',  name: 'Pebibyte' },
+  ];
+
+  // ── Quick-reference objects (stored in bytes) ───────────────────
+  const REFS = [
+    { name: 'Plain Text Page',      bytes: 2_000 },
+    { name: 'MP3 Song (4 min)',     bytes: 4_000_000 },
+    { name: 'JPEG Photo',           bytes: 3_500_000 },
+    { name: 'HD Movie (2 hr)',      bytes: 4_500_000_000 },
+    { name: '4K Movie (2 hr)',      bytes: 25_000_000_000 },
+    { name: 'Blu-ray Disc',         bytes: 50_000_000_000 },
+    { name: '1 TB Hard Drive',      bytes: 1_000_000_000_000 },
+    { name: '1 PB Data Center',     bytes: 1_000_000_000_000_000 },
+  ];
+
+  const input  = document.getElementById('data-input') as HTMLInputElement;
+  const select = document.getElementById('data-unit') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const refs   = document.getElementById('refs')!;
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e18) return value.toExponential(4);
+    if (abs >= 1e15) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1e12) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1e9)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1e6)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const bVal     = val * TO_B[fromUnit];
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = bVal / TO_B[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    refs.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.bytes / TO_B[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refs.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

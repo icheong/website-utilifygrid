@@ -1,0 +1,330 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'angular-velocity-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Angular Velocity Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter an angular velocity and select its unit — all others update instantly with a live rotating diagram.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.25rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="ang-input">Angular Velocity</label>
+        <input id="ang-input" type="number" value="60" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="ang-unit">Unit</label>
+        <select id="ang-unit" class="select-themed" style="min-width:10rem;">
+          <option value="rads" selected>Rad/s</option>
+          <option value="degs">Deg/s</option>
+          <option value="rpm">RPM</option>
+          <option value="rps">Rev/s</option>
+          <option value="hz">Hertz (Hz)</option>
+          <option value="degm">Deg/min</option>
+          <option value="degh">Deg/hr</option>
+          <option value="as">Arcsec/s</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Live diagram -->
+    <div style="display:flex;gap:1.5rem;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <svg id="ang-svg" viewBox="0 0 200 200" width="180" height="180" style="flex-shrink:0;">
+        <defs>
+          <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="var(--color-brand-blue)" />
+          </marker>
+        </defs>
+        <!-- Circle -->
+        <circle cx="100" cy="100" r="85" fill="none" stroke="var(--border)" stroke-width="1.5" />
+        <!-- Degree marks -->
+        <line x1="100" y1="18" x2="100" y2="28" stroke="var(--text-muted)" stroke-width="1" />
+        <line x1="182" y1="100" x2="172" y2="100" stroke="var(--text-muted)" stroke-width="1" />
+        <line x1="100" y1="182" x2="100" y2="172" stroke="var(--text-muted)" stroke-width="1" />
+        <line x1="18" y1="100" x2="28" y2="100" stroke="var(--text-muted)" stroke-width="1" />
+        <!-- Angle arc -->
+        <path id="ang-arc" fill="none" stroke="var(--color-brand-blue)" stroke-width="2.5" stroke-linecap="round" opacity="0.3" />
+        <!-- Rotating arm -->
+        <line id="ang-arm" x1="100" y1="100" x2="100" y2="25" stroke="var(--color-brand-blue)" stroke-width="3" stroke-linecap="round" />
+        <!-- Tip dot -->
+        <circle id="ang-tip" cx="100" cy="25" r="5" fill="var(--color-brand-blue)" />
+        <!-- Center dot -->
+        <circle cx="100" cy="100" r="4" fill="var(--text-secondary)" />
+      </svg>
+      <div style="min-width:0;">
+        <p id="ang-display" style="font-size:1.8rem;font-weight:700;font-family:'Fira Code',monospace;color:var(--text-primary);margin-bottom:0.25rem;">60 RPM</p>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0;">= <span id="ang-rads">6.2832</span> rad/s</p>
+        <p style="font-size:0.78rem;color:var(--text-muted);">= <span id="ang-degs">360</span> °/s</p>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Angular Velocity Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric angular velocity</strong> and select its <strong>unit</strong> from the dropdown. All other angular velocity units update instantly as you type — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter supports 8 angular velocity units: <strong>rad/s</strong>, <strong>deg/s</strong>, <strong>RPM</strong>, <strong>rev/s</strong>, <strong>Hz</strong>, <strong>°/min</strong>, <strong>°/hr</strong>, and <strong>arcsec/s</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      The live rotating diagram shows the speed visually — the arm rotates at the entered angular velocity. Common rotational speeds are shown below for quick comparison.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How angular velocity conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions use <strong>radians per second (rad/s)</strong> as the base unit. Each unit has a fixed factor relative to one rad/s:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 deg/s   = π/180 rad/s   ≈ 0.01745 rad/s
+1 RPM     = 2π/60 rad/s   ≈ 0.10472 rad/s
+1 rev/s   = 2π rad/s      ≈ 6.28319 rad/s
+1 Hz      = 2π rad/s      ≈ 6.28319 rad/s
+1 °/min   = π/10800 rad/s ≈ 0.00029 rad/s
+1 °/hr    = π/648000 rad/s
+1 arcsec/s= π/648000 rad/s
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      One full revolution = 2π radians = 360° = 1 Hz. So RPM = Hz × 60, and Hz = RPM ÷ 60. The radian is the natural angular unit: it equals the arc length divided by the radius.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is angular velocity?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Angular velocity is the rate of change of angular position — how fast something rotates. It is measured as the angle swept per unit time. Common units include radians per second (rad/s), revolutions per minute (RPM), and degrees per second (°/s)." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between RPM and Hz?",
+          "acceptedAnswer": { "@type": "Answer", "text": "RPM (revolutions per minute) counts full rotations per minute. Hz (hertz) counts full rotations per second. 1 Hz = 60 RPM. A washing machine spin cycle at 1200 RPM = 20 Hz. A 60 Hz power supply rotates at 3600 RPM." }
+        },
+        {
+          "@type": "Question",
+          "name": "How many radians are in a revolution?",
+          "acceptedAnswer": { "@type": "Answer", "text": "One full revolution equals exactly 2π radians (≈ 6.28319 rad). This is because the circumference of a circle is 2πr, so the angle swept when traveling the full circumference divided by the radius equals 2π." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a radian?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A radian is the angle formed when the arc length equals the radius. One full circle = 2π radians ≈ 6.283 radians. Radians are dimensionless and are the standard angular unit in mathematics and physics because they simplify many formulas." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the angular velocity of a clock's hour hand?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The hour hand completes one full revolution (2π radians) in 12 hours = 43,200 seconds. Its angular velocity is 2π/43200 ≈ 0.0001454 rad/s, or about 0.00833 RPM. The minute hand is 12× faster at about 0.1 RPM." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is angular velocity?', a: 'Angular velocity is the rate of change of angular position — how fast something rotates. It is measured as the angle swept per unit time. Common units include radians per second (rad/s), revolutions per minute (RPM), and degrees per second (°/s).' },
+        { q: 'What is the difference between RPM and Hz?', a: 'RPM (revolutions per minute) counts full rotations per minute. Hz (hertz) counts full rotations per second. 1 Hz = 60 RPM. A washing machine spin cycle at 1200 RPM = 20 Hz. A 60 Hz power supply rotates at 3600 RPM.' },
+        { q: 'How many radians are in a revolution?', a: 'One full revolution equals exactly 2π radians (≈ 6.28319 rad). This is because the circumference of a circle is 2πr, so the angle swept when traveling the full circumference divided by the radius equals 2π.' },
+        { q: 'What is a radian?', a: 'A radian is the angle formed when the arc length equals the radius. One full circle = 2π radians ≈ 6.283 radians. Radians are dimensionless and are the standard angular unit in mathematics and physics because they simplify many formulas.' },
+        { q: 'What is the angular velocity of a clock\'s hour hand?', a: 'The hour hand completes one full revolution (2π radians) in 12 hours = 43,200 seconds. Its angular velocity is 2π/43200 ≈ 0.0001454 rad/s, or about 0.00833 RPM. The minute hand is 12× faster at about 0.1 RPM.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Conversion factors to rad/s ─────────────────────────────────
+  const TO_RADS = {
+    rads: 1,
+    degs: Math.PI / 180,
+    rpm:  (2 * Math.PI) / 60,
+    rps:  2 * Math.PI,
+    hz:   2 * Math.PI,
+    degm: Math.PI / 10800,
+    degh: Math.PI / 648000,
+    as:   Math.PI / 648000,
+  };
+
+  const UNITS = [
+    { id: 'rads', label: 'rad/s',   name: 'Radian per Second' },
+    { id: 'degs', label: '°/s',      name: 'Degree per Second' },
+    { id: 'rpm',  label: 'RPM',      name: 'Revolutions per Minute' },
+    { id: 'rps',  label: 'rev/s',    name: 'Revolutions per Second' },
+    { id: 'hz',   label: 'Hz',       name: 'Hertz' },
+    { id: 'degm', label: '°/min',    name: 'Degree per Minute' },
+    { id: 'degh', label: '°/hr',     name: 'Degree per Hour' },
+    { id: 'as',   label: '″/s',      name: 'Arcsecond per Second' },
+  ];
+
+  const REFS = [
+    { name: 'Clock Hour Hand',         rads: 0.0001454 },
+    { name: 'Clock Minute Hand',       rads: 0.001745 },
+    { name: 'Clock Second Hand',       rads: 0.1047 },
+    { name: 'Vinyl Record (33⅓ RPM)', rads: 3.4907 },
+    { name: 'Washing Machine',         rads: 125.66 },
+    { name: 'Car Engine (3000 RPM)',   rads: 314.16 },
+    { name: 'Jet Turbine',             rads: 4188.79 },
+    { name: 'Centrifuge (50,000 RPM)', rads: 5235.99 },
+  ];
+
+  const input    = document.getElementById('ang-input') as HTMLInputElement;
+  const select   = document.getElementById('ang-unit') as HTMLSelectElement;
+  const grid     = document.getElementById('results')!;
+  const refsDiv  = document.getElementById('refs')!;
+  const angArm   = document.getElementById('ang-arm')!;
+  const angTip   = document.getElementById('ang-tip')!;
+  const angArc   = document.getElementById('ang-arc')!;
+  const angDisp  = document.getElementById('ang-display')!;
+  const angRads  = document.getElementById('ang-rads')!;
+  const angDegs  = document.getElementById('ang-degs')!;
+
+  let currentAngle = 0;
+  let animId: number | null = null;
+
+  function fmt(value: number): string {
+    if (Number.isNaN(value)) return '—';
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e12) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1e6)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    return value.toExponential(4);
+  }
+
+  function svgArc(angle: number): string {
+    const r = 55;
+    const cx = 100, cy = 100;
+    const a = Math.min(angle, 2 * Math.PI);
+    const x = cx + r * Math.sin(a);
+    const y = cy - r * Math.cos(a);
+    const large = a > Math.PI ? 1 : 0;
+    return `M ${cx} ${cy - r} A ${r} ${r} 0 ${large} 1 ${x} ${y}`;
+  }
+
+  function animate(speed: number) {
+    if (animId) cancelAnimationFrame(animId);
+    const rpmSpeed = speed / (2 * Math.PI) * 60;
+    const degPerFrame = rpmSpeed * 360 / 60;
+
+    let last = performance.now();
+    function tick(now: number) {
+      const dt = (now - last) / 1000;
+      last = now;
+      currentAngle += speed * dt;
+      currentAngle %= 2 * Math.PI;
+
+      const cx = 100, cy = 100, armLen = 75;
+      const tipX = cx + armLen * Math.sin(currentAngle);
+      const tipY = cy - armLen * Math.cos(currentAngle);
+
+      angArm.setAttribute('x2', String(tipX));
+      angArm.setAttribute('y2', String(tipY));
+      angTip.setAttribute('cx', String(tipX));
+      angTip.setAttribute('cy', String(tipY));
+
+      if (currentAngle > 0.01) {
+        angArc.setAttribute('d', svgArc(currentAngle));
+      } else {
+        angArc.setAttribute('d', '');
+      }
+
+      animId = requestAnimationFrame(tick);
+    }
+    animId = requestAnimationFrame(tick);
+  }
+
+  function update() {
+    const val      = parseFloat(input.value);
+    const fromUnit = select.value;
+    const radsVal  = val * TO_RADS[fromUnit];
+
+    // Summary
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.label;
+    angDisp.textContent = `${fmt(val)} ${unitLabel}`;
+    angRads.textContent = fmt(radsVal);
+    angDegs.textContent = fmt(radsVal * 180 / Math.PI);
+
+    // Animate
+    animate(Math.min(Math.abs(radsVal), 200));
+
+    // Results grid
+    grid.innerHTML = '';
+    UNITS.forEach(u => {
+      if (u.id === fromUnit) return;
+      const converted = radsVal / TO_RADS[u.id];
+      const display = fmt(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${u.label}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // Quick references
+    refsDiv.innerHTML = '';
+    REFS.forEach(r => {
+      const value = r.rads / TO_RADS[fromUnit];
+      const display = fmt(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refsDiv.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

@@ -1,0 +1,238 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'length-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Length Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+
+    <!-- Input row -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="length-input">Value</label>
+        <input id="length-input" type="number" value="1" min="0" step="any" placeholder="Enter value"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="length-unit">Unit</label>
+        <select id="length-unit" class="select-themed" style="min-width:10rem;">
+          <option value="mm">Millimeters (mm)</option>
+          <option value="cm">Centimeters (cm)</option>
+          <option value="m" selected>Meters (m)</option>
+          <option value="km">Kilometers (km)</option>
+          <option value="in">Inches (in)</option>
+          <option value="ft">Feet (ft)</option>
+          <option value="yd">Yards (yd)</option>
+          <option value="mi">Miles (mi)</option>
+          <option value="nmi">Nautical Miles (nmi)</option>
+          <option value="um">Micrometers (μm)</option>
+          <option value="nm">Nanometers (nm)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Results grid -->
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+
+    <!-- Quick references -->
+    <div style="margin-top:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Length Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other length units update instantly — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The converter covers the most common <strong>metric</strong> units (nanometers through kilometers) and <strong>imperial</strong> units (inches through miles), plus nautical miles. Results use high-precision floating-point math so small values stay accurate.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How length conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions go through <strong>meters</strong> as the base unit. Each unit has a fixed factor relative to one meter:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 inch  = 0.0254 m        (exact)
+1 foot  = 0.3048 m        (exact)
+1 yard  = 0.9144 m        (exact)
+1 mile  = 1609.344 m      (exact)
+1 nmi   = 1852 m          (exact)
+1 cm    = 0.01 m
+1 mm    = 0.001 m
+1 km    = 1000 m
+1 μm    = 0.000001 m
+1 nm    = 0.000000001 m
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Because the imperial-to-metric factors above are <strong>exact definitions</strong> (not approximations), conversions between imperial units (e.g. inches to feet) are also exact. All calculations run in your browser — no data is sent anywhere.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the difference between a meter and a foot?",
+          "acceptedAnswer": { "@type": "Answer", "text": "One meter equals approximately 3.28084 feet. The meter is the base unit of length in the metric system (SI), while the foot is an imperial unit commonly used in the United States, United Kingdom, and other countries for everyday measurements." }
+        },
+        {
+          "@type": "Question",
+          "name": "How many centimeters are in an inch?",
+          "acceptedAnswer": { "@type": "Answer", "text": "One inch is exactly 2.54 centimeters. This is an exact conversion factor defined by international agreement, not an approximation." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a nautical mile used for?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A nautical mile (1,852 meters) is used in maritime and aviation navigation. It is based on the circumference of the Earth — one nautical mile equals one minute of latitude. Speed at sea is measured in knots, where 1 knot = 1 nautical mile per hour." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why are some conversions exact and others approximate?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Imperial-to-metric conversions like 1 inch = 2.54 cm and 1 foot = 0.3048 m are exact by international definition (since 1959). Conversions like miles to kilometers (1 mi = 1.609344 km) are also exact. However, values displayed with many decimal places are floating-point representations that may show rounding artifacts at extreme precision." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I convert very small values like nanometers?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The converter supports nanometers (nm) and micrometers (μm), which are commonly used in science, engineering, and electronics. Nanometers are used to measure wavelengths of light, semiconductor features, and molecules." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is the difference between a meter and a foot?', a: 'One meter equals approximately 3.28084 feet. The meter is the base unit of length in the metric system (SI), while the foot is an imperial unit commonly used in the United States, United Kingdom, and other countries for everyday measurements.' },
+        { q: 'How many centimeters are in an inch?', a: 'One inch is exactly 2.54 centimeters. This is an exact conversion factor defined by international agreement, not an approximation.' },
+        { q: 'What is a nautical mile used for?', a: 'A nautical mile (1,852 meters) is used in maritime and aviation navigation. It is based on the circumference of the Earth — one nautical mile equals one minute of latitude. Speed at sea is measured in knots, where 1 knot = 1 nautical mile per hour.' },
+        { q: 'Why are some conversions exact and others approximate?', a: 'Imperial-to-metric conversions like 1 inch = 2.54 cm and 1 foot = 0.3048 m are exact by international definition (since 1959). Conversions like miles to kilometers (1 mi = 1.609344 km) are also exact. However, values displayed with many decimal places are floating-point representations that may show rounding artifacts at extreme precision.' },
+        { q: 'Can I convert very small values like nanometers?', a: 'Yes. The converter supports nanometers (nm) and micrometers (μm), which are commonly used in science, engineering, and electronics. Nanometers are used to measure wavelengths of light, semiconductor features, and molecules.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  // ── Unit definitions: factor to meters ──────────────────────────
+  const UNITS = [
+    { id: 'nm',  label: 'Nanometers',      abbr: 'nm',  factor: 1e-9 },
+    { id: 'um',  label: 'Micrometers',     abbr: 'μm',  factor: 1e-6 },
+    { id: 'mm',  label: 'Millimeters',     abbr: 'mm',  factor: 0.001 },
+    { id: 'cm',  label: 'Centimeters',     abbr: 'cm',  factor: 0.01 },
+    { id: 'm',   label: 'Meters',          abbr: 'm',   factor: 1 },
+    { id: 'km',  label: 'Kilometers',      abbr: 'km',  factor: 1000 },
+    { id: 'in',  label: 'Inches',          abbr: 'in',  factor: 0.0254 },
+    { id: 'ft',  label: 'Feet',            abbr: 'ft',  factor: 0.3048 },
+    { id: 'yd',  label: 'Yards',           abbr: 'yd',  factor: 0.9144 },
+    { id: 'mi',  label: 'Miles',           abbr: 'mi',  factor: 1609.344 },
+    { id: 'nmi', label: 'Nautical Miles',  abbr: 'nmi', factor: 1852 },
+  ];
+
+  const input  = document.getElementById('length-input') as HTMLInputElement;
+  const select = document.getElementById('length-unit') as HTMLSelectElement;
+  const grid   = document.getElementById('results')!;
+  const refs   = document.getElementById('refs')!;
+
+  // ── Quick-reference objects (stored in meters) ──────────────────
+  const REFS = [
+    { name: 'Credit Card',      m: 0.0856 },
+    { name: 'Smartphone',       m: 0.146 },
+    { name: 'Guitar',           m: 1.0 },
+    { name: 'Car',              m: 4.5 },
+    { name: 'Bus',              m: 12.0 },
+    { name: 'Football Pitch',   m: 105.0 },
+    { name: 'Marathon',         m: 42195.0 },
+    { name: 'Distance to Moon', m: 384_400_000 },
+  ];
+
+  function formatResult(value: number): string {
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9)  return value.toExponential(4);
+    if (abs >= 1e6)  return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1)    return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 1e-6)  return value.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val = parseFloat(input.value);
+    const fromUnit = select.value;
+    const fromFactor = UNITS.find(u => u.id === fromUnit)!.factor;
+
+    grid.innerHTML = '';
+
+    UNITS.forEach(unit => {
+      const converted = (val * fromFactor) / unit.factor;
+      const display = formatResult(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${unit.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector<HTMLButtonElement>('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector<HTMLButtonElement>('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+
+    // ── Quick references ──────────────────────────────────────────
+    const unitLabel = UNITS.find(u => u.id === fromUnit)!.abbr;
+    refs.innerHTML = '';
+    REFS.forEach(r => {
+      const value = (r.m * 1) / fromFactor;
+      const display = formatResult(value);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.style.padding = '0.5rem 0.75rem';
+      row.innerHTML = `
+        <span class="info-label" style="min-width:auto;">${r.name}</span>
+        <span class="info-value" style="font-size:0.82rem;">${display} ${unitLabel}</span>
+      `;
+      refs.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>
