@@ -101,16 +101,19 @@ TOGGLE GROUP (metric/imperial, mode A/B)
 
 All inputs, selects, textareas must use **`input-themed`** (already in `global.css`) which maps to:
 ```css
+width: 100%;
+padding: 0.625rem 0.875rem;
+border-radius: 0.5rem;
+font-size: 0.95rem;
+box-sizing: border-box;
 background: var(--bg-surface);
 border: 1.5px solid var(--border);
 color: var(--text-primary);
-border-radius: 0.5rem;        /* rounded-lg */
-padding: 0.5rem 0.75rem;
 focus: border #1D4ED8, ring 3px rgba(29,78,216,0.15)
 placeholder: var(--text-muted)
 ```
 
-No tool should use `class="border border-gray-200 rounded"` or inline style equivalents.
+No tool should use `class="border border-gray-200 rounded"` or inline style equivalents. Tools should use bare `class="input-themed"` with no inline style overrides for width, padding, border-radius, font-size, or box-sizing — these are all handled by the base class. The only acceptable inline override is for compact inputs in nested sub-sections that need smaller padding (e.g., `style="padding:0.5rem 0.75rem; font-size:0.875rem"`).
 
 ### 2.3 Result / Output Card
 
@@ -346,18 +349,18 @@ These tools use hardcoded hex colours that make them unusable in dark mode:
 
 ### Priority 4 — Input field standardisation
 
-All tool pages must audit every `<input>`, `<select>`, `<textarea>` and apply `input-themed` class. Remove any competing inline `style=` attributes on those elements.
+All tool pages must audit every `<input>`, `<select>`, `<textarea>` and apply `input-themed` class. Remove any competing inline `style=` attributes on those elements — the base class now includes `width:100%`, `padding:0.625rem 0.875rem`, `border-radius:0.5rem`, `font-size:0.95rem`, and `box-sizing:border-box`, so no inline overrides are needed for standard inputs. Only add inline styles for exceptional cases such as compact inputs in nested sub-sections requiring smaller padding.
 
-Special note: `<select>` elements need an additional class:
+Special note: `<select>` elements use `.select-themed` which inherits the same base properties as `input-themed` plus:
 ```css
 .select-themed {
-  /* inherits input-themed, plus: */
+  /* inherits input-themed base (width, padding, border-radius, etc.) plus: */
   appearance: none;
   background-image: url("data:image/svg+xml,..."); /* chevron */
-  padding-right: 2rem;
+  padding-right: 2.25rem;
 }
 ```
-Add `.select-themed` to `global.css`.
+`select-themed` is already in `global.css`.
 
 ---
 
@@ -433,7 +436,7 @@ Execute in this order to avoid regressions:
 A tool page is considered style-compliant when:
 - [ ] No hardcoded hex colour in `style=` attributes (exception: SVG/Canvas pixel-accurate draws only)
 - [ ] All buttons use `.btn-primary`, `.btn-secondary`, or `.btn-success` classes
-- [ ] All inputs/selects/textareas use `.input-themed` or `.select-themed`
+- [ ] All inputs/selects/textareas use `.input-themed` or `.select-themed` with no inline style overrides for width, padding, border-radius, font-size, or box-sizing
 - [ ] Mode/type toggles use `.toggle-group` / `.toggle-btn`
 - [ ] Result display uses `.result-card` (with optional accent class)
 - [ ] Copy buttons implement the 2s flash pattern via `window.initCopyBtn` or equivalent
