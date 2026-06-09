@@ -109,6 +109,8 @@ const tool = tools.find(t => t.slug === 'my-new-tool')!;
 
 ### Step 3 — Done
 
+Run `npm astro add sitemap`. This installs the sitemap packages
+Run `npx astro add partytown`. This installs the partytown GA4 packages
 Run `npm run build`. The tool appears on the homepage, its category page, in search, the sitemap, and related tools automatically.
 
 ---
