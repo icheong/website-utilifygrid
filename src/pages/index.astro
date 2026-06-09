@@ -114,15 +114,15 @@ const structuredData = {
             data-tags={tool.tags.join(' ')}
             style="display:block; padding:1.25rem;"
           >
-            <div style="display:flex; align-items:flex-start; gap:1rem;">
-              <div style="width:2.75rem; height:2.75rem; border-radius:0.625rem; background:linear-gradient(135deg,#DBEAFE,#EFF6FF); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">
+            <div style="display:flex; align-items:flex-start; gap:0.875rem;">
+              <div style="width:2.75rem; height:2.75rem; min-width:2.75rem; border-radius:0.625rem; background:linear-gradient(135deg,#DBEAFE,#EFF6FF); display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0; line-height:1;">
                 {tool.icon}
               </div>
-              <div style="min-width:0;">
-                <div style="font-family:'Sora',sans-serif; font-weight:600; color:var(--text-primary); font-size:0.95rem; margin-bottom:0.3rem;">{tool.name}</div>
-                <div style="font-size:0.82rem; color:var(--text-secondary); line-height:1.5;">{tool.shortDescription}</div>
-                <div style="margin-top:0.6rem;">
-                  <span style="display:inline-block; background:#FFF7ED; color:#EA580C; font-size:0.72rem; font-weight:600; padding:0.15rem 0.6rem; border-radius:999px; text-transform:capitalize;">
+              <div style="min-width:0; flex:1;">
+                <div style="font-family:'Sora',sans-serif; font-weight:600; color:var(--text-primary); font-size:0.925rem; margin-bottom:0.3rem; letter-spacing:-0.01em; line-height:1.3;">{tool.name}</div>
+                <div style="font-size:0.8rem; color:var(--text-secondary); line-height:1.55; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">{tool.shortDescription}</div>
+                <div style="margin-top:0.625rem;">
+                  <span style="display:inline-block; background:#FFF7ED; color:#EA580C; font-size:0.7rem; font-weight:600; padding:0.15rem 0.55rem; border-radius:999px; text-transform:capitalize; letter-spacing:0.02em;">
                     {tool.category.replace(/-/g, ' ')}
                   </span>
                 </div>
@@ -140,7 +140,7 @@ const structuredData = {
         <h2 style="font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">All Tools</h2>
       </div>
 
-      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:0.875rem;" id="all-tools-grid">
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:0.875rem;" id="all-tools-grid">
         {tools.map(tool => (
           <a
             href={`/tools/${tool.slug}`}
@@ -148,11 +148,11 @@ const structuredData = {
             data-category={tool.category}
             data-name={tool.name.toLowerCase()}
             data-tags={tool.tags.join(' ')}
-            style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:1.1rem 0.75rem;"
+            style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:1.25rem 1rem 1rem;"
           >
-            <span style="font-size:1.75rem; margin-bottom:0.5rem;">{tool.icon}</span>
-            <span style="font-size:0.82rem; font-weight:600; color:var(--text-primary); line-height:1.35;">{tool.name}</span>
-            <span style="font-size:0.72rem; color:var(--text-muted); margin-top:0.25rem; text-transform:capitalize;">{tool.category.replace(/-/g,' ')}</span>
+            <span style="font-size:1.75rem; margin-bottom:0.625rem; line-height:1; display:block;">{tool.icon}</span>
+            <span style="font-size:0.8rem; font-weight:600; color:var(--text-primary); line-height:1.4; letter-spacing:-0.01em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; width:100%;">{tool.name}</span>
+            <span style="font-size:0.7rem; color:var(--text-muted); margin-top:0.3rem; text-transform:capitalize; letter-spacing:0.01em;">{tool.category.replace(/-/g,' ')}</span>
           </a>
         ))}
       </div>
