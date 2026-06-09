@@ -3,6 +3,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 import partytown from '@astrojs/partytown';
 
+import sitemap from '@astrojs/sitemap';
+
 export default defineConfig({
   site: 'https://utilifygrid.com',
 
@@ -11,5 +13,5 @@ export default defineConfig({
   },
 
   output: 'static',
-  integrations: [partytown()],
+  integrations: [partytown(), sitemap()],
 });
