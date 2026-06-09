@@ -8,7 +8,7 @@ const tool = tools.find(t => t.slug === 'pdf-edit')!;
 
   <div slot="tool">
     <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Edit PDF</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Add text, images, shapes, and freehand drawings to any PDF page — all client-side, no upload needed.</p>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Add text, images, shapes, freehand drawings, highlights, underlines, and comments to any PDF page — all client-side, no upload needed.</p>
 
     <!-- Drop zone -->
     <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
@@ -21,84 +21,87 @@ const tool = tools.find(t => t.slug === 'pdf-edit')!;
     <!-- Editor workspace (hidden until PDF loaded) -->
     <div id="editor-wrap" style="display:none;margin-top:1.25rem;">
 
-      <!-- Toolbar + Properties row -->
-      <div style="display:flex;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;align-items:flex-start;">
-
-        <!-- Tool buttons -->
-        <div style="display:flex;flex-direction:column;gap:0.35rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.75rem;padding:0.5rem;">
-          <p style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);text-align:center;margin-bottom:0.15rem;">Tools</p>
-          <div class="toggle-group" style="flex-direction:column;padding:0.2rem;">
-            <button class="toggle-btn active tool-btn" data-tool="text" title="Add Text" aria-pressed="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+      <!-- Top bar: tools + compact props toggle -->
+      <div style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.75rem;padding:0.4rem 0.6rem;margin-bottom:0.5rem;">
+        <!-- Row 1: tools + expand + props toggle -->
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div class="toggle-group" style="display:flex;gap:0.15rem;padding:0.15rem;flex-shrink:0;">
+            <button class="toggle-btn active tool-btn" data-tool="text" title="Add Text" aria-pressed="true" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
             </button>
-            <button class="toggle-btn tool-btn" data-tool="rect" title="Rectangle" aria-pressed="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+            <button class="toggle-btn tool-btn" data-tool="rect" title="Rectangle" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
             </button>
-            <button class="toggle-btn tool-btn" data-tool="circle" title="Circle" aria-pressed="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+            <button class="toggle-btn tool-btn" data-tool="circle" title="Circle" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
             </button>
-            <button class="toggle-btn tool-btn" data-tool="line" title="Line" aria-pressed="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+            <button class="toggle-btn tool-btn" data-tool="line" title="Line" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/></svg>
             </button>
-            <button class="toggle-btn tool-btn" data-tool="arrow" title="Arrow" aria-pressed="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="10 5 19 5 19 14"/></svg>
+            <button class="toggle-btn tool-btn" data-tool="arrow" title="Arrow" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="10 5 19 5 19 14"/></svg>
             </button>
-            <button class="toggle-btn tool-btn" data-tool="freehand" title="Freehand Draw" aria-pressed="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+            <button class="toggle-btn tool-btn" data-tool="freehand" title="Freehand Draw" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
             </button>
-            <button class="toggle-btn tool-btn" data-tool="image" title="Add Image" aria-pressed="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <button class="toggle-btn tool-btn" data-tool="image" title="Add Image" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             </button>
-            <button class="toggle-btn tool-btn" data-tool="eraser" title="Eraser" aria-pressed="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l9-9 8 8-4 4z"/><path d="M6.5 13.5l5-5"/></svg>
+            <button class="toggle-btn tool-btn" data-tool="highlight" title="Highlight" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="underline" title="Underline" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="comment" title="Comment" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="eraser" title="Eraser" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l9-9 8 8-4 4z"/><path d="M6.5 13.5l5-5"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="hand" title="Pan / Drag" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v7"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
             </button>
           </div>
+
+          <div style="width:1px;height:1.5rem;background:var(--border);flex-shrink:0;"></div>
+
+          <span id="edit-count" style="font-size:0.68rem;color:var(--text-muted);white-space:nowrap;flex-shrink:0;">0 edits</span>
+          <div style="flex:1;"></div>
+          <button id="props-toggle" class="btn-secondary" type="button" style="padding:0.3rem 0.4rem;" title="Toggle colour palette">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          </button>
+          <button id="expand-btn" class="btn-secondary" type="button" style="padding:0.25rem 0.5rem;font-size:0.68rem;" title="Fullscreen editor">Expand</button>
         </div>
 
-        <!-- Canvas area -->
-        <div id="canvas-container" style="flex:1;min-width:0;min-height:400px;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.75rem;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;">
-          <div id="canvas-wrapper" style="position:relative;display:inline-block;">
-            <canvas id="pdf-canvas" style="display:block;max-width:100%;box-shadow:0 2px 12px rgba(0,0,0,0.15);"></canvas>
-            <svg id="edit-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;cursor:crosshair;"></svg>
-          </div>
-          <p id="canvas-placeholder" style="font-size:0.85rem;color:var(--text-muted);position:absolute;">Loading page…</p>
-        </div>
-
-        <!-- Properties panel -->
-        <div style="width:180px;flex-shrink:0;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.75rem;padding:0.75rem;display:flex;flex-direction:column;gap:0.6rem;">
-          <p style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);">Properties</p>
-
-          <div>
-            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.25rem;">Colour</label>
-            <div style="display:flex;gap:0.35rem;flex-wrap:wrap;">
+        <!-- Row 2: collapsible properties -->
+        <div id="props-row" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-top:0.4rem;padding-top:0.4rem;border-top:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:0.2rem;">
+            <div style="display:flex;gap:0.2rem;">
               {['#EF4444','#F97316','#EAB308','#22C55E','#3B82F6','#8B5CF6','#EC4899','#000000'].map(c => (
-                <button class="color-swatch" data-color={c} style={`width:1.4rem;height:1.4rem;border-radius:0.35rem;border:2px solid var(--border);cursor:pointer;background:${c};`} title={c}></button>
+                <button class="color-swatch" data-color={c} style={`width:1.1rem;height:1.1rem;border-radius:0.25rem;border:1.5px solid var(--border);cursor:pointer;background:${c};`} title={c}></button>
               ))}
             </div>
-            <input id="prop-color" type="text" class="input-themed" value="#EF4444" style="margin-top:0.35rem;font-size:0.78rem;padding:0.35rem 0.5rem;" />
+            <input id="prop-color" type="text" class="input-themed" value="#EF4444" style="font-size:0.7rem;padding:0.2rem 0.35rem;width:5rem;" />
           </div>
-
-          <div>
-            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.25rem;">Size</label>
-            <input id="prop-size" type="range" min="1" max="50" value="4" style="width:100%;accent-color:var(--color-brand-blue);" />
-            <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:0.15rem;"><span id="prop-size-val">4</span>px</div>
+          <div style="display:flex;align-items:center;gap:0.2rem;">
+            <label style="font-size:0.68rem;font-weight:600;color:var(--text-secondary);white-space:nowrap;">Sz</label>
+            <input id="prop-size" type="range" min="1" max="50" value="4" style="width:4rem;accent-color:var(--color-brand-blue);" />
+            <span id="prop-size-val" style="font-size:0.68rem;color:var(--text-muted);min-width:1.2rem;">4</span>
           </div>
-
-          <div>
-            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.25rem;">Font Size</label>
-            <input id="prop-font" type="range" min="8" max="120" value="16" style="width:100%;accent-color:var(--color-brand-blue);" />
-            <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:0.15rem;"><span id="prop-font-val">16</span>pt</div>
+          <div style="display:flex;align-items:center;gap:0.2rem;">
+            <label style="font-size:0.68rem;font-weight:600;color:var(--text-secondary);white-space:nowrap;">Font</label>
+            <input id="prop-font" type="range" min="8" max="120" value="16" style="width:4rem;accent-color:var(--color-brand-blue);" />
+            <span id="prop-font-val" style="font-size:0.68rem;color:var(--text-muted);min-width:1.2rem;">16</span>
           </div>
-
-          <div>
-            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.25rem;">Opacity</label>
-            <input id="prop-opacity" type="range" min="10" max="100" value="100" style="width:100%;accent-color:var(--color-brand-blue);" />
-            <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:0.15rem;"><span id="prop-opacity-val">100</span>%</div>
+          <div style="display:flex;align-items:center;gap:0.2rem;">
+            <label style="font-size:0.68rem;font-weight:600;color:var(--text-secondary);white-space:nowrap;">Op</label>
+            <input id="prop-opacity" type="range" min="10" max="100" value="100" style="width:4rem;accent-color:var(--color-brand-blue);" />
+            <span id="prop-opacity-val" style="font-size:0.68rem;color:var(--text-muted);min-width:1.8rem;">100%</span>
           </div>
-
-          <div>
-            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.25rem;">Fill</label>
-            <select id="prop-fill" class="select-themed" style="font-size:0.78rem;padding:0.35rem 0.5rem;">
+          <div style="display:flex;align-items:center;gap:0.2rem;">
+            <label style="font-size:0.68rem;font-weight:600;color:var(--text-secondary);white-space:nowrap;">Fill</label>
+            <select id="prop-fill" class="select-themed" style="font-size:0.7rem;padding:0.2rem 0.35rem;">
               <option value="none">None</option>
               <option value="solid">Solid</option>
             </select>
@@ -106,27 +109,39 @@ const tool = tools.find(t => t.slug === 'pdf-edit')!;
         </div>
       </div>
 
-      <!-- Page navigation + actions -->
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;">
+      <!-- Canvas area — fixed height, internal scroll -->
+      <div id="canvas-container" style="width:100%;max-width:100%;height:55vh;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.75rem;overflow:auto;position:relative;">
+        <div id="canvas-wrapper" style="position:relative;display:inline-block;flex-shrink:0;margin:1rem auto;display:block;text-align:center;">
+          <canvas id="pdf-canvas" style="display:block;box-shadow:0 2px 12px rgba(0,0,0,0.15);margin:0 auto;"></canvas>
+          <svg id="edit-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;cursor:crosshair;"></svg>
+        </div>
+        <p id="canvas-placeholder" style="font-size:0.85rem;color:var(--text-muted);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">Loading page…</p>
+      </div>
+
+      <!-- Bottom bar: page nav + zoom + actions -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.5rem;flex-wrap:wrap;gap:0.5rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.75rem;padding:0.4rem 0.75rem;">
         <div style="display:flex;align-items:center;gap:0.5rem;">
           <button id="prev-page" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;" disabled>&larr; Prev</button>
-          <span style="font-size:0.82rem;color:var(--text-secondary);font-weight:500;">Page <span id="page-num">1</span> / <span id="page-total">1</span></span>
+          <span style="font-size:0.8rem;color:var(--text-secondary);font-weight:500;">Page <span id="page-num">1</span> / <span id="page-total">1</span></span>
           <button id="next-page" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;">Next &rarr;</button>
         </div>
-        <div style="display:flex;align-items:center;gap:0.5rem;">
+        <div style="display:flex;align-items:center;gap:0.4rem;">
           <button id="undo-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;" disabled>Undo</button>
           <button id="redo-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;" disabled>Redo</button>
-          <button id="clear-page-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;color:#EF4444;">Clear Page</button>
-          <button id="save-btn" class="btn-primary" type="button" style="font-size:0.85rem;padding:0.55rem 1.5rem;">Save PDF</button>
+          <button id="clear-page-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;color:#EF4444;">Clear</button>
+          <button id="save-btn" class="btn-primary" type="button" style="font-size:0.85rem;padding:0.45rem 1.25rem;">Save PDF</button>
         </div>
       </div>
-      <p id="edit-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      <p id="edit-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.35rem;display:none;"></p>
+    </div>
 
-      <!-- Edit info row -->
-      <div class="info-row" style="margin-top:0.75rem;">
-        <span class="info-label">Edits on this page</span>
-        <span class="info-value" id="edit-count">0</span>
+    <!-- Fullscreen editor overlay -->
+    <div id="editor-fullscreen" style="display:none;position:fixed;inset:0;z-index:999;background:var(--bg-surface);flex-direction:column;padding:0.75rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+        <h3 style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin:0;">Edit PDF — Fullscreen</h3>
+        <button id="collapse-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.75rem;">Collapse</button>
       </div>
+      <div id="fs-editor-content" style="flex:1;display:flex;flex-direction:column;min-height:0;"></div>
     </div>
   </div>
 
@@ -136,7 +151,7 @@ const tool = tools.find(t => t.slug === 'pdf-edit')!;
       <strong>Step 1:</strong> Drop a PDF file onto the upload zone, or click <strong>Browse File</strong> to select one. The first page loads in the editor canvas.
     </p>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 2:</strong> Choose a tool from the left toolbar — <strong>Text</strong>, <strong>Rectangle</strong>, <strong>Circle</strong>, <strong>Line</strong>, <strong>Arrow</strong>, <strong>Freehand</strong>, <strong>Image</strong>, or <strong>Eraser</strong>. Adjust colour, size, font size, opacity, and fill in the Properties panel on the right.
+      <strong>Step 2:</strong> Choose a tool from the left toolbar — <strong>Text</strong>, <strong>Rectangle</strong>, <strong>Circle</strong>, <strong>Line</strong>, <strong>Arrow</strong>, <strong>Freehand</strong>, <strong>Image</strong>, <strong>Highlight</strong>, <strong>Underline</strong>, <strong>Comment</strong>, or <strong>Eraser</strong>. Adjust colour, size, font size, opacity, and fill in the Properties panel on the right.
     </p>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
       <strong>Step 3:</strong> Click or drag on the canvas to add your edit. Use <strong>Prev / Next</strong> to switch pages. Each page stores its own edits. Click <strong>Save PDF</strong> to download the edited file.
@@ -159,7 +174,7 @@ const tool = tools.find(t => t.slug === 'pdf-edit')!;
 All processing happens client-side (WASM).
 No server upload — your files stay private.</pre>
     <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Text uses standard PDF fonts (Helvetica, Times, Courier). Shapes and freehand strokes are drawn as vector paths, so they scale cleanly at any resolution. Images are embedded at their original quality.
+      Text uses standard PDF fonts (Helvetica, Times, Courier). Shapes, highlights, underlines, and freehand strokes are drawn as vector paths, so they scale cleanly at any resolution. Comments are embedded as text annotations. Images are embedded at their original quality.
     </p>
   </div>
 
@@ -177,7 +192,7 @@ No server upload — your files stay private.</pre>
         {
           "@type": "Question",
           "name": "What types of edits can I make?",
-          "acceptedAnswer": { "@type": "Answer", "text": "You can add text (with custom font size and colour), draw shapes (rectangles, circles, lines, arrows), add images (PNG, JPG, GIF, WebP), make freehand drawings, and erase any edit you've added. All edits are per-page." }
+          "acceptedAnswer": { "@type": "Answer", "text": "You can add text (with custom font size and colour), draw shapes (rectangles, circles, lines, arrows), add images (PNG, JPG, GIF, WebP), make freehand drawings, highlight text, add underlines, insert comments, and erase any edit you've added. All edits are per-page." }
         },
         {
           "@type": "Question",
@@ -202,7 +217,7 @@ No server upload — your files stay private.</pre>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'Is my data uploaded to a server?', a: 'No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your files never leave your device — there is no server upload at any point.' },
-        { q: 'What types of edits can I make?', a: 'You can add text (with custom font size and colour), draw shapes (rectangles, circles, lines, arrows), add images (PNG, JPG, GIF, WebP), make freehand drawings, and erase any edit you\'ve added. All edits are per-page.' },
+        { q: 'What types of edits can I make?', a: 'You can add text (with custom font size and colour), draw shapes (rectangles, circles, lines, arrows), add images (PNG, JPG, GIF, WebP), make freehand drawings, highlight text, add underlines, insert comments, and erase any edit you\'ve added. All edits are per-page.' },
         { q: 'Can I undo or redo edits?', a: 'Yes. Use the Undo and Redo buttons (or Ctrl+Z / Ctrl+Y keyboard shortcuts) to step through your edit history per page. You can also clear all edits on the current page with the Clear Page button.' },
         { q: 'Is there a file size limit?', a: 'There is no hard limit, but very large PDFs (hundreds of pages or tens of MB) may slow down rendering. For best results, keep files under 50 MB. Each page is rendered individually, so larger documents simply take a bit longer to navigate.' },
         { q: 'Does editing reduce PDF quality?', a: 'No. Your edits are drawn as vector graphics and embedded text directly onto the PDF pages. The original page content is preserved. Only the elements you add are new — nothing from the original is recompressed or degraded.' },
@@ -259,10 +274,19 @@ No server upload — your files stay private.</pre>
   const propOpacity     = document.getElementById('prop-opacity') as HTMLInputElement;
   const propOpacityVal  = document.getElementById('prop-opacity-val')!;
   const propFill        = document.getElementById('prop-fill') as HTMLSelectElement;
+  const expandBtn       = document.getElementById('expand-btn')!;
+  const editorFullscreen= document.getElementById('editor-fullscreen')!;
+  const fsEditorContent = document.getElementById('fs-editor-content')!;
+  const collapseBtn     = document.getElementById('collapse-btn')!;
+  const propsToggle     = document.getElementById('props-toggle')!;
+  const propsRow        = document.getElementById('props-row')!;
+  let isFullscreen = false;
+  let originalParent: HTMLElement | null = null;
+  let originalNextSibling: Node | null = null;
 
   /* ── State ────────────────────────────────────────────────── */
   type Edit = {
-    type: 'text'|'rect'|'circle'|'line'|'arrow'|'freehand'|'image';
+    type: 'text'|'rect'|'circle'|'line'|'arrow'|'freehand'|'image'|'highlight'|'underline'|'comment';
     x: number; y: number;
     x2?: number; y2?: number;
     color: string; size: number; opacity: number;
@@ -286,13 +310,29 @@ No server upload — your files stay private.</pre>
   let startX = 0;
   let startY = 0;
   let tempId = '';
+  let panning = false;
+  let panStartX = 0;
+  let panStartY = 0;
+  let panScrollX = 0;
+  let panScrollY = 0;
+  let dragIdx: number | null = null;
+  let dragOffX = 0;
+  let dragOffY = 0;
+  let resizing = false;
+  let resizeIdx: number | null = null;
+  let resizeStartX = 0;
+  let resizeStartY = 0;
+  let resizeStartX2 = 0;
+  let resizeStartY2 = 0;
+  let resizeOrigBB: { x: number; y: number; w: number; h: number } | null = null;
 
   /* Per-page rendering metadata */
   let pageViewportW = 0;   /* SVG / canvas width in CSS px  */
   let pageViewportH = 0;   /* SVG / canvas height in CSS px */
   let pagePdfW = 0;        /* pdf-lib page width in points   */
   let pagePdfH = 0;        /* pdf-lib page height in points  */
-
+  let baseScale = 1;
+  let pageBaseScale: Record<number, number> = {};       /* scale from renderPage (fit-to-width) */
   /* ── Helpers ──────────────────────────────────────────────── */
   function getProps() {
     return {
@@ -312,7 +352,8 @@ No server upload — your files stay private.</pre>
   }
 
   function updateEditCount() {
-    editCountEl.textContent = String((pageEdits[currentPage] || []).length);
+    const n = (pageEdits[currentPage] || []).length;
+    editCountEl.textContent = n + ' edit' + (n !== 1 ? 's' : '');
   }
 
   /* Convert mouse event to SVG-coordinate space (0..viewportW, 0..viewportH) */
@@ -322,6 +363,15 @@ No server upload — your files stay private.</pre>
       x: ((e.clientX - rect.left) / rect.width)  * pageViewportW,
       y: ((e.clientY - rect.top)  / rect.height) * pageViewportH,
     };
+  }
+
+  /* Convert viewport coords to PDF point coords (invariant to container size) */
+  function vpToPdf(x: number, y: number): { x: number; y: number } {
+    return { x: x * (pagePdfW / pageViewportW), y: pagePdfH - y * (pagePdfH / pageViewportH) };
+  }
+  /* Convert PDF point coords back to viewport coords */
+  function pdfToVp(x: number, y: number): { x: number; y: number } {
+    return { x: x * (pageViewportW / pagePdfW), y: (pagePdfH - y) * (pageViewportH / pagePdfH) };
   }
 
   /* ── Tool selection ───────────────────────────────────────── */
@@ -334,7 +384,7 @@ No server upload — your files stay private.</pre>
       btn.classList.add('active');
       btn.setAttribute('aria-pressed', 'true');
       activeTool = (btn as HTMLElement).dataset.tool!;
-      svg.style.cursor = activeTool === 'eraser' ? 'pointer' : 'crosshair';
+      svg.style.cursor = activeTool === 'eraser' ? 'pointer' : activeTool === 'hand' ? 'grab' : 'crosshair';
       commitAnyTextInput();
     });
   });
@@ -400,13 +450,17 @@ No server upload — your files stay private.</pre>
     const page = await pdfDoc.getPage(num);
     const unscaled = page.getViewport({ scale: 1 });
     const containerW = canvasContainer.clientWidth - 32;
-    const displayScale = Math.min(containerW / unscaled.width, 2);
-    const vp = page.getViewport({ scale: displayScale });
+    baseScale = Math.min(containerW / unscaled.width, 2);
+    pageBaseScale[num] = baseScale;
+    /* Canvas always renders at base size; CSS transform handles zoom */
+    const vp = page.getViewport({ scale: baseScale });
 
     pageViewportW = vp.width;
     pageViewportH = vp.height;
     canvas.width  = vp.width;
     canvas.height = vp.height;
+    canvas.style.maxWidth = '';
+    canvas.style.height = '';
     canvasWrapper.style.width  = vp.width  + 'px';
     canvasWrapper.style.height = vp.height + 'px';
     svg.setAttribute('viewBox', `0 0 ${vp.width} ${vp.height}`);
@@ -438,6 +492,58 @@ No server upload — your files stay private.</pre>
     nextBtn.toggleAttribute('disabled', currentPage >= totalPages);
     updateUndoRedo();
   }
+
+  /* ── Fullscreen expand / collapse ─────────────────────────── */
+  async function expandEditor() {
+    if (isFullscreen) return;
+    isFullscreen = true;
+    /* Save original position so we can restore it */
+    originalParent = editorWrap.parentNode;
+    originalNextSibling = editorWrap.nextSibling;
+    /* Move editor-wrap into fullscreen overlay */
+    fsEditorContent.appendChild(editorWrap);
+    editorWrap.style.cssText = 'display:flex;flex-direction:column;flex:1;min-height:0;margin-top:0;';
+    editorFullscreen.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    expandBtn.textContent = 'Shrink';
+    canvasContainer.style.cssText = 'width:100%;height:auto;flex:1;min-height:0;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.75rem;overflow:auto;position:relative;';
+    await renderPage(currentPage);
+  }
+  async function collapseEditor() {
+    if (!isFullscreen) return;
+    isFullscreen = false;
+    /* Move editor-wrap back to its original position FIRST */
+    if (originalParent) {
+      if (originalNextSibling && originalNextSibling.parentNode === originalParent) {
+        originalParent.insertBefore(editorWrap, originalNextSibling);
+      } else {
+        originalParent.appendChild(editorWrap);
+      }
+    }
+    /* Restore editor-wrap inline styles to defaults */
+    editorWrap.style.cssText = 'display:block;margin-top:1.25rem;max-width:100%;overflow:hidden;';
+    editorFullscreen.style.display = 'none';
+    document.body.style.overflow = '';
+    expandBtn.textContent = 'Expand';
+    canvasContainer.style.cssText = 'width:100%;max-width:100%;height:55vh;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.75rem;overflow:auto;position:relative;';
+    canvasWrapper.style.cssText = 'position:relative;display:inline-block;flex-shrink:0;margin:1rem auto;display:block;text-align:center;';
+    canvas.style.maxWidth = '100%';
+    canvas.style.height = 'auto';
+    /* Force browser to reflow at the restored size before reading clientWidth */
+    void canvasContainer.offsetWidth;
+    await renderPage(currentPage);
+  }
+  expandBtn.addEventListener('click', expandEditor);
+  collapseBtn.addEventListener('click', collapseEditor);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && isFullscreen) { e.preventDefault(); collapseEditor(); }
+  });
+
+  /* ── Props toggle ─────────────────────────────────────────── */
+  propsToggle.addEventListener('click', () => {
+    const visible = propsRow.style.display !== 'none';
+    propsRow.style.display = visible ? 'none' : 'flex';
+  });
 
   /* ── History ──────────────────────────────────────────────── */
   function pushHistory(page: number) {
@@ -485,8 +591,55 @@ No server upload — your files stay private.</pre>
   });
 
   /* ═══════════════════════════════════════════════════════════
-     SVG rendering — every element carries data-edit-idx
+     SVG rendering — every element wrapped in <g data-type="edit" data-idx="N">
      ═══════════════════════════════════════════════════════════ */
+  function editBBox(edit: Edit): { x: number; y: number; w: number; h: number } {
+    const sx = pageViewportW / pagePdfW, sy = pageViewportH / pagePdfH;
+    const tx = (px: number) => px * sx;
+    const ty = (py: number) => (pagePdfH - py) * sy;
+    switch (edit.type) {
+      case 'rect': case 'highlight': case 'underline': {
+        const x1 = tx(edit.x), y1 = ty(edit.y), x2 = tx(edit.x2!), y2 = ty(edit.y2!);
+        const x = Math.min(x1, x2), y = Math.min(y1, y2);
+        return { x, y, w: Math.abs(x2 - x1) || 1, h: Math.abs(y2 - y1) || 1 };
+      }
+      case 'circle': {
+        const x1 = tx(edit.x), y1 = ty(edit.y), x2 = tx(edit.x2!), y2 = ty(edit.y2!);
+        const x = Math.min(x1, x2), y = Math.min(y1, y2);
+        return { x, y, w: Math.abs(x2 - x1) || 1, h: Math.abs(y2 - y1) || 1 };
+      }
+      case 'line': case 'arrow': {
+        const x1 = tx(edit.x), y1 = ty(edit.y), x2 = tx(edit.x2!), y2 = ty(edit.y2!);
+        const x = Math.min(x1, x2), y = Math.min(y1, y2);
+        return { x, y, w: Math.abs(x2 - x1) || 1, h: Math.abs(y2 - y1) || 1 };
+      }
+      case 'text': {
+        const fs = edit.fontSize || 16;
+        const tw = (edit.text || '').length * fs * 0.52;
+        return { x: tx(edit.x), y: ty(edit.y), w: tw * sx || 20, h: fs * sy * 1.2 };
+      }
+      case 'comment': {
+        const fs = edit.fontSize || 12;
+        const tw = (edit.text || '').length * fs * 0.52;
+        return { x: tx(edit.x), y: ty(edit.y), w: Math.max(20, (25 + tw) * sx), h: 20 * sy };
+      }
+      case 'image': {
+        return { x: tx(edit.x), y: ty(edit.y), w: (edit.imgW || 100) * sx, h: (edit.imgH || 100) * sy };
+      }
+      case 'freehand': {
+        if (!edit.points || !edit.points.length) return { x: tx(edit.x), y: ty(edit.y), w: 1, h: 1 };
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (const p of edit.points) {
+          const vx = tx(p.x), vy = ty(p.y);
+          minX = Math.min(minX, vx); minY = Math.min(minY, vy);
+          maxX = Math.max(maxX, vx); maxY = Math.max(maxY, vy);
+        }
+        return { x: minX, y: minY, w: (maxX - minX) || 1, h: (maxY - minY) || 1 };
+      }
+    }
+    return { x: tx(edit.x), y: ty(edit.y), w: 20, h: 20 };
+  }
+
   function renderEdits() {
     svg.innerHTML = '';
     const edits = pageEdits[currentPage] || [];
@@ -499,127 +652,260 @@ No server upload — your files stay private.</pre>
   function buildSvg(edit: Edit, idx: number): SVGElement | null {
     const op = edit.opacity ?? 1;
     const ns = 'http://www.w3.org/2000/svg';
-    const marker = (el: SVGElement) => {
-      el.setAttribute('data-edit-idx', String(idx));
-      el.style.cursor = activeTool === 'eraser' ? 'pointer' : '';
-      return el;
+    const sx = pageViewportW / pagePdfW, sy = pageViewportH / pagePdfH;
+    const tx = (px: number) => px * sx;
+    const ty = (py: number) => (pagePdfH - py) * sy;
+
+    /* Wrapper group for hit area, content, and resize handle */
+    const g = document.createElementNS(ns, 'g');
+    g.setAttribute('data-type', 'edit');
+    g.setAttribute('data-idx', String(idx));
+
+    const bb = editBBox(edit);
+
+    /* Invisible hit area for drag — covers the bounding box */
+    const hit = document.createElementNS(ns, 'rect');
+    hit.setAttribute('x', String(bb.x));
+    hit.setAttribute('y', String(bb.y));
+    hit.setAttribute('width', String(bb.w));
+    hit.setAttribute('height', String(bb.h));
+    hit.setAttribute('fill', 'transparent');
+    hit.setAttribute('stroke', 'none');
+    hit.style.cursor = activeTool === 'eraser' ? 'pointer' : 'grab';
+    g.appendChild(hit);
+
+    /* Build the actual visual element (all coords converted from PDF→viewport) */
+    const buildInner = (): SVGElement | null => {
+      switch (edit.type) {
+        case 'text': {
+          const t = document.createElementNS(ns, 'text');
+          const vx = tx(edit.x), vy = ty(edit.y);
+          const vfs = (edit.fontSize || 16) * sy;
+          t.setAttribute('x', String(vx));
+          t.setAttribute('y', String(vy + vfs * 0.82));
+          t.setAttribute('fill', edit.color);
+          t.setAttribute('font-size', String(vfs));
+          t.setAttribute('font-family', 'Helvetica, Arial, sans-serif');
+          t.setAttribute('opacity', String(op));
+          t.setAttribute('pointer-events', 'none');
+          t.textContent = edit.text || '';
+          return t;
+        }
+        case 'rect': {
+          const r = document.createElementNS(ns, 'rect');
+          const x1 = tx(edit.x), y1 = ty(edit.y), x2 = tx(edit.x2!), y2 = ty(edit.y2!);
+          r.setAttribute('x', String(Math.min(x1, x2)));
+          r.setAttribute('y', String(Math.min(y1, y2)));
+          r.setAttribute('width', String(Math.abs(x2 - x1)));
+          r.setAttribute('height', String(Math.abs(y2 - y1)));
+          r.setAttribute('stroke', edit.color);
+          r.setAttribute('stroke-width', String(edit.size * sx));
+          r.setAttribute('fill', edit.fill === 'solid' ? edit.color : 'none');
+          r.setAttribute('opacity', String(op));
+          r.setAttribute('pointer-events', 'none');
+          return r;
+        }
+        case 'circle': {
+          const c = document.createElementNS(ns, 'ellipse');
+          const x1 = tx(edit.x), y1 = ty(edit.y), x2 = tx(edit.x2!), y2 = ty(edit.y2!);
+          c.setAttribute('cx', String((x1 + x2) / 2));
+          c.setAttribute('cy', String((y1 + y2) / 2));
+          c.setAttribute('rx', String(Math.abs(x2 - x1) / 2));
+          c.setAttribute('ry', String(Math.abs(y2 - y1) / 2));
+          c.setAttribute('stroke', edit.color);
+          c.setAttribute('stroke-width', String(edit.size * sx));
+          c.setAttribute('fill', edit.fill === 'solid' ? edit.color : 'none');
+          c.setAttribute('opacity', String(op));
+          c.setAttribute('pointer-events', 'none');
+          return c;
+        }
+        case 'line': {
+          const l = document.createElementNS(ns, 'line');
+          l.setAttribute('x1', String(tx(edit.x))); l.setAttribute('y1', String(ty(edit.y)));
+          l.setAttribute('x2', String(tx(edit.x2!))); l.setAttribute('y2', String(ty(edit.y2!)));
+          l.setAttribute('stroke', edit.color); l.setAttribute('stroke-width', String(edit.size * sx));
+          l.setAttribute('stroke-linecap', 'round'); l.setAttribute('opacity', String(op));
+          l.setAttribute('pointer-events', 'none');
+          return l;
+        }
+        case 'arrow': {
+          const ag = document.createElementNS(ns, 'g');
+          ag.setAttribute('opacity', String(op));
+          ag.setAttribute('pointer-events', 'none');
+          const ax1 = tx(edit.x), ay1 = ty(edit.y), ax2 = tx(edit.x2!), ay2 = ty(edit.y2!);
+          const l = document.createElementNS(ns, 'line');
+          l.setAttribute('x1', String(ax1)); l.setAttribute('y1', String(ay1));
+          l.setAttribute('x2', String(ax2)); l.setAttribute('y2', String(ay2));
+          l.setAttribute('stroke', edit.color); l.setAttribute('stroke-width', String(edit.size * sx));
+          l.setAttribute('stroke-linecap', 'round');
+          ag.appendChild(l);
+          const a = Math.atan2(ay2 - ay1, ax2 - ax1);
+          const hl = Math.max(edit.size * sx * 4, 12);
+          const pts = [
+            [ax2, ay2],
+            [ax2 - hl * Math.cos(a - Math.PI / 6), ay2 - hl * Math.sin(a - Math.PI / 6)],
+            [ax2 - hl * Math.cos(a + Math.PI / 6), ay2 - hl * Math.sin(a + Math.PI / 6)],
+          ];
+          const poly = document.createElementNS(ns, 'polygon');
+          poly.setAttribute('points', pts.map(p => p.join(',')).join(' '));
+          poly.setAttribute('fill', edit.color);
+          ag.appendChild(poly);
+          return ag;
+        }
+        case 'freehand': {
+          if (!edit.points || edit.points.length < 2) return null;
+          const p = document.createElementNS(ns, 'polyline');
+          p.setAttribute('points', edit.points.map(pt => `${tx(pt.x)},${ty(pt.y)}`).join(' '));
+          p.setAttribute('stroke', edit.color); p.setAttribute('stroke-width', String(edit.size * sx));
+          p.setAttribute('fill', 'none'); p.setAttribute('stroke-linecap', 'round');
+          p.setAttribute('stroke-linejoin', 'round'); p.setAttribute('opacity', String(op));
+          p.setAttribute('pointer-events', 'none');
+          return p;
+        }
+        case 'image': {
+          const img = document.createElementNS(ns, 'image');
+          img.setAttribute('href', edit.imageData!);
+          img.setAttribute('x', String(tx(edit.x))); img.setAttribute('y', String(ty(edit.y)));
+          img.setAttribute('width', String((edit.imgW || 100) * sx));
+          img.setAttribute('height', String((edit.imgH || 100) * sy));
+          img.setAttribute('opacity', String(op));
+          img.setAttribute('pointer-events', 'none');
+          return img;
+        }
+        case 'highlight': {
+          const r = document.createElementNS(ns, 'rect');
+          const x1 = tx(edit.x), y1 = ty(edit.y), x2 = tx(edit.x2!), y2 = ty(edit.y2!);
+          r.setAttribute('x', String(Math.min(x1, x2)));
+          r.setAttribute('y', String(Math.min(y1, y2)));
+          r.setAttribute('width', String(Math.abs(x2 - x1)));
+          r.setAttribute('height', String(Math.abs(y2 - y1)));
+          r.setAttribute('fill', edit.color); r.setAttribute('opacity', '0.3');
+          r.setAttribute('stroke', 'none'); r.setAttribute('pointer-events', 'none');
+          return r;
+        }
+        case 'underline': {
+          const l = document.createElementNS(ns, 'line');
+          const uy = Math.max(ty(edit.y), ty(edit.y2!));
+          l.setAttribute('x1', String(tx(edit.x))); l.setAttribute('y1', String(uy));
+          l.setAttribute('x2', String(tx(edit.x2!))); l.setAttribute('y2', String(uy));
+          l.setAttribute('stroke', edit.color); l.setAttribute('stroke-width', String(Math.max(edit.size, 2) * sx));
+          l.setAttribute('stroke-linecap', 'round'); l.setAttribute('opacity', String(op));
+          l.setAttribute('pointer-events', 'none');
+          return l;
+        }
+        case 'comment': {
+          const cg = document.createElementNS(ns, 'g');
+          cg.setAttribute('opacity', String(op)); cg.setAttribute('pointer-events', 'none');
+          const cx = tx(edit.x), cy = ty(edit.y);
+          const cfs = (edit.fontSize || 12) * sy;
+          const box = document.createElementNS(ns, 'rect');
+          box.setAttribute('x', String(cx)); box.setAttribute('y', String(cy));
+          box.setAttribute('width', String(20 * sx)); box.setAttribute('height', String(20 * sy));
+          box.setAttribute('rx', '3'); box.setAttribute('fill', edit.color);
+          cg.appendChild(box);
+          for (let li = 0; li < 3; li++) {
+            const ln = document.createElementNS(ns, 'line');
+            ln.setAttribute('x1', String(cx + 4 * sx)); ln.setAttribute('y1', String(cy + (5 + li * 5) * sy));
+            ln.setAttribute('x2', String(cx + 16 * sx)); ln.setAttribute('y2', String(cy + (5 + li * 5) * sy));
+            ln.setAttribute('stroke', '#fff'); ln.setAttribute('stroke-width', String(1.5 * sx));
+            ln.setAttribute('stroke-linecap', 'round');
+            cg.appendChild(ln);
+          }
+          if (edit.text) {
+            const t = document.createElementNS(ns, 'text');
+            t.setAttribute('x', String(cx + 25 * sx)); t.setAttribute('y', String(cy + 14 * sy));
+            t.setAttribute('fill', edit.color); t.setAttribute('font-size', String(cfs));
+            t.setAttribute('font-family', 'Helvetica, Arial, sans-serif');
+            t.setAttribute('font-weight', '600');
+            t.textContent = edit.text;
+            cg.appendChild(t);
+          }
+          return cg;
+        }
+      }
+      return null;
     };
 
-    switch (edit.type) {
-      /* ── TEXT ─────────────────────────────────────────────── */
-      case 'text': {
-        const t = document.createElementNS(ns, 'text');
-        t.setAttribute('x', String(edit.x));
-        /* SVG text y = baseline; shift up by ~80 % of fontSize for visual top-left */
-        t.setAttribute('y', String(edit.y + (edit.fontSize || 16) * 0.82));
-        t.setAttribute('fill', edit.color);
-        t.setAttribute('font-size', String(edit.fontSize || 16));
-        t.setAttribute('font-family', 'Helvetica, Arial, sans-serif');
-        t.setAttribute('opacity', String(op));
-        t.textContent = edit.text || '';
-        return marker(t);
-      }
-      /* ── RECT ────────────────────────────────────────────── */
-      case 'rect': {
-        const r = document.createElementNS(ns, 'rect');
-        r.setAttribute('x', String(Math.min(edit.x, edit.x2!)));
-        r.setAttribute('y', String(Math.min(edit.y, edit.y2!)));
-        r.setAttribute('width',  String(Math.abs(edit.x2! - edit.x)));
-        r.setAttribute('height', String(Math.abs(edit.y2! - edit.y)));
-        r.setAttribute('stroke', edit.color);
-        r.setAttribute('stroke-width', String(edit.size));
-        r.setAttribute('fill', edit.fill === 'solid' ? edit.color : 'none');
-        r.setAttribute('opacity', String(op));
-        return marker(r);
-      }
-      /* ── CIRCLE (ellipse) ────────────────────────────────── */
-      case 'circle': {
-        const c = document.createElementNS(ns, 'ellipse');
-        c.setAttribute('cx', String((edit.x + edit.x2!) / 2));
-        c.setAttribute('cy', String((edit.y + edit.y2!) / 2));
-        c.setAttribute('rx', String(Math.abs(edit.x2! - edit.x) / 2));
-        c.setAttribute('ry', String(Math.abs(edit.y2! - edit.y) / 2));
-        c.setAttribute('stroke', edit.color);
-        c.setAttribute('stroke-width', String(edit.size));
-        c.setAttribute('fill', edit.fill === 'solid' ? edit.color : 'none');
-        c.setAttribute('opacity', String(op));
-        return marker(c);
-      }
-      /* ── LINE ────────────────────────────────────────────── */
-      case 'line': {
-        const l = document.createElementNS(ns, 'line');
-        l.setAttribute('x1', String(edit.x));
-        l.setAttribute('y1', String(edit.y));
-        l.setAttribute('x2', String(edit.x2!));
-        l.setAttribute('y2', String(edit.y2!));
-        l.setAttribute('stroke', edit.color);
-        l.setAttribute('stroke-width', String(edit.size));
-        l.setAttribute('stroke-linecap', 'round');
-        l.setAttribute('opacity', String(op));
-        return marker(l);
-      }
-      /* ── ARROW ───────────────────────────────────────────── */
-      case 'arrow': {
-        const g = document.createElementNS(ns, 'g');
-        g.setAttribute('opacity', String(op));
-        const l = document.createElementNS(ns, 'line');
-        l.setAttribute('x1', String(edit.x));
-        l.setAttribute('y1', String(edit.y));
-        l.setAttribute('x2', String(edit.x2!));
-        l.setAttribute('y2', String(edit.y2!));
-        l.setAttribute('stroke', edit.color);
-        l.setAttribute('stroke-width', String(edit.size));
-        l.setAttribute('stroke-linecap', 'round');
-        g.appendChild(l);
-        const a  = Math.atan2(edit.y2! - edit.y, edit.x2! - edit.x);
-        const hl = Math.max(edit.size * 4, 12);
-        const pts = [
-          [edit.x2!, edit.y2!],
-          [edit.x2! - hl * Math.cos(a - Math.PI / 6), edit.y2! - hl * Math.sin(a - Math.PI / 6)],
-          [edit.x2! - hl * Math.cos(a + Math.PI / 6), edit.y2! - hl * Math.sin(a + Math.PI / 6)],
-        ];
-        const poly = document.createElementNS(ns, 'polygon');
-        poly.setAttribute('points', pts.map(p => p.join(',')).join(' '));
-        poly.setAttribute('fill', edit.color);
-        g.appendChild(poly);
-        return marker(g);
-      }
-      /* ── FREEHAND ────────────────────────────────────────── */
-      case 'freehand': {
-        if (!edit.points || edit.points.length < 2) return null;
-        const p = document.createElementNS(ns, 'polyline');
-        p.setAttribute('points', edit.points.map(pt => `${pt.x},${pt.y}`).join(' '));
-        p.setAttribute('stroke', edit.color);
-        p.setAttribute('stroke-width', String(edit.size));
-        p.setAttribute('fill', 'none');
-        p.setAttribute('stroke-linecap', 'round');
-        p.setAttribute('stroke-linejoin', 'round');
-        p.setAttribute('opacity', String(op));
-        return marker(p);
-      }
-      /* ── IMAGE ───────────────────────────────────────────── */
-      case 'image': {
-        const img = document.createElementNS(ns, 'image');
-        img.setAttribute('href', edit.imageData!);
-        img.setAttribute('x', String(edit.x));
-        img.setAttribute('y', String(edit.y));
-        img.setAttribute('width',  String(edit.imgW || 100));
-        img.setAttribute('height', String(edit.imgH || 100));
-        img.setAttribute('opacity', String(op));
-        return marker(img);
-      }
-    }
-    return null;
+    const inner = buildInner();
+    if (inner) g.appendChild(inner);
+
+    /* Resize handle — small square in bottom-right of bounding box */
+    const hs = Math.max(8, Math.min(12, Math.min(bb.w, bb.h) * 0.15));
+    const handle = document.createElementNS(ns, 'rect');
+    handle.setAttribute('x', String(bb.x + bb.w - hs / 2));
+    handle.setAttribute('y', String(bb.y + bb.h - hs / 2));
+    handle.setAttribute('width', String(hs)); handle.setAttribute('height', String(hs));
+    handle.setAttribute('rx', '2'); handle.setAttribute('fill', '#1D4ED8');
+    handle.setAttribute('stroke', '#fff'); handle.setAttribute('stroke-width', '1');
+    handle.setAttribute('data-action', 'resize-' + idx);
+    handle.style.cursor = 'nwse-resize';
+    g.appendChild(handle);
+
+    return g;
   }
 
   /* ═══════════════════════════════════════════════════════════
      Mouse interaction
      ═══════════════════════════════════════════════════════════ */
   svg.addEventListener('mousedown', e => {
-    if (e.button !== 0) return;          /* left-click only */
+    if (e.button !== 0) return;
     if (activeTool === 'eraser') return;  /* handled in click */
+    if (activeTool === 'hand') {
+      panning = true;
+      panStartX = e.clientX;
+      panStartY = e.clientY;
+      panScrollX = canvasContainer.scrollLeft;
+      panScrollY = canvasContainer.scrollTop;
+      svg.style.cursor = 'grabbing';
+      e.preventDefault();
+      return;
+    }
+
+    /* Check for resize handle or drag on existing edit FIRST */
+    const target = e.target as SVGElement;
+    const action = target.getAttribute('data-action') || '';
+    if (action.startsWith('resize-')) {
+      const idx = parseInt(action.replace('resize-', ''), 10);
+      const edits = pageEdits[currentPage] || [];
+      if (idx >= 0 && idx < edits.length) {
+        resizing = true; resizeIdx = idx;
+        const pt = svgPoint(e); resizeStartX = pt.x; resizeStartY = pt.y;
+        /* Save original bounding box in PDF coords for consistent resize */
+        const e2 = edits[idx];
+        if (e2.type === 'freehand' && e2.points?.length) {
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          for (const p of e2.points) { minX = Math.min(minX, p.x); minY = Math.min(minY, p.y); maxX = Math.max(maxX, p.x); maxY = Math.max(maxY, p.y); }
+          resizeOrigBB = { x: minX, y: minY, w: (maxX - minX) || 1, h: (maxY - minY) || 1 };
+        } else {
+          resizeOrigBB = { x: e2.x, y: e2.y, w: Math.abs((e2.x2 ?? e2.x) - e2.x) || 1, h: Math.abs((e2.y2 ?? e2.y) - e2.y) || 1 };
+        }
+        resizeStartX2 = e2.x2 ?? e2.x;
+        resizeStartY2 = e2.y2 ?? e2.y;
+        e.preventDefault();
+      }
+      return;
+    }
+    const editGroup = target.closest('[data-type="edit"]');
+    if (editGroup) {
+      const idx = parseInt(editGroup.getAttribute('data-idx')!, 10);
+      const edits = pageEdits[currentPage] || [];
+      if (idx >= 0 && idx < edits.length) {
+        const edit = edits[idx];
+        dragIdx = idx;
+        /* Convert mouse click to PDF, store offset from edit's PDF position */
+        const mp = vpToPdf(pt.x, pt.y);
+        dragOffX = mp.x - edit.x;
+        dragOffY = -(mp.y - edit.y);
+        e.preventDefault();
+      }
+      return;
+    }
+
+    /* No existing edit clicked — use tool-specific handler */
     if (activeTool === 'text')    { handleTextClick(e);    return; }
     if (activeTool === 'image')   { handleImageClick(e);   return; }
+    if (activeTool === 'comment') { handleCommentClick(e); return; }
+
     drawing = true;
     const pt = svgPoint(e);
     startX = pt.x;
@@ -627,21 +913,79 @@ No server upload — your files stay private.</pre>
     tempId = 'tmp-' + Date.now();
     if (activeTool === 'freehand') {
       const p = getProps();
+      const pp = vpToPdf(pt.x, pt.y);
       pageEdits[currentPage] = pageEdits[currentPage] || [];
       pageEdits[currentPage].push({
-        type: 'freehand', x: pt.x, y: pt.y,
+        type: 'freehand', x: pp.x, y: pp.y,
         color: p.color, size: p.size, opacity: p.opacity,
-        points: [{ x: pt.x, y: pt.y }], id: tempId,
+        points: [{ x: pp.x, y: pp.y }], id: tempId,
       });
     }
   });
 
   svg.addEventListener('mousemove', e => {
-    if (!drawing) return;
+    if (panning) {
+      canvasContainer.scrollLeft = panScrollX - (e.clientX - panStartX);
+      canvasContainer.scrollTop  = panScrollY - (e.clientY - panStartY);
+      return;
+    }
     const pt = svgPoint(e);
+    if (resizing && resizeIdx !== null) {
+      e.preventDefault();
+      const edits = pageEdits[currentPage] || [];
+      const edit = edits[resizeIdx];
+      if (!edit) return;
+      const dx = pt.x - resizeStartX;
+      const dy = pt.y - resizeStartY;
+      /* Convert viewport delta to PDF delta */
+      const dpx = dx * (pagePdfW / pageViewportW);
+      const dpy = -dy * (pagePdfH / pageViewportH);
+      if (edit.type === 'freehand') {
+        /* Scale all points using the original bounding box saved at mousedown (in PDF coords) */
+        if (edit.points && edit.points.length && resizeOrigBB) {
+          const ow = resizeOrigBB.w || 1, oh = resizeOrigBB.h || 1;
+          const nw = Math.max(10, ow + dpx), nh = Math.max(10, oh + dpy);
+          const scx = nw / ow, scy = nh / oh;
+          const ox = resizeOrigBB.x, oy = resizeOrigBB.y;
+          for (const p of edit.points) { p.x = ox + (p.x - ox) * scx; p.y = oy + (p.y - oy) * scy; }
+        }
+      } else if (edit.type === 'line' || edit.type === 'arrow' || edit.type === 'highlight' || edit.type === 'underline' || edit.type === 'rect' || edit.type === 'circle') {
+        edit.x2 = resizeStartX2 + dpx;
+        edit.y2 = resizeStartY2 + dpy;
+      } else if (edit.type === 'image') {
+        edit.imgW = Math.max(20, (resizeOrigBB?.w || 100) + dpx);
+        edit.imgH = Math.max(10, (resizeOrigBB?.h || 100) + dpy);
+      } else if (edit.type === 'text') {
+        edit.fontSize = Math.max(6, Math.round(((resizeOrigBB?.w || 20) + dpx) / ((edit.text || 'x').length * 0.52)));
+      } else if (edit.type === 'comment') {
+        edit.fontSize = Math.max(6, Math.round((edit.fontSize || 12) * (1 + dpx * 0.005)));
+      }
+      renderEdits();
+      return;
+    }
+    if (dragIdx !== null) {
+      e.preventDefault();
+      const edits = pageEdits[currentPage] || [];
+      const edit = edits[dragIdx];
+      if (!edit) return;
+      /* Convert current mouse to PDF, apply offset to get new PDF position */
+      const mp = vpToPdf(pt.x, pt.y);
+      const newPdfX = mp.x - dragOffX;
+      const newPdfY = mp.y + dragOffY;
+      const dpx = newPdfX - edit.x;
+      const dpy = newPdfY - edit.y;
+      if (edit.type === 'freehand' && edit.points) {
+        for (const p of edit.points) { p.x += dpx; p.y += dpy; }
+      }
+      edit.x += dpx; edit.y += dpy;
+      if (edit.x2 !== undefined) { edit.x2 += dpx; edit.y2 += dpy; }
+      renderEdits();
+      return;
+    }
+    if (!drawing) return;
     if (activeTool === 'freehand') {
       const ed = (pageEdits[currentPage] || []).find(ed => ed.id === tempId);
-      if (ed?.points) { ed.points.push({ x: pt.x, y: pt.y }); renderEdits(); }
+      if (ed?.points) { const pp = vpToPdf(pt.x, pt.y); ed.points.push({ x: pp.x, y: pp.y }); renderEdits(); }
     } else {
       renderEdits();
       const prev = buildTempPreview(startX, startY, pt.x, pt.y);
@@ -650,6 +994,21 @@ No server upload — your files stay private.</pre>
   });
 
   svg.addEventListener('mouseup', e => {
+    if (panning) {
+      panning = false;
+      svg.style.cursor = 'grab';
+      return;
+    }
+    if (resizing) {
+      pushHistory(currentPage);
+      resizing = false; resizeIdx = null;
+      return;
+    }
+    if (dragIdx !== null) {
+      pushHistory(currentPage);
+      dragIdx = null;
+      return;
+    }
     if (!drawing) return;
     drawing = false;
     const pt = svgPoint(e);
@@ -659,17 +1018,23 @@ No server upload — your files stay private.</pre>
     const p = getProps();
     const id = 'e' + Date.now() + Math.random().toString(36).slice(2, 5);
     const base = { color: p.color, size: p.size, opacity: p.opacity, fill: p.fill, id };
+    const s = vpToPdf(startX, startY);
+    const e2 = vpToPdf(pt.x, pt.y);
     pageEdits[currentPage] = pageEdits[currentPage] || [];
 
     switch (activeTool) {
       case 'rect':
-        pageEdits[currentPage].push({ type: 'rect', x: startX, y: startY, x2: pt.x, y2: pt.y, ...base }); break;
+        pageEdits[currentPage].push({ type: 'rect', x: s.x, y: s.y, x2: e2.x, y2: e2.y, ...base }); break;
       case 'circle':
-        pageEdits[currentPage].push({ type: 'circle', x: startX, y: startY, x2: pt.x, y2: pt.y, ...base }); break;
+        pageEdits[currentPage].push({ type: 'circle', x: s.x, y: s.y, x2: e2.x, y2: e2.y, ...base }); break;
       case 'line':
-        pageEdits[currentPage].push({ type: 'line', x: startX, y: startY, x2: pt.x, y2: pt.y, ...base }); break;
+        pageEdits[currentPage].push({ type: 'line', x: s.x, y: s.y, x2: e2.x, y2: e2.y, ...base }); break;
       case 'arrow':
-        pageEdits[currentPage].push({ type: 'arrow', x: startX, y: startY, x2: pt.x, y2: pt.y, ...base }); break;
+        pageEdits[currentPage].push({ type: 'arrow', x: s.x, y: s.y, x2: e2.x, y2: e2.y, ...base }); break;
+      case 'highlight':
+        pageEdits[currentPage].push({ type: 'highlight', x: s.x, y: s.y, x2: e2.x, y2: e2.y, ...base }); break;
+      case 'underline':
+        pageEdits[currentPage].push({ type: 'underline', x: s.x, y: s.y, x2: e2.x, y2: e2.y, ...base }); break;
     }
     pushHistory(currentPage);
     renderEdits();
@@ -681,14 +1046,23 @@ No server upload — your files stay private.</pre>
       drawing = false;
       svg.querySelector('#tmp-preview')?.remove();
     }
+    if (dragIdx !== null) { pushHistory(currentPage); dragIdx = null; }
+    if (resizing) { pushHistory(currentPage); resizing = false; resizeIdx = null; }
+  });
+  /* Stop panning if mouse released outside SVG */
+  document.addEventListener('mouseup', () => {
+    if (panning) { panning = false; svg.style.cursor = 'grab'; }
+    if (dragIdx !== null) { pushHistory(currentPage); dragIdx = null; }
+    if (resizing) { pushHistory(currentPage); resizing = false; resizeIdx = null; }
   });
 
-  /* ── Eraser — click on SVG element by data-edit-idx ──────── */
+  /* ── Eraser — click on SVG element by data-idx ──────── */
   svg.addEventListener('click', e => {
     if (activeTool !== 'eraser') return;
-    const target = (e.target as SVGElement).closest('[data-edit-idx]') as SVGElement | null;
+    commitAnyCommentInput();
+    const target = (e.target as SVGElement).closest('[data-type="edit"]') as SVGElement | null;
     if (!target) return;
-    const idx = parseInt(target.getAttribute('data-edit-idx')!, 10);
+    const idx = parseInt(target.getAttribute('data-idx')!, 10);
     const edits = pageEdits[currentPage] || [];
     if (idx >= 0 && idx < edits.length) {
       pushHistory(currentPage);
@@ -755,6 +1129,30 @@ No server upload — your files stay private.</pre>
         g.appendChild(poly);
         return g;
       }
+      case 'highlight': {
+        const r = document.createElementNS(ns, 'rect');
+        r.id = 'tmp-preview';
+        r.setAttribute('x', String(Math.min(x1, x2)));
+        r.setAttribute('y', String(Math.min(y1, y2)));
+        r.setAttribute('width',  String(Math.abs(x2 - x1)));
+        r.setAttribute('height', String(Math.abs(y2 - y1)));
+        r.setAttribute('fill', p.color);
+        r.setAttribute('opacity', '0.3');
+        r.setAttribute('stroke', 'none');
+        return r;
+      }
+      case 'underline': {
+        const y = Math.max(y1, y2);
+        const l = document.createElementNS(ns, 'line');
+        l.id = 'tmp-preview';
+        l.setAttribute('x1', String(x1)); l.setAttribute('y1', String(y));
+        l.setAttribute('x2', String(x2)); l.setAttribute('y2', String(y));
+        l.setAttribute('stroke', p.color);
+        l.setAttribute('stroke-width', String(Math.max(p.size, 2)));
+        l.setAttribute('stroke-linecap', 'round');
+        l.setAttribute('opacity', '0.6');
+        return l;
+      }
     }
     return null;
   }
@@ -765,6 +1163,8 @@ No server upload — your files stay private.</pre>
   function commitAnyTextInput() {
     const el = document.getElementById('inline-text-input') as HTMLInputElement | null;
     if (el) commitTextInput(el);
+    const cEl = document.getElementById('inline-comment-input') as HTMLInputElement | null;
+    if (cEl) commitCommentInput(cEl);
   }
 
   function handleTextClick(e: MouseEvent) {
@@ -798,8 +1198,9 @@ No server upload — your files stay private.</pre>
       zIndex: '20',
       opacity: String(props.opacity),
     } as CSSStyleDeclaration);
-    input.dataset.svgX = String(pt.x);
-    input.dataset.svgY = String(pt.y);
+    const pdfPt = vpToPdf(pt.x, pt.y);
+    input.dataset.svgX = String(pdfPt.x);
+    input.dataset.svgY = String(pdfPt.y);
 
     canvasWrapper.appendChild(input);
     /* Delay focus so the click that created it doesn't immediately blur */
@@ -861,10 +1262,12 @@ No server upload — your files stay private.</pre>
           const ratio  = Math.min(maxDim / img.width, maxDim / img.height);
           const w = img.width  * ratio;
           const h = img.height * ratio;
+          const pp = vpToPdf(pt.x - w / 2, pt.y - h / 2);
+          const sz = vpToPdf(w, h);
           pageEdits[currentPage] = pageEdits[currentPage] || [];
           pageEdits[currentPage].push({
-            type: 'image', x: pt.x - w / 2, y: pt.y - h / 2,
-            imageData: dataUrl, imgW: w, imgH: h,
+            type: 'image', x: pp.x, y: pp.y,
+            imageData: dataUrl, imgW: sz.x, imgH: sz.y,
             color: '#000000', size: 1,
             opacity: parseInt(propOpacity.value) / 100,
             id: 'e' + Date.now() + Math.random().toString(36).slice(2, 5),
@@ -878,6 +1281,83 @@ No server upload — your files stay private.</pre>
       reader.readAsDataURL(file);
     });
     tmp.click();
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     COMMENT TOOL
+     ═══════════════════════════════════════════════════════════ */
+  function handleCommentClick(e: MouseEvent) {
+    commitAnyCommentInput();
+    const pt = svgPoint(e);
+    const props = getProps();
+
+    const wrapperRect = canvasWrapper.getBoundingClientRect();
+    const leftPx = e.clientX - wrapperRect.left;
+    const topPx  = e.clientY - wrapperRect.top;
+
+    const input = document.createElement('input');
+    input.id = 'inline-comment-input';
+    input.type = 'text';
+    input.placeholder = 'Type comment\u2026';
+    Object.assign(input.style, {
+      position: 'absolute',
+      left: (leftPx + 25) + 'px',
+      top:  topPx  + 'px',
+      transform: 'translateY(-50%)',
+      fontSize: (props.fontSize || 12) + 'px',
+      color: props.color,
+      background: 'rgba(255,255,255,0.95)',
+      border: '1.5px dashed ' + props.color,
+      borderRadius: '3px',
+      padding: '2px 6px',
+      outline: 'none',
+      minWidth: '80px',
+      fontFamily: 'Helvetica, Arial, sans-serif',
+      zIndex: '20',
+      opacity: String(props.opacity),
+    } as CSSStyleDeclaration);
+    const pdfPt2 = vpToPdf(pt.x, pt.y);
+    input.dataset.svgX = String(pdfPt2.x);
+    input.dataset.svgY = String(pdfPt2.y);
+
+    canvasWrapper.appendChild(input);
+    requestAnimationFrame(() => input.focus());
+
+    input.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter') { ev.preventDefault(); commitCommentInput(input); }
+      if (ev.key === 'Escape') input.remove();
+    });
+    input.addEventListener('blur', () => {
+      setTimeout(() => { if (input.parentElement) commitCommentInput(input); }, 80);
+    });
+  }
+
+  function commitAnyCommentInput() {
+    const el = document.getElementById('inline-comment-input') as HTMLInputElement | null;
+    if (el) commitCommentInput(el);
+  }
+
+  function commitCommentInput(input: HTMLInputElement) {
+    const text = input.value.trim();
+    input.remove();
+    if (!text) return;
+
+    const props = getProps();
+    pageEdits[currentPage] = pageEdits[currentPage] || [];
+    pageEdits[currentPage].push({
+      type: 'comment',
+      x: parseFloat(input.dataset.svgX || '0'),
+      y: parseFloat(input.dataset.svgY || '0'),
+      text,
+      color: props.color,
+      fontSize: props.fontSize || 12,
+      size: props.size,
+      opacity: props.opacity,
+      id: 'e' + Date.now() + Math.random().toString(36).slice(2, 5),
+    });
+    pushHistory(currentPage);
+    renderEdits();
+    updateEditCount();
   }
 
   /* ═══════════════════════════════════════════════════════════
@@ -898,21 +1378,8 @@ No server upload — your files stay private.</pre>
         if (!edits.length) continue;
 
         const page = libDoc.getPage(p - 1);
-        const { width: pdfW, height: pdfH } = page.getSize();
 
-        /* Per-page viewport: re-derive from the stored PDF.js doc so we
-           don't rely on the currently-rendered page's state. */
-        const pdfJsPage  = await pdfDoc.getPage(p);
-        const unscaledVP = pdfJsPage.getViewport({ scale: 1 });
-        const containerW = canvasContainer.clientWidth - 32;
-        const displayScale = Math.min(containerW / unscaledVP.width, 2);
-        const vpW = unscaledVP.width  * displayScale;   /* SVG viewport width  */
-        const vpH = unscaledVP.height * displayScale;   /* SVG viewport height */
-
-        /* Coordinate scale factors: SVG-px → PDF-points.
-           svgX ∈ [0, vpW]  →  pdfX ∈ [0, pdfW]       */
-        const sx = pdfW / vpW;
-        const sy = pdfH / vpH;
+        /* Edits are stored in PDF point coords — use them directly */
 
         for (const edit of edits) {
           const c   = parseColor(edit.color);
@@ -922,16 +1389,10 @@ No server upload — your files stay private.</pre>
           switch (edit.type) {
             /* ── TEXT ─────────────────────────────────────── */
             case 'text': {
-              const fs = (edit.fontSize || 16) * sy;
-              /* edit.y is the click Y in SVG space (top-left origin).
-                 We stored it as the *visual* top of the text.
-                 SVG-text renders with baseline = y + 0.82*fontSize,
-                 so the visual top is edit.y.
-                 PDF drawText uses baseline = y, so we need:
-                   pdfY = pdfH - edit.y*sy - fs  (baseline at visual top - fontSize)  */
+              const fs = edit.fontSize || 16;
               page.drawText(edit.text || '', {
-                x: edit.x * sx,
-                y: pdfH - (edit.y + (edit.fontSize || 16) * 0.82) * sy,
+                x: edit.x,
+                y: edit.y,
                 size: fs,
                 font: helvetica,
                 color: clr,
@@ -941,44 +1402,44 @@ No server upload — your files stay private.</pre>
             }
             /* ── RECT ────────────────────────────────────── */
             case 'rect': {
-              const rx = Math.min(edit.x, edit.x2!) * sx;
-              const ry = pdfH - Math.max(edit.y, edit.y2!) * sy;
-              const rw = Math.abs(edit.x2! - edit.x) * sx;
-              const rh = Math.abs(edit.y2! - edit.y) * sy;
+              const rx = Math.min(edit.x, edit.x2!);
+              const ry = Math.min(edit.y, edit.y2!);
+              const rw = Math.abs(edit.x2! - edit.x);
+              const rh = Math.abs(edit.y2! - edit.y);
               if (edit.fill === 'solid')
                 page.drawRectangle({ x: rx, y: ry, width: rw, height: rh, color: clr, opacity: op });
-              page.drawRectangle({ x: rx, y: ry, width: rw, height: rh, borderColor: clr, borderWidth: (edit.size || 2) * sy, opacity: op });
+              page.drawRectangle({ x: rx, y: ry, width: rw, height: rh, borderColor: clr, borderWidth: edit.size || 2, opacity: op });
               break;
             }
             /* ── CIRCLE ──────────────────────────────────── */
             case 'circle': {
-              const cx = ((edit.x + edit.x2!) / 2) * sx;
-              const cy = pdfH - ((edit.y + edit.y2!) / 2) * sy;
-              const rx = (Math.abs(edit.x2! - edit.x) / 2) * sx;
-              const ry = (Math.abs(edit.y2! - edit.y) / 2) * sy;
+              const cx = (edit.x + edit.x2!) / 2;
+              const cy = (edit.y + edit.y2!) / 2;
+              const rx = Math.abs(edit.x2! - edit.x) / 2;
+              const ry = Math.abs(edit.y2! - edit.y) / 2;
               if (edit.fill === 'solid')
                 page.drawEllipse({ x: cx, y: cy, xScale: rx, yScale: ry, color: clr, opacity: op });
-              page.drawEllipse({ x: cx, y: cy, xScale: rx, yScale: ry, borderColor: clr, borderWidth: (edit.size || 2) * sy, opacity: op });
+              page.drawEllipse({ x: cx, y: cy, xScale: rx, yScale: ry, borderColor: clr, borderWidth: edit.size || 2, opacity: op });
               break;
             }
             /* ── LINE ────────────────────────────────────── */
             case 'line': {
               page.drawLine({
-                start: { x: edit.x * sx,  y: pdfH - edit.y * sy },
-                end:   { x: edit.x2! * sx, y: pdfH - edit.y2! * sy },
-                color: clr, thickness: (edit.size || 2) * sy, opacity: op,
+                start: { x: edit.x,  y: edit.y },
+                end:   { x: edit.x2!, y: edit.y2! },
+                color: clr, thickness: edit.size || 2, opacity: op,
               });
               break;
             }
             /* ── ARROW ───────────────────────────────────── */
             case 'arrow': {
-              const x1 = edit.x  * sx, y1 = pdfH - edit.y  * sy;
-              const x2 = edit.x2! * sx, y2 = pdfH - edit.y2! * sy;
-              page.drawLine({ start: { x: x1, y: y1 }, end: { x: x2, y: y2 }, color: clr, thickness: (edit.size || 2) * sy, opacity: op });
+              const x1 = edit.x,  y1 = edit.y;
+              const x2 = edit.x2!, y2 = edit.y2!;
+              page.drawLine({ start: { x: x1, y: y1 }, end: { x: x2, y: y2 }, color: clr, thickness: edit.size || 2, opacity: op });
               const a  = Math.atan2(y2 - y1, x2 - x1);
-              const hl = Math.max((edit.size || 2) * sy * 4, 12);
-              page.drawLine({ start: { x: x2, y: y2 }, end: { x: x2 - hl * Math.cos(a - Math.PI / 6), y: y2 - hl * Math.sin(a - Math.PI / 6) }, color: clr, thickness: (edit.size || 2) * sy, opacity: op });
-              page.drawLine({ start: { x: x2, y: y2 }, end: { x: x2 - hl * Math.cos(a + Math.PI / 6), y: y2 - hl * Math.sin(a + Math.PI / 6) }, color: clr, thickness: (edit.size || 2) * sy, opacity: op });
+              const hl = Math.max((edit.size || 2) * 4, 12);
+              page.drawLine({ start: { x: x2, y: y2 }, end: { x: x2 - hl * Math.cos(a - Math.PI / 6), y: y2 - hl * Math.sin(a - Math.PI / 6) }, color: clr, thickness: edit.size || 2, opacity: op });
+              page.drawLine({ start: { x: x2, y: y2 }, end: { x: x2 - hl * Math.cos(a + Math.PI / 6), y: y2 - hl * Math.sin(a + Math.PI / 6) }, color: clr, thickness: edit.size || 2, opacity: op });
               break;
             }
             /* ── FREEHAND ────────────────────────────────── */
@@ -986,9 +1447,9 @@ No server upload — your files stay private.</pre>
               if (!edit.points || edit.points.length < 2) break;
               for (let i = 1; i < edit.points.length; i++) {
                 page.drawLine({
-                  start: { x: edit.points[i - 1].x * sx, y: pdfH - edit.points[i - 1].y * sy },
-                  end:   { x: edit.points[i].x     * sx, y: pdfH - edit.points[i].y     * sy },
-                  color: clr, thickness: (edit.size || 2) * sy, opacity: op,
+                  start: { x: edit.points[i - 1].x, y: edit.points[i - 1].y },
+                  end:   { x: edit.points[i].x,     y: edit.points[i].y },
+                  color: clr, thickness: edit.size || 2, opacity: op,
                 });
               }
               break;
@@ -1003,13 +1464,52 @@ No server upload — your files stay private.</pre>
                   ? await libDoc.embedPng(bytes)
                   : await libDoc.embedJpg(bytes);
                 page.drawImage(embedded, {
-                  x: edit.x * sx,
-                  y: pdfH - edit.y * sy - (edit.imgH || 100) * sy,
-                  width:  (edit.imgW || 100) * sx,
-                  height: (edit.imgH || 100) * sy,
+                  x: edit.x,
+                  y: edit.y,
+                  width:  edit.imgW || 100,
+                  height: edit.imgH || 100,
                   opacity: op,
                 });
               } catch { /* skip unsupported image format */ }
+              break;
+            }
+            /* ── HIGHLIGHT ───────────────────────────────── */
+            case 'highlight': {
+              const rx = Math.min(edit.x, edit.x2!);
+              const ry = Math.min(edit.y, edit.y2!);
+              const rw = Math.abs(edit.x2! - edit.x);
+              const rh = Math.abs(edit.y2! - edit.y);
+              page.drawRectangle({ x: rx, y: ry, width: rw, height: rh, color: clr, opacity: 0.3 });
+              break;
+            }
+            /* ── UNDERLINE ───────────────────────────────── */
+            case 'underline': {
+              const uy = Math.max(edit.y, edit.y2!);
+              page.drawLine({
+                start: { x: edit.x,  y: uy },
+                end:   { x: edit.x2!, y: uy },
+                color: clr, thickness: Math.max(edit.size || 2, 2), opacity: op,
+              });
+              break;
+            }
+            /* ── COMMENT ─────────────────────────────────── */
+            case 'comment': {
+              page.drawRectangle({
+                x: edit.x, y: edit.y,
+                width: 20, height: 20,
+                color: clr, opacity: op,
+              });
+              if (edit.text) {
+                const fs = edit.fontSize || 12;
+                page.drawText(edit.text, {
+                  x: edit.x + 25,
+                  y: edit.y + 4,
+                  size: fs,
+                  font: helvetica,
+                  color: clr,
+                  opacity: op,
+                });
+              }
               break;
             }
           }

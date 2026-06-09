@@ -32,13 +32,11 @@ Annotate PDF: Highlight, underline, and add comments.
 
 Add Watermark: Overlay text or images with transparency control.
 
-Page Numbers: Add headers/footers with dynamic page numbering.
+Header and Footer: Add headers/footers with custom text to the top and/or bottom of every page including dynamic page numbering.
 
 Bates Numbering: For legal indexing and identification.
 
 Crop PDF: Trim margins or specific areas.
-
-Header & Footer: Add custom text to the top or bottom of every page.
 
 3. Convert to PDF (23 Tools)
 Image to PDF: Supports JPG, PNG, TIFF, BMP, WEBP, GIF, and HEIC.
