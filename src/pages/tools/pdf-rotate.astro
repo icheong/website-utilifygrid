@@ -1,0 +1,227 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'pdf-rotate')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Rotate PDF</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Change the orientation of specific or all pages. Click pages to cycle rotation, or use the controls to set a target angle.</p>
+
+    <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
+      <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem;">or click to browse</p>
+      <input id="file-input" type="file" accept=".pdf" style="display:none;" />
+      <button id="browse-btn" class="btn-secondary" type="button" style="font-size:0.82rem;">Browse File</button>
+    </div>
+
+    <div id="workspace" style="display:none;margin-top:1.25rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
+          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        </p>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
+        </div>
+      </div>
+
+      <!-- Bulk controls -->
+      <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:0.75rem;color:var(--text-secondary);font-weight:600;">Rotate all:</span>
+        <button class="btn-secondary bulk-rotate" type="button" data-angle="90" style="font-size:0.72rem;">↻ 90°</button>
+        <button class="btn-secondary bulk-rotate" type="button" data-angle="180" style="font-size:0.72rem;">180°</button>
+        <button class="btn-secondary bulk-rotate" type="button" data-angle="270" style="font-size:0.72rem;">↺ 270°</button>
+        <button class="btn-secondary bulk-rotate" type="button" data-angle="0" style="font-size:0.72rem;">Reset</button>
+      </div>
+
+      <div id="pages-grid" style="display:flex;flex-wrap:wrap;gap:0.6rem;"></div>
+
+      <div style="margin-top:1.25rem;text-align:center;">
+        <button id="download-btn" class="btn-primary" type="button" style="font-size:0.95rem;padding:0.7rem 2rem;">Download Rotated PDF</button>
+        <p id="status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Rotate PDF</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 1:</strong> Drop a PDF or click <strong>Browse File</strong>. All pages appear as thumbnails.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 2:</strong> Click individual pages to cycle through 0° → 90° → 180° → 270°, or use the <strong>Rotate all</strong> buttons to set a target angle for every page at once.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Step 3:</strong> Click <strong>Download Rotated PDF</strong> to save the result.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Rotate PDF works</h2>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. User drops a PDF file
+2. PDF.js renders page thumbnails
+3. User clicks pages or uses bulk rotate
+4. pdf-lib applies rotation metadata to each page
+5. Rotated PDF is downloaded
+
+Rotation is metadata-only — no re-rendering.
+All client-side — no server upload.</pre>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is my file uploaded?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens in your browser. Your file never leaves your device." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does rotating reduce PDF quality?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Rotation is applied as metadata — pages are not re-rendered or re-encoded. Quality is perfectly preserved." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I rotate individual pages differently?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Click each page to cycle its rotation independently. You can set different angles for different pages before downloading." }
+        }
+      ]
+    }
+    </script>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Is my file uploaded?', a: 'No. All processing happens in your browser. Your file never leaves your device.' },
+        { q: 'Does rotating reduce PDF quality?', a: 'No. Rotation is applied as metadata — pages are not re-rendered or re-encoded. Quality is perfectly preserved.' },
+        { q: 'Can I rotate individual pages differently?', a: 'Yes. Click each page to cycle its rotation independently. You can set different angles for different pages before downloading.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script is:inline src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script is:inline src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+<script>
+(function () {
+  const { PDFDocument, degrees } = (window as any).PDFLib;
+  const pdfjsLib = (window as any).pdfjsLib;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+  const dropZone = document.getElementById('drop-zone')!;
+  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  const browseBtn = document.getElementById('browse-btn')!;
+  const workspace = document.getElementById('workspace')!;
+  const docName = document.getElementById('doc-name')!;
+  const docPages = document.getElementById('doc-pages')!;
+  const resetBtn = document.getElementById('reset-btn')!;
+  const pagesGrid = document.getElementById('pages-grid')!;
+  const downloadBtn = document.getElementById('download-btn')!;
+  const statusEl = document.getElementById('status')!;
+
+  let pdfBytes: ArrayBuffer | null = null;
+  let pdfDoc: any = null;
+  let totalPages = 0;
+  let rotations: number[] = [];
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--color-brand-blue)'; });
+  dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = ''; if (e.dataTransfer!.files.length) loadFile(e.dataTransfer!.files[0]); });
+  browseBtn.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', e => { if (e.target === dropZone || e.target === browseBtn) fileInput.click(); });
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) loadFile(fileInput.files[0]); fileInput.value = ''; });
+  resetBtn.addEventListener('click', () => { pdfBytes = null; pdfDoc = null; rotations = []; workspace.style.display = 'none'; dropZone.style.display = ''; });
+
+  document.querySelectorAll('.bulk-rotate').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const angle = parseInt((btn as HTMLElement).dataset.angle!);
+      rotations = rotations.map(() => angle);
+      renderPages();
+    });
+  });
+
+  async function loadFile(file: File) {
+    if (file.type !== 'application/pdf') return;
+    pdfBytes = await file.arrayBuffer();
+    pdfDoc = await pdfjsLib.getDocument({ data: pdfBytes.slice(0) }).promise;
+    totalPages = pdfDoc.numPages;
+    docName.textContent = file.name.replace(/\.pdf$/i, '');
+    docPages.textContent = totalPages + ' page' + (totalPages > 1 ? 's' : '');
+    rotations = new Array(totalPages).fill(0);
+    dropZone.style.display = 'none';
+    workspace.style.display = '';
+    renderPages();
+  }
+
+  async function renderPages() {
+    pagesGrid.innerHTML = '';
+    for (let i = 0; i < totalPages; i++) {
+      const page = await pdfDoc.getPage(i + 1);
+      const viewport = page.getViewport({ scale: 0.25 });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const rot = rotations[i];
+      canvas.style.cssText = `width:100px;height:auto;border:2px solid ${rot !== 0 ? '#F59E0B' : 'var(--border)'};border-radius:6px;cursor:pointer;transition:border-color 0.15s;background:#fff;`;
+      await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
+
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;flex-shrink:0;text-align:center;';
+
+      const rotBadge = document.createElement('div');
+      rotBadge.style.cssText = `position:absolute;top:-6px;left:-6px;background:${rot !== 0 ? '#F59E0B' : 'var(--text-muted)'};color:#fff;font-size:0.55rem;font-weight:700;padding:0.1rem 0.35rem;border-radius:4px;z-index:2;`;
+      rotBadge.textContent = rot !== 0 ? rot + '°' : '';
+
+      const label = document.createElement('div');
+      label.style.cssText = 'font-size:0.65rem;color:var(--text-muted);margin-top:0.2rem;';
+      label.textContent = 'Page ' + (i + 1);
+
+      wrap.appendChild(rotBadge);
+      wrap.appendChild(canvas);
+      wrap.appendChild(label);
+
+      canvas.addEventListener('click', () => {
+        rotations[i] = (rotations[i] + 90) % 360;
+        renderPages();
+      });
+
+      pagesGrid.appendChild(wrap);
+    }
+  }
+
+  downloadBtn.addEventListener('click', async () => {
+    if (!rotations.length) return;
+    downloadBtn.setAttribute('disabled', '');
+    downloadBtn.textContent = 'Building…';
+    try {
+      const srcDoc = await PDFDocument.load(pdfBytes!);
+      const newDoc = await PDFDocument.create();
+      const copied = await newDoc.copyPages(srcDoc, Array.from({ length: totalPages }, (_, i) => i));
+      copied.forEach((p, i) => { if (rotations[i]) p.setRotation(degrees(rotations[i])); newDoc.addPage(p); });
+      const bytes = await newDoc.save();
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'rotated.pdf'; a.click();
+      URL.revokeObjectURL(url);
+      const rotatedCount = rotations.filter(r => r !== 0).length;
+      statusEl.style.display = ''; statusEl.style.color = '#10B981'; statusEl.textContent = `Rotated ${rotatedCount} page${rotatedCount !== 1 ? 's' : ''}. Downloaded rotated.pdf.`;
+    } catch (e: any) { statusEl.style.display = ''; statusEl.style.color = '#EF4444'; statusEl.textContent = 'Error: ' + e.message; }
+    finally { downloadBtn.removeAttribute('disabled'); downloadBtn.textContent = 'Download Rotated PDF'; }
+  });
+})();
+</script>

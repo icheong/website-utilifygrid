@@ -1,0 +1,230 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'pdf-reverse-pages')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Reverse Pages</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Instantly flip the page order of a PDF. Preview before and after, then download.</p>
+
+    <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
+      <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem;">or click to browse</p>
+      <input id="file-input" type="file" accept=".pdf" style="display:none;" />
+      <button id="browse-btn" class="btn-secondary" type="button" style="font-size:0.82rem;">Browse File</button>
+    </div>
+
+    <div id="workspace" style="display:none;margin-top:1.25rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
+          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        </p>
+        <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
+      </div>
+
+      <!-- Before / After comparison -->
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:start;margin-bottom:1.25rem;">
+        <!-- Before -->
+        <div>
+          <p style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;text-align:center;">Original Order</p>
+          <div id="before-pages" style="display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;"></div>
+        </div>
+        <!-- Arrow -->
+        <div style="display:flex;align-items:center;justify-content:center;padding-top:2rem;">
+          <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
+            <path d="M4 12h28m0 0l-8-8m8 8l-8 8" stroke="var(--color-brand-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <!-- After -->
+        <div>
+          <p style="font-size:0.75rem;font-weight:600;color:#10B981;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;text-align:center;">Reversed Order</p>
+          <div id="after-pages" style="display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;"></div>
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <button id="reverse-btn" class="btn-primary" type="button" style="font-size:0.95rem;padding:0.7rem 2rem;">Reverse &amp; Download</button>
+        <p id="status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Reverse Pages</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 1:</strong> Drop a PDF or click <strong>Browse File</strong>. Thumbnails appear showing the original page order.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 2:</strong> The reversed order is shown on the right for comparison.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Step 3:</strong> Click <strong>Reverse &amp; Download</strong> to save the reversed PDF.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Reverse Pages works</h2>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. User drops a PDF file
+2. PDF.js renders page thumbnails
+3. Before/After comparison shows the reversal
+4. pdf-lib copies pages in reverse order
+5. Reversed PDF is downloaded
+
+All client-side — no server upload.</pre>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is my file uploaded?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens in your browser. Your file never leaves your device." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does reversing reduce PDF quality?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Pages are copied losslessly in reverse order. Text, images, and vectors are preserved byte-for-byte." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I reverse only some pages?",
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool reverses all pages in the document. To reverse a subset, first extract the pages you want with the Split PDF tool, then reverse the extracted file." }
+        }
+      ]
+    }
+    </script>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Is my file uploaded?', a: 'No. All processing happens in your browser. Your file never leaves your device.' },
+        { q: 'Does reversing reduce PDF quality?', a: 'No. Pages are copied losslessly in reverse order. Text, images, and vectors are preserved byte-for-byte.' },
+        { q: 'Can I reverse only some pages?', a: 'This tool reverses all pages in the document. To reverse a subset, first extract the pages you want with the Split PDF tool, then reverse the extracted file.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script is:inline src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script is:inline src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+<script>
+(function () {
+  const { PDFDocument } = (window as any).PDFLib;
+  const pdfjsLib = (window as any).pdfjsLib;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+  const dropZone = document.getElementById('drop-zone')!;
+  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  const browseBtn = document.getElementById('browse-btn')!;
+  const workspace = document.getElementById('workspace')!;
+  const docName = document.getElementById('doc-name')!;
+  const docPages = document.getElementById('doc-pages')!;
+  const resetBtn = document.getElementById('reset-btn')!;
+  const beforePages = document.getElementById('before-pages')!;
+  const afterPages = document.getElementById('after-pages')!;
+  const reverseBtn = document.getElementById('reverse-btn')!;
+  const statusEl = document.getElementById('status')!;
+
+  let pdfBytes: ArrayBuffer | null = null;
+  let pdfDoc: any = null;
+  let totalPages = 0;
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--color-brand-blue)'; });
+  dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = ''; if (e.dataTransfer!.files.length) loadFile(e.dataTransfer!.files[0]); });
+  browseBtn.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', e => { if (e.target === dropZone || e.target === browseBtn) fileInput.click(); });
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) loadFile(fileInput.files[0]); fileInput.value = ''; });
+  resetBtn.addEventListener('click', () => { pdfBytes = null; pdfDoc = null; workspace.style.display = 'none'; dropZone.style.display = ''; });
+
+  async function loadFile(file: File) {
+    if (file.type !== 'application/pdf') return;
+    pdfBytes = await file.arrayBuffer();
+    pdfDoc = await pdfjsLib.getDocument({ data: pdfBytes.slice(0) }).promise;
+    totalPages = pdfDoc.numPages;
+    docName.textContent = file.name.replace(/\.pdf$/i, '');
+    docPages.textContent = totalPages + ' page' + (totalPages > 1 ? 's' : '');
+    dropZone.style.display = 'none';
+    workspace.style.display = '';
+    await renderComparison();
+  }
+
+  async function renderComparison() {
+    beforePages.innerHTML = '';
+    afterPages.innerHTML = '';
+    const scale = totalPages > 10 ? 0.15 : 0.2;
+
+    for (let i = 1; i <= totalPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.cssText = `width:${totalPages > 10 ? 55 : 70}px;height:auto;border:1px solid var(--border);border-radius:4px;background:#fff;`;
+      await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'text-align:center;flex-shrink:0;';
+      const num = document.createElement('div');
+      num.style.cssText = 'font-size:0.55rem;color:var(--text-muted);margin-top:0.15rem;';
+      num.textContent = 'P.' + i;
+      wrap.appendChild(canvas);
+      wrap.appendChild(num);
+      beforePages.appendChild(wrap);
+    }
+
+    const indices = Array.from({ length: totalPages }, (_, i) => i + 1).reverse();
+    for (const origNum of indices) {
+      const page = await pdfDoc.getPage(origNum);
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.cssText = `width:${totalPages > 10 ? 55 : 70}px;height:auto;border:1px solid #10B981;border-radius:4px;background:#fff;`;
+      await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'text-align:center;flex-shrink:0;';
+      const num = document.createElement('div');
+      num.style.cssText = 'font-size:0.55rem;color:#10B981;font-weight:600;margin-top:0.15rem;';
+      num.textContent = 'P.' + origNum;
+      wrap.appendChild(canvas);
+      wrap.appendChild(num);
+      afterPages.appendChild(wrap);
+    }
+  }
+
+  reverseBtn.addEventListener('click', async () => {
+    reverseBtn.setAttribute('disabled', '');
+    reverseBtn.textContent = 'Reversing…';
+    try {
+      const srcDoc = await PDFDocument.load(pdfBytes!);
+      const newDoc = await PDFDocument.create();
+      const indices = Array.from({ length: totalPages }, (_, i) => i).reverse();
+      const copied = await newDoc.copyPages(srcDoc, indices);
+      copied.forEach(p => newDoc.addPage(p));
+      const bytes = await newDoc.save();
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'reversed.pdf'; a.click();
+      URL.revokeObjectURL(url);
+      statusEl.style.display = ''; statusEl.style.color = '#10B981'; statusEl.textContent = 'Downloaded reversed.pdf (' + totalPages + ' pages in reverse order).';
+    } catch (e: any) { statusEl.style.display = ''; statusEl.style.color = '#EF4444'; statusEl.textContent = 'Error: ' + e.message; }
+    finally { reverseBtn.removeAttribute('disabled'); reverseBtn.textContent = 'Reverse & Download'; }
+  });
+})();
+</script>

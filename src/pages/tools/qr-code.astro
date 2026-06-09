@@ -1,0 +1,425 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'qr-code')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">QR Code Generator &amp; Scanner</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Generate custom QR codes or scan them from images and your camera — entirely in-browser.</p>
+
+    <!-- Tab bar -->
+    <div style="display:flex;gap:0;border:1.5px solid var(--border);border-radius:0.6rem;overflow:hidden;margin-bottom:1.25rem;background:var(--bg-surface);">
+      <button id="tab-gen" class="tab-btn" type="button" style="flex:1;padding:0.6rem;font-size:0.85rem;font-weight:600;text-align:center;cursor:pointer;border:none;background:var(--color-brand-blue);color:#fff;transition:background 0.2s;">Generate</button>
+      <button id="tab-scan" class="tab-btn" type="button" style="flex:1;padding:0.6rem;font-size:0.85rem;font-weight:600;text-align:center;cursor:pointer;border:none;background:transparent;color:var(--text-secondary);transition:background 0.2s;">Scan</button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- GENERATE TAB                                               -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="panel-gen">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;">
+        <!-- Left: controls -->
+        <div>
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="qr-text">Text or URL</label>
+            <textarea id="qr-text" rows="3" placeholder="Enter text or URL…"
+              class="input-themed" style="width:100%;font-family:'Fira Code',monospace;font-size:0.85rem;resize:vertical;">https://utilifygrid.com</textarea>
+          </div>
+
+          <!-- Styling controls -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+            <div>
+              <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;" for="qr-fg">Dot Colour</label>
+              <div style="display:flex;gap:0.4rem;align-items:center;">
+                <input id="qr-fg" type="color" value="#000000" style="width:32px;height:32px;border:none;border-radius:4px;cursor:pointer;background:none;" />
+                <input id="qr-fg-hex" type="text" value="#000000" class="input-themed" style="flex:1;font-family:'Fira Code',monospace;font-size:0.78rem;padding:0.35rem 0.5rem;" />
+              </div>
+            </div>
+            <div>
+              <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;" for="qr-bg">Background</label>
+              <div style="display:flex;gap:0.4rem;align-items:center;">
+                <input id="qr-bg" type="color" value="#FFFFFF" style="width:32px;height:32px;border:none;border-radius:4px;cursor:pointer;background:none;" />
+                <input id="qr-bg-hex" type="text" value="#FFFFFF" class="input-themed" style="flex:1;font-family:'Fira Code',monospace;font-size:0.78rem;padding:0.35rem 0.5rem;" />
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem;">
+            <div>
+              <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;" for="qr-ecl">Error Correction</label>
+              <select id="qr-ecl" class="select-themed" style="width:100%;font-size:0.82rem;">
+                <option value="L">Low (7%)</option>
+                <option value="M" selected>Medium (15%)</option>
+                <option value="Q">Quartile (25%)</option>
+                <option value="H">High (30%)</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;" for="qr-size">Size (px)</label>
+              <input id="qr-size" type="number" value="300" min="100" max="1000" step="50" class="input-themed" style="width:100%;font-family:'Fira Code',monospace;font-size:0.82rem;" />
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button id="dl-btn" class="btn-primary" type="button" style="font-size:0.82rem;">Download PNG</button>
+            <button id="copy-btn" class="btn-secondary" type="button" style="font-size:0.82rem;">Copy Image</button>
+          </div>
+          <p id="gen-status" style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+        </div>
+
+        <!-- Right: canvas preview -->
+        <div style="display:flex;align-items:center;justify-content:center;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.5rem;min-height:280px;">
+          <canvas id="qr-canvas" style="border-radius:4px;image-rendering:pixelated;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- SCAN TAB                                                    -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="panel-scan" style="display:none;">
+      <!-- File drop -->
+      <div id="scan-drop" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);margin-bottom:1rem;">
+        <p style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Drop an image with a QR code</p>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.6rem;">PNG, JPG — or click to browse</p>
+        <input id="scan-file-input" type="file" accept="image/*" style="display:none;" />
+        <button id="scan-browse-btn" class="btn-secondary" type="button" style="font-size:0.78rem;">Browse Image</button>
+      </div>
+
+      <!-- Camera -->
+      <div style="margin-bottom:1rem;">
+        <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
+          <button id="cam-toggle" class="btn-secondary" type="button" style="font-size:0.82rem;">Start Camera</button>
+          <span id="cam-label" style="font-size:0.75rem;color:var(--text-muted);"></span>
+        </div>
+        <div id="cam-wrap" style="display:none;position:relative;border-radius:0.875rem;overflow:hidden;background:#000;aspect-ratio:4/3;max-width:480px;">
+          <video id="cam-video" autoplay playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+          <div id="scan-overlay" style="position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;">
+            <div id="scan-frame" style="width:65%;height:65%;border:2px solid rgba(255,255,255,0.7);border-radius:12px;position:relative;">
+              <div class="scan-corner" style="position:absolute;top:-1px;left:-1px;width:18px;height:18px;border-top:3px solid #10B981;border-left:3px solid #10B981;border-radius:4px 0 0 0;"></div>
+              <div class="scan-corner" style="position:absolute;top:-1px;right:-1px;width:18px;height:18px;border-top:3px solid #10B981;border-right:3px solid #10B981;border-radius:0 4px 0 0;"></div>
+              <div class="scan-corner" style="position:absolute;bottom:-1px;left:-1px;width:18px;height:18px;border-bottom:3px solid #10B981;border-left:3px solid #10B981;border-radius:0 0 0 4px;"></div>
+              <div class="scan-corner" style="position:absolute;bottom:-1px;right:-1px;width:18px;height:18px;border-bottom:3px solid #10B981;border-right:3px solid #10B981;border-radius:0 0 4px 0;"></div>
+            </div>
+          </div>
+          <canvas id="scan-canvas" style="display:none;"></canvas>
+        </div>
+      </div>
+
+      <!-- Scan error banner -->
+      <div id="scan-error" style="display:none;padding:0.6rem 0.875rem;border-radius:0.5rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);margin-bottom:1rem;">
+        <p id="scan-error-msg" style="font-size:0.82rem;color:#EF4444;"></p>
+      </div>
+
+      <!-- Result -->
+      <div id="scan-result" style="display:none;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1rem;">
+        <p style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Decoded Result</p>
+        <textarea id="scan-output" readonly rows="3" class="input-themed" style="width:100%;font-family:'Fira Code',monospace;font-size:0.85rem;resize:none;"></textarea>
+        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;">
+          <button id="scan-copy" class="btn-secondary" type="button" style="font-size:0.78rem;">Copy to Clipboard</button>
+          <button id="scan-open" class="btn-primary" type="button" style="font-size:0.78rem;display:none;">Open URL</button>
+        </div>
+        <p id="scan-copy-status" style="font-size:0.72rem;color:#10B981;margin-top:0.3rem;display:none;">Copied!</p>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the QR Code tool</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Generate tab:</strong> Enter text or a URL, customise dot/background colours, error correction level, and size. The QR code updates in real-time. Download as PNG or copy the image to your clipboard.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Scan tab:</strong> Drop an image file containing a QR code, or start your camera for live scanning. Decoded text appears instantly with a Copy button and an Open URL link if applicable.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How QR Code Generator &amp; Scanner works</h2>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Generator:
+  1. Text input → qrcode library encodes to matrix
+  2. Matrix rendered to HTML5 Canvas with custom colours
+  3. Canvas exported as PNG blob for download/copy
+
+Scanner (Image):
+  1. File dropped → pixels read via offscreen Canvas
+  2. jsQR decodes the QR matrix from image data
+  3. Decoded string displayed in output
+
+Scanner (Camera):
+  1. getUserMedia opens webcam stream
+  2. requestAnimationFrame loop reads video frames
+  3. jsQR decodes each frame until QR found
+  4. Scanner pauses, result displayed
+
+All client-side — no server, no data leaves your device.</pre>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does the scanner need camera permission?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. When you click 'Start Camera', the browser asks for camera permission. If denied, a clear error message is shown. You can still scan by dropping image files instead." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is any data sent to a server?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. QR generation uses the qrcode library and scanning uses jsQR — both run entirely in your browser. No images or text leave your device." }
+        },
+        {
+          "@type": "Question",
+          "name": "What error correction levels mean?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Error correction adds redundancy to the QR code so it can be read even if partially obscured. Low (7%) uses less space; High (30%) allows the code to survive damage or overlay but creates a denser pattern." }
+        }
+      ]
+    }
+    </script>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Does the scanner need camera permission?', a: "Yes. When you click 'Start Camera', the browser asks for camera permission. If denied, a clear error message is shown. You can still scan by dropping image files instead." },
+        { q: 'Is any data sent to a server?', a: 'No. QR generation uses the qrcode library and scanning uses jsQR — both run entirely in your browser. No images or text leave your device.' },
+        { q: 'What do error correction levels mean?', a: 'Error correction adds redundancy to the QR code so it can be read even if partially obscured. Low (7%) uses less space; High (30%) allows the code to survive damage or overlay but creates a denser pattern.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<!-- Libraries (loaded dynamically in main script) -->
+
+<script>
+(function () {
+  // ── Load CDN libraries dynamically ──────────────────────────────
+  function loadScript(src: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error('Failed to load ' + src));
+      document.head.appendChild(s);
+    });
+  }
+
+  async function init() {
+    await loadScript('https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js');
+
+    const QRCode = (window as any).QRCode;
+    const jsQR = (window as any).jsQR;
+
+    // ── Elements ────────────────────────────────────────────────────
+    const tabGen   = document.getElementById('tab-gen')!;
+    const tabScan  = document.getElementById('tab-scan')!;
+  const panelGen = document.getElementById('panel-gen')!;
+  const panelScan = document.getElementById('panel-scan')!;
+
+  // Generate
+  const qrText  = document.getElementById('qr-text') as HTMLTextAreaElement;
+  const qrFg    = document.getElementById('qr-fg') as HTMLInputElement;
+  const qrFgHex = document.getElementById('qr-fg-hex') as HTMLInputElement;
+  const qrBg    = document.getElementById('qr-bg') as HTMLInputElement;
+  const qrBgHex = document.getElementById('qr-bg-hex') as HTMLInputElement;
+  const qrEcl   = document.getElementById('qr-ecl') as HTMLSelectElement;
+  const qrSize  = document.getElementById('qr-size') as HTMLInputElement;
+  const canvas  = document.getElementById('qr-canvas') as HTMLCanvasElement;
+  const dlBtn   = document.getElementById('dl-btn')!;
+  const copyBtn = document.getElementById('copy-btn')!;
+  const genStatus = document.getElementById('gen-status')!;
+
+  // Scan
+  const scanDrop      = document.getElementById('scan-drop')!;
+  const scanFileInput = document.getElementById('scan-file-input') as HTMLInputElement;
+  const scanBrowseBtn = document.getElementById('scan-browse-btn')!;
+  const camToggle     = document.getElementById('cam-toggle')!;
+  const camLabel      = document.getElementById('cam-label')!;
+  const camWrap       = document.getElementById('cam-wrap')!;
+  const camVideo      = document.getElementById('cam-video') as HTMLVideoElement;
+  const scanCanvas    = document.getElementById('scan-canvas') as HTMLCanvasElement;
+  const scanError     = document.getElementById('scan-error')!;
+  const scanErrorMsg  = document.getElementById('scan-error-msg')!;
+  const scanResult    = document.getElementById('scan-result')!;
+  const scanOutput    = document.getElementById('scan-output') as HTMLTextAreaElement;
+  const scanCopy      = document.getElementById('scan-copy')!;
+  const scanOpen      = document.getElementById('scan-open')!;
+  const scanCopyStatus = document.getElementById('scan-copy-status')!;
+
+  // ── Tab switching ───────────────────────────────────────────────
+  let activeTab: 'gen' | 'scan' = 'gen';
+  function switchTab(tab: 'gen' | 'scan') {
+    activeTab = tab;
+    tabGen.style.background = tab === 'gen' ? 'var(--color-brand-blue)' : 'transparent';
+    tabGen.style.color = tab === 'gen' ? '#fff' : 'var(--text-secondary)';
+    tabScan.style.background = tab === 'scan' ? 'var(--color-brand-blue)' : 'transparent';
+    tabScan.style.color = tab === 'scan' ? '#fff' : 'var(--text-secondary)';
+    panelGen.style.display = tab === 'gen' ? '' : 'none';
+    panelScan.style.display = tab === 'scan' ? '' : 'none';
+    if (tab === 'scan') stopCamera();
+  }
+  tabGen.addEventListener('click', () => switchTab('gen'));
+  tabScan.addEventListener('click', () => switchTab('scan'));
+
+  // ── Generate QR ─────────────────────────────────────────────────
+
+  function syncColor(src: HTMLInputElement, target: HTMLInputElement) {
+    src.addEventListener('input', () => { target.value = src.value; generate(); });
+    target.addEventListener('input', () => {
+      if (/^#[0-9A-Fa-f]{6}$/.test(target.value)) { src.value = target.value; generate(); }
+    });
+  }
+  syncColor(qrFg, qrFgHex);
+  syncColor(qrBg, qrBgHex);
+
+  qrText.addEventListener('input', generate);
+  qrEcl.addEventListener('change', generate);
+  qrSize.addEventListener('input', generate);
+
+  function generate() {
+    const text = qrText.value.trim();
+    if (!text) { const ctx = canvas.getContext('2d')!; canvas.width = 1; canvas.height = 1; return; }
+    const size = Math.max(100, Math.min(1000, parseInt(qrSize.value) || 300));
+    const ecl = qrEcl.value as 'L' | 'M' | 'Q' | 'H';
+
+    QRCode.toCanvas(canvas, text, {
+      width: size,
+      margin: 2,
+      color: { dark: qrFg.value, light: qrBg.value },
+      errorCorrectionLevel: ecl,
+    }, (err: any) => { if (err) console.error(err); });
+  }
+  generate();
+
+  // ── Download ────────────────────────────────────────────────────
+  dlBtn.addEventListener('click', () => {
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob!);
+      const a = document.createElement('a'); a.href = url; a.download = 'utilifygrid-qrcode.png'; a.click();
+      URL.revokeObjectURL(url);
+      showGenStatus('Downloaded utilifygrid-qrcode.png');
+    }, 'image/png');
+  });
+
+  // ── Copy image ──────────────────────────────────────────────────
+  copyBtn.addEventListener('click', async () => {
+    try {
+      const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob(b => b ? resolve(b) : reject(new Error('Canvas empty')), 'image/png'));
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      showGenStatus('Copied to clipboard');
+    } catch { showGenStatus('Copy failed — try Download instead'); }
+  });
+
+  function showGenStatus(msg: string) {
+    genStatus.style.display = ''; genStatus.textContent = msg; genStatus.style.color = '#10B981';
+    setTimeout(() => { genStatus.style.display = 'none'; }, 2500);
+  }
+
+  // ── Scan: file drop ─────────────────────────────────────────────
+  scanDrop.addEventListener('dragover', e => { e.preventDefault(); scanDrop.style.borderColor = 'var(--color-brand-blue)'; scanDrop.style.background = 'rgba(29,78,216,0.04)'; });
+  scanDrop.addEventListener('dragleave', () => { scanDrop.style.borderColor = ''; scanDrop.style.background = ''; });
+  scanDrop.addEventListener('drop', e => { e.preventDefault(); scanDrop.style.borderColor = ''; scanDrop.style.background = ''; if (e.dataTransfer!.files.length) scanImage(e.dataTransfer!.files[0]); });
+  scanBrowseBtn.addEventListener('click', () => scanFileInput.click());
+  scanDrop.addEventListener('click', e => { if (e.target === scanDrop || e.target === scanBrowseBtn) scanFileInput.click(); });
+  scanFileInput.addEventListener('change', () => { if (scanFileInput.files.length) scanImage(scanFileInput.files[0]); scanFileInput.value = ''; });
+
+  function scanImage(file: File) {
+    stopCamera();
+    hideScanError();
+    const img = new Image();
+    img.onload = () => {
+      scanCanvas.width = img.width;
+      scanCanvas.height = img.height;
+      const ctx = scanCanvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+      if (code) showScanResult(code.data);
+      else showScanError('No QR code found in this image.');
+    };
+    img.onerror = () => showScanError('Could not load image.');
+    img.src = URL.createObjectURL(file);
+  }
+
+  // ── Scan: camera ────────────────────────────────────────────────
+  let camStream: MediaStream | null = null;
+  let scanAnimFrame: number | null = null;
+  let scanning = false;
+
+  camToggle.addEventListener('click', async () => {
+    if (scanning) { stopCamera(); return; }
+    hideScanError();
+    try {
+      camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      camVideo.srcObject = camStream;
+      camWrap.style.display = '';
+      camToggle.textContent = 'Stop Camera';
+      camLabel.textContent = 'Scanning…';
+      scanning = true;
+      scanFrame();
+    } catch (e: any) {
+      showScanError(e.name === 'NotAllowedError' ? 'Camera permission denied. Please allow camera access and try again.' : e.name === 'NotFoundError' ? 'No camera found on this device.' : 'Camera error: ' + e.message);
+    }
+  });
+
+  function scanFrame() {
+    if (!scanning) return;
+    if (camVideo.readyState === camVideo.HAVE_ENOUGH_DATA) {
+      scanCanvas.width = camVideo.videoWidth;
+      scanCanvas.height = camVideo.videoHeight;
+      const ctx = scanCanvas.getContext('2d')!;
+      ctx.drawImage(camVideo, 0, 0);
+      const imageData = ctx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+      if (code) { stopCamera(); showScanResult(code.data); return; }
+    }
+    scanAnimFrame = requestAnimationFrame(scanFrame);
+  }
+
+  function stopCamera() {
+    scanning = false;
+    if (scanAnimFrame) { cancelAnimationFrame(scanAnimFrame); scanAnimFrame = null; }
+    if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+    camWrap.style.display = 'none';
+    camToggle.textContent = 'Start Camera';
+    camLabel.textContent = '';
+  }
+
+  function showScanResult(text: string) {
+    scanResult.style.display = '';
+    scanOutput.value = text;
+    const isUrl = /^https?:\/\//i.test(text);
+    scanOpen.style.display = isUrl ? '' : 'none';
+    if (isUrl) scanOpen.onclick = () => window.open(text, '_blank');
+  }
+
+  function showScanError(msg: string) { scanError.style.display = ''; scanErrorMsg.textContent = msg; }
+  function hideScanError() { scanError.style.display = 'none'; }
+
+  scanCopy.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(scanOutput.value);
+    scanCopyStatus.style.display = '';
+    setTimeout(() => { scanCopyStatus.style.display = 'none'; }, 2000);
+  });
+
+  } // end init()
+
+  init().catch(console.error);
+})();
+</script>

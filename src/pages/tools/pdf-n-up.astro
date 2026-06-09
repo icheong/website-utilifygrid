@@ -1,0 +1,259 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'pdf-n-up')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">N-Up PDF</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Layout multiple PDF pages onto a single sheet — 2-up, 4-up, 6-up, 8-up, or 9-up.</p>
+
+    <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
+      <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem;">or click to browse</p>
+      <input id="file-input" type="file" accept=".pdf" style="display:none;" />
+      <button id="browse-btn" class="btn-secondary" type="button" style="font-size:0.82rem;">Browse File</button>
+    </div>
+
+    <div id="workspace" style="display:none;margin-top:1.25rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
+          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        </p>
+        <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
+      </div>
+
+      <!-- Layout selector -->
+      <div style="margin-bottom:1rem;">
+        <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Layout</p>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button class="btn-secondary layout-btn active" type="button" data-n="2" style="font-size:0.82rem;padding:0.5rem 1rem;">2-Up</button>
+          <button class="btn-secondary layout-btn" type="button" data-n="4" style="font-size:0.82rem;padding:0.5rem 1rem;">4-Up</button>
+          <button class="btn-secondary layout-btn" type="button" data-n="6" style="font-size:0.82rem;padding:0.5rem 1rem;">6-Up</button>
+          <button class="btn-secondary layout-btn" type="button" data-n="8" style="font-size:0.82rem;padding:0.5rem 1rem;">8-Up</button>
+          <button class="btn-secondary layout-btn" type="button" data-n="9" style="font-size:0.82rem;padding:0.5rem 1rem;">9-Up</button>
+        </div>
+      </div>
+
+      <!-- Visual preview of layout -->
+      <div id="layout-preview" style="margin-bottom:1rem;"></div>
+
+      <div style="text-align:center;">
+        <button id="process-btn" class="btn-primary" type="button" style="font-size:0.95rem;padding:0.7rem 2rem;">Create N-Up PDF</button>
+        <p id="status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use N-Up PDF</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 1:</strong> Drop a PDF or click <strong>Browse File</strong>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 2:</strong> Choose a layout — <strong>2-Up</strong> (side by side), <strong>4-Up</strong> (2×2 grid), <strong>6-Up</strong> (2×3), <strong>8-Up</strong> (2×4), or <strong>9-Up</strong> (3×3). A visual preview shows how pages will be arranged.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Step 3:</strong> Click <strong>Create N-Up PDF</strong> to download the result.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How N-Up PDF works</h2>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">4-Up example (pages 1–8):
+
+┌───────┬───────┐
+│   1   │   2   │
+├───────┼───────┤
+│   3   │   4   │
+└───────┴───────┘
+┌───────┬───────┐
+│   5   │   6   │
+├───────┼───────┤
+│   7   │   8   │
+└───────┴───────┘
+
+Each original page is scaled down and
+positioned on a larger output sheet.
+All client-side — no server upload.</pre>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What does N-Up mean?",
+          "acceptedAnswer": { "@type": "Answer", "text": "N-Up means placing N original pages onto a single output sheet. 2-Up puts 2 pages side by side. 4-Up arranges 4 pages in a 2×2 grid. It's commonly used for printing handouts or saving paper." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my file uploaded?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens in your browser using pdf-lib. Your file never leaves your device." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does N-Up reduce quality?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Pages are scaled down geometrically — no re-encoding occurs. Vector content remains sharp. Raster images are scaled by the PDF viewer, same as zooming out." }
+        }
+      ]
+    }
+    </script>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What does N-Up mean?', a: 'N-Up means placing N original pages onto a single output sheet. 2-Up puts 2 pages side by side. 4-Up arranges 4 pages in a 2×2 grid. It\'s commonly used for printing handouts or saving paper.' },
+        { q: 'Is my file uploaded?', a: 'No. All processing happens in your browser using pdf-lib. Your file never leaves your device.' },
+        { q: 'Does N-Up reduce quality?', a: 'Pages are scaled down geometrically — no re-encoding occurs. Vector content remains sharp. Raster images are scaled by the PDF viewer, same as zooming out.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script is:inline src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script is:inline src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+<script>
+(function () {
+  const { PDFDocument } = (window as any).PDFLib;
+  const pdfjsLib = (window as any).pdfjsLib;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+  const dropZone = document.getElementById('drop-zone')!;
+  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  const browseBtn = document.getElementById('browse-btn')!;
+  const workspace = document.getElementById('workspace')!;
+  const docName = document.getElementById('doc-name')!;
+  const docPages = document.getElementById('doc-pages')!;
+  const resetBtn = document.getElementById('reset-btn')!;
+  const layoutPreview = document.getElementById('layout-preview')!;
+  const processBtn = document.getElementById('process-btn')!;
+  const statusEl = document.getElementById('status')!;
+
+  let pdfBytes: ArrayBuffer | null = null;
+  let totalPages = 0;
+  let selectedN = 2;
+
+  const LAYOUTS: Record<number, { cols: number; rows: number }> = {
+    2: { cols: 2, rows: 1 },
+    4: { cols: 2, rows: 2 },
+    6: { cols: 2, rows: 3 },
+    8: { cols: 2, rows: 4 },
+    9: { cols: 3, rows: 3 },
+  };
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--color-brand-blue)'; });
+  dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = ''; if (e.dataTransfer!.files.length) loadFile(e.dataTransfer!.files[0]); });
+  browseBtn.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', e => { if (e.target === dropZone || e.target === browseBtn) fileInput.click(); });
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) loadFile(fileInput.files[0]); fileInput.value = ''; });
+  resetBtn.addEventListener('click', () => { pdfBytes = null; workspace.style.display = 'none'; dropZone.style.display = ''; });
+
+  document.querySelectorAll('.layout-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.layout-btn').forEach(b => { b.className = 'btn-secondary layout-btn'; });
+      btn.className = 'btn-primary layout-btn';
+      selectedN = parseInt((btn as HTMLElement).dataset.n!);
+      renderLayoutPreview();
+    });
+  });
+
+  async function loadFile(file: File) {
+    if (file.type !== 'application/pdf') return;
+    pdfBytes = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: pdfBytes.slice(0) }).promise;
+    totalPages = pdf.numPages;
+    docName.textContent = file.name.replace(/\.pdf$/i, '');
+    docPages.textContent = totalPages + ' page' + (totalPages > 1 ? 's' : '');
+    dropZone.style.display = 'none';
+    workspace.style.display = '';
+    renderLayoutPreview();
+  }
+
+  function renderLayoutPreview() {
+    const { cols, rows } = LAYOUTS[selectedN];
+    const totalSlots = cols * rows;
+    const sheets = Math.ceil(totalPages / totalSlots);
+    let html = `<p style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:0.5rem;">${cols}×${rows} grid — ${totalSlots} pages per sheet — ${sheets} sheet${sheets > 1 ? 's' : ''} total</p>`;
+    html += '<div style="display:flex;gap:1rem;flex-wrap:wrap;">';
+    for (let s = 0; s < Math.min(sheets, 3); s++) {
+      html += `<div style="border:1.5px solid var(--border);border-radius:6px;padding:0.4rem;display:inline-grid;grid-template-columns:repeat(${cols},1fr);gap:0.25rem;background:var(--bg-surface-2);">`;
+      for (let i = 0; i < totalSlots; i++) {
+        const pageNum = s * totalSlots + i + 1;
+        const hasPage = pageNum <= totalPages;
+        html += `<div style="width:28px;height:38px;border:1px solid ${hasPage ? 'var(--color-brand-blue)' : 'var(--border)'};border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.5rem;font-weight:600;color:${hasPage ? 'var(--color-brand-blue)' : 'var(--text-muted)'};background:${hasPage ? 'rgba(29,78,216,0.06)' : 'transparent'};">${hasPage ? pageNum : ''}</div>`;
+      }
+      html += '</div>';
+    }
+    if (sheets > 3) html += `<div style="display:flex;align-items:center;font-size:0.72rem;color:var(--text-muted);">+${sheets - 3} more sheets</div>`;
+    html += '</div>';
+    layoutPreview.innerHTML = html;
+  }
+
+  processBtn.addEventListener('click', async () => {
+    if (!pdfBytes) return;
+    processBtn.setAttribute('disabled', '');
+    processBtn.textContent = 'Processing…';
+    try {
+      const srcDoc = await PDFDocument.load(pdfBytes);
+      const newDoc = await PDFDocument.create();
+      const { cols, rows } = LAYOUTS[selectedN];
+      const perSheet = cols * rows;
+      const srcPages = srcDoc.getPageIndices();
+
+      // Get first page dimensions for reference
+      const firstPage = srcDoc.getPage(0);
+      const { width: pw, height: ph } = firstPage.getSize();
+
+      // Output sheet size: same as original, but we'll draw scaled pages
+      for (let sheetStart = 0; sheetStart < srcPages.length; sheetStart += perSheet) {
+        const newPage = newDoc.addPage([pw, ph]);
+        const sheetIndices = srcPages.slice(sheetStart, sheetStart + perSheet);
+
+        for (let i = 0; i < sheetIndices.length; i++) {
+          const col = i % cols;
+          const row = Math.floor(i / cols);
+          // For N-up, we flip row so page 1 is top-left
+          const flippedRow = rows - 1 - row;
+
+          const cellW = pw / cols;
+          const cellH = ph / rows;
+          const x = col * cellW;
+          const y = flippedRow * cellH;
+
+          const embedded = await newDoc.embedPage(srcDoc.getPage(sheetIndices[i]));
+          newPage.drawPage(embedded, {
+            x, y,
+            width: cellW,
+            height: cellH,
+          });
+        }
+      }
+
+      const bytes = await newDoc.save();
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `${selectedN}-up.pdf`; a.click();
+      URL.revokeObjectURL(url);
+      const sheets = Math.ceil(totalPages / perSheet);
+      statusEl.style.display = ''; statusEl.style.color = '#10B981'; statusEl.textContent = `Created ${sheets} sheet${sheets > 1 ? 's' : ''} (${selectedN}-up). Downloaded ${selectedN}-up.pdf.`;
+    } catch (e: any) { statusEl.style.display = ''; statusEl.style.color = '#EF4444'; statusEl.textContent = 'Error: ' + e.message; }
+    finally { processBtn.removeAttribute('disabled'); processBtn.textContent = 'Create N-Up PDF'; }
+  });
+})();
+</script>

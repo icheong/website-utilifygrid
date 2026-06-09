@@ -1,0 +1,372 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'pdf-split')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Split PDF</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Upload a PDF, choose how to split it — by ranges or extract every page — and download the results.</p>
+
+    <!-- Drop zone -->
+    <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
+      <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem;">or click to browse</p>
+      <input id="file-input" type="file" accept=".pdf" style="display:none;" />
+      <button id="browse-btn" class="btn-secondary" type="button" style="font-size:0.82rem;">Browse File</button>
+    </div>
+
+    <!-- Editor (hidden until file loaded) -->
+    <div id="editor" style="display:none;margin-top:1.25rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
+          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        </p>
+        <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">Upload Different File</button>
+      </div>
+
+      <!-- Split mode tabs -->
+      <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+        <button id="tab-ranges" class="btn-primary" type="button" style="font-size:0.82rem;">By Page Ranges</button>
+        <button id="tab-all" class="btn-secondary" type="button" style="font-size:0.82rem;">Extract All Pages</button>
+      </div>
+
+      <!-- Range mode -->
+      <div id="mode-ranges">
+        <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:0.5rem;">Enter page ranges separated by commas. Use hyphens for ranges, or single page numbers.</p>
+        <div style="display:flex;gap:0.5rem;align-items:end;margin-bottom:1rem;">
+          <div style="flex:1;">
+            <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;" for="range-input">Page Ranges</label>
+            <input id="range-input" type="text" value="1-3, 5, 8-10" placeholder="e.g. 1-3, 5, 8-10"
+              class="input-themed" style="font-family:'Fira Code',monospace;font-size:0.9rem;" />
+          </div>
+          <button id="split-ranges-btn" class="btn-primary" type="button" style="font-size:0.82rem;white-space:nowrap;">Split &amp; Download</button>
+        </div>
+        <p id="range-error" style="font-size:0.75rem;color:#EF4444;margin-bottom:0.5rem;display:none;"></p>
+        <!-- Range presets -->
+        <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:1rem;">
+          <span style="font-size:0.72rem;color:var(--text-muted);line-height:1.8;">Quick:</span>
+          <button class="btn-secondary preset-btn" type="button" style="font-size:0.68rem;padding:0.15rem 0.5rem;" data-range="1">First page</button>
+          <button class="btn-secondary preset-btn" type="button" style="font-size:0.68rem;padding:0.15rem 0.5rem;" data-range="1-2">First 2 pages</button>
+          <button class="btn-secondary preset-btn" type="button" style="font-size:0.68rem;padding:0.15rem 0.5rem;" data-range="odd">Odd pages</button>
+          <button class="btn-secondary preset-btn" type="button" style="font-size:0.68rem;padding:0.15rem 0.5rem;" data-range="even">Even pages</button>
+          <button class="btn-secondary preset-btn" type="button" style="font-size:0.68rem;padding:0.15rem 0.5rem;" data-range="half1">First half</button>
+          <button class="btn-secondary preset-btn" type="button" style="font-size:0.68rem;padding:0.15rem 0.5rem;" data-range="half2">Second half</button>
+        </div>
+      </div>
+
+      <!-- Extract all mode -->
+      <div id="mode-all" style="display:none;">
+        <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:0.75rem;">Every page will be saved as a separate PDF file. A ZIP archive will be downloaded containing all pages.</p>
+        <button id="split-all-btn" class="btn-primary" type="button" style="font-size:0.82rem;">Extract All Pages &amp; Download ZIP</button>
+      </div>
+
+      <!-- Status -->
+      <p id="split-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.75rem;display:none;"></p>
+
+      <!-- Page thumbnails -->
+      <div id="thumbs-wrap" style="margin-top:1rem;">
+        <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Page Preview</p>
+        <div id="thumbs" style="display:flex;flex-wrap:wrap;gap:0.5rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Split PDF tool</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 1:</strong> Drop a PDF file onto the upload zone, or click <strong>Browse File</strong> to select one.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 2:</strong> Choose a split mode:
+    </p>
+    <ul style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem; padding-left:1.5rem;">
+      <li><strong>By Page Ranges</strong> — enter ranges like <code>1-3, 5, 8-10</code> or use quick presets (odd, even, first/second half).</li>
+      <li><strong>Extract All Pages</strong> — saves every page as a separate PDF inside a ZIP archive.</li>
+    </ul>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Step 3:</strong> Click <strong>Split &amp; Download</strong> or <strong>Extract All Pages &amp; Download ZIP</strong>. Your files download immediately — nothing is uploaded.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Split PDF works</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      This tool uses <strong>pdf-lib</strong> (for splitting) and <strong>PDF.js</strong> (for preview) running entirely in your browser. No files are uploaded to any server.
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. User drops/selects a PDF file
+2. PDF.js renders page thumbnails for preview
+3. User enters page ranges or chooses extract-all
+4. pdf-lib creates new PDF(s) with selected pages
+5. Single range → downloads as .pdf
+   Multiple ranges → downloads as .zip (JSZip)
+
+All processing happens client-side (WASM).
+No server upload — your files stay private.</pre>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is my PDF uploaded to a server?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do page ranges work?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Enter page numbers separated by commas. Use hyphens for ranges: '1-3' means pages 1, 2, and 3. '1, 4-6, 10' extracts pages 1, 4, 5, 6, and 10. Pages start at 1." }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens when I extract all pages?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Each page is saved as a separate PDF file. All individual PDFs are bundled into a ZIP archive for a single download. For a 10-page PDF, you get 10 separate files." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does splitting reduce PDF quality?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The split is a lossless copy — text, vectors, images, and bookmarks are copied byte-for-byte. There is no re-encoding or recompression." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I split password-protected PDFs?",
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool can split PDFs encrypted without a user password (they open freely but restrict editing). PDFs requiring a password to open cannot be processed." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Is my PDF uploaded to a server?', a: 'No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device.' },
+        { q: 'How do page ranges work?', a: "Enter page numbers separated by commas. Use hyphens for ranges: '1-3' means pages 1, 2, and 3. '1, 4-6, 10' extracts pages 1, 4, 5, 6, and 10. Pages start at 1." },
+        { q: 'What happens when I extract all pages?', a: 'Each page is saved as a separate PDF file. All individual PDFs are bundled into a ZIP archive for a single download. For a 10-page PDF, you get 10 separate files.' },
+        { q: 'Does splitting reduce PDF quality?', a: 'No. The split is a lossless copy — text, vectors, images, and bookmarks are copied byte-for-byte. There is no re-encoding or recompression.' },
+        { q: 'Can I split password-protected PDFs?', a: 'This tool can split PDFs encrypted without a user password (they open freely but restrict editing). PDFs requiring a password to open cannot be processed.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<!-- CDN libs -->
+<script is:inline src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script is:inline src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script is:inline src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+
+<script>
+(function () {
+  const { PDFDocument } = (window as any).PDFLib;
+  const pdfjsLib = (window as any).pdfjsLib;
+  const JSZip = (window as any).JSZip;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+  const dropZone     = document.getElementById('drop-zone')!;
+  const fileInput    = document.getElementById('file-input') as HTMLInputElement;
+  const browseBtn    = document.getElementById('browse-btn')!;
+  const editor       = document.getElementById('editor')!;
+  const docName      = document.getElementById('doc-name')!;
+  const docPages     = document.getElementById('doc-pages')!;
+  const resetBtn     = document.getElementById('reset-btn')!;
+  const tabRanges    = document.getElementById('tab-ranges')!;
+  const tabAll       = document.getElementById('tab-all')!;
+  const modeRanges   = document.getElementById('mode-ranges')!;
+  const modeAll      = document.getElementById('mode-all')!;
+  const rangeInput   = document.getElementById('range-input') as HTMLInputElement;
+  const splitRangesBtn = document.getElementById('split-ranges-btn')!;
+  const splitAllBtn  = document.getElementById('split-all-btn')!;
+  const rangeError   = document.getElementById('range-error')!;
+  const splitStatus  = document.getElementById('split-status')!;
+  const thumbsDiv    = document.getElementById('thumbs')!;
+
+  let pdfBytes: ArrayBuffer | null = null;
+  let pdfDoc: any = null;
+  let totalPages = 0;
+  let mode: 'ranges' | 'all' = 'ranges';
+
+  // ── Drop zone ───────────────────────────────────────────────────
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--color-brand-blue)'; dropZone.style.background = 'rgba(29,78,216,0.04)'; });
+  dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; dropZone.style.background = ''; });
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = ''; dropZone.style.background = ''; if (e.dataTransfer!.files.length) loadFile(e.dataTransfer!.files[0]); });
+  browseBtn.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', e => { if (e.target === dropZone || e.target === browseBtn) fileInput.click(); });
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) loadFile(fileInput.files[0]); fileInput.value = ''; });
+  resetBtn.addEventListener('click', () => { pdfBytes = null; pdfDoc = null; editor.style.display = 'none'; dropZone.style.display = ''; });
+
+  // ── Mode tabs ───────────────────────────────────────────────────
+  tabRanges.addEventListener('click', () => { mode = 'ranges'; tabRanges.className = 'btn-primary'; tabAll.className = 'btn-secondary'; modeRanges.style.display = ''; modeAll.style.display = 'none'; });
+  tabAll.addEventListener('click', () => { mode = 'all'; tabAll.className = 'btn-primary'; tabRanges.className = 'btn-secondary'; modeAll.style.display = ''; modeRanges.style.display = 'none'; });
+
+  // ── Preset buttons ──────────────────────────────────────────────
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const r = (btn as HTMLElement).dataset.range!;
+      if (r === 'odd') rangeInput.value = Array.from({ length: totalPages }, (_, i) => i + 1).filter(n => n % 2 === 1).join(', ');
+      else if (r === 'even') rangeInput.value = Array.from({ length: totalPages }, (_, i) => i + 1).filter(n => n % 2 === 0).join(', ');
+      else if (r === 'half1') rangeInput.value = `1-${Math.ceil(totalPages / 2)}`;
+      else if (r === 'half2') rangeInput.value = `${Math.ceil(totalPages / 2) + 1}-${totalPages}`;
+      else rangeInput.value = r;
+    });
+  });
+
+  // ── Load PDF ────────────────────────────────────────────────────
+  async function loadFile(file: File) {
+    if (file.type !== 'application/pdf') return;
+    pdfBytes = await file.arrayBuffer();
+    pdfDoc = await pdfjsLib.getDocument({ data: pdfBytes.slice(0) }).promise;
+    totalPages = pdfDoc.numPages;
+    docName.textContent = file.name.replace(/\.pdf$/i, '');
+    docPages.textContent = totalPages + ' page' + (totalPages > 1 ? 's' : '');
+    dropZone.style.display = 'none';
+    editor.style.display = '';
+    rangeInput.value = '1-' + Math.min(3, totalPages);
+    showStatus('');
+    renderThumbs();
+  }
+
+  // ── Render thumbnails ───────────────────────────────────────────
+  async function renderThumbs() {
+    thumbsDiv.innerHTML = '';
+    for (let i = 1; i <= totalPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const viewport = page.getViewport({ scale: 0.2 });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.cssText = 'border:1px solid var(--border);border-radius:4px;width:80px;height:auto;';
+      await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'text-align:center;flex-shrink:0;';
+      wrap.innerHTML = '';
+      wrap.appendChild(canvas);
+      const label = document.createElement('div');
+      label.style.cssText = 'font-size:0.65rem;color:var(--text-muted);margin-top:0.2rem;';
+      label.textContent = 'P. ' + i;
+      wrap.appendChild(label);
+      thumbsDiv.appendChild(wrap);
+    }
+  }
+
+  // ── Parse ranges ────────────────────────────────────────────────
+  function parseRanges(str: string): number[] {
+    const pages = new Set<number>();
+    for (const part of str.split(',')) {
+      const trimmed = part.trim();
+      if (!trimmed) continue;
+      if (trimmed.includes('-')) {
+        const [a, b] = trimmed.split('-').map(Number);
+        if (isNaN(a) || isNaN(b) || a < 1 || b < 1 || a > totalPages || b > totalPages) throw new Error(`Invalid range: ${trimmed}`);
+        for (let i = Math.min(a, b); i <= Math.max(a, b); i++) pages.add(i);
+      } else {
+        const n = Number(trimmed);
+        if (isNaN(n) || n < 1 || n > totalPages) throw new Error(`Invalid page: ${trimmed}`);
+        pages.add(n);
+      }
+    }
+    return Array.from(pages).sort((a, b) => a - b);
+  }
+
+  // ── Split by ranges ─────────────────────────────────────────────
+  splitRangesBtn.addEventListener('click', async () => {
+    rangeError.style.display = 'none';
+    let pages: number[];
+    try {
+      pages = parseRanges(rangeInput.value);
+    } catch (e: any) {
+      rangeError.textContent = e.message;
+      rangeError.style.display = '';
+      return;
+    }
+    if (!pages.length) { rangeError.textContent = 'No valid pages specified.'; rangeError.style.display = ''; return; }
+    splitRangesBtn.setAttribute('disabled', '');
+    splitRangesBtn.textContent = 'Splitting…';
+    showStatus('Processing…');
+
+    try {
+      const srcDoc = await PDFDocument.load(pdfBytes!);
+      const indices = pages.map(p => p - 1);
+
+      if (indices.length === 1) {
+        // Single page — download directly
+        const newDoc = await PDFDocument.create();
+        const [copied] = await newDoc.copyPages(srcDoc, indices);
+        newDoc.addPage(copied);
+        const bytes = await newDoc.save();
+        downloadBlob(new Blob([bytes], { type: 'application/pdf' }), `page_${pages[0]}.pdf`);
+        showStatus(`Downloaded page ${pages[0]}.`);
+      } else {
+        // Multiple pages — create one PDF with selected pages in order
+        const newDoc = await PDFDocument.create();
+        const copied = await newDoc.copyPages(srcDoc, indices);
+        copied.forEach(p => newDoc.addPage(p));
+        const bytes = await newDoc.save();
+        downloadBlob(new Blob([bytes], { type: 'application/pdf' }), `split_${pages.length}_pages.pdf`);
+        showStatus(`Downloaded ${pages.length} pages as one PDF.`);
+      }
+    } catch (e: any) {
+      showStatus('Error: ' + (e.message || 'Split failed.'));
+    } finally {
+      splitRangesBtn.removeAttribute('disabled');
+      splitRangesBtn.textContent = 'Split & Download';
+    }
+  });
+
+  // ── Extract all pages ───────────────────────────────────────────
+  splitAllBtn.addEventListener('click', async () => {
+    splitAllBtn.setAttribute('disabled', '');
+    splitAllBtn.textContent = 'Extracting…';
+    showStatus('Processing…');
+
+    try {
+      const srcDoc = await PDFDocument.load(pdfBytes!);
+      const zip = new JSZip();
+      for (let i = 0; i < totalPages; i++) {
+        showStatus(`Extracting page ${i + 1} of ${totalPages}…`);
+        const newDoc = await PDFDocument.create();
+        const [copied] = await newDoc.copyPages(srcDoc, [i]);
+        newDoc.addPage(copied);
+        const bytes = await newDoc.save();
+        zip.file(`page_${i + 1}.pdf`, bytes);
+      }
+      showStatus('Creating ZIP archive…');
+      const blob = await zip.generateAsync({ type: 'blob' });
+      downloadBlob(blob, `all_pages_${totalPages}.zip`);
+      showStatus(`Downloaded ${totalPages} pages as ZIP.`);
+    } catch (e: any) {
+      showStatus('Error: ' + (e.message || 'Extraction failed.'));
+    } finally {
+      splitAllBtn.removeAttribute('disabled');
+      splitAllBtn.textContent = 'Extract All Pages & Download ZIP';
+    }
+  });
+
+  // ── Helpers ─────────────────────────────────────────────────────
+  function downloadBlob(blob: Blob, name: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  function showStatus(msg: string) {
+    splitStatus.style.display = msg ? '' : 'none';
+    splitStatus.textContent = msg;
+  }
+})();
+</script>

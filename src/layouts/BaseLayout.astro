@@ -305,9 +305,55 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
     </div>
   </footer>
 
-  <!-- Favourites utility (must load before page scripts) -->
-  <script src="/favourites.js" is:inline></script>
-  <!-- Pass all tool metadata to client -->
+  <!-- Favourites utility — inlined so window.UGFavs exists before any page script runs -->
+  <script is:inline>
+    (function () {
+      var KEY = 'ug-favs';
+      function load() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (_) { return []; } }
+      function save(slugs) {
+        try { localStorage.setItem(KEY, JSON.stringify(slugs)); } catch (_) {}
+        window.dispatchEvent(new CustomEvent('ug:favs-changed', { detail: { slugs: slugs } }));
+      }
+      window.UGFavs = {
+        all:    function()     { return load(); },
+        has:    function(s)    { return load().includes(s); },
+        add:    function(s)    { var a = load(); if (!a.includes(s)) save([...a, s]); },
+        remove: function(s)    { save(load().filter(function(x){ return x !== s; })); },
+        toggle: function(s)    { window.UGFavs.has(s) ? window.UGFavs.remove(s) : window.UGFavs.add(s); },
+        count:  function()     { return load().length; },
+      };
+      function syncStars() {
+        var favs = load();
+        document.querySelectorAll('[data-fav-slug]').forEach(function(btn) {
+          var slug = btn.dataset.favSlug;
+          var active = favs.includes(slug);
+          btn.setAttribute('aria-pressed', String(active));
+          btn.classList.toggle('fav-active', active);
+        });
+        document.querySelectorAll('.tool-fav-btn[data-fav-slug]').forEach(function(btn) {
+          var label = btn.querySelector('.fav-btn-label');
+          if (label) label.textContent = favs.includes(btn.dataset.favSlug) ? 'Saved' : 'Save';
+        });
+        var badge = document.getElementById('fav-badge');
+        if (badge) {
+          var n = favs.length;
+          badge.textContent = String(n);
+          badge.style.display = n > 0 ? 'flex' : 'none';
+          if (n > 0) {
+            badge.classList.remove('badge-pop');
+            void badge.offsetWidth;
+            badge.classList.add('badge-pop');
+            badge.addEventListener('animationend', function() { badge.classList.remove('badge-pop'); }, { once: true });
+          }
+        }
+        var trigger = document.getElementById('fav-nav-trigger');
+        if (trigger) trigger.classList.toggle('fav-has-items', favs.length > 0);
+      }
+      document.addEventListener('DOMContentLoaded', syncStars);
+      window.addEventListener('ug:favs-changed', syncStars);
+    })();
+  </script>
+  <!-- Pass all tool metadata to client for the favourites dropdown -->
   <script define:vars={{ toolsMeta }}>
     window.__UG_TOOLS__ = toolsMeta;
   </script>

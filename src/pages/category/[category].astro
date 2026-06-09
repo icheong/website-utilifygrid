@@ -59,10 +59,9 @@ const structuredData = {
     {categoryTools.length > 0 ? (
       <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:1.125rem;">
         {categoryTools.map(tool => (
-          <div style="position:relative;">
+          <div class="tool-card-themed cat-card-wrap">
             <a
               href={`/tools/${tool.slug}`}
-              class="tool-card-themed"
               style="display:flex; align-items:flex-start; gap:1rem; padding:1.125rem 1.25rem; text-decoration:none; padding-right:2.75rem;"
             >
               <span style="font-size:2rem; flex-shrink:0; line-height:1;">{tool.icon}</span>
@@ -71,9 +70,9 @@ const structuredData = {
                 <p style="font-size:0.8rem; color:var(--text-secondary); margin:0; line-height:1.5;">{tool.shortDescription}</p>
               </div>
             </a>
-            <!-- Star button — top-right of card -->
+            <!-- Star button — z-index:1 keeps it above the <a> layer -->
             <button
-              class="card-fav-btn cat-star-btn"
+              class="cat-star-btn"
               data-fav-slug={tool.slug}
               data-tool-name={tool.name}
               aria-pressed="false"
@@ -118,11 +117,22 @@ const structuredData = {
 </BaseLayout>
 
 <style>
+  /* Wrapper carries the card chrome so hover works on the whole card */
+  .cat-card-wrap {
+    position: relative;
+  }
+  /* Make the <a> fill the card without being a positioned element (avoids z-index fight) */
+  .cat-card-wrap > a {
+    display: block;
+    text-decoration: none;
+  }
+
   /* Star button on category cards */
   .cat-star-btn {
     position: absolute;
     top: 0.625rem;
     right: 0.625rem;
+    z-index: 1;           /* sits above the <a> layer */
     width: 28px;
     height: 28px;
     border-radius: 0.4rem;
@@ -134,9 +144,10 @@ const structuredData = {
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: opacity 0.15s, color 0.15s, background 0.15s, transform 0.15s;
+    transition: opacity 0.15s, color 0.15s, background 0.15s, border-color 0.15s, transform 0.15s;
   }
-  div:hover > .cat-star-btn,
+  /* Show on wrapper hover OR when already saved */
+  .cat-card-wrap:hover .cat-star-btn,
   .cat-star-btn.fav-active {
     opacity: 1;
   }
@@ -155,7 +166,7 @@ const structuredData = {
 
   @keyframes favPop {
     0%   { transform: scale(1); }
-    40%  { transform: scale(1.35); }
+    40%  { transform: scale(1.4); }
     70%  { transform: scale(0.9); }
     100% { transform: scale(1); }
   }

@@ -1,0 +1,1048 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'pdf-edit')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Edit PDF</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Add text, images, shapes, and freehand drawings to any PDF page — all client-side, no upload needed.</p>
+
+    <!-- Drop zone -->
+    <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
+      <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem;">or click to browse</p>
+      <input id="file-input" type="file" accept=".pdf" style="display:none;" />
+      <button id="browse-btn" class="btn-secondary" type="button" style="font-size:0.82rem;">Browse File</button>
+    </div>
+
+    <!-- Editor workspace (hidden until PDF loaded) -->
+    <div id="editor-wrap" style="display:none;margin-top:1.25rem;">
+
+      <!-- Toolbar + Properties row -->
+      <div style="display:flex;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;align-items:flex-start;">
+
+        <!-- Tool buttons -->
+        <div style="display:flex;flex-direction:column;gap:0.35rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.75rem;padding:0.5rem;">
+          <p style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);text-align:center;margin-bottom:0.15rem;">Tools</p>
+          <div class="toggle-group" style="flex-direction:column;padding:0.2rem;">
+            <button class="toggle-btn active tool-btn" data-tool="text" title="Add Text" aria-pressed="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="rect" title="Rectangle" aria-pressed="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="circle" title="Circle" aria-pressed="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="line" title="Line" aria-pressed="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="arrow" title="Arrow" aria-pressed="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="10 5 19 5 19 14"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="freehand" title="Freehand Draw" aria-pressed="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="image" title="Add Image" aria-pressed="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </button>
+            <button class="toggle-btn tool-btn" data-tool="eraser" title="Eraser" aria-pressed="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l9-9 8 8-4 4z"/><path d="M6.5 13.5l5-5"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas area -->
+        <div id="canvas-container" style="flex:1;min-width:0;min-height:400px;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.75rem;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;">
+          <div id="canvas-wrapper" style="position:relative;display:inline-block;">
+            <canvas id="pdf-canvas" style="display:block;max-width:100%;box-shadow:0 2px 12px rgba(0,0,0,0.15);"></canvas>
+            <svg id="edit-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;cursor:crosshair;"></svg>
+          </div>
+          <p id="canvas-placeholder" style="font-size:0.85rem;color:var(--text-muted);position:absolute;">Loading page…</p>
+        </div>
+
+        <!-- Properties panel -->
+        <div style="width:180px;flex-shrink:0;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.75rem;padding:0.75rem;display:flex;flex-direction:column;gap:0.6rem;">
+          <p style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);">Properties</p>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.25rem;">Colour</label>
+            <div style="display:flex;gap:0.35rem;flex-wrap:wrap;">
+              {['#EF4444','#F97316','#EAB308','#22C55E','#3B82F6','#8B5CF6','#EC4899','#000000'].map(c => (
+                <button class="color-swatch" data-color={c} style={`width:1.4rem;height:1.4rem;border-radius:0.35rem;border:2px solid var(--border);cursor:pointer;background:${c};`} title={c}></button>
+              ))}
+            </div>
+            <input id="prop-color" type="text" class="input-themed" value="#EF4444" style="margin-top:0.35rem;font-size:0.78rem;padding:0.35rem 0.5rem;" />
+          </div>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.25rem;">Size</label>
+            <input id="prop-size" type="range" min="1" max="50" value="4" style="width:100%;accent-color:var(--color-brand-blue);" />
+            <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:0.15rem;"><span id="prop-size-val">4</span>px</div>
+          </div>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.25rem;">Font Size</label>
+            <input id="prop-font" type="range" min="8" max="120" value="16" style="width:100%;accent-color:var(--color-brand-blue);" />
+            <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:0.15rem;"><span id="prop-font-val">16</span>pt</div>
+          </div>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.25rem;">Opacity</label>
+            <input id="prop-opacity" type="range" min="10" max="100" value="100" style="width:100%;accent-color:var(--color-brand-blue);" />
+            <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:0.15rem;"><span id="prop-opacity-val">100</span>%</div>
+          </div>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.25rem;">Fill</label>
+            <select id="prop-fill" class="select-themed" style="font-size:0.78rem;padding:0.35rem 0.5rem;">
+              <option value="none">None</option>
+              <option value="solid">Solid</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page navigation + actions -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <button id="prev-page" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;" disabled>&larr; Prev</button>
+          <span style="font-size:0.82rem;color:var(--text-secondary);font-weight:500;">Page <span id="page-num">1</span> / <span id="page-total">1</span></span>
+          <button id="next-page" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;">Next &rarr;</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <button id="undo-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;" disabled>Undo</button>
+          <button id="redo-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;" disabled>Redo</button>
+          <button id="clear-page-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;color:#EF4444;">Clear Page</button>
+          <button id="save-btn" class="btn-primary" type="button" style="font-size:0.85rem;padding:0.55rem 1.5rem;">Save PDF</button>
+        </div>
+      </div>
+      <p id="edit-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+
+      <!-- Edit info row -->
+      <div class="info-row" style="margin-top:0.75rem;">
+        <span class="info-label">Edits on this page</span>
+        <span class="info-value" id="edit-count">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Edit PDF tool</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 1:</strong> Drop a PDF file onto the upload zone, or click <strong>Browse File</strong> to select one. The first page loads in the editor canvas.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 2:</strong> Choose a tool from the left toolbar — <strong>Text</strong>, <strong>Rectangle</strong>, <strong>Circle</strong>, <strong>Line</strong>, <strong>Arrow</strong>, <strong>Freehand</strong>, <strong>Image</strong>, or <strong>Eraser</strong>. Adjust colour, size, font size, opacity, and fill in the Properties panel on the right.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Step 3:</strong> Click or drag on the canvas to add your edit. Use <strong>Prev / Next</strong> to switch pages. Each page stores its own edits. Click <strong>Save PDF</strong> to download the edited file.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Edit PDF works</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      This tool uses <strong>PDF.js</strong> (to render pages to canvas) and <strong>pdf-lib</strong> (to apply edits and save). An SVG overlay captures your edits as vector data. On save, each edit is drawn onto the PDF page using pdf-lib's drawing API.
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. User drops/selects a PDF file
+2. PDF.js renders the current page to canvas
+3. SVG overlay captures edits (text, shapes, etc.)
+4. Edits stored as data objects per page
+5. On save, pdf-lib draws each edit onto the
+   corresponding page using vector operations
+6. Edited PDF is downloaded as a new file
+
+All processing happens client-side (WASM).
+No server upload — your files stay private.</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Text uses standard PDF fonts (Helvetica, Times, Courier). Shapes and freehand strokes are drawn as vector paths, so they scale cleanly at any resolution. Images are embedded at their original quality.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is my data uploaded to a server?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your files never leave your device — there is no server upload at any point." }
+        },
+        {
+          "@type": "Question",
+          "name": "What types of edits can I make?",
+          "acceptedAnswer": { "@type": "Answer", "text": "You can add text (with custom font size and colour), draw shapes (rectangles, circles, lines, arrows), add images (PNG, JPG, GIF, WebP), make freehand drawings, and erase any edit you've added. All edits are per-page." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I undo or redo edits?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Use the Undo and Redo buttons (or Ctrl+Z / Ctrl+Y keyboard shortcuts) to step through your edit history per page. You can also clear all edits on the current page with the Clear Page button." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a file size limit?",
+          "acceptedAnswer": { "@type": "Answer", "text": "There is no hard limit, but very large PDFs (hundreds of pages or tens of MB) may slow down rendering. For best results, keep files under 50 MB. Each page is rendered individually, so larger documents simply take a bit longer to navigate." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does editing reduce PDF quality?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Your edits are drawn as vector graphics and embedded text directly onto the PDF pages. The original page content is preserved. Only the elements you add are new — nothing from the original is recompressed or degraded." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Is my data uploaded to a server?', a: 'No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your files never leave your device — there is no server upload at any point.' },
+        { q: 'What types of edits can I make?', a: 'You can add text (with custom font size and colour), draw shapes (rectangles, circles, lines, arrows), add images (PNG, JPG, GIF, WebP), make freehand drawings, and erase any edit you\'ve added. All edits are per-page.' },
+        { q: 'Can I undo or redo edits?', a: 'Yes. Use the Undo and Redo buttons (or Ctrl+Z / Ctrl+Y keyboard shortcuts) to step through your edit history per page. You can also clear all edits on the current page with the Clear Page button.' },
+        { q: 'Is there a file size limit?', a: 'There is no hard limit, but very large PDFs (hundreds of pages or tens of MB) may slow down rendering. For best results, keep files under 50 MB. Each page is rendered individually, so larger documents simply take a bit longer to navigate.' },
+        { q: 'Does editing reduce PDF quality?', a: 'No. Your edits are drawn as vector graphics and embedded text directly onto the PDF pages. The original page content is preserved. Only the elements you add are new — nothing from the original is recompressed or degraded.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<!-- CDN libs -->
+<script is:inline src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script is:inline src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+<script>
+(function () {
+  const { PDFDocument, rgb, StandardFonts } = (window as any).PDFLib;
+  const pdfjsLib = (window as any).pdfjsLib;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+  /* ── DOM ──────────────────────────────────────────────────── */
+  const dropZone        = document.getElementById('drop-zone')!;
+  const fileInput       = document.getElementById('file-input') as HTMLInputElement;
+  const browseBtn       = document.getElementById('browse-btn')!;
+  const editorWrap      = document.getElementById('editor-wrap')!;
+  const canvas          = document.getElementById('pdf-canvas') as HTMLCanvasElement;
+  const ctx             = canvas.getContext('2d')!;
+  const svg             = document.getElementById('edit-svg') as SVGSVGElement;
+  const canvasWrapper   = document.getElementById('canvas-wrapper')!;
+  const canvasContainer = document.getElementById('canvas-container')!;
+  const placeholder     = document.getElementById('canvas-placeholder')!;
+  const prevBtn         = document.getElementById('prev-page')!;
+  const nextBtn         = document.getElementById('next-page')!;
+  const pageNumEl       = document.getElementById('page-num')!;
+  const pageTotalEl     = document.getElementById('page-total')!;
+  const undoBtn         = document.getElementById('undo-btn')!;
+  const redoBtn         = document.getElementById('redo-btn')!;
+  const clearPageBtn    = document.getElementById('clear-page-btn')!;
+  const saveBtn         = document.getElementById('save-btn')!;
+  const editStatus      = document.getElementById('edit-status')!;
+  const editCountEl     = document.getElementById('edit-count')!;
+  const propColor       = document.getElementById('prop-color') as HTMLInputElement;
+  const propSize        = document.getElementById('prop-size') as HTMLInputElement;
+  const propSizeVal     = document.getElementById('prop-size-val')!;
+  const propFont        = document.getElementById('prop-font') as HTMLInputElement;
+  const propFontVal     = document.getElementById('prop-font-val')!;
+  const propOpacity     = document.getElementById('prop-opacity') as HTMLInputElement;
+  const propOpacityVal  = document.getElementById('prop-opacity-val')!;
+  const propFill        = document.getElementById('prop-fill') as HTMLSelectElement;
+
+  /* ── State ────────────────────────────────────────────────── */
+  type Edit = {
+    type: 'text'|'rect'|'circle'|'line'|'arrow'|'freehand'|'image';
+    x: number; y: number;
+    x2?: number; y2?: number;
+    color: string; size: number; opacity: number;
+    text?: string; fontSize?: number;
+    fill?: string;
+    points?: {x:number;y:number}[];
+    imageData?: string;
+    imgW?: number; imgH?: number;
+    id: string;
+  };
+
+  let pdfDoc: any = null;
+  let pdfBytes: ArrayBuffer | null = null;
+  let currentPage = 1;
+  let totalPages = 0;
+  let pageEdits: Record<number, Edit[]> = {};
+  let history: Record<number, Edit[][]> = {};
+  let historyIdx: Record<number, number> = {};
+  let activeTool = 'text';
+  let drawing = false;
+  let startX = 0;
+  let startY = 0;
+  let tempId = '';
+
+  /* Per-page rendering metadata */
+  let pageViewportW = 0;   /* SVG / canvas width in CSS px  */
+  let pageViewportH = 0;   /* SVG / canvas height in CSS px */
+  let pagePdfW = 0;        /* pdf-lib page width in points   */
+  let pagePdfH = 0;        /* pdf-lib page height in points  */
+
+  /* ── Helpers ──────────────────────────────────────────────── */
+  function getProps() {
+    return {
+      color: propColor.value,
+      size: parseInt(propSize.value),
+      opacity: parseInt(propOpacity.value) / 100,
+      fontSize: parseInt(propFont.value),
+      fill: propFill.value,
+    };
+  }
+
+  function showStatus(msg: string, loading: boolean) {
+    editStatus.style.display = '';
+    editStatus.textContent = msg;
+    editStatus.style.color = loading ? 'var(--text-muted)' : '#10B981';
+    if (loading) setTimeout(() => { editStatus.style.display = 'none'; }, 2500);
+  }
+
+  function updateEditCount() {
+    editCountEl.textContent = String((pageEdits[currentPage] || []).length);
+  }
+
+  /* Convert mouse event to SVG-coordinate space (0..viewportW, 0..viewportH) */
+  function svgPoint(e: MouseEvent): { x: number; y: number } {
+    const rect = svg.getBoundingClientRect();
+    return {
+      x: ((e.clientX - rect.left) / rect.width)  * pageViewportW,
+      y: ((e.clientY - rect.top)  / rect.height) * pageViewportH,
+    };
+  }
+
+  /* ── Tool selection ───────────────────────────────────────── */
+  document.querySelectorAll('.tool-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tool-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+      activeTool = (btn as HTMLElement).dataset.tool!;
+      svg.style.cursor = activeTool === 'eraser' ? 'pointer' : 'crosshair';
+      commitAnyTextInput();
+    });
+  });
+
+  /* ── Swatches + sliders ───────────────────────────────────── */
+  document.querySelectorAll('.color-swatch').forEach(sw => {
+    sw.addEventListener('click', () => { propColor.value = (sw as HTMLElement).dataset.color!; });
+  });
+  propSize.addEventListener('input',    () => { propSizeVal.textContent = propSize.value; });
+  propFont.addEventListener('input',    () => { propFontVal.textContent = propFont.value; });
+  propOpacity.addEventListener('input', () => { propOpacityVal.textContent = propOpacity.value; });
+
+  /* ── Drop zone ────────────────────────────────────────────── */
+  dropZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropZone.style.borderColor = 'var(--color-brand-blue)';
+    dropZone.style.background = 'rgba(29,78,216,0.04)';
+  });
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.style.borderColor = '';
+    dropZone.style.background = '';
+  });
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.style.borderColor = '';
+    dropZone.style.background = '';
+    if (e.dataTransfer!.files[0]) loadFile(e.dataTransfer!.files[0]);
+  });
+  browseBtn.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', e => {
+    if (e.target === dropZone || e.target === browseBtn) fileInput.click();
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) loadFile(fileInput.files[0]);
+    fileInput.value = '';
+  });
+
+  /* ── Load PDF ─────────────────────────────────────────────── */
+  async function loadFile(file: File) {
+    if (!file || file.type !== 'application/pdf') return;
+    try {
+      pdfBytes = await file.arrayBuffer();
+      pdfDoc = await pdfjsLib.getDocument({ data: pdfBytes.slice(0) }).promise;
+      totalPages = pdfDoc.numPages;
+      currentPage = 1;
+      pageEdits = {};
+      history = {};
+      historyIdx = {};
+      dropZone.style.display = 'none';
+      editorWrap.style.display = '';
+      pageTotalEl.textContent = String(totalPages);
+      await renderPage(currentPage);
+      updateNav();
+    } catch (err: any) {
+      showStatus('Error loading PDF: ' + (err.message || 'Unknown error'), false);
+    }
+  }
+
+  /* ── Render a single page ─────────────────────────────────── */
+  async function renderPage(num: number) {
+    placeholder.style.display = '';
+    svg.innerHTML = '';
+    const page = await pdfDoc.getPage(num);
+    const unscaled = page.getViewport({ scale: 1 });
+    const containerW = canvasContainer.clientWidth - 32;
+    const displayScale = Math.min(containerW / unscaled.width, 2);
+    const vp = page.getViewport({ scale: displayScale });
+
+    pageViewportW = vp.width;
+    pageViewportH = vp.height;
+    canvas.width  = vp.width;
+    canvas.height = vp.height;
+    canvasWrapper.style.width  = vp.width  + 'px';
+    canvasWrapper.style.height = vp.height + 'px';
+    svg.setAttribute('viewBox', `0 0 ${vp.width} ${vp.height}`);
+    svg.style.width  = vp.width  + 'px';
+    svg.style.height = vp.height + 'px';
+
+    /* pdf-lib page dimensions (for save conversion) */
+    const pdfPage = (await PDFDocument.load(pdfBytes!)).getPage(num - 1);
+    const sz = pdfPage.getSize();
+    pagePdfW = sz.width;
+    pagePdfH = sz.height;
+
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    placeholder.style.display = 'none';
+    renderEdits();
+    updateEditCount();
+  }
+
+  /* ── Navigation ───────────────────────────────────────────── */
+  prevBtn.addEventListener('click', async () => {
+    if (currentPage > 1) { currentPage--; await renderPage(currentPage); updateNav(); }
+  });
+  nextBtn.addEventListener('click', async () => {
+    if (currentPage < totalPages) { currentPage++; await renderPage(currentPage); updateNav(); }
+  });
+  function updateNav() {
+    pageNumEl.textContent = String(currentPage);
+    prevBtn.toggleAttribute('disabled', currentPage <= 1);
+    nextBtn.toggleAttribute('disabled', currentPage >= totalPages);
+    updateUndoRedo();
+  }
+
+  /* ── History ──────────────────────────────────────────────── */
+  function pushHistory(page: number) {
+    if (!history[page])    { history[page] = [[]]; historyIdx[page] = 0; }
+    const snap = (pageEdits[page] || []).map(e => ({ ...e }));
+    const idx = historyIdx[page]!;
+    history[page] = history[page].slice(0, idx + 1);
+    history[page].push(snap);
+    historyIdx[page] = history[page].length - 1;
+    updateUndoRedo();
+  }
+  function undo() {
+    const p = currentPage;
+    if (!history[p] || historyIdx[p]! <= 0) return;
+    historyIdx[p]!--;
+    pageEdits[p] = history[p][historyIdx[p]!].map(e => ({ ...e }));
+    renderEdits(); updateEditCount(); updateUndoRedo(); showStatus('Undone', true);
+  }
+  function redo() {
+    const p = currentPage;
+    if (!history[p] || historyIdx[p]! >= history[p].length - 1) return;
+    historyIdx[p]!++;
+    pageEdits[p] = history[p][historyIdx[p]!].map(e => ({ ...e }));
+    renderEdits(); updateEditCount(); updateUndoRedo(); showStatus('Redone', true);
+  }
+  function updateUndoRedo() {
+    const p = currentPage;
+    undoBtn.toggleAttribute('disabled', !history[p] || historyIdx[p]! <= 0);
+    redoBtn.toggleAttribute('disabled', !history[p] || historyIdx[p]! >= history[p].length - 1);
+  }
+  undoBtn.addEventListener('click', undo);
+  redoBtn.addEventListener('click', redo);
+  document.addEventListener('keydown', e => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+    if (mod && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); redo(); }
+  });
+
+  /* ── Clear page ───────────────────────────────────────────── */
+  clearPageBtn.addEventListener('click', () => {
+    if (!pageEdits[currentPage]?.length) return;
+    pushHistory(currentPage);
+    pageEdits[currentPage] = [];
+    renderEdits(); updateEditCount(); showStatus('Page cleared', true);
+  });
+
+  /* ═══════════════════════════════════════════════════════════
+     SVG rendering — every element carries data-edit-idx
+     ═══════════════════════════════════════════════════════════ */
+  function renderEdits() {
+    svg.innerHTML = '';
+    const edits = pageEdits[currentPage] || [];
+    edits.forEach((edit, i) => {
+      const el = buildSvg(edit, i);
+      if (el) svg.appendChild(el);
+    });
+  }
+
+  function buildSvg(edit: Edit, idx: number): SVGElement | null {
+    const op = edit.opacity ?? 1;
+    const ns = 'http://www.w3.org/2000/svg';
+    const marker = (el: SVGElement) => {
+      el.setAttribute('data-edit-idx', String(idx));
+      el.style.cursor = activeTool === 'eraser' ? 'pointer' : '';
+      return el;
+    };
+
+    switch (edit.type) {
+      /* ── TEXT ─────────────────────────────────────────────── */
+      case 'text': {
+        const t = document.createElementNS(ns, 'text');
+        t.setAttribute('x', String(edit.x));
+        /* SVG text y = baseline; shift up by ~80 % of fontSize for visual top-left */
+        t.setAttribute('y', String(edit.y + (edit.fontSize || 16) * 0.82));
+        t.setAttribute('fill', edit.color);
+        t.setAttribute('font-size', String(edit.fontSize || 16));
+        t.setAttribute('font-family', 'Helvetica, Arial, sans-serif');
+        t.setAttribute('opacity', String(op));
+        t.textContent = edit.text || '';
+        return marker(t);
+      }
+      /* ── RECT ────────────────────────────────────────────── */
+      case 'rect': {
+        const r = document.createElementNS(ns, 'rect');
+        r.setAttribute('x', String(Math.min(edit.x, edit.x2!)));
+        r.setAttribute('y', String(Math.min(edit.y, edit.y2!)));
+        r.setAttribute('width',  String(Math.abs(edit.x2! - edit.x)));
+        r.setAttribute('height', String(Math.abs(edit.y2! - edit.y)));
+        r.setAttribute('stroke', edit.color);
+        r.setAttribute('stroke-width', String(edit.size));
+        r.setAttribute('fill', edit.fill === 'solid' ? edit.color : 'none');
+        r.setAttribute('opacity', String(op));
+        return marker(r);
+      }
+      /* ── CIRCLE (ellipse) ────────────────────────────────── */
+      case 'circle': {
+        const c = document.createElementNS(ns, 'ellipse');
+        c.setAttribute('cx', String((edit.x + edit.x2!) / 2));
+        c.setAttribute('cy', String((edit.y + edit.y2!) / 2));
+        c.setAttribute('rx', String(Math.abs(edit.x2! - edit.x) / 2));
+        c.setAttribute('ry', String(Math.abs(edit.y2! - edit.y) / 2));
+        c.setAttribute('stroke', edit.color);
+        c.setAttribute('stroke-width', String(edit.size));
+        c.setAttribute('fill', edit.fill === 'solid' ? edit.color : 'none');
+        c.setAttribute('opacity', String(op));
+        return marker(c);
+      }
+      /* ── LINE ────────────────────────────────────────────── */
+      case 'line': {
+        const l = document.createElementNS(ns, 'line');
+        l.setAttribute('x1', String(edit.x));
+        l.setAttribute('y1', String(edit.y));
+        l.setAttribute('x2', String(edit.x2!));
+        l.setAttribute('y2', String(edit.y2!));
+        l.setAttribute('stroke', edit.color);
+        l.setAttribute('stroke-width', String(edit.size));
+        l.setAttribute('stroke-linecap', 'round');
+        l.setAttribute('opacity', String(op));
+        return marker(l);
+      }
+      /* ── ARROW ───────────────────────────────────────────── */
+      case 'arrow': {
+        const g = document.createElementNS(ns, 'g');
+        g.setAttribute('opacity', String(op));
+        const l = document.createElementNS(ns, 'line');
+        l.setAttribute('x1', String(edit.x));
+        l.setAttribute('y1', String(edit.y));
+        l.setAttribute('x2', String(edit.x2!));
+        l.setAttribute('y2', String(edit.y2!));
+        l.setAttribute('stroke', edit.color);
+        l.setAttribute('stroke-width', String(edit.size));
+        l.setAttribute('stroke-linecap', 'round');
+        g.appendChild(l);
+        const a  = Math.atan2(edit.y2! - edit.y, edit.x2! - edit.x);
+        const hl = Math.max(edit.size * 4, 12);
+        const pts = [
+          [edit.x2!, edit.y2!],
+          [edit.x2! - hl * Math.cos(a - Math.PI / 6), edit.y2! - hl * Math.sin(a - Math.PI / 6)],
+          [edit.x2! - hl * Math.cos(a + Math.PI / 6), edit.y2! - hl * Math.sin(a + Math.PI / 6)],
+        ];
+        const poly = document.createElementNS(ns, 'polygon');
+        poly.setAttribute('points', pts.map(p => p.join(',')).join(' '));
+        poly.setAttribute('fill', edit.color);
+        g.appendChild(poly);
+        return marker(g);
+      }
+      /* ── FREEHAND ────────────────────────────────────────── */
+      case 'freehand': {
+        if (!edit.points || edit.points.length < 2) return null;
+        const p = document.createElementNS(ns, 'polyline');
+        p.setAttribute('points', edit.points.map(pt => `${pt.x},${pt.y}`).join(' '));
+        p.setAttribute('stroke', edit.color);
+        p.setAttribute('stroke-width', String(edit.size));
+        p.setAttribute('fill', 'none');
+        p.setAttribute('stroke-linecap', 'round');
+        p.setAttribute('stroke-linejoin', 'round');
+        p.setAttribute('opacity', String(op));
+        return marker(p);
+      }
+      /* ── IMAGE ───────────────────────────────────────────── */
+      case 'image': {
+        const img = document.createElementNS(ns, 'image');
+        img.setAttribute('href', edit.imageData!);
+        img.setAttribute('x', String(edit.x));
+        img.setAttribute('y', String(edit.y));
+        img.setAttribute('width',  String(edit.imgW || 100));
+        img.setAttribute('height', String(edit.imgH || 100));
+        img.setAttribute('opacity', String(op));
+        return marker(img);
+      }
+    }
+    return null;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     Mouse interaction
+     ═══════════════════════════════════════════════════════════ */
+  svg.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;          /* left-click only */
+    if (activeTool === 'eraser') return;  /* handled in click */
+    if (activeTool === 'text')    { handleTextClick(e);    return; }
+    if (activeTool === 'image')   { handleImageClick(e);   return; }
+    drawing = true;
+    const pt = svgPoint(e);
+    startX = pt.x;
+    startY = pt.y;
+    tempId = 'tmp-' + Date.now();
+    if (activeTool === 'freehand') {
+      const p = getProps();
+      pageEdits[currentPage] = pageEdits[currentPage] || [];
+      pageEdits[currentPage].push({
+        type: 'freehand', x: pt.x, y: pt.y,
+        color: p.color, size: p.size, opacity: p.opacity,
+        points: [{ x: pt.x, y: pt.y }], id: tempId,
+      });
+    }
+  });
+
+  svg.addEventListener('mousemove', e => {
+    if (!drawing) return;
+    const pt = svgPoint(e);
+    if (activeTool === 'freehand') {
+      const ed = (pageEdits[currentPage] || []).find(ed => ed.id === tempId);
+      if (ed?.points) { ed.points.push({ x: pt.x, y: pt.y }); renderEdits(); }
+    } else {
+      renderEdits();
+      const prev = buildTempPreview(startX, startY, pt.x, pt.y);
+      if (prev) svg.appendChild(prev);
+    }
+  });
+
+  svg.addEventListener('mouseup', e => {
+    if (!drawing) return;
+    drawing = false;
+    const pt = svgPoint(e);
+    svg.querySelector('#tmp-preview')?.remove();
+    if (activeTool === 'freehand') return;
+
+    const p = getProps();
+    const id = 'e' + Date.now() + Math.random().toString(36).slice(2, 5);
+    const base = { color: p.color, size: p.size, opacity: p.opacity, fill: p.fill, id };
+    pageEdits[currentPage] = pageEdits[currentPage] || [];
+
+    switch (activeTool) {
+      case 'rect':
+        pageEdits[currentPage].push({ type: 'rect', x: startX, y: startY, x2: pt.x, y2: pt.y, ...base }); break;
+      case 'circle':
+        pageEdits[currentPage].push({ type: 'circle', x: startX, y: startY, x2: pt.x, y2: pt.y, ...base }); break;
+      case 'line':
+        pageEdits[currentPage].push({ type: 'line', x: startX, y: startY, x2: pt.x, y2: pt.y, ...base }); break;
+      case 'arrow':
+        pageEdits[currentPage].push({ type: 'arrow', x: startX, y: startY, x2: pt.x, y2: pt.y, ...base }); break;
+    }
+    pushHistory(currentPage);
+    renderEdits();
+    updateEditCount();
+  });
+
+  svg.addEventListener('mouseleave', () => {
+    if (drawing && activeTool !== 'freehand') {
+      drawing = false;
+      svg.querySelector('#tmp-preview')?.remove();
+    }
+  });
+
+  /* ── Eraser — click on SVG element by data-edit-idx ──────── */
+  svg.addEventListener('click', e => {
+    if (activeTool !== 'eraser') return;
+    const target = (e.target as SVGElement).closest('[data-edit-idx]') as SVGElement | null;
+    if (!target) return;
+    const idx = parseInt(target.getAttribute('data-edit-idx')!, 10);
+    const edits = pageEdits[currentPage] || [];
+    if (idx >= 0 && idx < edits.length) {
+      pushHistory(currentPage);
+      edits.splice(idx, 1);
+      renderEdits();
+      updateEditCount();
+      showStatus('Edit removed', true);
+    }
+  });
+
+  /* ── Temp shape preview during drag ───────────────────────── */
+  function buildTempPreview(x1: number, y1: number, x2: number, y2: number): SVGElement | null {
+    const p = getProps();
+    const ns = 'http://www.w3.org/2000/svg';
+    const style = `stroke:${p.color};stroke-width:${p.size};fill:${p.fill === 'solid' ? p.color : 'none'};opacity:0.6;stroke-dasharray:6 3;`;
+    switch (activeTool) {
+      case 'rect': {
+        const r = document.createElementNS(ns, 'rect');
+        r.id = 'tmp-preview';
+        r.setAttribute('x', String(Math.min(x1, x2)));
+        r.setAttribute('y', String(Math.min(y1, y2)));
+        r.setAttribute('width',  String(Math.abs(x2 - x1)));
+        r.setAttribute('height', String(Math.abs(y2 - y1)));
+        r.setAttribute('style', style);
+        return r;
+      }
+      case 'circle': {
+        const c = document.createElementNS(ns, 'ellipse');
+        c.id = 'tmp-preview';
+        c.setAttribute('cx', String((x1 + x2) / 2));
+        c.setAttribute('cy', String((y1 + y2) / 2));
+        c.setAttribute('rx', String(Math.abs(x2 - x1) / 2));
+        c.setAttribute('ry', String(Math.abs(y2 - y1) / 2));
+        c.setAttribute('style', style);
+        return c;
+      }
+      case 'line': {
+        const l = document.createElementNS(ns, 'line');
+        l.id = 'tmp-preview';
+        l.setAttribute('x1', String(x1)); l.setAttribute('y1', String(y1));
+        l.setAttribute('x2', String(x2)); l.setAttribute('y2', String(y2));
+        l.setAttribute('style', style + 'stroke-linecap:round;');
+        return l;
+      }
+      case 'arrow': {
+        const g = document.createElementNS(ns, 'g');
+        g.id = 'tmp-preview';
+        g.setAttribute('opacity', '0.6');
+        const l = document.createElementNS(ns, 'line');
+        l.setAttribute('x1', String(x1)); l.setAttribute('y1', String(y1));
+        l.setAttribute('x2', String(x2)); l.setAttribute('y2', String(y2));
+        l.setAttribute('style', style + 'stroke-linecap:round;');
+        g.appendChild(l);
+        const a  = Math.atan2(y2 - y1, x2 - x1);
+        const hl = Math.max(p.size * 4, 12);
+        const pts = [
+          [x2, y2],
+          [x2 - hl * Math.cos(a - Math.PI / 6), y2 - hl * Math.sin(a - Math.PI / 6)],
+          [x2 - hl * Math.cos(a + Math.PI / 6), y2 - hl * Math.sin(a + Math.PI / 6)],
+        ];
+        const poly = document.createElementNS(ns, 'polygon');
+        poly.setAttribute('points', pts.map(pt => pt.join(',')).join(' '));
+        poly.setAttribute('fill', p.color);
+        g.appendChild(poly);
+        return g;
+      }
+    }
+    return null;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     TEXT TOOL — robust inline input
+     ═══════════════════════════════════════════════════════════ */
+  function commitAnyTextInput() {
+    const el = document.getElementById('inline-text-input') as HTMLInputElement | null;
+    if (el) commitTextInput(el);
+  }
+
+  function handleTextClick(e: MouseEvent) {
+    commitAnyTextInput();
+    const pt = svgPoint(e);
+    const props = getProps();
+
+    /* Position the input relative to canvasWrapper using getBoundingClientRect */
+    const wrapperRect = canvasWrapper.getBoundingClientRect();
+    const leftPx = e.clientX - wrapperRect.left;
+    const topPx  = e.clientY - wrapperRect.top;
+
+    const input = document.createElement('input');
+    input.id = 'inline-text-input';
+    input.type = 'text';
+    input.placeholder = 'Type here\u2026';
+    Object.assign(input.style, {
+      position: 'absolute',
+      left: leftPx + 'px',
+      top:  topPx  + 'px',
+      transform: 'translateY(-50%)',
+      fontSize: (props.fontSize || 16) + 'px',
+      color: props.color,
+      background: 'rgba(255,255,255,0.95)',
+      border: '1.5px dashed ' + props.color,
+      borderRadius: '3px',
+      padding: '2px 6px',
+      outline: 'none',
+      minWidth: '60px',
+      fontFamily: 'Helvetica, Arial, sans-serif',
+      zIndex: '20',
+      opacity: String(props.opacity),
+    } as CSSStyleDeclaration);
+    input.dataset.svgX = String(pt.x);
+    input.dataset.svgY = String(pt.y);
+
+    canvasWrapper.appendChild(input);
+    /* Delay focus so the click that created it doesn't immediately blur */
+    requestAnimationFrame(() => input.focus());
+
+    input.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter') { ev.preventDefault(); commitTextInput(input); }
+      if (ev.key === 'Escape') input.remove();
+    });
+    input.addEventListener('blur', () => {
+      /* Small delay so a click on another tool can fire first */
+      setTimeout(() => { if (input.parentElement) commitTextInput(input); }, 80);
+    });
+  }
+
+  function commitTextInput(input: HTMLInputElement) {
+    const text = input.value.trim();
+    input.remove();
+    if (!text) return;
+
+    const props = getProps();
+    pageEdits[currentPage] = pageEdits[currentPage] || [];
+    pageEdits[currentPage].push({
+      type: 'text',
+      x: parseFloat(input.dataset.svgX || '0'),
+      y: parseFloat(input.dataset.svgY || '0'),
+      text,
+      color: props.color,
+      fontSize: props.fontSize || 16,
+      size: props.size,
+      opacity: props.opacity,
+      id: 'e' + Date.now() + Math.random().toString(36).slice(2, 5),
+    });
+    pushHistory(currentPage);
+    renderEdits();
+    updateEditCount();
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     IMAGE TOOL
+     ═══════════════════════════════════════════════════════════ */
+  function handleImageClick(e: MouseEvent) {
+    const pt = svgPoint(e);
+    const tmp = document.createElement('input');
+    tmp.type = 'file';
+    tmp.accept = 'image/*';
+    tmp.style.display = 'none';
+    document.body.appendChild(tmp);
+    tmp.addEventListener('change', () => {
+      const file = tmp.files?.[0];
+      tmp.remove();
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = Math.min(pageViewportW * 0.4, 200);
+          const ratio  = Math.min(maxDim / img.width, maxDim / img.height);
+          const w = img.width  * ratio;
+          const h = img.height * ratio;
+          pageEdits[currentPage] = pageEdits[currentPage] || [];
+          pageEdits[currentPage].push({
+            type: 'image', x: pt.x - w / 2, y: pt.y - h / 2,
+            imageData: dataUrl, imgW: w, imgH: h,
+            color: '#000000', size: 1,
+            opacity: parseInt(propOpacity.value) / 100,
+            id: 'e' + Date.now() + Math.random().toString(36).slice(2, 5),
+          });
+          pushHistory(currentPage);
+          renderEdits();
+          updateEditCount();
+        };
+        img.src = dataUrl;
+      };
+      reader.readAsDataURL(file);
+    });
+    tmp.click();
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     SAVE — apply edits to PDF via pdf-lib
+     ═══════════════════════════════════════════════════════════ */
+  saveBtn.addEventListener('click', async () => {
+    if (!pdfDoc) return;
+    saveBtn.setAttribute('disabled', '');
+    saveBtn.textContent = 'Saving\u2026';
+    showStatus('Preparing PDF\u2026', true);
+
+    try {
+      const libDoc    = await PDFDocument.load(pdfBytes!);
+      const helvetica = await libDoc.embedFont(StandardFonts.Helvetica);
+
+      for (let p = 1; p <= totalPages; p++) {
+        const edits = pageEdits[p] || [];
+        if (!edits.length) continue;
+
+        const page = libDoc.getPage(p - 1);
+        const { width: pdfW, height: pdfH } = page.getSize();
+
+        /* Per-page viewport: re-derive from the stored PDF.js doc so we
+           don't rely on the currently-rendered page's state. */
+        const pdfJsPage  = await pdfDoc.getPage(p);
+        const unscaledVP = pdfJsPage.getViewport({ scale: 1 });
+        const containerW = canvasContainer.clientWidth - 32;
+        const displayScale = Math.min(containerW / unscaledVP.width, 2);
+        const vpW = unscaledVP.width  * displayScale;   /* SVG viewport width  */
+        const vpH = unscaledVP.height * displayScale;   /* SVG viewport height */
+
+        /* Coordinate scale factors: SVG-px → PDF-points.
+           svgX ∈ [0, vpW]  →  pdfX ∈ [0, pdfW]       */
+        const sx = pdfW / vpW;
+        const sy = pdfH / vpH;
+
+        for (const edit of edits) {
+          const c   = parseColor(edit.color);
+          const op  = edit.opacity ?? 1;
+          const clr = rgb(c.r, c.g, c.b);
+
+          switch (edit.type) {
+            /* ── TEXT ─────────────────────────────────────── */
+            case 'text': {
+              const fs = (edit.fontSize || 16) * sy;
+              /* edit.y is the click Y in SVG space (top-left origin).
+                 We stored it as the *visual* top of the text.
+                 SVG-text renders with baseline = y + 0.82*fontSize,
+                 so the visual top is edit.y.
+                 PDF drawText uses baseline = y, so we need:
+                   pdfY = pdfH - edit.y*sy - fs  (baseline at visual top - fontSize)  */
+              page.drawText(edit.text || '', {
+                x: edit.x * sx,
+                y: pdfH - (edit.y + (edit.fontSize || 16) * 0.82) * sy,
+                size: fs,
+                font: helvetica,
+                color: clr,
+                opacity: op,
+              });
+              break;
+            }
+            /* ── RECT ────────────────────────────────────── */
+            case 'rect': {
+              const rx = Math.min(edit.x, edit.x2!) * sx;
+              const ry = pdfH - Math.max(edit.y, edit.y2!) * sy;
+              const rw = Math.abs(edit.x2! - edit.x) * sx;
+              const rh = Math.abs(edit.y2! - edit.y) * sy;
+              if (edit.fill === 'solid')
+                page.drawRectangle({ x: rx, y: ry, width: rw, height: rh, color: clr, opacity: op });
+              page.drawRectangle({ x: rx, y: ry, width: rw, height: rh, borderColor: clr, borderWidth: (edit.size || 2) * sy, opacity: op });
+              break;
+            }
+            /* ── CIRCLE ──────────────────────────────────── */
+            case 'circle': {
+              const cx = ((edit.x + edit.x2!) / 2) * sx;
+              const cy = pdfH - ((edit.y + edit.y2!) / 2) * sy;
+              const rx = (Math.abs(edit.x2! - edit.x) / 2) * sx;
+              const ry = (Math.abs(edit.y2! - edit.y) / 2) * sy;
+              if (edit.fill === 'solid')
+                page.drawEllipse({ x: cx, y: cy, xScale: rx, yScale: ry, color: clr, opacity: op });
+              page.drawEllipse({ x: cx, y: cy, xScale: rx, yScale: ry, borderColor: clr, borderWidth: (edit.size || 2) * sy, opacity: op });
+              break;
+            }
+            /* ── LINE ────────────────────────────────────── */
+            case 'line': {
+              page.drawLine({
+                start: { x: edit.x * sx,  y: pdfH - edit.y * sy },
+                end:   { x: edit.x2! * sx, y: pdfH - edit.y2! * sy },
+                color: clr, thickness: (edit.size || 2) * sy, opacity: op,
+              });
+              break;
+            }
+            /* ── ARROW ───────────────────────────────────── */
+            case 'arrow': {
+              const x1 = edit.x  * sx, y1 = pdfH - edit.y  * sy;
+              const x2 = edit.x2! * sx, y2 = pdfH - edit.y2! * sy;
+              page.drawLine({ start: { x: x1, y: y1 }, end: { x: x2, y: y2 }, color: clr, thickness: (edit.size || 2) * sy, opacity: op });
+              const a  = Math.atan2(y2 - y1, x2 - x1);
+              const hl = Math.max((edit.size || 2) * sy * 4, 12);
+              page.drawLine({ start: { x: x2, y: y2 }, end: { x: x2 - hl * Math.cos(a - Math.PI / 6), y: y2 - hl * Math.sin(a - Math.PI / 6) }, color: clr, thickness: (edit.size || 2) * sy, opacity: op });
+              page.drawLine({ start: { x: x2, y: y2 }, end: { x: x2 - hl * Math.cos(a + Math.PI / 6), y: y2 - hl * Math.sin(a + Math.PI / 6) }, color: clr, thickness: (edit.size || 2) * sy, opacity: op });
+              break;
+            }
+            /* ── FREEHAND ────────────────────────────────── */
+            case 'freehand': {
+              if (!edit.points || edit.points.length < 2) break;
+              for (let i = 1; i < edit.points.length; i++) {
+                page.drawLine({
+                  start: { x: edit.points[i - 1].x * sx, y: pdfH - edit.points[i - 1].y * sy },
+                  end:   { x: edit.points[i].x     * sx, y: pdfH - edit.points[i].y     * sy },
+                  color: clr, thickness: (edit.size || 2) * sy, opacity: op,
+                });
+              }
+              break;
+            }
+            /* ── IMAGE ───────────────────────────────────── */
+            case 'image': {
+              try {
+                const raw = atob(edit.imageData!.split(',')[1]);
+                const bytes = Uint8Array.from(raw, ch => ch.charCodeAt(0));
+                const isPng = edit.imageData!.startsWith('data:image/png');
+                const embedded = isPng
+                  ? await libDoc.embedPng(bytes)
+                  : await libDoc.embedJpg(bytes);
+                page.drawImage(embedded, {
+                  x: edit.x * sx,
+                  y: pdfH - edit.y * sy - (edit.imgH || 100) * sy,
+                  width:  (edit.imgW || 100) * sx,
+                  height: (edit.imgH || 100) * sy,
+                  opacity: op,
+                });
+              } catch { /* skip unsupported image format */ }
+              break;
+            }
+          }
+        }
+      }
+
+      showStatus('Saving PDF\u2026', true);
+      const out = await libDoc.save();
+      const blob = new Blob([out], { type: 'application/pdf' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = 'edited.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+      showStatus('Done! Downloaded edited.pdf', false);
+    } catch (err: any) {
+      showStatus('Error: ' + (err.message || 'Save failed.'), false);
+    } finally {
+      saveBtn.removeAttribute('disabled');
+      saveBtn.textContent = 'Save PDF';
+    }
+  });
+
+  /* ── Parse hex → RGB [0..1] ───────────────────────────────── */
+  function parseColor(hex: string) {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    return {
+      r: parseInt(hex.substring(0, 2), 16) / 255,
+      g: parseInt(hex.substring(2, 4), 16) / 255,
+      b: parseInt(hex.substring(4, 6), 16) / 255,
+    };
+  }
+})();
+</script>

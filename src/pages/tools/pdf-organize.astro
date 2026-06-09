@@ -1,0 +1,249 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'pdf-organize')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Organize PDF</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Drag pages to reorder, click to duplicate or remove — visual workspace for your PDF.</p>
+
+    <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
+      <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem;">or click to browse</p>
+      <input id="file-input" type="file" accept=".pdf" style="display:none;" />
+      <button id="browse-btn" class="btn-secondary" type="button" style="font-size:0.82rem;">Browse File</button>
+    </div>
+
+    <div id="workspace" style="display:none;margin-top:1.25rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
+          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        </p>
+        <div style="display:flex;gap:0.5rem;">
+          <button id="undo-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;" disabled>Undo</button>
+          <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
+        </div>
+      </div>
+      <div id="pages-grid" style="display:flex;flex-wrap:wrap;gap:0.6rem;"></div>
+      <div style="margin-top:1.25rem;text-align:center;">
+        <button id="download-btn" class="btn-primary" type="button" style="font-size:0.95rem;padding:0.7rem 2rem;">Download Organized PDF</button>
+        <p id="status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Organize PDF</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 1:</strong> Drop a PDF or click <strong>Browse File</strong>. All pages appear as thumbnails.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Step 2:</strong> <strong>Drag</strong> pages to reorder. Click <strong>⧉</strong> to duplicate a page. Click <strong>✕</strong> to delete a page. Use <strong>Undo</strong> to revert changes.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Step 3:</strong> Click <strong>Download Organized PDF</strong> to save the result.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Organize PDF works</h2>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. User drops a PDF file
+2. PDF.js renders page thumbnails
+3. User drags to reorder, duplicates, or deletes
+4. pdf-lib copies pages in the new order
+5. Organized PDF is downloaded
+
+All client-side — no server upload.</pre>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is my file uploaded?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Everything runs in your browser using pdf-lib and PDF.js. Your file never leaves your device." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I undo changes?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Click the Undo button to revert the last action (reorder, duplicate, or delete). You can undo multiple times." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does organizing reduce quality?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Pages are copied losslessly. Text, images, and vectors are preserved byte-for-byte." }
+        }
+      ]
+    }
+    </script>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Is my file uploaded?', a: 'No. Everything runs in your browser using pdf-lib and PDF.js. Your file never leaves your device.' },
+        { q: 'Can I undo changes?', a: 'Yes. Click the Undo button to revert the last action (reorder, duplicate, or delete). You can undo multiple times.' },
+        { q: 'Does organizing reduce quality?', a: 'No. Pages are copied losslessly. Text, images, and vectors are preserved byte-for-byte.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script is:inline src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script is:inline src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+<script>
+(function () {
+  const { PDFDocument } = (window as any).PDFLib;
+  const pdfjsLib = (window as any).pdfjsLib;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+  const dropZone = document.getElementById('drop-zone')!;
+  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  const browseBtn = document.getElementById('browse-btn')!;
+  const workspace = document.getElementById('workspace')!;
+  const docName = document.getElementById('doc-name')!;
+  const docPages = document.getElementById('doc-pages')!;
+  const resetBtn = document.getElementById('reset-btn')!;
+  const undoBtn = document.getElementById('undo-btn')!;
+  const downloadBtn = document.getElementById('download-btn')!;
+  const pagesGrid = document.getElementById('pages-grid')!;
+  const statusEl = document.getElementById('status')!;
+
+  type PageItem = { id: number; srcPageIndex: number; rotation: number; };
+  let items: PageItem[] = [];
+  let history: PageItem[][] = [];
+  let nextId = 0;
+  let pdfBytes: ArrayBuffer | null = null;
+  let pdfDoc: any = null;
+  let totalPages = 0;
+  let draggedItem: number | null = null;
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--color-brand-blue)'; });
+  dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = ''; if (e.dataTransfer!.files.length) loadFile(e.dataTransfer!.files[0]); });
+  browseBtn.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', e => { if (e.target === dropZone || e.target === browseBtn) fileInput.click(); });
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) loadFile(fileInput.files[0]); fileInput.value = ''; });
+  resetBtn.addEventListener('click', () => { pdfBytes = null; pdfDoc = null; items = []; history = []; workspace.style.display = 'none'; dropZone.style.display = ''; });
+  undoBtn.addEventListener('click', () => { if (history.length) { items = history.pop()!; renderPages(); } });
+
+  async function loadFile(file: File) {
+    if (file.type !== 'application/pdf') return;
+    pdfBytes = await file.arrayBuffer();
+    pdfDoc = await pdfjsLib.getDocument({ data: pdfBytes.slice(0) }).promise;
+    totalPages = pdfDoc.numPages;
+    docName.textContent = file.name.replace(/\.pdf$/i, '');
+    docPages.textContent = totalPages + ' page' + (totalPages > 1 ? 's' : '');
+    items = [];
+    history = [];
+    for (let i = 0; i < totalPages; i++) items.push({ id: nextId++, srcPageIndex: i, rotation: 0 });
+    dropZone.style.display = 'none';
+    workspace.style.display = '';
+    renderPages();
+  }
+
+  function saveHistory() { history.push(items.map(i => ({ ...i }))); if (history.length > 50) history.shift(); undoBtn.disabled = history.length === 0; }
+
+  async function renderPages() {
+    pagesGrid.innerHTML = '';
+    docPages.textContent = items.length + ' page' + (items.length !== 1 ? 's' : '');
+    for (let idx = 0; idx < items.length; idx++) {
+      const item = items[idx];
+      const page = await pdfDoc.getPage(item.srcPageIndex + 1);
+      const viewport = page.getViewport({ scale: 0.3 });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.cssText = 'width:110px;height:auto;border:2px solid var(--border);border-radius:6px;cursor:grab;transition:border-color 0.15s,box-shadow 0.15s;background:#fff;';
+      await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'page-card';
+      wrap.draggable = true;
+      wrap.dataset.idx = String(idx);
+      wrap.style.cssText = 'position:relative;flex-shrink:0;text-align:center;';
+
+      const numBadge = document.createElement('div');
+      numBadge.style.cssText = 'position:absolute;top:-6px;left:-6px;background:var(--color-brand-blue);color:#fff;font-size:0.6rem;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:2;';
+      numBadge.textContent = String(idx + 1);
+
+      const btnRow = document.createElement('div');
+      btnRow.style.cssText = 'display:flex;gap:0.25rem;justify-content:center;margin-top:0.3rem;';
+
+      const dupBtn = document.createElement('button');
+      dupBtn.className = 'btn-secondary';
+      dupBtn.type = 'button';
+      dupBtn.style.cssText = 'font-size:0.6rem;padding:0.15rem 0.4rem;';
+      dupBtn.textContent = '⧉ Duplicate';
+      dupBtn.addEventListener('click', e => { e.stopPropagation(); saveHistory(); items.splice(idx + 1, 0, { ...item, id: nextId++ }); renderPages(); });
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-secondary';
+      delBtn.type = 'button';
+      delBtn.style.cssText = 'font-size:0.6rem;padding:0.15rem 0.4rem;color:#EF4444;';
+      delBtn.textContent = '✕ Delete';
+      delBtn.addEventListener('click', e => { e.stopPropagation(); saveHistory(); items.splice(idx, 1); renderPages(); });
+
+      btnRow.appendChild(dupBtn);
+      btnRow.appendChild(delBtn);
+      wrap.appendChild(numBadge);
+      wrap.appendChild(canvas);
+      wrap.appendChild(btnRow);
+
+      wrap.addEventListener('dragstart', e => { draggedItem = idx; canvas.style.opacity = '0.4'; e.dataTransfer!.effectAllowed = 'move'; });
+      wrap.addEventListener('dragend', () => { draggedItem = null; canvas.style.opacity = ''; pagesGrid.querySelectorAll('.page-card').forEach(c => (c.firstChild as HTMLElement).style.borderColor = 'var(--border)'); });
+      wrap.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer!.dropEffect = 'move'; (canvas).style.borderColor = 'var(--color-brand-blue)'; });
+      wrap.addEventListener('dragleave', () => { canvas.style.borderColor = 'var(--border)'; });
+      wrap.addEventListener('drop', e => {
+        e.preventDefault();
+        canvas.style.borderColor = 'var(--border)';
+        if (draggedItem === null || draggedItem === idx) return;
+        saveHistory();
+        const [moved] = items.splice(draggedItem, 1);
+        items.splice(idx, 0, moved);
+        renderPages();
+      });
+
+      pagesGrid.appendChild(wrap);
+    }
+    undoBtn.disabled = history.length === 0;
+  }
+
+  downloadBtn.addEventListener('click', async () => {
+    if (!items.length) return;
+    downloadBtn.setAttribute('disabled', '');
+    downloadBtn.textContent = 'Building…';
+    try {
+      const srcDoc = await PDFDocument.load(pdfBytes!);
+      const newDoc = await PDFDocument.create();
+      for (const item of items) {
+        const [copied] = await newDoc.copyPages(srcDoc, [item.srcPageIndex]);
+        if (item.rotation) copied.setRotation(item.rotation);
+        newDoc.addPage(copied);
+      }
+      const bytes = await newDoc.save();
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'organized.pdf'; a.click();
+      URL.revokeObjectURL(url);
+      statusEl.style.display = ''; statusEl.style.color = '#10B981'; statusEl.textContent = 'Downloaded organized.pdf (' + items.length + ' pages).';
+    } catch (e: any) { statusEl.style.display = ''; statusEl.style.color = '#EF4444'; statusEl.textContent = 'Error: ' + e.message; }
+    finally { downloadBtn.removeAttribute('disabled'); downloadBtn.textContent = 'Download Organized PDF'; }
+  });
+})();
+</script>
