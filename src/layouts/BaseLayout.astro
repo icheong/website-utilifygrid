@@ -17,6 +17,7 @@ const siteUrl   = 'https://utilifygrid.com';
 const siteName  = 'UtilifyGrid';
 const adsenseId = 'ca-pub-7704630721055432';
 const fullCanonical = canonicalUrl ? `${siteUrl}${canonicalUrl}` : siteUrl;
+const isProd = import.meta.env.PROD;
 
 /* Pass all tool metadata to the client for the favourites dropdown */
 const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, category: t.category }));
@@ -51,6 +52,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
   <script is:inline>
     (function(){try{const s=localStorage.getItem('ug-theme'),d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');}catch(_){}})();
   </script>
+  {isProd && (
   <!-- GA4 via Partytown -->
   <script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-7FRYF9YQCK"></script>
   <script type="text/partytown">
@@ -59,6 +61,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
     gtag('js', new Date());
     gtag('config', 'G-7FRYF9YQCK');
   </script>
+  )}
 </head>
 
 <body class="min-h-screen flex flex-col">
