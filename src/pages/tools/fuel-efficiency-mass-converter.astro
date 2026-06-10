@@ -1,0 +1,157 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'fuel-efficiency-mass-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Fuel Efficiency — Mass Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="inp">Value</label>
+        <input id="inp" type="number" value="1" min="0" step="any" placeholder="Enter value" class="input-themed" style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sel">Unit</label>
+        <select id="sel" class="select-themed" style="min-width:10rem;">
+          <option value="kmkg">Kilometer per Kilometer (km/kg)</option>
+          <option value="mkg">Meter per Kilogram (m/kg)</option>
+          <option value="milb">Mile per Pound (mi/lb)</option>
+          <option value="nmikg">Nautical Mile per Kilometer (nmi/kg)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Fuel Efficiency — Mass Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other mass-based fuel efficiency units update instantly — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      This converter handles <strong>mass-based</strong> fuel efficiency — distance traveled per unit of fuel mass consumed. It is commonly used in aviation and industrial applications where fuel is measured by weight rather than volume.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How mass fuel efficiency conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions go through <strong>meters per kilogram (m/kg)</strong> as the base unit. Each unit has a fixed factor relative to one m/kg:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 km/kg  = 1000 m/kg
+1 mi/lb  = 2204.62 m/kg
+1 nmi/kg = 1852 m/kg
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Mass-based fuel efficiency is the inverse of specific fuel consumption. Higher values mean better efficiency — the vehicle travels farther per kilogram of fuel. All calculations run in your browser — no data is sent anywhere.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is mass-based fuel efficiency?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Mass-based fuel efficiency measures how far a vehicle can travel per unit of fuel mass consumed (e.g., km/kg or mi/lb). It is commonly used in aviation and industrial applications where fuel is measured by weight rather than volume, since fuel density can vary with temperature." }
+        },
+        {
+          "@type": "Question",
+          "name": "When is km/kg used?",
+          "acceptedAnswer": { "@type": "Answer", "text": "km/kg (kilometers per kilogram) is used primarily in aviation and military contexts where fuel is measured by mass. It provides a more consistent measure than volume-based efficiency since fuel density changes with temperature and altitude." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is mass-based fuel efficiency?', a: 'Mass-based fuel efficiency measures how far a vehicle can travel per unit of fuel mass consumed (e.g., km/kg or mi/lb). It is commonly used in aviation and industrial applications where fuel is measured by weight rather than volume, since fuel density can vary with temperature.' },
+        { q: 'When is km/kg used?', a: 'km/kg (kilometers per kilogram) is used primarily in aviation and military contexts where fuel is measured by mass. It provides a more consistent measure than volume-based efficiency since fuel density changes with temperature and altitude.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  const UNITS = [
+    { id: 'kmkg',  label: 'Kilometer per Kilometer (km/kg)',  abbr: 'km/kg',  factor: 1000 },
+    { id: 'mkg',   label: 'Meter per Kilogram (m/kg)',        abbr: 'm/kg',   factor: 1 },
+    { id: 'milb',  label: 'Mile per Pound (mi/lb)',           abbr: 'mi/lb',  factor: 2204.62 },
+    { id: 'nmikg', label: 'Nautical Mile per Kilometer (nmi/kg)', abbr: 'nmi/kg', factor: 1852 },
+  ];
+
+  const input = document.getElementById('inp') as HTMLInputElement;
+  const select = document.getElementById('sel') as HTMLSelectElement;
+  const grid = document.getElementById('results')!;
+
+  function formatResult(value: number): string {
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9) return value.toExponential(4);
+    if (abs >= 1e6) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1) return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 1e-6) return value.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val = parseFloat(input.value);
+    const fromUnit = select.value;
+    const fromFactor = UNITS.find(u => u.id === fromUnit)!.factor;
+    grid.innerHTML = '';
+    UNITS.forEach(unit => {
+      const converted = (val * fromFactor) / unit.factor;
+      const display = formatResult(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${unit.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

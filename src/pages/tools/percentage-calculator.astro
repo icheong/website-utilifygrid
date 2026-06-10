@@ -37,8 +37,7 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
         </div>
       </div>
       <div class="result-card accent-blue" id="res-of" style="display:none; text-align:center;">
-        <div class="result-value" id="res-of-val"></div>
-        <div class="result-label" id="res-of-lbl"></div>
+        <div id="res-of-sentence" style="font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:500; color:var(--text-primary); line-height:1.6;"></div>
       </div>
     </div>
 
@@ -57,8 +56,7 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
         </div>
       </div>
       <div class="result-card accent-blue" id="res-is" style="display:none; text-align:center;">
-        <div class="result-value" id="res-is-val"></div>
-        <div class="result-label" id="res-is-lbl"></div>
+        <div id="res-is-sentence" style="font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:500; color:var(--text-primary); line-height:1.6;"></div>
       </div>
     </div>
 
@@ -77,8 +75,7 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
         </div>
       </div>
       <div class="result-card" id="res-chg" style="display:none; text-align:center;">
-        <div class="result-value" id="res-chg-val"></div>
-        <div class="result-label" id="res-chg-lbl"></div>
+        <div id="res-chg-sentence" style="font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:500; color:var(--text-primary); line-height:1.6;"></div>
       </div>
     </div>
 
@@ -204,17 +201,16 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
     err.style.display = 'block';
   }
 
-  function showResult(cardId: string, valId: string, lblId: string, value: string, label: string, isNegative = false) {
-    const card = document.getElementById(cardId)!;
-    const valEl = document.getElementById(valId)!;
-    const lblEl = document.getElementById(lblId)!;
+  function fmt(n: number) {
+    return parseFloat(n.toFixed(6)).toLocaleString();
+  }
 
+  function showSentence(cardId: string, sentenceId: string, html: string, isNegative = false) {
+    const card = document.getElementById(cardId)!;
+    const el = document.getElementById(sentenceId)!;
     card.classList.remove('accent-blue','accent-success','accent-warning','accent-red');
     card.classList.add(isNegative ? 'accent-warning' : 'accent-success');
-
-    valEl.textContent = value;
-    (valEl as HTMLElement).style.color = isNegative ? '#D97706' : 'var(--color-brand-blue)';
-    lblEl.textContent = label;
+    el.innerHTML = html;
     card.style.display = '';
   }
 
@@ -228,7 +224,9 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
       const val = parseFloat((document.getElementById('of-val') as HTMLInputElement).value);
       if (isNaN(pct) || isNaN(val)) { showError('Please enter both values.'); return; }
       const result = val * (pct / 100);
-      showResult('res-of','res-of-val','res-of-lbl', result.toLocaleString(undefined, {maximumFractionDigits:6}), `${pct}% of ${val}`);
+      showSentence('res-of', 'res-of-sentence',
+        `${fmt(pct)}% of ${fmt(val)} is <span style="color:var(--color-brand-blue);">${fmt(result)}</span>`
+      );
     }
 
     else if (activeMode === 'is') {
@@ -236,7 +234,9 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
       const y = parseFloat((document.getElementById('is-y') as HTMLInputElement).value);
       if (isNaN(x) || isNaN(y) || y === 0) { showError('Please enter two values (Y cannot be zero).'); return; }
       const result = (x / y) * 100;
-      showResult('res-is','res-is-val','res-is-lbl', result.toFixed(4).replace(/\.?0+$/,'') + '%', `${x} is this % of ${y}`);
+      showSentence('res-is', 'res-is-sentence',
+        `${fmt(x)} is <span style="color:var(--color-brand-blue);">${parseFloat(result.toFixed(2))}%</span> of ${fmt(y)}`
+      );
     }
 
     else if (activeMode === 'change') {
@@ -245,10 +245,9 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
       if (isNaN(from) || isNaN(to) || from === 0) { showError('Please enter both values (original cannot be zero).'); return; }
       const change = ((to - from) / Math.abs(from)) * 100;
       const isDecrease = change < 0;
-      const direction  = isDecrease ? 'decrease' : 'increase';
-      showResult('res-chg','res-chg-val','res-chg-lbl',
-        (isDecrease ? '' : '+') + change.toFixed(4).replace(/\.?0+$/,'') + '%',
-        `Percentage ${direction} from ${from} to ${to}`,
+      const sign = isDecrease ? '' : '+';
+      showSentence('res-chg', 'res-chg-sentence',
+        `<span style="color:var(--color-brand-blue);">${fmt(from)}</span> became <span style="color:var(--color-brand-blue);">${fmt(to)}</span> — a <span style="color:${isDecrease ? '#D97706' : 'var(--color-brand-blue)'};">${sign}${parseFloat(change.toFixed(2))}%</span> ${isDecrease ? 'decrease' : 'increase'}`,
         isDecrease
       );
     }

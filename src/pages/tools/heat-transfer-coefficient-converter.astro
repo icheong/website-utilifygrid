@@ -1,0 +1,172 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'heat-transfer-coefficient-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Heat Transfer Coefficient Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="inp">Value</label>
+        <input id="inp" type="number" value="1" min="0" step="any" placeholder="Enter value" class="input-themed" style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sel">Unit</label>
+        <select id="sel" class="select-themed" style="min-width:10rem;">
+          <option value="W_m2K">Watt per Square Meter-Kelvin (W/(m²·K))</option>
+          <option value="BTU_hft2F">BTU per Hour-Square Foot-°F (BTU/(h·ft²·°F))</option>
+          <option value="cal_scm2C">Calorie per Second-Square Centimeter-°C (cal/(s·cm²·°C))</option>
+          <option value="W_cm2K">Watt per Square Centimeter-Kelvin (W/(cm²·K))</option>
+          <option value="kJ_hm2K">Kilojoule per Hour-Square Meter-Kelvin (kJ/(h·m²·K))</option>
+          <option value="kcal_hm2C">Kilocalorie per Hour-Square Meter-°C (kcal/(h·m²·°C))</option>
+          <option value="Wh_m2K">Watt-Hour per Square Meter-Kelvin (Wh/(m²·K))</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Heat Transfer Coefficient Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other heat transfer coefficient units update instantly — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      This converter handles the <strong>convective heat transfer coefficient</strong> — the proportionality constant between heat flux and temperature difference. It is used in HVAC, chemical engineering, and thermal system design.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How heat transfer coefficient conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions go through <strong>W/(m²·K)</strong> as the base unit. Each unit has a fixed conversion factor:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 BTU/(h·ft²·°F) = 5.67447 W/(m²·K)
+1 cal/(s·cm²·°C)  = 41840 W/(m²·K)
+1 W/(cm²·K)       = 10000 W/(m²·K)
+1 kJ/(h·m²·K)     = 0.277778 W/(m²·K)
+1 kcal/(h·m²·°C)  = 1.16278 W/(m²·K)
+1 Wh/(m²·K)       = 3600 W/(m²·K)
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      The heat transfer coefficient (h) describes how effectively heat is transferred between a solid surface and a fluid. Natural convection in air has h ≈ 5-25 W/(m²·K), forced convection in water has h ≈ 100-2000 W/(m²·K), and boiling heat transfer can exceed 10,000 W/(m²·K). All calculations run in your browser.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the heat transfer coefficient?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The heat transfer coefficient (h) is a measure of how effectively heat is transferred between a solid surface and a surrounding fluid. It is defined as the heat flux per unit temperature difference (h = q / ΔT), measured in W/(m²·K). Higher values indicate more effective heat transfer." }
+        },
+        {
+          "@type": "Question",
+          "name": "What are typical values for heat transfer coefficients?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Natural convection in air: 5-25 W/(m²·K), Forced convection in air: 25-250 W/(m²·K), Natural convection in water: 100-600 W/(m²·K), Forced convection in water: 100-2000 W/(m²·K), Boiling water: 2500-100,000 W/(m²·K). These values depend on fluid properties, flow conditions, and geometry." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between natural and forced convection?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Natural convection occurs when fluid motion is driven by density differences caused by temperature gradients (e.g., a radiator heating room air). Forced convection occurs when fluid is mechanically moved by a fan, pump, or other device (e.g., a car radiator with a water pump). Forced convection typically has much higher heat transfer coefficients." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is the heat transfer coefficient?', a: 'The heat transfer coefficient (h) is a measure of how effectively heat is transferred between a solid surface and a surrounding fluid. It is defined as the heat flux per unit temperature difference (h = q / ΔT), measured in W/(m²·K). Higher values indicate more effective heat transfer.' },
+        { q: 'What are typical values for heat transfer coefficients?', a: 'Natural convection in air: 5-25 W/(m²·K), Forced convection in air: 25-250 W/(m²·K), Natural convection in water: 100-600 W/(m²·K), Forced convection in water: 100-2000 W/(m²·K), Boiling water: 2500-100,000 W/(m²·K). These values depend on fluid properties, flow conditions, and geometry.' },
+        { q: 'What is the difference between natural and forced convection?', a: 'Natural convection occurs when fluid motion is driven by density differences caused by temperature gradients (e.g., a radiator heating room air). Forced convection occurs when fluid is mechanically moved by a fan, pump, or other device (e.g., a car radiator with a water pump). Forced convection typically has much higher heat transfer coefficients.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  const UNITS = [
+    { id: 'W_m2K',     label: 'Watt per Square Meter-Kelvin (W/(m²·K))',              abbr: 'W/(m²·K)',         factor: 1 },
+    { id: 'BTU_hft2F',  label: 'BTU per Hour-Square Foot-°F (BTU/(h·ft²·°F))',        abbr: 'BTU/(h·ft²·°F)',   factor: 5.67447 },
+    { id: 'cal_scm2C',  label: 'Calorie per Second-Square Centimeter-°C (cal/(s·cm²·°C))', abbr: 'cal/(s·cm²·°C)', factor: 41840 },
+    { id: 'W_cm2K',     label: 'Watt per Square Centimeter-Kelvin (W/(cm²·K))',        abbr: 'W/(cm²·K)',        factor: 10000 },
+    { id: 'kJ_hm2K',    label: 'Kilojoule per Hour-Square Meter-Kelvin (kJ/(h·m²·K))', abbr: 'kJ/(h·m²·K)',      factor: 0.277778 },
+    { id: 'kcal_hm2C',  label: 'Kilocalorie per Hour-Square Meter-°C (kcal/(h·m²·°C))', abbr: 'kcal/(h·m²·°C)',  factor: 1.16278 },
+    { id: 'Wh_m2K',     label: 'Watt-Hour per Square Meter-Kelvin (Wh/(m²·K))',        abbr: 'Wh/(m²·K)',        factor: 3600 },
+  ];
+
+  const input = document.getElementById('inp') as HTMLInputElement;
+  const select = document.getElementById('sel') as HTMLSelectElement;
+  const grid = document.getElementById('results')!;
+
+  function formatResult(value: number): string {
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9) return value.toExponential(4);
+    if (abs >= 1e6) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1) return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 1e-6) return value.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val = parseFloat(input.value);
+    const fromUnit = select.value;
+    const fromFactor = UNITS.find(u => u.id === fromUnit)!.factor;
+    grid.innerHTML = '';
+    UNITS.forEach(unit => {
+      const converted = (val * fromFactor) / unit.factor;
+      const display = formatResult(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${unit.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

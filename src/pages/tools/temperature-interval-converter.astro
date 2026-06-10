@@ -1,0 +1,164 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'temperature-interval-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Temperature Interval Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="inp">Value</label>
+        <input id="inp" type="number" value="1" min="0" step="any" placeholder="Enter value" class="input-themed" style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sel">Unit</label>
+        <select id="sel" class="select-themed" style="min-width:10rem;">
+          <option value="K">Kelvin (K)</option>
+          <option value="C">Celsius Degree (°C)</option>
+          <option value="F">Fahrenheit Degree (°F)</option>
+          <option value="R">Rankine (°R)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Temperature Interval Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other temperature interval units update instantly — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      This converter handles <strong>temperature intervals</strong> (differences), not absolute temperatures. A temperature <em>difference</em> of 1°C equals 1 K, but 1°F equals 5/9 K. This is different from converting between absolute temperature scales.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How temperature interval conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions go through <strong>Kelvin intervals</strong> as the base unit. Temperature intervals use linear conversion factors:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 K  = 1 K    (exact)
+1 °C = 1 K    (exact — a degree Celsius interval equals a Kelvin interval)
+1 °F = 5/9 K  (0.555556 K)
+1 °R = 5/9 K  (0.555556 K)
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Note: this is for <strong>intervals only</strong>. Converting absolute temperatures (e.g., 25°C to °F) requires offset formulas. Temperature <em>differences</em> of 1 K and 1 °C are identical because the Kelvin and Celsius scales have the same size degree — they only differ in their zero point.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is a temperature interval?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A temperature interval (or temperature difference) measures the change or range between two temperatures. For example, a temperature rise from 20°C to 30°C is an interval of 10°C (or 10 K). Intervals use linear conversion without the offset needed for absolute temperatures." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is 1°C equal to 1 K but not 1°F?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The Celsius and Kelvin scales have the same degree size — they only differ by their zero point (0 K = -273.15°C). So a 1° change in Celsius equals a 1 K change. However, the Fahrenheit degree is 5/9 the size of a Celsius/Kelvin degree, so 1°F = 5/9 K." }
+        },
+        {
+          "@type": "Question",
+          "name": "How is this different from converting absolute temperatures?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Absolute temperature conversion (e.g., 25°C to °F) uses the formula °F = °C × 9/5 + 32, which includes an offset. Interval conversion uses only the ratio (°F interval = °C interval × 9/5) with no offset. This converter handles intervals only." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is a temperature interval?', a: 'A temperature interval (or temperature difference) measures the change or range between two temperatures. For example, a temperature rise from 20°C to 30°C is an interval of 10°C (or 10 K). Intervals use linear conversion without the offset needed for absolute temperatures.' },
+        { q: 'Why is 1°C equal to 1 K but not 1°F?', a: 'The Celsius and Kelvin scales have the same degree size — they only differ by their zero point (0 K = -273.15°C). So a 1° change in Celsius equals a 1 K change. However, the Fahrenheit degree is 5/9 the size of a Celsius/Kelvin degree, so 1°F = 5/9 K.' },
+        { q: 'How is this different from converting absolute temperatures?', a: 'Absolute temperature conversion (e.g., 25°C to °F) uses the formula °F = °C × 9/5 + 32, which includes an offset. Interval conversion uses only the ratio (°F interval = °C interval × 9/5) with no offset. This converter handles intervals only.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  const UNITS = [
+    { id: 'K', label: 'Kelvin (K)',            abbr: 'K',  factor: 1 },
+    { id: 'C', label: 'Celsius Degree (°C)',   abbr: '°C', factor: 1 },
+    { id: 'F', label: 'Fahrenheit Degree (°F)', abbr: '°F', factor: 0.55555556 },
+    { id: 'R', label: 'Rankine (°R)',          abbr: '°R', factor: 0.55555556 },
+  ];
+
+  const input = document.getElementById('inp') as HTMLInputElement;
+  const select = document.getElementById('sel') as HTMLSelectElement;
+  const grid = document.getElementById('results')!;
+
+  function formatResult(value: number): string {
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9) return value.toExponential(4);
+    if (abs >= 1e6) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1) return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 1e-6) return value.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val = parseFloat(input.value);
+    const fromUnit = select.value;
+    const fromFactor = UNITS.find(u => u.id === fromUnit)!.factor;
+    grid.innerHTML = '';
+    UNITS.forEach(unit => {
+      const converted = (val * fromFactor) / unit.factor;
+      const display = formatResult(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${unit.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

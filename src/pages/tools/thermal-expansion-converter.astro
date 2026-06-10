@@ -1,0 +1,163 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'thermal-expansion-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Thermal Expansion Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="inp">Value</label>
+        <input id="inp" type="number" value="1" min="0" step="any" placeholder="Enter value" class="input-themed" style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sel">Unit</label>
+        <select id="sel" class="select-themed" style="min-width:10rem;">
+          <option value="K">Per Kelvin (1/K)</option>
+          <option value="C">Per Celsius (1/°C)</option>
+          <option value="F">Per Fahrenheit (1/°F)</option>
+          <option value="R">Per Rankine (1/°R)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Thermal Expansion Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other thermal expansion coefficient units update instantly — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      This converter handles the <strong>coefficient of linear thermal expansion</strong>, which measures how much a material expands per degree of temperature change. Commonly used in engineering, materials science, and construction.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How thermal expansion conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions go through <strong>per Kelvin (1/K)</strong> as the base unit. Since the Celsius and Kelvin scales have the same degree size, 1/°C = 1/K. The Fahrenheit and Rankine scales use a factor of 1.8:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 1/°C = 1 1/K     (exact — same degree size)
+1 1/°F = 1.8 1/K   (because °F intervals are 5/9 of K intervals)
+1 1/°R = 1.8 1/K   (Rankine has same degree size as Fahrenheit)
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      The coefficient of linear thermal expansion (α) describes fractional change in length per degree of temperature change. For example, steel has α ≈ 12 × 10⁻⁶ 1/K, meaning a 1-meter steel bar expands by 0.012 mm for each 1°C temperature increase. All calculations run in your browser.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the coefficient of thermal expansion?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The coefficient of thermal expansion (CTE) measures how much a material expands or contracts per degree of temperature change. It is expressed as a fractional change in length per degree (e.g., 1/K or 1/°C). Different materials have different CTEs, which is critical in engineering design for structures exposed to temperature variations." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is 1/°C equal to 1/K?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The Celsius and Kelvin scales have the same degree size — they differ only in their zero point. Since thermal expansion is about the *change* in temperature (not absolute temperature), the scale offset doesn't matter. A 1°C change equals a 1 K change, so 1/°C = 1/K." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which materials have the highest thermal expansion?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Metals like aluminum (α ≈ 23 × 10⁻⁶ 1/K) and copper (α ≈ 17 × 10⁻⁶ 1/K) expand more than steel (α ≈ 12 × 10⁻⁶ 1/K). Plastics can have even higher CTEs (50-200 × 10⁻⁶ 1/K). Invar and some ceramics have very low CTEs, making them useful in precision instruments." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is the coefficient of thermal expansion?', a: 'The coefficient of thermal expansion (CTE) measures how much a material expands or contracts per degree of temperature change. It is expressed as a fractional change in length per degree (e.g., 1/K or 1/°C). Different materials have different CTEs, which is critical in engineering design for structures exposed to temperature variations.' },
+        { q: 'Why is 1/°C equal to 1/K?', a: 'The Celsius and Kelvin scales have the same degree size — they differ only in their zero point. Since thermal expansion is about the *change* in temperature (not absolute temperature), the scale offset doesn\'t matter. A 1°C change equals a 1 K change, so 1/°C = 1/K.' },
+        { q: 'Which materials have the highest thermal expansion?', a: 'Metals like aluminum (α ≈ 23 × 10⁻⁶ 1/K) and copper (α ≈ 17 × 10⁻⁶ 1/K) expand more than steel (α ≈ 12 × 10⁻⁶ 1/K). Plastics can have even higher CTEs (50-200 × 10⁻⁶ 1/K). Invar and some ceramics have very low CTEs, making them useful in precision instruments.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  const UNITS = [
+    { id: 'K', label: 'Per Kelvin (1/K)',      abbr: '1/K',  factor: 1 },
+    { id: 'C', label: 'Per Celsius (1/°C)',     abbr: '1/°C', factor: 1 },
+    { id: 'F', label: 'Per Fahrenheit (1/°F)',  abbr: '1/°F', factor: 1.8 },
+    { id: 'R', label: 'Per Rankine (1/°R)',     abbr: '1/°R', factor: 1.8 },
+  ];
+
+  const input = document.getElementById('inp') as HTMLInputElement;
+  const select = document.getElementById('sel') as HTMLSelectElement;
+  const grid = document.getElementById('results')!;
+
+  function formatResult(value: number): string {
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9) return value.toExponential(4);
+    if (abs >= 1e6) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1) return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 1e-6) return value.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val = parseFloat(input.value);
+    const fromUnit = select.value;
+    const fromFactor = UNITS.find(u => u.id === fromUnit)!.factor;
+    grid.innerHTML = '';
+    UNITS.forEach(unit => {
+      const converted = (val * fromFactor) / unit.factor;
+      const display = formatResult(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${unit.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

@@ -1,0 +1,172 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'specific-heat-capacity-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Specific Heat Capacity Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="inp">Value</label>
+        <input id="inp" type="number" value="1" min="0" step="any" placeholder="Enter value" class="input-themed" style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sel">Unit</label>
+        <select id="sel" class="select-themed" style="min-width:10rem;">
+          <option value="J_kgK">Joule per Kilogram-Kelvin (J/(kg·K))</option>
+          <option value="kJ_kgK">Kilojoule per Kilogram-Kelvin (kJ/(kg·K))</option>
+          <option value="cal_gC">Calorie per Gram-°C (cal/(g·°C))</option>
+          <option value="kcal_kgC">Kilocalorie per Kilogram-°C (kcal/(kg·°C))</option>
+          <option value="BTU_lbF">BTU per Pound-°F (BTU/(lb·°F))</option>
+          <option value="J_gK">Joule per Gram-Kelvin (J/(g·K))</option>
+          <option value="Wh_kgK">Watt-Hour per Kilogram-Kelvin (Wh/(kg·K))</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Specific Heat Capacity Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other specific heat capacity units update instantly — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      This converter handles <strong>specific heat capacity</strong> — the amount of energy needed to raise the temperature of 1 kg (or 1 g) of a substance by 1 degree. It is used in thermodynamics, chemistry, and materials science.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How specific heat capacity conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions go through <strong>J/(kg·K)</strong> as the base unit. Each unit has a fixed conversion factor:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 kJ/(kg·K)     = 1000 J/(kg·K)
+1 cal/(g·°C)    = 4184 J/(kg·K)
+1 kcal/(kg·°C)  = 4184 J/(kg·K)
+1 BTU/(lb·°F)   = 4186.8 J/(kg·K)
+1 J/(g·K)       = 1000 J/(kg·K)
+1 Wh/(kg·K)     = 3600 J/(kg·K)
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Specific heat capacity varies widely between materials. Water has a very high specific heat (4186 J/(kg·K)), which is why oceans moderate climate. Metals have low specific heat — copper is only 385 J/(kg·K). All calculations run in your browser.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is specific heat capacity?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Specific heat capacity is the amount of energy (heat) required to raise the temperature of 1 kilogram of a substance by 1 Kelvin (or 1°C). It is expressed in J/(kg·K) in SI units. Water has one of the highest specific heat capacities at about 4186 J/(kg·K), which is why it is used in cooling systems." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is cal/(g·°C) equal to kcal/(kg·°C)?",
+          "acceptedAnswer": { "@type": "Answer", "text": "They are numerically identical because both the calorie and kilocalorie scale with mass in the same ratio. 1 cal/(g·°C) = 1000 cal/(kg·°C) = 1 kcal/(kg·°C). The prefix 'kilo-' in both kcal and kg cancels out." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the specific heat of water?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The specific heat of water is approximately 4186 J/(kg·K) or 1 cal/(g·°C) or 1 BTU/(lb·°F). This is unusually high compared to most materials, which is why water is effective as a coolant and why coastal areas have milder climates than inland areas." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is specific heat capacity?', a: 'Specific heat capacity is the amount of energy (heat) required to raise the temperature of 1 kilogram of a substance by 1 Kelvin (or 1°C). It is expressed in J/(kg·K) in SI units. Water has one of the highest specific heat capacities at about 4186 J/(kg·K), which is why it is used in cooling systems.' },
+        { q: 'Why is cal/(g·°C) equal to kcal/(kg·°C)?', a: 'They are numerically identical because both the calorie and kilocalorie scale with mass in the same ratio. 1 cal/(g·°C) = 1000 cal/(kg·°C) = 1 kcal/(kg·°C). The prefix \'kilo-\' in both kcal and kg cancels out.' },
+        { q: 'What is the specific heat of water?', a: 'The specific heat of water is approximately 4186 J/(kg·K) or 1 cal/(g·°C) or 1 BTU/(lb·°F). This is unusually high compared to most materials, which is why water is effective as a coolant and why coastal areas have milder climates than inland areas.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  const UNITS = [
+    { id: 'J_kgK',   label: 'Joule per Kilogram-Kelvin (J/(kg·K))',           abbr: 'J/(kg·K)',     factor: 1 },
+    { id: 'kJ_kgK',  label: 'Kilojoule per Kilogram-Kelvin (kJ/(kg·K))',      abbr: 'kJ/(kg·K)',    factor: 1000 },
+    { id: 'cal_gC',  label: 'Calorie per Gram-°C (cal/(g·°C))',               abbr: 'cal/(g·°C)',   factor: 4184 },
+    { id: 'kcal_kgC', label: 'Kilocalorie per Kilogram-°C (kcal/(kg·°C))',    abbr: 'kcal/(kg·°C)', factor: 4184 },
+    { id: 'BTU_lbF', label: 'BTU per Pound-°F (BTU/(lb·°F))',                 abbr: 'BTU/(lb·°F)',  factor: 4186.8 },
+    { id: 'J_gK',    label: 'Joule per Gram-Kelvin (J/(g·K))',                 abbr: 'J/(g·K)',      factor: 1000 },
+    { id: 'Wh_kgK',  label: 'Watt-Hour per Kilogram-Kelvin (Wh/(kg·K))',       abbr: 'Wh/(kg·K)',    factor: 3600 },
+  ];
+
+  const input = document.getElementById('inp') as HTMLInputElement;
+  const select = document.getElementById('sel') as HTMLSelectElement;
+  const grid = document.getElementById('results')!;
+
+  function formatResult(value: number): string {
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9) return value.toExponential(4);
+    if (abs >= 1e6) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1) return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 1e-6) return value.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val = parseFloat(input.value);
+    const fromUnit = select.value;
+    const fromFactor = UNITS.find(u => u.id === fromUnit)!.factor;
+    grid.innerHTML = '';
+    UNITS.forEach(unit => {
+      const converted = (val * fromFactor) / unit.factor;
+      const display = formatResult(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${unit.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

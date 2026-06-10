@@ -1,0 +1,196 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'fuel-efficiency-volume-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Fuel Efficiency — Volume Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="inp">Value</label>
+        <input id="inp" type="number" value="1" min="0" step="any" placeholder="Enter value" class="input-themed" style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sel">Unit</label>
+        <select id="sel" class="select-themed" style="min-width:10rem;">
+          <option value="kmL">Kilometer per Liter (km/L)</option>
+          <option value="miL">Mile per Liter (mi/L)</option>
+          <option value="miGalUS">Mile per US Gallon (mi/gal)</option>
+          <option value="miGalUK">Mile per UK Gallon (mi/gal UK)</option>
+          <option value="kmGalUS">Kilometer per US Gallon (km/gal)</option>
+          <option value="kmGalUK">Kilometer per UK Gallon (km/gal UK)</option>
+          <option value="L100km">Liter per 100 km (L/100km)</option>
+          <option value="GalUS100mi">US Gallon per 100 Miles (gal/100mi)</option>
+          <option value="GalUK100mi">UK Gallon per 100 Miles (gal/100mi UK)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Fuel Efficiency — Volume Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other volume-based fuel efficiency units update instantly — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      This converter handles both <strong>distance-per-volume</strong> units (km/L, mi/gal) and <strong>volume-per-distance</strong> units (L/100km, gal/100mi). The inverted units are automatically handled — just enter your value and the converter does the rest.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How volume fuel efficiency conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions go through <strong>kilometers per liter (km/L)</strong> as the base unit. Forward units have factors to km/L, while inverted units (L/100km, gal/100mi) use the reciprocal formula:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Forward:
+  1 mi/L      = 0.621371 km/L
+  1 mi/gal(US)= 2.35215 km/L
+  1 mi/gal(UK)= 2.82481 km/L
+  1 km/gal(US)= 0.264172 km/L
+  1 km/gal(UK)= 0.354006 km/L
+
+Inverted:
+  L/100km:     km/L = 100 / (L/100km)
+  gal/100mi:   km/L = 100 / (gal/100mi) × mi_to_km / gal_to_L
+
+Result = Input × (FromFactor / ToFactor)  [forward]
+       = 100 / Input                      [inverted]</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      The key insight: L/100km and gal/100mi are <strong>inverted</strong> — lower values mean better fuel economy. The converter automatically handles this inverse relationship. All calculations run in your browser — no data is sent anywhere.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why is L/100km inverted compared to km/L?",
+          "acceptedAnswer": { "@type": "Answer", "text": "L/100km measures fuel consumed per distance (lower is better), while km/L measures distance per fuel (higher is better). They are mathematical inverses: km/L = 100 / (L/100km). For example, 5 L/100km equals 20 km/L." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which fuel efficiency unit is most commonly used?",
+          "acceptedAnswer": { "@type": "Answer", "text": "L/100km is the standard in most countries using the metric system (Europe, Asia, Australia). Miles per gallon (mpg) is used in the US and UK. km/L is common in some Asian countries. This converter handles all major units." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between US and UK gallons?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A US gallon is approximately 3.785 liters, while a UK (imperial) gallon is approximately 4.546 liters. This means the same vehicle will show different mpg values depending on which gallon is used — UK mpg numbers are about 20% higher than US mpg for the same fuel consumption." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Why is L/100km inverted compared to km/L?', a: 'L/100km measures fuel consumed per distance (lower is better), while km/L measures distance per fuel (higher is better). They are mathematical inverses: km/L = 100 / (L/100km). For example, 5 L/100km equals 20 km/L.' },
+        { q: 'Which fuel efficiency unit is most commonly used?', a: 'L/100km is the standard in most countries using the metric system (Europe, Asia, Australia). Miles per gallon (mpg) is used in the US and UK. km/L is common in some Asian countries. This converter handles all major units.' },
+        { q: 'What is the difference between US and UK gallons?', a: 'A US gallon is approximately 3.785 liters, while a UK (imperial) gallon is approximately 4.546 liters. This means the same vehicle will show different mpg values depending on which gallon is used — UK mpg numbers are about 20% higher than US mpg for the same fuel consumption.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  const UNITS = [
+    { id: 'kmL',        label: 'Kilometer per Liter (km/L)',           abbr: 'km/L',        factor: 1, inverted: false },
+    { id: 'miL',        label: 'Mile per Liter (mi/L)',               abbr: 'mi/L',        factor: 0.621371, inverted: false },
+    { id: 'miGalUS',    label: 'Mile per US Gallon (mi/gal)',         abbr: 'mi/gal',      factor: 2.35215, inverted: false },
+    { id: 'miGalUK',    label: 'Mile per UK Gallon (mi/gal UK)',      abbr: 'mi/gal UK',   factor: 2.82481, inverted: false },
+    { id: 'kmGalUS',    label: 'Kilometer per US Gallon (km/gal)',    abbr: 'km/gal',      factor: 0.264172, inverted: false },
+    { id: 'kmGalUK',    label: 'Kilometer per UK Gallon (km/gal UK)', abbr: 'km/gal UK',   factor: 0.354006, inverted: false },
+    { id: 'L100km',     label: 'Liter per 100 km (L/100km)',          abbr: 'L/100km',     factor: 1, inverted: true },
+    { id: 'GalUS100mi', label: 'US Gallon per 100 Miles (gal/100mi)', abbr: 'gal/100mi',   factor: 1, inverted: true },
+    { id: 'GalUK100mi', label: 'UK Gallon per 100 Miles (gal/100mi UK)', abbr: 'gal/100mi UK', factor: 1, inverted: true },
+  ];
+
+  const input = document.getElementById('inp') as HTMLInputElement;
+  const select = document.getElementById('sel') as HTMLSelectElement;
+  const grid = document.getElementById('results')!;
+
+  function formatResult(value: number): string {
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9) return value.toExponential(4);
+    if (abs >= 1e6) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1) return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 1e-6) return value.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    return value.toExponential(4);
+  }
+
+  function convertFuelVol(val: number, fromId: string, toId: string): number {
+    const from = UNITS.find(u => u.id === fromId)!;
+    const to = UNITS.find(u => u.id === toId)!;
+    let kmPerL: number;
+    if (from.inverted) {
+      kmPerL = 100 / val;
+    } else {
+      kmPerL = val * from.factor;
+    }
+    if (to.inverted) {
+      return kmPerL === 0 ? 0 : 100 / kmPerL;
+    } else {
+      return kmPerL / to.factor;
+    }
+  }
+
+  function update() {
+    const val = parseFloat(input.value);
+    const fromUnit = select.value;
+    grid.innerHTML = '';
+    UNITS.forEach(unit => {
+      const converted = convertFuelVol(val, fromUnit, unit.id);
+      const display = formatResult(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${unit.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

@@ -1,0 +1,166 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'thermal-conductivity-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Thermal Conductivity Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="inp">Value</label>
+        <input id="inp" type="number" value="1" min="0" step="any" placeholder="Enter value" class="input-themed" style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sel">Unit</label>
+        <select id="sel" class="select-themed" style="min-width:10rem;">
+          <option value="W_mK">Watt per Meter-Kelvin (W/(m·K))</option>
+          <option value="BTU_hftF">BTU per Hour-Foot-°F (BTU/(h·ft·°F))</option>
+          <option value="W_cmK">Watt per Centimeter-Kelvin (W/(cm·K))</option>
+          <option value="cal_scmC">Calorie per Second-Cm-°C (cal/(s·cm·°C))</option>
+          <option value="kW_mK">Kilowatt per Meter-Kelvin (kW/(m·K))</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Thermal Conductivity Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other thermal conductivity units update instantly — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      This converter handles <strong>thermal conductivity</strong> — the rate at which heat passes through a material. It is used in materials science, building engineering, and heat transfer calculations. Metals have high thermal conductivity; insulators have low values.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How thermal conductivity conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions go through <strong>W/(m·K)</strong> as the base unit. Each unit has a fixed conversion factor:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 BTU/(h·ft·°F) = 0.577789 W/(m·K)
+1 W/(cm·K)       = 100 W/(m·K)
+1 cal/(s·cm·°C)  = 418.4 W/(m·K)
+1 kW/(m·K)       = 0.001 W/(m·K)
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Thermal conductivity (k or λ) measures a material's ability to conduct heat. Metals like copper (k ≈ 400 W/(m·K)) and aluminum (k ≈ 237 W/(m·K)) are excellent conductors, while materials like Styrofoam (k ≈ 0.03 W/(m·K)) are excellent insulators. All calculations run in your browser.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is thermal conductivity?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Thermal conductivity is a material property that measures the rate at which heat energy passes through a material. It is expressed in W/(m·K) in SI units. Higher values mean the material conducts heat better — metals have high thermal conductivity, while insulators like wood or foam have low values." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the BTU thermal conductivity unit?",
+          "acceptedAnswer": { "@type": "Answer", "text": "BTU/(h·ft·°F) is the imperial unit for thermal conductivity, commonly used in US engineering. It measures how many BTUs of heat flow per hour through a 1-foot-thick material with a 1°F temperature difference. To convert to SI: multiply by 0.577789 to get W/(m·K)." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which materials have the highest thermal conductivity?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Silver has the highest thermal conductivity of any metal at about 429 W/(m·K), followed by copper at 401 W/(m·K) and gold at 317 W/(m·K). Diamond has an exceptionally high thermal conductivity of about 2000 W/(m·K). At the other extreme, aerogels have thermal conductivity as low as 0.001 W/(m·K)." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is thermal conductivity?', a: 'Thermal conductivity is a material property that measures the rate at which heat energy passes through a material. It is expressed in W/(m·K) in SI units. Higher values mean the material conducts heat better — metals have high thermal conductivity, while insulators like wood or foam have low values.' },
+        { q: 'What is the BTU thermal conductivity unit?', a: 'BTU/(h·ft·°F) is the imperial unit for thermal conductivity, commonly used in US engineering. It measures how many BTUs of heat flow per hour through a 1-foot-thick material with a 1°F temperature difference. To convert to SI: multiply by 0.577789 to get W/(m·K).' },
+        { q: 'Which materials have the highest thermal conductivity?', a: 'Silver has the highest thermal conductivity of any metal at about 429 W/(m·K), followed by copper at 401 W/(m·K) and gold at 317 W/(m·K). Diamond has an exceptionally high thermal conductivity of about 2000 W/(m·K). At the other extreme, aerogels have thermal conductivity as low as 0.001 W/(m·K).' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  const UNITS = [
+    { id: 'W_mK',    label: 'Watt per Meter-Kelvin (W/(m·K))',         abbr: 'W/(m·K)',         factor: 1 },
+    { id: 'BTU_hftF', label: 'BTU per Hour-Foot-°F (BTU/(h·ft·°F))',  abbr: 'BTU/(h·ft·°F)',   factor: 0.577789 },
+    { id: 'W_cmK',   label: 'Watt per Centimeter-Kelvin (W/(cm·K))',   abbr: 'W/(cm·K)',        factor: 100 },
+    { id: 'cal_scmC', label: 'Calorie per Second-Cm-°C (cal/(s·cm·°C))', abbr: 'cal/(s·cm·°C)', factor: 418.4 },
+    { id: 'kW_mK',   label: 'Kilowatt per Meter-Kelvin (kW/(m·K))',    abbr: 'kW/(m·K)',        factor: 0.001 },
+  ];
+
+  const input = document.getElementById('inp') as HTMLInputElement;
+  const select = document.getElementById('sel') as HTMLSelectElement;
+  const grid = document.getElementById('results')!;
+
+  function formatResult(value: number): string {
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9) return value.toExponential(4);
+    if (abs >= 1e6) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1) return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 1e-6) return value.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val = parseFloat(input.value);
+    const fromUnit = select.value;
+    const fromFactor = UNITS.find(u => u.id === fromUnit)!.factor;
+    grid.innerHTML = '';
+    UNITS.forEach(unit => {
+      const converted = (val * fromFactor) / unit.factor;
+      const display = formatResult(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${unit.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>

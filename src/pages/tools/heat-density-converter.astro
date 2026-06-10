@@ -1,0 +1,175 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'heat-density-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Heat Density Converter</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+
+    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="inp">Value</label>
+        <input id="inp" type="number" value="1" min="0" step="any" placeholder="Enter value" class="input-themed" style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+      </div>
+      <div>
+        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sel">Unit</label>
+        <select id="sel" class="select-themed" style="min-width:10rem;">
+          <option value="J_m3">Joule per Cubic Meter (J/m³)</option>
+          <option value="kJ_m3">Kilojoule per Cubic Meter (kJ/m³)</option>
+          <option value="MJ_m3">Megajoule per Cubic Meter (MJ/m³)</option>
+          <option value="cal_cm3">Calorie per Cubic Centimeter (cal/cm³)</option>
+          <option value="BTU_ft3">BTU per Cubic Foot (BTU/ft³)</option>
+          <option value="BTU_galUS">BTU per US Gallon (BTU/gal)</option>
+          <option value="kWh_m3">Kilowatt-Hour per Cubic Meter (kWh/m³)</option>
+          <option value="therm_ft3">Therm per Cubic Foot (therm/ft³)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.5rem;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Heat Density Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other heat density (volumetric energy density) units update instantly — no buttons to click.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      This converter handles <strong>heat density</strong> (also called volumetric energy density) — the amount of energy stored per unit volume. It is used in fuel analysis, battery technology, and thermal engineering.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How heat density conversions work</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
+      All conversions go through <strong>J/m³</strong> as the base unit. Each unit has a fixed conversion factor:
+    </p>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 kJ/m³     = 1000 J/m³
+1 MJ/m³     = 1e6 J/m³
+1 cal/cm³   = 4184000 J/m³
+1 BTU/ft³   = 37258.9 J/m³
+1 BTU/gal   = 278716.3 J/m³
+1 kWh/m³    = 3600000 J/m³
+1 therm/ft³ = 105506000 J/m³
+
+Result = Input × (FromFactor / ToFactor)</pre>
+    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
+      Heat density is the total energy content per unit volume. It differs from power density (energy per time per volume). For example, gasoline has a heat density of about 32 MJ/m³, while natural gas at standard conditions is about 37 MJ/m³. All calculations run in your browser.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is heat density?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Heat density (volumetric energy density) is the amount of energy stored per unit volume, expressed in J/m³ or its multiples. It measures how much energy a fuel, battery, or thermal storage material can hold in a given volume. Higher values mean more energy per unit volume." }
+        },
+        {
+          "@type": "Question",
+          "name": "How does heat density differ from specific energy?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Heat density is energy per unit VOLUME (J/m³), while specific energy is energy per unit MASS (J/kg). Gasoline has high heat density but moderate specific energy, while hydrogen has very high specific energy but low heat density at standard conditions (it's a gas). Both metrics matter for fuel selection." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the heat density of common fuels?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Gasoline: ~32 MJ/m³, Diesel: ~36 MJ/m³, Natural gas: ~37 MJ/m³, Hydrogen (STP): ~11 MJ/m³, Lithium-ion battery: ~1500-2500 MJ/m³. Note that liquid fuels have much higher heat density than gaseous fuels, which is why they're preferred for transport." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is heat density?', a: 'Heat density (volumetric energy density) is the amount of energy stored per unit volume, expressed in J/m³ or its multiples. It measures how much energy a fuel, battery, or thermal storage material can hold in a given volume. Higher values mean more energy per unit volume.' },
+        { q: 'How does heat density differ from specific energy?', a: 'Heat density is energy per unit VOLUME (J/m³), while specific energy is energy per unit MASS (J/kg). Gasoline has high heat density but moderate specific energy, while hydrogen has very high specific energy but low heat density at standard conditions (it\'s a gas). Both metrics matter for fuel selection.' },
+        { q: 'What is the heat density of common fuels?', a: 'Gasoline: ~32 MJ/m³, Diesel: ~36 MJ/m³, Natural gas: ~37 MJ/m³, Hydrogen (STP): ~11 MJ/m³, Lithium-ion battery: ~1500-2500 MJ/m³. Note that liquid fuels have much higher heat density than gaseous fuels, which is why they\'re preferred for transport.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+(function () {
+  const UNITS = [
+    { id: 'J_m3',     label: 'Joule per Cubic Meter (J/m³)',              abbr: 'J/m³',     factor: 1 },
+    { id: 'kJ_m3',    label: 'Kilojoule per Cubic Meter (kJ/m³)',         abbr: 'kJ/m³',    factor: 1000 },
+    { id: 'MJ_m3',    label: 'Megajoule per Cubic Meter (MJ/m³)',         abbr: 'MJ/m³',    factor: 1e6 },
+    { id: 'cal_cm3',  label: 'Calorie per Cubic Centimeter (cal/cm³)',    abbr: 'cal/cm³',  factor: 4184000 },
+    { id: 'BTU_ft3',  label: 'BTU per Cubic Foot (BTU/ft³)',              abbr: 'BTU/ft³',  factor: 37258.9 },
+    { id: 'BTU_galUS', label: 'BTU per US Gallon (BTU/gal)',              abbr: 'BTU/gal',  factor: 278716.3 },
+    { id: 'kWh_m3',   label: 'Kilowatt-Hour per Cubic Meter (kWh/m³)',   abbr: 'kWh/m³',   factor: 3600000 },
+    { id: 'therm_ft3', label: 'Therm per Cubic Foot (therm/ft³)',         abbr: 'therm/ft³', factor: 105506000 },
+  ];
+
+  const input = document.getElementById('inp') as HTMLInputElement;
+  const select = document.getElementById('sel') as HTMLSelectElement;
+  const grid = document.getElementById('results')!;
+
+  function formatResult(value: number): string {
+    if (value === 0) return '0';
+    const abs = Math.abs(value);
+    if (abs >= 1e9) return value.toExponential(4);
+    if (abs >= 1e6) return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1000) return value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    if (abs >= 1) return value.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    if (abs >= 0.001) return value.toLocaleString('en-US', { maximumFractionDigits: 8 });
+    if (abs >= 1e-6) return value.toLocaleString('en-US', { maximumFractionDigits: 10 });
+    return value.toExponential(4);
+  }
+
+  function update() {
+    const val = parseFloat(input.value);
+    const fromUnit = select.value;
+    const fromFactor = UNITS.find(u => u.id === fromUnit)!.factor;
+    grid.innerHTML = '';
+    UNITS.forEach(unit => {
+      const converted = (val * fromFactor) / unit.factor;
+      const display = formatResult(converted);
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `
+        <span class="info-label">${unit.abbr}</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex:1;justify-content:flex-end;min-width:0;">
+          <span class="info-value" style="word-break:break-all;" data-val="${display}">${display}</span>
+          <button class="btn-secondary copy-btn" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+        </div>
+      `;
+      row.querySelector('.copy-btn')!.addEventListener('click', () => {
+        const btn = row.querySelector('.copy-btn')!;
+        navigator.clipboard.writeText(display).then(() => {
+          btn.textContent = '✓';
+          btn.classList.add('btn-success');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+        });
+      });
+      grid.appendChild(row);
+    });
+  }
+
+  input.addEventListener('input', update);
+  select.addEventListener('change', update);
+  update();
+})();
+</script>
