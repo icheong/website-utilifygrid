@@ -505,7 +505,7 @@ No server upload — your files stay private.</pre>
     editorWrap.style.cssText = 'display:flex;flex-direction:column;flex:1;min-height:0;margin-top:0;';
     editorFullscreen.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-    expandBtn.textContent = 'Shrink';
+    expandBtn.textContent = 'Expand';
     canvasContainer.style.cssText = 'width:100%;height:auto;flex:1;min-height:0;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.75rem;overflow:auto;position:relative;';
     await renderPage(currentPage);
   }
@@ -893,6 +893,7 @@ No server upload — your files stay private.</pre>
         const edit = edits[idx];
         dragIdx = idx;
         /* Convert mouse click to PDF, store offset from edit's PDF position */
+        const pt = svgPoint(e);
         const mp = vpToPdf(pt.x, pt.y);
         dragOffX = mp.x - edit.x;
         dragOffY = -(mp.y - edit.y);

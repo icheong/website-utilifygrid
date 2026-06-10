@@ -1,0 +1,272 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'kaprekar-constant-calculator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">Kaprekar's Constant</h2>
+    <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:1.25rem;">Enter any 4-digit number (not all same digits) and watch every step of the journey to 6174.</p>
+
+    <!-- Input row -->
+    <div style="display:flex; gap:0.75rem; align-items:flex-end; margin-bottom:1.25rem;">
+      <div style="flex:1;">
+        <label style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;" for="kaprekar-input">4-Digit Number</label>
+        <input id="kaprekar-input" type="text" inputmode="numeric" maxlength="4" placeholder="e.g. 3524"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace; font-size:1.15rem; font-weight:700; letter-spacing:0.1em;" />
+      </div>
+      <button id="run-btn" class="btn-primary" style="padding:0.625rem 1.5rem; white-space:nowrap;" type="button">
+        Run
+      </button>
+      <button id="random-btn" class="btn-secondary" style="white-space:nowrap;" type="button">
+        Random
+      </button>
+    </div>
+
+    <!-- Error -->
+    <p id="kap-error" style="display:none; color:#EF4444; font-size:0.82rem; margin-bottom:0.75rem;"></p>
+
+    <!-- Progress bar -->
+    <div id="progress-wrap" style="display:none; margin-bottom:1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.4rem;">
+        <span style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em;">Steps to 6174</span>
+        <span id="step-counter" style="font-family:'Fira Code',monospace; font-size:0.8rem; font-weight:700; color:var(--text-primary);"></span>
+      </div>
+      <div style="height:6px; background:var(--bg-surface-3); border-radius:999px; overflow:hidden;">
+        <div id="progress-bar" style="height:100%; background:linear-gradient(90deg,#1D4ED8,#6366F1); border-radius:999px; width:0%; transition:width 0.4s ease;"></div>
+      </div>
+    </div>
+
+    <!-- Steps container -->
+    <div id="steps-container" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
+
+    <!-- Result banner -->
+    <div id="result-banner" style="display:none; margin-top:1rem; border-radius:0.875rem; padding:1.25rem 1.5rem; background:linear-gradient(135deg,#1E3A8A,#1D4ED8); color:#fff; text-align:center;">
+      <div id="result-special" style="font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; opacity:0.8; margin-bottom:0.25rem;"></div>
+      <div style="font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:800;" id="result-headline"></div>
+      <div style="font-size:0.82rem; opacity:0.75; margin-top:0.3rem;" id="result-sub"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this calculator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Type any 4-digit number into the input field — the only restriction is that not all four digits can be the same (e.g. 1111 or 9999 won't work). Click <strong>Run</strong> to see every step of the Kaprekar process, or hit <strong>Random</strong> to generate a surprise starting number.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Each step shows the descending arrangement, the ascending arrangement, the subtraction, and the result — all the way until the sequence reaches 6174. Leading zeros are preserved so each number stays 4 digits throughout the process.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">The algorithm</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1rem;">
+      {[
+        ['Step 1 — Arrange descending', 'Sort the four digits from largest to smallest. Pad with leading zeros if needed so the result is always 4 digits.'],
+        ['Step 2 — Arrange ascending', 'Sort the same four digits from smallest to largest (again, pad to 4 digits).'],
+        ['Step 3 — Subtract', 'Subtract the ascending number from the descending number.'],
+        ['Step 4 — Repeat', 'Use the result as the new 4-digit number and apply steps 1–3 again. Within at most 7 iterations, every valid 4-digit number reaches 6174.'],
+        ['The fixed point', '6174 is a Kaprekar constant: 7641 − 1467 = 6174. Once reached, the process loops forever.'],
+      ].map(([label, desc]) => (
+        <div class="info-row" style="flex-direction:column; gap:0.3rem;">
+          <div class="info-label">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+    <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:var(--text-primary); line-height:2;">
+      descending(n) − ascending(n) = next_n<br/>
+      repeat until next_n === 6174<br/>
+      max iterations ≤ 7 (proven for all valid 4-digit inputs)
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Who discovered the Kaprekar constant?', a: 'The process was discovered by Indian mathematician D. R. Kaprekar in 1949. He showed that every 4-digit number (excluding repdigits) converges to 6174 under repeated application of the descending-minus-ascending subtraction.' },
+        { q: 'Why do numbers with all identical digits not work?', a: 'Numbers like 1111, 2222, or 9999 produce 0 at the first step (e.g. 1111 − 1111 = 0) and never progress. They are excluded because they have no valid Kaprekar sequence.' },
+        { q: 'Does a similar constant exist for 3-digit numbers?', a: 'Yes — the Kaprekar constant for 3-digit numbers is 495. Any 3-digit number that is not a repdigit will converge to 495 within at most 6 iterations of the same process.' },
+        { q: 'What is the maximum number of steps needed?', a: 'No valid 4-digit number takes more than 7 iterations to reach 6174. Most numbers arrive within 5 or fewer steps. The exact distribution was proven by exhaustive enumeration.' },
+        { q: 'What happens to 6174 itself?', a: '6174 is a fixed point: descending = 7641, ascending = 1467, and 7641 − 1467 = 6174. The process loops back to itself indefinitely.' },
+        { q: 'Are there Kaprekar constants for other digit lengths?', a: 'Not always. For 2-digit numbers there is no single constant. For 5-digit numbers there are multiple attractors rather than one constant. 4-digit numbers (and 3-digit) are special in converging to a single fixed point.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  var KAPREKAR = 6174;
+  var MAX_STEPS = 7;
+
+  function pad4(n) {
+    return String(n).padStart(4, '0');
+  }
+
+  function isRepdigit(s) {
+    return s.split('').every(function(c) { return c === s[0]; });
+  }
+
+  function descAsc(n) {
+    var digits = pad4(n).split('').map(Number).sort(function(a, b) { return b - a; });
+    var desc = parseInt(digits.join(''), 10);
+    var asc  = parseInt(digits.slice().reverse().join(''), 10);
+    return { desc: desc, asc: asc, digits: digits };
+  }
+
+  function validate(raw) {
+    var s = raw.trim();
+    if (!/^\d{4}$/.test(s)) return 'Please enter exactly 4 digits.';
+    if (isRepdigit(s)) return 'All four digits are the same — this number has no Kaprekar sequence.';
+    return null;
+  }
+
+  function runKaprekar(startStr) {
+    var steps = [];
+    var current = parseInt(startStr, 10);
+    for (var i = 1; i <= MAX_STEPS; i++) {
+      var da = descAsc(current);
+      var result = da.desc - da.asc;
+      steps.push({
+        step: i,
+        input: current,
+        descStr: pad4(da.desc),
+        ascStr:  pad4(da.asc),
+        desc: da.desc,
+        asc: da.asc,
+        result: result
+      });
+      if (result === KAPREKAR) break;
+      current = result;
+    }
+    return steps;
+  }
+
+  function makeRow(label, value, accent, annotation) {
+    return '<div style="display:flex; align-items:center; gap:0.75rem;">' +
+      '<span style="font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; width:5rem; flex-shrink:0;">' + label + '</span>' +
+      '<span style="font-family:\'Fira Code\',monospace; font-size:1.05rem; font-weight:700; color:' + accent + '; letter-spacing:0.08em;">' + value + '</span>' +
+      '<span style="font-size:0.72rem; color:var(--text-muted);">' + annotation + '</span>' +
+      '</div>';
+  }
+
+  function buildStepCard(s) {
+    var isLast = s.result === KAPREKAR;
+    var card = document.createElement('div');
+    card.className = 'result-card';
+    card.style.cssText = 'border-left:3px solid ' + (isLast ? '#10B981' : '#1D4ED8') + '; opacity:0; transform:translateY(8px); transition:opacity 0.3s ease, transform 0.3s ease;';
+
+    var stepLabel = document.createElement('div');
+    stepLabel.style.cssText = 'font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:0.625rem; display:flex; align-items:center; justify-content:space-between;';
+    stepLabel.innerHTML = '<span>Step ' + s.step + '</span><span style="font-family:\'Fira Code\',monospace; font-size:0.72rem; color:var(--text-muted);">starting from ' + pad4(s.input) + '</span>';
+
+    var digits = pad4(s.input).split('').map(Number).sort(function(a, b) { return b - a; });
+    var descAnnotation = '(' + digits.join(' > ') + ')';
+    var ascAnnotation  = '(' + digits.slice().reverse().join(' < ') + ')';
+
+    var resultColor = isLast ? '#10B981' : 'var(--text-primary)';
+    var badgeHtml = isLast ? '<span style="font-size:0.72rem; font-weight:700; color:#10B981; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:0.3rem; padding:0.15rem 0.5rem;">= 6174 ✓</span>' : '';
+
+    var mathBlock = document.createElement('div');
+    mathBlock.style.cssText = 'display:flex; flex-direction:column; gap:0.3rem;';
+    mathBlock.innerHTML =
+      makeRow('Descending', s.descStr, '#1D4ED8', descAnnotation) +
+      makeRow('Ascending',  s.ascStr,  '#6366F1', ascAnnotation) +
+      '<div style="height:1px; background:var(--border); margin:0.25rem 0 0.25rem 5.75rem;"></div>' +
+      '<div style="display:flex; align-items:center; gap:0.75rem;">' +
+        '<span style="font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; width:5rem; flex-shrink:0;">Result</span>' +
+        '<span style="font-family:\'Fira Code\',monospace; font-size:1.25rem; font-weight:800; color:' + resultColor + '; letter-spacing:0.08em;">' + pad4(s.result) + '</span>' +
+        badgeHtml +
+      '</div>';
+
+    var equation = document.createElement('div');
+    equation.style.cssText = 'margin-top:0.625rem; padding:0.5rem 0.75rem; background:var(--bg-surface-2); border-radius:0.5rem; font-family:"Fira Code",monospace; font-size:0.82rem; color:var(--text-secondary); text-align:center; border:1px solid var(--border);';
+    equation.textContent = s.descStr + ' \u2212 ' + s.ascStr + ' = ' + pad4(s.result);
+
+    card.appendChild(stepLabel);
+    card.appendChild(mathBlock);
+    card.appendChild(equation);
+    return card;
+  }
+
+  function run() {
+    var inputEl      = document.getElementById('kaprekar-input');
+    var errorEl      = document.getElementById('kap-error');
+    var container    = document.getElementById('steps-container');
+    var banner       = document.getElementById('result-banner');
+    var progressWrap = document.getElementById('progress-wrap');
+    var progressBar  = document.getElementById('progress-bar');
+    var stepCounter  = document.getElementById('step-counter');
+
+    container.innerHTML = '';
+    banner.style.display = 'none';
+    errorEl.style.display = 'none';
+    progressWrap.style.display = 'none';
+    progressBar.style.width = '0%';
+
+    var raw = inputEl.value.trim();
+    var err = validate(raw);
+    if (err) {
+      errorEl.textContent = err;
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    var steps = runKaprekar(raw);
+    var totalSteps = steps.length;
+
+    progressWrap.style.display = 'block';
+    stepCounter.textContent = '0 / ' + totalSteps;
+
+    steps.forEach(function(s, i) {
+      var card = buildStepCard(s);
+      container.appendChild(card);
+      setTimeout(function() {
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+        stepCounter.textContent = (i + 1) + ' / ' + totalSteps;
+        progressBar.style.width = (((i + 1) / totalSteps) * 100) + '%';
+
+        if (i === totalSteps - 1) {
+          setTimeout(function() {
+            banner.style.display = 'block';
+            document.getElementById('result-special').textContent = "Kaprekar\u2019s Constant Reached";
+            document.getElementById('result-headline').textContent = '6174 in ' + totalSteps + ' step' + (totalSteps !== 1 ? 's' : '');
+            document.getElementById('result-sub').textContent = '7641 \u2212 1467 = 6174 \u00b7 the fixed point \u00b7 loops forever';
+          }, 200);
+        }
+      }, i * 280);
+    });
+  }
+
+  document.getElementById('run-btn').addEventListener('click', run);
+
+  document.getElementById('random-btn').addEventListener('click', function() {
+    var inputEl = document.getElementById('kaprekar-input');
+    var n;
+    do {
+      var val = Math.floor(1000 + Math.random() * 9000);
+      n = String(val);
+    } while (isRepdigit(n));
+    inputEl.value = n;
+    run();
+  });
+
+  document.getElementById('kaprekar-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') run();
+  });
+</script>
