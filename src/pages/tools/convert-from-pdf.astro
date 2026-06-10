@@ -1,0 +1,455 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'convert-from-pdf')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Convert From PDF</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Upload a PDF and export its contents as images, text, or HTML — all client-side.</p>
+
+    <!-- Drop zone (shared) -->
+    <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);margin-bottom:1.25rem;">
+      <p style="font-size:0.95rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Drop a PDF file here</p>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.6rem;">or click to browse</p>
+      <input id="file-input" type="file" accept=".pdf" style="display:none;" />
+      <button id="browse-btn" class="btn-secondary" type="button" style="font-size:0.82rem;">Browse File</button>
+    </div>
+
+    <!-- File info bar (hidden until loaded) -->
+    <div id="file-bar" style="display:none;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.75rem;padding:0.5rem 0.875rem;margin-bottom:1rem;display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+      <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);margin:0;">
+        <span id="doc-name"></span>
+        <span id="doc-pages" style="color:var(--text-muted);font-weight:400;margin-left:0.5rem;"></span>
+      </p>
+      <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
+    </div>
+
+    <!-- Conversion options (hidden until loaded) -->
+    <div id="convert-wrap" style="display:none;">
+
+      <!-- Mode tabs -->
+      <div class="toggle-group" style="margin-bottom:1.25rem;display:flex;flex-wrap:wrap;">
+        <button class="toggle-btn active from-tab" data-tab="image" aria-pressed="true">PDF → Image</button>
+        <button class="toggle-btn from-tab" data-tab="text" aria-pressed="false">PDF → Text</button>
+        <button class="toggle-btn from-tab" data-tab="html" aria-pressed="false">PDF → HTML</button>
+      </div>
+
+      <!-- ── PDF → IMAGE ──────────────────────────────────────── -->
+      <div id="from-tab-image" class="from-panel">
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.875rem;">
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Format</label>
+            <select id="img-fmt" class="select-themed" style="font-size:0.82rem;width:auto;">
+              <option value="png">PNG</option>
+              <option value="jpeg">JPG</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Scale</label>
+            <select id="img-scale" class="select-themed" style="font-size:0.82rem;width:auto;">
+              <option value="1">1× (72 dpi)</option>
+              <option value="2" selected>2× (144 dpi)</option>
+              <option value="3">3× (216 dpi)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Pages</label>
+            <select id="img-pages" class="select-themed" style="font-size:0.82rem;width:auto;">
+              <option value="all">All pages</option>
+              <option value="current">Current page only</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:0.75rem;">
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Page Preview</label>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <button id="prev-btn" class="btn-secondary" type="button" style="font-size:0.72rem;padding:0.3rem 0.5rem;" disabled>‹</button>
+            <span id="page-label" style="font-size:0.82rem;color:var(--text-secondary);">Page 1 / 1</span>
+            <button id="next-btn" class="btn-secondary" type="button" style="font-size:0.72rem;padding:0.3rem 0.5rem;">›</button>
+          </div>
+          <canvas id="preview-canvas" style="display:block;max-width:100%;margin-top:0.5rem;border:1px solid var(--border);border-radius:0.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);"></canvas>
+        </div>
+        <button id="img-export-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Export as Images</button>
+        <p id="img-export-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+
+      <!-- ── PDF → TEXT ───────────────────────────────────────── -->
+      <div id="from-tab-text" class="from-panel" style="display:none;">
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.875rem;">
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Extraction</label>
+            <select id="text-mode" class="select-themed" style="font-size:0.82rem;width:auto;">
+              <option value="native">Native text layer</option>
+              <option value="ocr">OCR (scanned PDFs)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Pages</label>
+            <select id="text-pages" class="select-themed" style="font-size:0.82rem;width:auto;">
+              <option value="all">All pages</option>
+              <option value="current">Current page only</option>
+            </select>
+          </div>
+        </div>
+        <p id="ocr-note" style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.5rem;display:none;">OCR loads Tesseract.js (~10 MB) on first use.</p>
+        <button id="text-extract-btn" class="btn-primary" type="button" style="font-size:0.875rem;margin-bottom:0.875rem;">Extract Text</button>
+        <p id="text-extract-status" style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;display:none;"></p>
+        <textarea id="text-output" class="input-themed" rows="12" readonly placeholder="Extracted text will appear here…" style="font-size:0.82rem;font-family:'Fira Code',monospace;resize:vertical;line-height:1.6;background:var(--bg-surface-2);"></textarea>
+        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+          <button id="text-copy-btn" class="btn-secondary" type="button" style="font-size:0.78rem;">Copy Text</button>
+          <button id="text-download-btn" class="btn-secondary" type="button" style="font-size:0.78rem;">Download .txt</button>
+        </div>
+      </div>
+
+      <!-- ── PDF → HTML ───────────────────────────────────────── -->
+      <div id="from-tab-html" class="from-panel" style="display:none;">
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.875rem;">
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Pages</label>
+            <select id="html-pages" class="select-themed" style="font-size:0.82rem;width:auto;">
+              <option value="all">All pages</option>
+              <option value="current">Current page only</option>
+            </select>
+          </div>
+          <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.82rem;color:var(--text-secondary);cursor:pointer;padding-top:1.1rem;">
+            <input id="html-styled" type="checkbox" checked style="accent-color:var(--color-brand-blue);" /> Include basic CSS
+          </label>
+        </div>
+        <button id="html-export-btn" class="btn-primary" type="button" style="font-size:0.875rem;margin-bottom:0.875rem;">Convert to HTML</button>
+        <p id="html-status" style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;display:none;"></p>
+        <textarea id="html-output" class="input-themed" rows="10" readonly placeholder="Generated HTML will appear here…" style="font-size:0.78rem;font-family:'Fira Code',monospace;resize:vertical;line-height:1.6;background:var(--bg-surface-2);display:none;"></textarea>
+        <div id="html-actions" style="display:none;gap:0.5rem;margin-top:0.5rem;display:none;">
+          <button id="html-copy-btn" class="btn-secondary" type="button" style="font-size:0.78rem;">Copy HTML</button>
+          <button id="html-download-btn" class="btn-secondary" type="button" style="font-size:0.78rem;">Download .html</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Convert From PDF</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Drop or browse a PDF file. Once loaded, the page count is shown and the conversion options unlock. Select a tab for your desired output format.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>PDF → Image:</strong> Preview individual pages, choose PNG or JPG and resolution scale, then export. For multi-page PDFs, a ZIP archive is downloaded. <strong>PDF → Text:</strong> Choose native extraction (for PDFs with a text layer) or OCR mode for scanned documents.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;"><strong>PDF → HTML:</strong> Converts the PDF text layer into a structured HTML file you can copy or download.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      {[
+        ['PDF → Image', 'PDF.js renders each page to a <canvas> element at your chosen scale factor. The canvas is exported as a PNG or JPG data URL and downloaded. Multi-page exports are bundled in a ZIP via JSZip.'],
+        ['PDF → Text (Native)', 'PDF.js reads the embedded text layer of the PDF page, returning the text content without any image processing. This is fast and accurate for PDFs that were created digitally.'],
+        ['PDF → Text (OCR)', 'Tesseract.js (loaded on demand) performs optical character recognition on a canvas render of each page. This works on scanned PDFs but takes longer and may have lower accuracy.'],
+        ['PDF → HTML', 'PDF.js extracts the text content and font information per page, wrapping each block in styled <div> elements. The output is a self-contained HTML file approximating the document structure.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Is my PDF uploaded to a server?', a: 'No. All conversion happens in your browser using PDF.js and Tesseract.js. Your file never leaves your device.' },
+        { q: 'What resolution are the exported images?', a: 'The scale factor controls output resolution. 1× is 72 dpi (screen), 2× is 144 dpi (good for reading), and 3× is 216 dpi (print-ready). Higher scale means larger file sizes.' },
+        { q: 'My PDF text extraction returns nothing — why?', a: 'Scanned PDFs contain images of text, not actual text data. Switch to OCR mode, which uses Tesseract.js to recognise text from the rendered page image.' },
+        { q: 'How accurate is the OCR?', a: 'Accuracy depends on scan quality, font clarity, and language. Clean, well-lit scans of standard fonts achieve very high accuracy. Handwriting, low resolution, or unusual fonts will reduce accuracy.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script is:inline src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script is:inline src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+
+<script>
+(function () {
+  const pdfjsLib = (window as any).pdfjsLib;
+  const JSZip = (window as any).JSZip;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+  /* ── Shared state ─────────────────────────────────────────── */
+  let pdfDoc: any = null;
+  let pdfBytes: ArrayBuffer | null = null;
+  let totalPages = 0;
+  let currentPage = 1;
+
+  /* ── DOM ──────────────────────────────────────────────────── */
+  const dropZone   = document.getElementById('drop-zone')!;
+  const fileInput  = document.getElementById('file-input') as HTMLInputElement;
+  const browseBtn  = document.getElementById('browse-btn')!;
+  const fileBar    = document.getElementById('file-bar')!;
+  const docName    = document.getElementById('doc-name')!;
+  const docPages   = document.getElementById('doc-pages')!;
+  const resetBtn   = document.getElementById('reset-btn')!;
+  const convertWrap = document.getElementById('convert-wrap')!;
+
+  /* ── Drop zone ────────────────────────────────────────────── */
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--color-brand-blue)'; dropZone.style.background = 'rgba(29,78,216,0.04)'; });
+  dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; dropZone.style.background = ''; });
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = ''; dropZone.style.background = ''; if (e.dataTransfer!.files[0]) loadFile(e.dataTransfer!.files[0]); });
+  browseBtn.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', e => { if (e.target === dropZone || e.target === browseBtn) fileInput.click(); });
+  fileInput.addEventListener('change', () => { if (fileInput.files![0]) loadFile(fileInput.files![0]); fileInput.value = ''; });
+  resetBtn.addEventListener('click', () => { pdfDoc = null; pdfBytes = null; fileBar.style.display = 'none'; convertWrap.style.display = 'none'; dropZone.style.display = ''; });
+
+  async function loadFile(file: File) {
+    if (file.type !== 'application/pdf') return;
+    pdfBytes = await file.arrayBuffer();
+    pdfDoc = await pdfjsLib.getDocument({ data: pdfBytes.slice(0) }).promise;
+    totalPages = pdfDoc.numPages;
+    currentPage = 1;
+    docName.textContent = file.name.replace(/\.pdf$/i, '');
+    docPages.textContent = totalPages + ' page' + (totalPages > 1 ? 's' : '');
+    dropZone.style.display = 'none';
+    fileBar.style.display = 'flex';
+    convertWrap.style.display = '';
+    updatePageLabel();
+    renderPreview();
+  }
+
+  /* ── Tab switching ────────────────────────────────────────── */
+  document.querySelectorAll('.from-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.from-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-pressed', 'false'); });
+      tab.classList.add('active'); tab.setAttribute('aria-pressed', 'true');
+      document.querySelectorAll('.from-panel').forEach(p => (p as HTMLElement).style.display = 'none');
+      const panel = document.getElementById('from-tab-' + (tab as HTMLElement).dataset.tab);
+      if (panel) panel.style.display = '';
+    });
+  });
+
+  /* ── Helpers ──────────────────────────────────────────────── */
+  function downloadBlob(blob: Blob, name: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+    URL.revokeObjectURL(url);
+  }
+  function showStatus(id: string, msg: string, ok?: boolean) {
+    const el = document.getElementById(id)!;
+    el.style.display = msg ? '' : 'none';
+    el.textContent = msg;
+    el.style.color = ok ? '#10B981' : 'var(--text-muted)';
+  }
+  function updatePageLabel() {
+    const lbl = document.getElementById('page-label')!;
+    lbl.textContent = `Page ${currentPage} / ${totalPages}`;
+    (document.getElementById('prev-btn') as HTMLButtonElement).disabled = currentPage <= 1;
+    (document.getElementById('next-btn') as HTMLButtonElement).disabled = currentPage >= totalPages;
+  }
+  async function renderPreview() {
+    if (!pdfDoc) return;
+    const page = await pdfDoc.getPage(currentPage);
+    const vp = page.getViewport({ scale: 1 });
+    const container = (document.getElementById('preview-canvas') as HTMLCanvasElement).parentElement!;
+    const maxW = Math.min(container.clientWidth - 16, 600);
+    const scale = maxW / vp.width;
+    const scaled = page.getViewport({ scale });
+    const canvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
+    canvas.width = scaled.width; canvas.height = scaled.height;
+    await page.render({ canvasContext: canvas.getContext('2d')!, viewport: scaled }).promise;
+  }
+
+  document.getElementById('prev-btn')!.addEventListener('click', async () => { if (currentPage > 1) { currentPage--; updatePageLabel(); await renderPreview(); } });
+  document.getElementById('next-btn')!.addEventListener('click', async () => { if (currentPage < totalPages) { currentPage++; updatePageLabel(); await renderPreview(); } });
+
+  /* ══════════════════════════════════════════════════════════
+     PDF → IMAGE
+  ══════════════════════════════════════════════════════════ */
+  document.getElementById('img-export-btn')!.addEventListener('click', async () => {
+    if (!pdfDoc) return;
+    const btn = document.getElementById('img-export-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Exporting…';
+    const fmt = (document.getElementById('img-fmt') as HTMLSelectElement).value;
+    const scale = parseInt((document.getElementById('img-scale') as HTMLSelectElement).value) || 2;
+    const pagesMode = (document.getElementById('img-pages') as HTMLSelectElement).value;
+    const pageList = pagesMode === 'current' ? [currentPage] : Array.from({ length: totalPages }, (_, i) => i + 1);
+    showStatus('img-export-status', `Rendering ${pageList.length} page${pageList.length > 1 ? 's' : ''}…`);
+
+    try {
+      const mimeType = fmt === 'jpeg' ? 'image/jpeg' : 'image/png';
+      const ext = fmt === 'jpeg' ? 'jpg' : 'png';
+
+      if (pageList.length === 1) {
+        const page = await pdfDoc.getPage(pageList[0]);
+        const vp = page.getViewport({ scale });
+        const canvas = document.createElement('canvas');
+        canvas.width = vp.width; canvas.height = vp.height;
+        await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise;
+        canvas.toBlob(blob => { downloadBlob(blob!, `page_${pageList[0]}.${ext}`); }, mimeType, 0.92);
+        showStatus('img-export-status', `Downloaded page ${pageList[0]}.${ext}`, true);
+      } else {
+        const zip = new JSZip();
+        for (let i = 0; i < pageList.length; i++) {
+          showStatus('img-export-status', `Rendering page ${i + 1} of ${pageList.length}…`);
+          const page = await pdfDoc.getPage(pageList[i]);
+          const vp = page.getViewport({ scale });
+          const canvas = document.createElement('canvas');
+          canvas.width = vp.width; canvas.height = vp.height;
+          await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise;
+          const blob = await new Promise<Blob>(res => canvas.toBlob(b => res(b!), mimeType, 0.92));
+          zip.file(`page_${pageList[i]}.${ext}`, blob);
+        }
+        showStatus('img-export-status', 'Creating ZIP…');
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        downloadBlob(zipBlob, `pages_${ext}.zip`);
+        showStatus('img-export-status', `Downloaded ${pageList.length} images as ZIP`, true);
+      }
+    } catch (e: any) { showStatus('img-export-status', 'Error: ' + (e.message || 'Failed')); }
+    finally { btn.disabled = false; btn.textContent = 'Export as Images'; }
+  });
+
+  /* ══════════════════════════════════════════════════════════
+     PDF → TEXT (native + OCR)
+  ══════════════════════════════════════════════════════════ */
+  const textModeSelect = document.getElementById('text-mode') as HTMLSelectElement;
+  textModeSelect.addEventListener('change', () => {
+    document.getElementById('ocr-note')!.style.display = textModeSelect.value === 'ocr' ? '' : 'none';
+  });
+
+  document.getElementById('text-extract-btn')!.addEventListener('click', async () => {
+    if (!pdfDoc) return;
+    const btn = document.getElementById('text-extract-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Extracting…';
+    const mode = textModeSelect.value;
+    const pagesMode = (document.getElementById('text-pages') as HTMLSelectElement).value;
+    const pageList = pagesMode === 'current' ? [currentPage] : Array.from({ length: totalPages }, (_, i) => i + 1);
+    showStatus('text-extract-status', 'Extracting text…');
+
+    try {
+      let fullText = '';
+      if (mode === 'native') {
+        for (const pg of pageList) {
+          const page = await pdfDoc.getPage(pg);
+          const content = await page.getTextContent();
+          const pageText = content.items.map((item: any) => item.str).join(' ');
+          fullText += `--- Page ${pg} ---\n${pageText}\n\n`;
+        }
+      } else {
+        // OCR via Tesseract.js (loaded on demand)
+        if (!(window as any).Tesseract) {
+          showStatus('text-extract-status', 'Loading Tesseract.js OCR engine…');
+          await new Promise<void>((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = 'https://unpkg.com/tesseract.js@5/dist/tesseract.min.js';
+            s.onload = () => resolve();
+            s.onerror = () => reject(new Error('Failed to load Tesseract.js'));
+            document.head.appendChild(s);
+          });
+        }
+        const worker = await (window as any).Tesseract.createWorker('eng');
+        for (let i = 0; i < pageList.length; i++) {
+          showStatus('text-extract-status', `OCR page ${i + 1} of ${pageList.length}…`);
+          const page = await pdfDoc.getPage(pageList[i]);
+          const vp = page.getViewport({ scale: 2 });
+          const canvas = document.createElement('canvas');
+          canvas.width = vp.width; canvas.height = vp.height;
+          await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise;
+          const { data: { text } } = await worker.recognize(canvas);
+          fullText += `--- Page ${pageList[i]} ---\n${text}\n\n`;
+        }
+        await worker.terminate();
+      }
+      const output = document.getElementById('text-output') as HTMLTextAreaElement;
+      output.value = fullText;
+      showStatus('text-extract-status', 'Extraction complete.', true);
+    } catch (e: any) { showStatus('text-extract-status', 'Error: ' + (e.message || 'Extraction failed.')); }
+    finally { btn.disabled = false; btn.textContent = 'Extract Text'; }
+  });
+
+  document.getElementById('text-copy-btn')!.addEventListener('click', async () => {
+    const text = (document.getElementById('text-output') as HTMLTextAreaElement).value;
+    if (!text) return;
+    await navigator.clipboard.writeText(text);
+    const btn = document.getElementById('text-copy-btn')!;
+    btn.textContent = '✓ Copied!'; btn.classList.add('btn-success');
+    setTimeout(() => { btn.textContent = 'Copy Text'; btn.classList.remove('btn-success'); }, 2000);
+  });
+  document.getElementById('text-download-btn')!.addEventListener('click', () => {
+    const text = (document.getElementById('text-output') as HTMLTextAreaElement).value;
+    if (!text) return;
+    downloadBlob(new Blob([text], { type: 'text/plain' }), 'extracted_text.txt');
+  });
+
+  /* ══════════════════════════════════════════════════════════
+     PDF → HTML
+  ══════════════════════════════════════════════════════════ */
+  document.getElementById('html-export-btn')!.addEventListener('click', async () => {
+    if (!pdfDoc) return;
+    const btn = document.getElementById('html-export-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Converting…';
+    const pagesMode = (document.getElementById('html-pages') as HTMLSelectElement).value;
+    const styled = (document.getElementById('html-styled') as HTMLInputElement).checked;
+    const pageList = pagesMode === 'current' ? [currentPage] : Array.from({ length: totalPages }, (_, i) => i + 1);
+    showStatus('html-status', 'Processing…');
+
+    try {
+      let body = '';
+      for (const pg of pageList) {
+        const page = await pdfDoc.getPage(pg);
+        const content = await page.getTextContent();
+        body += `<div class="pdf-page" data-page="${pg}">`;
+        let lastY: number | null = null;
+        for (const item of content.items as any[]) {
+          const y = Math.round(item.transform[5]);
+          if (lastY !== null && Math.abs(y - lastY) > 5) body += '<br>';
+          const fs = Math.round(item.height);
+          if (fs >= 14) body += `<h2>${escHtml(item.str)}</h2>`;
+          else body += `<span style="font-size:${Math.max(9, fs)}pt;">${escHtml(item.str)} </span>`;
+          lastY = y;
+        }
+        body += '</div>';
+      }
+      const css = styled ? `<style>
+        body{font-family:Georgia,serif;max-width:780px;margin:2rem auto;color:#111;line-height:1.7;}
+        .pdf-page{border-bottom:1px solid #eee;padding-bottom:2rem;margin-bottom:2rem;}
+        h2{font-family:Arial,sans-serif;margin:0.5em 0;}
+        .pdf-page:last-child{border-bottom:none;}
+      </style>` : '';
+      const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>PDF Export</title>${css}</head><body>${body}</body></html>`;
+      const output = document.getElementById('html-output') as HTMLTextAreaElement;
+      output.value = html;
+      output.style.display = '';
+      const actions = document.getElementById('html-actions')!;
+      actions.style.display = 'flex';
+      showStatus('html-status', 'HTML generated.', true);
+    } catch (e: any) { showStatus('html-status', 'Error: ' + (e.message || 'Failed.')); }
+    finally { btn.disabled = false; btn.textContent = 'Convert to HTML'; }
+  });
+
+  function escHtml(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  document.getElementById('html-copy-btn')!.addEventListener('click', async () => {
+    const html = (document.getElementById('html-output') as HTMLTextAreaElement).value;
+    if (!html) return;
+    await navigator.clipboard.writeText(html);
+    const btn = document.getElementById('html-copy-btn')!;
+    btn.textContent = '✓ Copied!'; btn.classList.add('btn-success');
+    setTimeout(() => { btn.textContent = 'Copy HTML'; btn.classList.remove('btn-success'); }, 2000);
+  });
+  document.getElementById('html-download-btn')!.addEventListener('click', () => {
+    const html = (document.getElementById('html-output') as HTMLTextAreaElement).value;
+    if (!html) return;
+    downloadBlob(new Blob([html], { type: 'text/html' }), 'document.html');
+  });
+})();
+</script>

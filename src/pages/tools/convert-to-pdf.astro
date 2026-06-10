@@ -1,0 +1,418 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'convert-to-pdf')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Convert To PDF</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Select a conversion type, upload your file or paste content, then download your PDF — all client-side.</p>
+
+    <!-- Mode tabs -->
+    <div class="toggle-group" style="margin-bottom:1.25rem;display:flex;flex-wrap:wrap;">
+      <button class="toggle-btn active conv-tab" data-tab="image" aria-pressed="true">Image → PDF</button>
+      <button class="toggle-btn conv-tab" data-tab="text" aria-pressed="false">Text → PDF</button>
+      <button class="toggle-btn conv-tab" data-tab="markdown" aria-pressed="false">Markdown → PDF</button>
+      <button class="toggle-btn conv-tab" data-tab="html" aria-pressed="false">HTML → PDF</button>
+    </div>
+
+    <!-- ── IMAGE → PDF ─────────────────────────────────────── -->
+    <div id="tab-image" class="conv-panel">
+      <div id="img-drop" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);margin-bottom:0.875rem;">
+        <p style="font-size:0.95rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Drop images here</p>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.6rem;">JPG, PNG, WEBP, GIF, BMP — multiple files OK</p>
+        <input id="img-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/bmp" multiple style="display:none;" />
+        <button id="img-browse" class="btn-secondary" type="button" style="font-size:0.82rem;">Browse Files</button>
+      </div>
+
+      <div id="img-list" style="display:flex;flex-direction:column;gap:0.375rem;margin-bottom:0.875rem;"></div>
+
+      <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.875rem;">
+        <div>
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Page Size</label>
+          <select id="img-page-size" class="select-themed" style="font-size:0.82rem;width:auto;">
+            <option value="fit">Fit to Image</option>
+            <option value="A4">A4</option>
+            <option value="Letter">Letter</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Orientation</label>
+          <select id="img-orientation" class="select-themed" style="font-size:0.82rem;width:auto;">
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Margin (pt)</label>
+          <input id="img-margin" type="number" class="input-themed" value="20" min="0" max="100" style="width:4rem;font-size:0.82rem;" />
+        </div>
+        <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.82rem;color:var(--text-secondary);cursor:pointer;padding-top:1.1rem;">
+          <input id="img-one-page" type="checkbox" style="accent-color:var(--color-brand-blue);" /> One page per image
+        </label>
+      </div>
+
+      <div id="img-preview-wrap" style="display:none;margin-bottom:0.875rem;">
+        <p style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.4rem;">Selected Images</p>
+        <div id="img-preview-grid" style="display:flex;flex-wrap:wrap;gap:0.5rem;"></div>
+      </div>
+
+      <button id="img-convert-btn" class="btn-primary" type="button" style="font-size:0.875rem;" disabled>Convert to PDF</button>
+      <p id="img-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+    </div>
+
+    <!-- ── TEXT → PDF ──────────────────────────────────────── -->
+    <div id="tab-text" class="conv-panel" style="display:none;">
+      <textarea id="text-input" class="input-themed" rows="12" placeholder="Paste or type your plain text here…" style="font-size:0.875rem;font-family:'Fira Code',monospace;resize:vertical;line-height:1.6;"></textarea>
+      <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-top:0.75rem;margin-bottom:0.875rem;">
+        <div>
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Font Size</label>
+          <input id="text-fontsize" type="number" class="input-themed" value="12" min="6" max="36" style="width:4rem;font-size:0.82rem;" />
+        </div>
+        <div>
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Page Size</label>
+          <select id="text-page-size" class="select-themed" style="font-size:0.82rem;width:auto;">
+            <option value="A4">A4</option>
+            <option value="Letter">Letter</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Line Spacing</label>
+          <select id="text-line-spacing" class="select-themed" style="font-size:0.82rem;width:auto;">
+            <option value="1">Single</option>
+            <option value="1.5" selected>1.5×</option>
+            <option value="2">Double</option>
+          </select>
+        </div>
+      </div>
+      <button id="text-convert-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Convert to PDF</button>
+      <p id="text-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+    </div>
+
+    <!-- ── MARKDOWN → PDF ──────────────────────────────────── -->
+    <div id="tab-markdown" class="conv-panel" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;margin-bottom:0.875rem;">
+        <div>
+          <p style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.3rem;">Markdown Input</p>
+          <textarea id="md-input" class="input-themed" rows="14" placeholder="# Heading&#10;&#10;Write your **markdown** here…&#10;&#10;- Item 1&#10;- Item 2&#10;&#10;`code`" style="font-size:0.82rem;font-family:'Fira Code',monospace;resize:vertical;line-height:1.6;"></textarea>
+        </div>
+        <div>
+          <p style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.3rem;">Preview</p>
+          <div id="md-preview" style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.5rem;padding:0.875rem;min-height:200px;font-size:0.85rem;line-height:1.7;color:var(--text-primary);overflow-y:auto;max-height:360px;"></div>
+        </div>
+      </div>
+      <button id="md-convert-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Print / Save as PDF</button>
+      <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.4rem;">Opens a print dialog — choose "Save as PDF" in your browser's print settings.</p>
+    </div>
+
+    <!-- ── HTML → PDF ──────────────────────────────────────── -->
+    <div id="tab-html" class="conv-panel" style="display:none;">
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.75rem;">Upload an HTML file or paste HTML source. A print dialog will open — choose <strong>Save as PDF</strong>.</p>
+
+      <div id="html-drop" style="border:2px dashed var(--border);border-radius:0.875rem;padding:1.75rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s;background:var(--bg-surface);margin-bottom:0.875rem;">
+        <p style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Drop an HTML file</p>
+        <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.5rem;">or paste HTML below</p>
+        <input id="html-input" type="file" accept=".html,.htm" style="display:none;" />
+        <button id="html-browse" class="btn-secondary" type="button" style="font-size:0.78rem;">Browse File</button>
+      </div>
+
+      <textarea id="html-paste" class="input-themed" rows="8" placeholder="<h1>Hello</h1><p>Paste your HTML here…</p>" style="font-size:0.82rem;font-family:'Fira Code',monospace;resize:vertical;line-height:1.6;margin-bottom:0.875rem;"></textarea>
+
+      <button id="html-convert-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Print / Save as PDF</button>
+      <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.4rem;">Opens a print dialog — choose "Save as PDF" in your browser's print settings.</p>
+    </div>
+
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Convert To PDF</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Select the conversion type using the tabs at the top. Each tab handles a different input format — images, plain text, Markdown, or HTML.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">For <strong>Image → PDF</strong>, drop one or more image files, adjust page size and margin options, then click <strong>Convert to PDF</strong> to download instantly. For <strong>Text</strong> and <strong>Markdown</strong>, paste your content and use the print dialog to save as PDF — this uses your browser's built-in PDF export.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">For <strong>HTML → PDF</strong>, upload your file or paste HTML. The content renders in a print-optimised layout and your browser's Save as PDF function handles the export.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      {[
+        ['Image → PDF', 'pdf-lib encodes each image (JPG or PNG via canvas normalisation) and places it on a new page. Page size can fit the image dimensions or be fixed to A4/Letter with centred scaling.'],
+        ['Text → PDF', 'pdf-lib draws text line-by-line using Helvetica, with configurable font size, line spacing, and margins. Text wraps automatically at the page boundary.'],
+        ['Markdown → PDF', 'Marked.js converts Markdown to HTML in real time. Clicking Print opens a styled print window using your browser\'s native PDF export — fully formatted with headings, code blocks, and lists.'],
+        ['HTML → PDF', 'The uploaded or pasted HTML is loaded into a styled print window. Your browser\'s "Save as PDF" print option exports it as a PDF with correct page breaks.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Is my data uploaded to a server?', a: 'No. All conversions happen entirely in your browser. Images, text, and documents never leave your device.' },
+        { q: 'What image formats are supported?', a: 'JPG, PNG, WEBP, GIF, and BMP. HEIC files from Apple devices need to be converted to JPG first — most phones offer this in their share/export options.' },
+        { q: 'Can I combine multiple images into one PDF?', a: 'Yes. Drop or select multiple images and they will all be converted into a single multi-page PDF, one image per page.' },
+        { q: 'Will Markdown formatting be preserved?', a: 'Yes. Headings, bold, italic, code blocks, blockquotes, lists, and tables are all rendered in the print preview and will appear in the exported PDF.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script is:inline src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+(function () {
+  const { PDFDocument, rgb, StandardFonts, PageSizes } = (window as any).PDFLib;
+  const marked = (window as any).marked;
+
+  /* ── Tab switching ────────────────────────────────────────── */
+  document.querySelectorAll('.conv-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.conv-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-pressed', 'false'); });
+      tab.classList.add('active'); tab.setAttribute('aria-pressed', 'true');
+      document.querySelectorAll('.conv-panel').forEach(p => (p as HTMLElement).style.display = 'none');
+      const panel = document.getElementById('tab-' + (tab as HTMLElement).dataset.tab);
+      if (panel) panel.style.display = '';
+    });
+  });
+
+  /* ── Helpers ──────────────────────────────────────────────── */
+  function downloadBlob(blob: Blob, name: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+    URL.revokeObjectURL(url);
+  }
+  function showStatus(id: string, msg: string, ok?: boolean) {
+    const el = document.getElementById(id)!;
+    el.style.display = msg ? '' : 'none';
+    el.textContent = msg;
+    el.style.color = ok ? '#10B981' : 'var(--text-muted)';
+  }
+  function pageSize(key: string, orient: string): [number, number] {
+    const A4: [number, number] = [595.28, 841.89];
+    const Letter: [number, number] = [612, 792];
+    let [w, h] = key === 'Letter' ? Letter : A4;
+    if (orient === 'landscape') [w, h] = [h, w];
+    return [w, h];
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     IMAGE → PDF
+  ══════════════════════════════════════════════════════════ */
+  const imgDrop   = document.getElementById('img-drop')!;
+  const imgInput  = document.getElementById('img-input') as HTMLInputElement;
+  const imgBrowse = document.getElementById('img-browse')!;
+  const imgList   = document.getElementById('img-list')!;
+  const imgPreviewWrap = document.getElementById('img-preview-wrap')!;
+  const imgPreviewGrid = document.getElementById('img-preview-grid')!;
+  const imgConvertBtn  = document.getElementById('img-convert-btn')! as HTMLButtonElement;
+  const imgPageSize    = document.getElementById('img-page-size') as HTMLSelectElement;
+  const imgOrientation = document.getElementById('img-orientation') as HTMLSelectElement;
+  const imgMarginIn    = document.getElementById('img-margin') as HTMLInputElement;
+
+  let imgFiles: File[] = [];
+
+  imgDrop.addEventListener('dragover', e => { e.preventDefault(); imgDrop.style.borderColor = 'var(--color-brand-blue)'; imgDrop.style.background = 'rgba(29,78,216,0.04)'; });
+  imgDrop.addEventListener('dragleave', () => { imgDrop.style.borderColor = ''; imgDrop.style.background = ''; });
+  imgDrop.addEventListener('drop', e => { e.preventDefault(); imgDrop.style.borderColor = ''; imgDrop.style.background = ''; handleImages(Array.from(e.dataTransfer!.files)); });
+  imgBrowse.addEventListener('click', () => imgInput.click());
+  imgDrop.addEventListener('click', e => { if (e.target === imgDrop || e.target === imgBrowse) imgInput.click(); });
+  imgInput.addEventListener('change', () => { handleImages(Array.from(imgInput.files!)); imgInput.value = ''; });
+
+  function handleImages(files: File[]) {
+    const valid = files.filter(f => f.type.startsWith('image/'));
+    imgFiles = [...imgFiles, ...valid];
+    renderImgList();
+  }
+
+  function renderImgList() {
+    imgList.innerHTML = '';
+    imgPreviewGrid.innerHTML = '';
+    if (!imgFiles.length) { imgPreviewWrap.style.display = 'none'; imgConvertBtn.disabled = true; return; }
+    imgConvertBtn.disabled = false;
+    imgPreviewWrap.style.display = '';
+    imgFiles.forEach((f, i) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0.5rem;border:1px solid var(--border);border-radius:0.5rem;background:var(--bg-surface);font-size:0.78rem;color:var(--text-primary);';
+      row.innerHTML = `<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</span><span style="color:var(--text-muted);flex-shrink:0;">${(f.size/1024).toFixed(0)} KB</span>`;
+      const del = document.createElement('button');
+      del.textContent = '×';
+      del.style.cssText = 'background:none;border:none;cursor:pointer;color:#EF4444;font-size:1rem;padding:0 0.25rem;line-height:1;';
+      del.addEventListener('click', () => { imgFiles.splice(i, 1); renderImgList(); });
+      row.appendChild(del);
+      imgList.appendChild(row);
+
+      const url = URL.createObjectURL(f);
+      const img = document.createElement('img');
+      img.src = url;
+      img.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:4px;border:1px solid var(--border);';
+      img.onload = () => URL.revokeObjectURL(url);
+      imgPreviewGrid.appendChild(img);
+    });
+  }
+
+  imgConvertBtn.addEventListener('click', async () => {
+    if (!imgFiles.length) return;
+    imgConvertBtn.disabled = true;
+    imgConvertBtn.textContent = 'Converting…';
+    showStatus('img-status', 'Processing images…');
+    try {
+      const pdfDoc = await PDFDocument.create();
+      const margin = parseInt(imgMarginIn.value) || 0;
+      const sizeKey = imgPageSize.value;
+      const orient = imgOrientation.value;
+
+      for (const file of imgFiles) {
+        const ab = await file.arrayBuffer();
+        const bytes = new Uint8Array(ab);
+        let img;
+        if (file.type === 'image/jpeg') img = await pdfDoc.embedJpg(bytes);
+        else {
+          // Convert to PNG via canvas for GIF/BMP/WEBP
+          const bitmap = await createImageBitmap(file);
+          const canvas = document.createElement('canvas');
+          canvas.width = bitmap.width; canvas.height = bitmap.height;
+          canvas.getContext('2d')!.drawImage(bitmap, 0, 0);
+          const blob = await new Promise<Blob>(res => canvas.toBlob(b => res(b!), 'image/png'));
+          img = await pdfDoc.embedPng(new Uint8Array(await blob.arrayBuffer()));
+        }
+        const { width: iw, height: ih } = img;
+        let pw: number, ph: number;
+        if (sizeKey === 'fit') { pw = iw + margin * 2; ph = ih + margin * 2; }
+        else { [pw, ph] = pageSize(sizeKey, orient); }
+        const page = pdfDoc.addPage([pw, ph]);
+        const maxW = pw - margin * 2, maxH = ph - margin * 2;
+        const scale = Math.min(maxW / iw, maxH / ih, 1);
+        const dw = iw * scale, dh = ih * scale;
+        const x = margin + (maxW - dw) / 2;
+        const y = margin + (maxH - dh) / 2;
+        page.drawImage(img, { x, y, width: dw, height: dh });
+      }
+
+      const bytes = await pdfDoc.save();
+      downloadBlob(new Blob([bytes], { type: 'application/pdf' }), 'images.pdf');
+      showStatus('img-status', `Done! ${imgFiles.length} image${imgFiles.length > 1 ? 's' : ''} exported as PDF.`, true);
+    } catch (e: any) { showStatus('img-status', 'Error: ' + (e.message || 'Conversion failed.')); }
+    finally { imgConvertBtn.disabled = false; imgConvertBtn.textContent = 'Convert to PDF'; }
+  });
+
+  /* ══════════════════════════════════════════════════════════
+     TEXT → PDF
+  ══════════════════════════════════════════════════════════ */
+  document.getElementById('text-convert-btn')!.addEventListener('click', async () => {
+    const text = (document.getElementById('text-input') as HTMLTextAreaElement).value;
+    if (!text.trim()) return;
+    const btn = document.getElementById('text-convert-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Converting…';
+    showStatus('text-status', 'Processing…');
+    try {
+      const pdfDoc = await PDFDocument.create();
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const fs = parseInt((document.getElementById('text-fontsize') as HTMLInputElement).value) || 12;
+      const ls = parseFloat((document.getElementById('text-line-spacing') as HTMLSelectElement).value) || 1.5;
+      const sizeKey = (document.getElementById('text-page-size') as HTMLSelectElement).value;
+      const [pw, ph] = pageSize(sizeKey, 'portrait');
+      const margin = 54;
+      const lineH = fs * ls;
+      const maxW = pw - margin * 2;
+      const lines = text.split('\n');
+      const wrapped: string[] = [];
+      for (const line of lines) {
+        if (!line.trim()) { wrapped.push(''); continue; }
+        let cur = '';
+        for (const word of line.split(' ')) {
+          const test = cur ? cur + ' ' + word : word;
+          if (font.widthOfTextAtSize(test, fs) > maxW) {
+            if (cur) wrapped.push(cur);
+            cur = word;
+          } else cur = test;
+        }
+        if (cur) wrapped.push(cur);
+      }
+      let page = pdfDoc.addPage([pw, ph]);
+      let y = ph - margin;
+      for (const ln of wrapped) {
+        if (y < margin + lineH) { page = pdfDoc.addPage([pw, ph]); y = ph - margin; }
+        if (ln) page.drawText(ln, { x: margin, y, size: fs, font, color: rgb(0, 0, 0) });
+        y -= lineH;
+      }
+      const bytes = await pdfDoc.save();
+      downloadBlob(new Blob([bytes], { type: 'application/pdf' }), 'document.pdf');
+      showStatus('text-status', 'Downloaded document.pdf', true);
+    } catch (e: any) { showStatus('text-status', 'Error: ' + (e.message || 'Failed.')); }
+    finally { btn.disabled = false; btn.textContent = 'Convert to PDF'; }
+  });
+
+  /* ══════════════════════════════════════════════════════════
+     MARKDOWN → PDF (print)
+  ══════════════════════════════════════════════════════════ */
+  const mdInput   = document.getElementById('md-input') as HTMLTextAreaElement;
+  const mdPreview = document.getElementById('md-preview')!;
+
+  mdInput.addEventListener('input', () => {
+    mdPreview.innerHTML = marked.parse(mdInput.value || '');
+  });
+
+  document.getElementById('md-convert-btn')!.addEventListener('click', () => {
+    const html = marked.parse(mdInput.value || '');
+    if (!html.trim()) return;
+    const win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Document</title><style>
+      body{font-family:Georgia,serif;font-size:13pt;line-height:1.75;max-width:680px;margin:2cm auto;color:#111;}
+      h1,h2,h3{font-family:Arial,sans-serif;} code,pre{font-family:monospace;background:#f4f4f4;padding:2px 5px;border-radius:3px;}
+      pre{padding:10px;overflow:auto;} blockquote{border-left:3px solid #ccc;margin-left:0;padding-left:1rem;color:#555;}
+      table{border-collapse:collapse;width:100%;} th,td{border:1px solid #ddd;padding:6px 10px;} th{background:#f0f0f0;}
+      @media print{body{margin:0;max-width:100%;}}
+    </style></head><body>${html}</body></html>`);
+    win.document.close();
+    win.print();
+  });
+
+  /* ══════════════════════════════════════════════════════════
+     HTML → PDF (print)
+  ══════════════════════════════════════════════════════════ */
+  const htmlDrop   = document.getElementById('html-drop')!;
+  const htmlInput  = document.getElementById('html-input') as HTMLInputElement;
+  const htmlBrowse = document.getElementById('html-browse')!;
+  const htmlPaste  = document.getElementById('html-paste') as HTMLTextAreaElement;
+
+  htmlDrop.addEventListener('dragover', e => { e.preventDefault(); htmlDrop.style.borderColor = 'var(--color-brand-blue)'; });
+  htmlDrop.addEventListener('dragleave', () => { htmlDrop.style.borderColor = ''; });
+  htmlDrop.addEventListener('drop', e => { e.preventDefault(); htmlDrop.style.borderColor = ''; if (e.dataTransfer!.files[0]) readHtmlFile(e.dataTransfer!.files[0]); });
+  htmlBrowse.addEventListener('click', () => htmlInput.click());
+  htmlDrop.addEventListener('click', e => { if (e.target === htmlDrop || e.target === htmlBrowse) htmlInput.click(); });
+  htmlInput.addEventListener('change', () => { if (htmlInput.files![0]) { readHtmlFile(htmlInput.files![0]); htmlInput.value = ''; } });
+
+  function readHtmlFile(f: File) {
+    const reader = new FileReader();
+    reader.onload = () => { htmlPaste.value = reader.result as string; };
+    reader.readAsText(f);
+  }
+
+  document.getElementById('html-convert-btn')!.addEventListener('click', () => {
+    const html = htmlPaste.value.trim();
+    if (!html) return;
+    const win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write(html.includes('<html') ? html : `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:sans-serif;padding:1.5rem;}</style></head><body>${html}</body></html>`);
+    win.document.close();
+    win.print();
+  });
+})();
+</script>
