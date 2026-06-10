@@ -65,6 +65,7 @@ const tool = tools.find(t => t.slug === 'pdf-sign')!;
         </div>
         <div style="display:flex;align-items:center;gap:0.5rem;">
           <span id="sig-count" style="font-size:0.78rem;color:var(--text-muted);"></span>
+          <button id="clear-page-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;color:#EF4444;">Clear</button>
           <button id="save-btn" class="btn-primary" type="button" style="font-size:0.85rem;padding:0.55rem 1.5rem;">Save PDF</button>
         </div>
       </div>
@@ -291,6 +292,7 @@ All client-side — no server upload.</pre>
   const pageNumEl    = $('page-num');
   const pageTotalEl  = $('page-total');
   const sigCountEl   = $('sig-count');
+  const clearPageBtn = $('clear-page-btn');
   const saveBtn      = $('save-btn');
   const statusEl     = $('status');
 
@@ -476,6 +478,14 @@ All client-side — no server upload.</pre>
 
   prevBtn.addEventListener('click', async () => { if (currentPage > 1) { currentPage--; await renderPage(currentPage); updateNav(); } });
   nextBtn.addEventListener('click', async () => { if (currentPage < totalPages) { currentPage++; await renderPage(currentPage); updateNav(); } });
+  clearPageBtn.addEventListener('click', () => {
+    const hasSigs = (pageSignatures[currentPage] || []).length > 0;
+    const hasDates = (pageDates[currentPage] || []).length > 0;
+    if (!hasSigs && !hasDates) return;
+    pageSignatures[currentPage] = [];
+    pageDates[currentPage] = [];
+    renderAll(); updateCounts(); showStatus('Page cleared', true);
+  });
   function updateNav() {
     pageNumEl.textContent = String(currentPage);
     prevBtn.toggleAttribute('disabled', currentPage <= 1);

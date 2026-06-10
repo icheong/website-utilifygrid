@@ -174,6 +174,7 @@ const tool = tools.find(t => t.slug === 'pdf-enhance')!;
         <div style="display:flex;align-items:center;gap:0.4rem;">
           <button id="undo-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;" disabled>Undo</button>
           <button id="redo-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;" disabled>Redo</button>
+          <button id="clear-page-btn" class="btn-secondary" type="button" style="font-size:0.78rem;padding:0.3rem 0.6rem;color:#EF4444;">Clear</button>
           <div style="width:1px;height:1.5rem;background:var(--border);flex-shrink:0;"></div>
           <button id="save-btn" class="btn-primary" type="button" style="font-size:0.85rem;padding:0.45rem 1.25rem;">Save PDF</button>
         </div>
@@ -284,6 +285,7 @@ All processing client-side (WASM). No upload.</pre>
   const saveBtn         = $('save-btn');
   const undoBtn         = $('undo-btn');
   const redoBtn         = $('redo-btn');
+  const clearPageBtn    = $('clear-page-btn');
   const expandBtn       = $('expand-btn');
   const editorFullscreen= $('editor-fullscreen');
   const fsEditorContent = $('fs-editor-content');
@@ -649,6 +651,12 @@ All processing client-side (WASM). No upload.</pre>
   }
   undoBtn.addEventListener('click', undo);
   redoBtn.addEventListener('click', redo);
+  clearPageBtn.addEventListener('click', () => {
+    if (!pageElements[currentPage]?.length) return;
+    pushHistory(currentPage);
+    pageElements[currentPage] = [];
+    renderElements(); updateElemCount(); showStatus('Page cleared', true);
+  });
   document.addEventListener('keydown', e => {
     const mod = e.ctrlKey || e.metaKey;
     if (mod && e.key==='z' && !e.shiftKey) { e.preventDefault(); undo(); }
