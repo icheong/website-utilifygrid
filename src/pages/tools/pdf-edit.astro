@@ -32,6 +32,9 @@ const tool = tools.find(t => t.slug === 'pdf-edit')!;
             <button class="toggle-btn tool-btn" data-tool="rect" title="Rectangle" aria-pressed="false" style="padding:0.35rem 0.45rem;">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
             </button>
+            <button class="toggle-btn tool-btn" data-tool="redact" title="Redact (solid black rectangle)" aria-pressed="false" style="padding:0.35rem 0.45rem;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+            </button>
             <button class="toggle-btn tool-btn" data-tool="circle" title="Circle" aria-pressed="false" style="padding:0.35rem 0.45rem;">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
             </button>
@@ -286,7 +289,7 @@ No server upload — your files stay private.</pre>
 
   /* ── State ────────────────────────────────────────────────── */
   type Edit = {
-    type: 'text'|'rect'|'circle'|'line'|'arrow'|'freehand'|'image'|'highlight'|'underline'|'comment';
+    type: 'text'|'rect'|'circle'|'line'|'arrow'|'freehand'|'image'|'highlight'|'underline'|'comment'|'redact';
     x: number; y: number;
     x2?: number; y2?: number;
     color: string; size: number; opacity: number;
@@ -602,7 +605,7 @@ No server upload — your files stay private.</pre>
     const tx = (px: number) => px * sx;
     const ty = (py: number) => (pagePdfH - py) * sy;
     switch (edit.type) {
-      case 'rect': case 'highlight': case 'underline': {
+      case 'rect': case 'redact': case 'highlight': case 'underline': {
         const x1 = tx(edit.x), y1 = ty(edit.y), x2 = tx(edit.x2!), y2 = ty(edit.y2!);
         const x = Math.min(x1, x2), y = Math.min(y1, y2);
         return { x, y, w: Math.abs(x2 - x1) || 1, h: Math.abs(y2 - y1) || 1 };
@@ -695,7 +698,8 @@ No server upload — your files stay private.</pre>
           t.textContent = edit.text || '';
           return t;
         }
-        case 'rect': {
+        case 'rect':
+        case 'redact': {
           const r = document.createElementNS(ns, 'rect');
           const x1 = tx(edit.x), y1 = ty(edit.y), x2 = tx(edit.x2!), y2 = ty(edit.y2!);
           r.setAttribute('x', String(Math.min(x1, x2)));
@@ -956,7 +960,7 @@ No server upload — your files stay private.</pre>
           const ox = resizeOrigBB.x, oy = resizeOrigBB.y;
           for (const p of edit.points) { p.x = ox + (p.x - ox) * scx; p.y = oy + (p.y - oy) * scy; }
         }
-      } else if (edit.type === 'line' || edit.type === 'arrow' || edit.type === 'highlight' || edit.type === 'underline' || edit.type === 'rect' || edit.type === 'circle') {
+      } else if (edit.type === 'line' || edit.type === 'arrow' || edit.type === 'highlight' || edit.type === 'underline' || edit.type === 'rect' || edit.type === 'redact' || edit.type === 'circle') {
         edit.x2 = resizeStartX2 + dpx;
         edit.y2 = resizeStartY2 + dpy;
       } else if (edit.type === 'image') {
@@ -1032,6 +1036,8 @@ No server upload — your files stay private.</pre>
     switch (activeTool) {
       case 'rect':
         pageEdits[currentPage].push({ type: 'rect', x: s.x, y: s.y, x2: e2.x, y2: e2.y, ...base }); break;
+      case 'redact':
+        pageEdits[currentPage].push({ type: 'redact', x: s.x, y: s.y, x2: e2.x, y2: e2.y, color: p.color, size: 0, opacity: 1, fill: 'solid', id }); break;
       case 'circle':
         pageEdits[currentPage].push({ type: 'circle', x: s.x, y: s.y, x2: e2.x, y2: e2.y, ...base }); break;
       case 'line':
@@ -1086,7 +1092,8 @@ No server upload — your files stay private.</pre>
     const ns = 'http://www.w3.org/2000/svg';
     const style = `stroke:${p.color};stroke-width:${p.size};fill:${p.fill === 'solid' ? p.color : 'none'};opacity:0.6;stroke-dasharray:6 3;`;
     switch (activeTool) {
-      case 'rect': {
+      case 'rect':
+      case 'redact': {
         const r = document.createElementNS(ns, 'rect');
         r.id = 'tmp-preview';
         r.setAttribute('x', String(Math.min(x1, x2)));
@@ -1408,7 +1415,8 @@ No server upload — your files stay private.</pre>
               break;
             }
             /* ── RECT ────────────────────────────────────── */
-            case 'rect': {
+        case 'rect':
+        case 'redact': {
               const rx = Math.min(edit.x, edit.x2!);
               const ry = Math.min(edit.y, edit.y2!);
               const rw = Math.abs(edit.x2! - edit.x);

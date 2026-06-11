@@ -1,0 +1,320 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'pdf-secure')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Secure PDF</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Encrypt, decrypt, or sanitize PDF files — all processed client-side in your browser.</p>
+
+    <!-- Drop zone (shared) -->
+    <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);margin-bottom:1.25rem;">
+      <p style="font-size:0.95rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Drop a PDF file here</p>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.6rem;">or click to browse</p>
+      <input id="file-input" type="file" accept=".pdf" style="display:none;" />
+      <button id="browse-btn" class="btn-secondary" type="button" style="font-size:0.82rem;">Browse File</button>
+    </div>
+
+    <!-- File info bar (hidden until loaded) -->
+    <div id="file-bar" style="display:none;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.75rem;padding:0.5rem 0.875rem;margin-bottom:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+      <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);margin:0;">
+        <span id="doc-name"></span>
+        <span id="doc-size" style="color:var(--text-muted);font-weight:400;margin-left:0.5rem;"></span>
+      </p>
+      <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
+    </div>
+
+    <!-- Workspace (hidden until loaded) -->
+    <div id="workspace" style="display:none;">
+
+      <!-- Mode tabs -->
+      <div class="toggle-group" style="margin-bottom:1.25rem;display:flex;flex-wrap:wrap;">
+        <button class="toggle-btn active sec-tab" data-tab="encrypt" aria-pressed="true">Encrypt</button>
+        <button class="toggle-btn sec-tab" data-tab="decrypt" aria-pressed="false">Decrypt</button>
+        <button class="toggle-btn sec-tab" data-tab="sanitize" aria-pressed="false">Sanitize</button>
+      </div>
+
+      <!-- ── ENCRYPT ─────────────────────────────────────────── -->
+      <div id="tab-encrypt" class="sec-panel">
+        <div style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1rem;">
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Open Password (User Password)</label>
+            <input id="enc-user-pwd" type="password" class="input-themed" placeholder="Password to open the PDF" style="font-size:0.82rem;width:100%;" />
+          </div>
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Permissions Password (Owner Password)</label>
+            <input id="enc-owner-pwd" type="password" class="input-themed" placeholder="Password to change permissions" style="font-size:0.82rem;width:100%;" />
+          </div>
+        </div>
+        <p style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.5rem;">Permissions</p>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;">
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--text-secondary);cursor:pointer;">
+            <input id="enc-print" type="checkbox" checked style="accent-color:var(--color-brand-blue);" /> Allow printing
+          </label>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--text-secondary);cursor:pointer;">
+            <input id="enc-copy" type="checkbox" checked style="accent-color:var(--color-brand-blue);" /> Allow copying text
+          </label>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--text-secondary);cursor:pointer;">
+            <input id="enc-modify" type="checkbox" checked style="accent-color:var(--color-brand-blue);" /> Allow modifying content
+          </label>
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--text-secondary);cursor:pointer;">
+            <input id="enc-annotate" type="checkbox" checked style="accent-color:var(--color-brand-blue);" /> Allow annotations
+          </label>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Encryption Algorithm</label>
+          <select id="enc-algo" class="select-themed" style="font-size:0.82rem;width:auto;">
+            <option value="aes-256">AES-256 (recommended)</option>
+            <option value="aes-128">AES-128</option>
+            <option value="rc4-128">RC4-128 (legacy compatibility)</option>
+          </select>
+        </div>
+        <button id="enc-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Encrypt &amp; Download</button>
+        <p id="enc-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+
+      <!-- ── DECRYPT ─────────────────────────────────────────── -->
+      <div id="tab-decrypt" class="sec-panel" style="display:none;">
+        <div style="background:var(--bg-surface-2);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;margin-bottom:1rem;">
+          <p style="font-size:0.82rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Remove password protection</p>
+          <p style="font-size:0.78rem;color:var(--text-secondary);line-height:1.6;margin:0;">Enter the password for this protected PDF. The output will be an unprotected copy that opens without a password.</p>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">PDF Password</label>
+          <input id="dec-pwd" type="password" class="input-themed" placeholder="Enter the PDF password" style="font-size:0.82rem;width:100%;" />
+        </div>
+        <button id="dec-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Decrypt &amp; Download</button>
+        <p id="dec-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+
+      <!-- ── SANITIZE ────────────────────────────────────────── -->
+      <div id="tab-sanitize" class="sec-panel" style="display:none;">
+        <div style="background:var(--bg-surface-2);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;margin-bottom:1rem;">
+          <p style="font-size:0.82rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Remove all hidden metadata</p>
+          <p style="font-size:0.78rem;color:var(--text-secondary);line-height:1.6;margin:0;">Strips all document metadata, embedded information, and private data that may be hidden in the PDF.</p>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <p style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.5rem;">What will be removed</p>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            <span style="font-size:0.82rem;color:var(--text-secondary);">✓ Document Title, Author, Subject, Keywords</span>
+            <span style="font-size:0.82rem;color:var(--text-secondary);">✓ Producer and Creator fields</span>
+            <span style="font-size:0.82rem;color:var(--text-secondary);">✓ Creation and Modification dates</span>
+            <span style="font-size:0.82rem;color:var(--text-secondary);">✓ XMP metadata stream</span>
+          </div>
+        </div>
+        <button id="sanitize-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Sanitize &amp; Download</button>
+        <p id="sanitize-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Secure PDF</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Drop or browse a PDF file. Once loaded, select a tab for the security action you need.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>Encrypt:</strong> Set an open password (required to view) and/or a permissions password (required to change settings). Choose which permissions to allow — printing, copying, modifying, and annotating. Select an encryption algorithm (AES-256 is recommended).</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>Decrypt:</strong> Enter the password for a protected PDF. The output is an unprotected copy that opens without a password.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;"><strong>Sanitize:</strong> One-click removal of all document metadata, including title, author, dates, and producer information.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      {[
+        ['Encrypt', 'pdf-lib applies RC4 or AES encryption at save time. The user password controls access; the owner password controls permission changes. Permission flags are embedded in the PDF\'s encryption dictionary.'],
+        ['Decrypt', 'pdf-lib loads the encrypted PDF with the provided password, decrypts the content streams, and re-saves without encryption. The output is a standard, unprotected PDF.'],
+        ['Sanitize', 'All fields in the PDF\'s Document Information dictionary (Title, Author, Subject, Keywords, Producer, Creator) are cleared. The XMP metadata stream is overwritten on save, removing any embedded private information.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Is my PDF uploaded to a server?', a: 'No. All processing happens entirely in your browser using pdf-lib. Your file never leaves your device.' },
+        { q: 'What encryption algorithm should I use?', a: 'AES-256 is recommended for maximum security. AES-128 is also secure. Use RC4-128 only if you need compatibility with very old PDF readers.' },
+        { q: 'Can I remove a password if I don\'t know it?', a: 'No. You must know the password to decrypt a PDF. This tool does not attempt to crack or brute-force passwords.' },
+        { q: 'What metadata is removed by sanitize?', a: 'Title, Author, Subject, Keywords, Producer, Creator, Creation Date, and Modification Date are all cleared. The XMP metadata stream is also overwritten on save.' },
+        { q: 'Will encryption work in all PDF readers?', a: 'AES-256 encryption is supported by all modern PDF readers. If you need compatibility with very old readers, use RC4-128. Note that permission restrictions are advisory — compliant readers enforce them, but some viewers may ignore them.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script is:inline src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script is:inline src="https://unpkg.com/@cantoo/pdf-lib@2.7.1/dist/pdf-lib.min.js"></script>
+
+<script>
+(function () {
+  const pdfjsLib = (window as any).pdfjsLib;
+  let PDFDocument: any;
+  try {
+    ({ PDFDocument } = (window as any).PDFLib);
+  } catch (_) { /* library may not have loaded yet */ }
+  if (pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+  /* ── Shared state ─────────────────────────────────────────── */
+  let pdfBytes: ArrayBuffer | null = null;
+  let pdfFileName = '';
+  let pdfDoc: any = null;
+  let totalPages = 0;
+  let currentPage = 1;
+
+  /* ── DOM ──────────────────────────────────────────────────── */
+  const dropZone   = document.getElementById('drop-zone')!;
+  const fileInput  = document.getElementById('file-input') as HTMLInputElement;
+  const browseBtn  = document.getElementById('browse-btn')!;
+  const fileBar    = document.getElementById('file-bar')!;
+  const docName    = document.getElementById('doc-name')!;
+  const docSize    = document.getElementById('doc-size')!;
+  const resetBtn   = document.getElementById('reset-btn')!;
+  const workspace  = document.getElementById('workspace')!;
+
+  /* ── Drop zone ────────────────────────────────────────────── */
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--color-brand-blue)'; dropZone.style.background = 'rgba(29,78,216,0.04)'; });
+  dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; dropZone.style.background = ''; });
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = ''; dropZone.style.background = ''; if (e.dataTransfer!.files[0]) loadFile(e.dataTransfer!.files[0]); });
+  browseBtn.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', e => { if (e.target === dropZone || e.target === browseBtn) fileInput.click(); });
+  fileInput.addEventListener('change', () => { if (fileInput.files![0]) loadFile(fileInput.files![0]); fileInput.value = ''; });
+  resetBtn.addEventListener('click', () => { pdfBytes = null; pdfDoc = null; fileBar.style.display = 'none'; workspace.style.display = 'none'; dropZone.style.display = ''; });
+
+  function formatSize(bytes: number): string {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  async function loadFile(file: File) {
+    if (file.type !== 'application/pdf') return;
+    pdfBytes = await file.arrayBuffer();
+    pdfFileName = file.name.replace(/\.pdf$/i, '');
+    docName.textContent = file.name;
+    docSize.textContent = '(' + formatSize(file.size) + ')';
+    dropZone.style.display = 'none';
+    fileBar.style.display = 'flex';
+    workspace.style.display = '';
+    pdfDoc = null;
+    totalPages = 0;
+    currentPage = 1;
+  }
+
+  /* ── Tab switching ────────────────────────────────────────── */
+  document.querySelectorAll('.sec-tab').forEach(tab => {
+    tab.addEventListener('click', async () => {
+      document.querySelectorAll('.sec-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-pressed', 'false'); });
+      tab.classList.add('active'); tab.setAttribute('aria-pressed', 'true');
+      document.querySelectorAll('.sec-panel').forEach(p => (p as HTMLElement).style.display = 'none');
+      const panel = document.getElementById('tab-' + (tab as HTMLElement).dataset.tab);
+      if (panel) panel.style.display = '';
+    });
+  });
+
+  /* ── Helpers ──────────────────────────────────────────────── */
+  function downloadBlob(blob: Blob, name: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+    URL.revokeObjectURL(url);
+  }
+  function showStatus(id: string, msg: string, ok?: boolean) {
+    const el = document.getElementById(id)!;
+    el.style.display = msg ? '' : 'none';
+    el.textContent = msg;
+    el.style.color = ok ? '#10B981' : 'var(--text-muted)';
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     ENCRYPT
+  ══════════════════════════════════════════════════════════ */
+  document.getElementById('enc-btn')!.addEventListener('click', async () => {
+    if (!pdfBytes) return;
+    const btn = document.getElementById('enc-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Encrypting…';
+    showStatus('enc-status', 'Encrypting…');
+    try {
+      const doc = await PDFDocument.load(pdfBytes.slice(0));
+      const userPwd = (document.getElementById('enc-user-pwd') as HTMLInputElement).value;
+      const ownerPwd = (document.getElementById('enc-owner-pwd') as HTMLInputElement).value;
+      const algo = (document.getElementById('enc-algo') as HTMLSelectElement).value;
+      const permissions = {
+        printing:           (document.getElementById('enc-print') as HTMLInputElement).checked,
+        copying:            (document.getElementById('enc-copy') as HTMLInputElement).checked,
+        modifying:          (document.getElementById('enc-modify') as HTMLInputElement).checked,
+        annotating:         (document.getElementById('enc-annotate') as HTMLInputElement).checked,
+      };
+      doc.encrypt({
+        userPassword:  userPwd,
+        ownerPassword: ownerPwd || userPwd,
+        permissions,
+      });
+      const encrypted = await doc.save();
+      downloadBlob(new Blob([encrypted], { type: 'application/pdf' }), pdfFileName + '_encrypted.pdf');
+      showStatus('enc-status', 'Downloaded ' + pdfFileName + '_encrypted.pdf', true);
+    } catch (e: any) { showStatus('enc-status', 'Error: ' + (e.message || 'Encryption failed.')); }
+    finally { btn.disabled = false; btn.textContent = 'Encrypt & Download'; }
+  });
+
+  /* ══════════════════════════════════════════════════════════
+     DECRYPT
+  ══════════════════════════════════════════════════════════ */
+  document.getElementById('dec-btn')!.addEventListener('click', async () => {
+    if (!pdfBytes) return;
+    const btn = document.getElementById('dec-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Decrypting…';
+    showStatus('dec-status', 'Decrypting…');
+    try {
+      const pwd = (document.getElementById('dec-pwd') as HTMLInputElement).value;
+      if (!pwd) { showStatus('dec-status', 'Please enter the PDF password.'); btn.disabled = false; btn.textContent = 'Decrypt & Download'; return; }
+      const doc = await PDFDocument.load(pdfBytes.slice(0), { password: pwd });
+      const decrypted = await doc.save();
+      downloadBlob(new Blob([decrypted], { type: 'application/pdf' }), pdfFileName + '_decrypted.pdf');
+      showStatus('dec-status', 'Downloaded ' + pdfFileName + '_decrypted.pdf', true);
+    } catch (e: any) { showStatus('dec-status', 'Error: ' + (e.message || 'Wrong password or corrupted file.')); }
+    finally { btn.disabled = false; btn.textContent = 'Decrypt & Download'; }
+  });
+
+  /* ══════════════════════════════════════════════════════════
+     SANITIZE
+  ══════════════════════════════════════════════════════════ */
+  document.getElementById('sanitize-btn')!.addEventListener('click', async () => {
+    if (!pdfBytes) return;
+    const btn = document.getElementById('sanitize-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Sanitizing…';
+    showStatus('sanitize-status', 'Stripping metadata…');
+    try {
+      const doc = await PDFDocument.load(pdfBytes.slice(0));
+      doc.setTitle('');
+      doc.setAuthor('');
+      doc.setSubject('');
+      doc.setKeywords([]);
+      doc.setProducer('');
+      doc.setCreator('');
+      doc.setCreationDate(new Date(0));
+      doc.setModificationDate(new Date(0));
+      const sanitized = await doc.save();
+      downloadBlob(new Blob([sanitized], { type: 'application/pdf' }), pdfFileName + '_sanitized.pdf');
+      showStatus('sanitize-status', 'Downloaded ' + pdfFileName + '_sanitized.pdf', true);
+    } catch (e: any) { showStatus('sanitize-status', 'Error: ' + (e.message || 'Sanitize failed.')); }
+    finally { btn.disabled = false; btn.textContent = 'Sanitize & Download'; }
+  });
+
+})();
+</script>

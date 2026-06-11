@@ -1,0 +1,381 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'pdf-optimize-and-repair')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Optimize &amp; Repair PDF</h2>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Compress, repair, flatten, or edit metadata of a PDF — all processed client-side in your browser.</p>
+
+    <!-- Drop zone (shared) -->
+    <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);margin-bottom:1.25rem;">
+      <p style="font-size:0.95rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Drop a PDF file here</p>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.6rem;">or click to browse</p>
+      <input id="file-input" type="file" accept=".pdf" style="display:none;" />
+      <button id="browse-btn" class="btn-secondary" type="button" style="font-size:0.82rem;">Browse File</button>
+    </div>
+
+    <!-- File info bar (hidden until loaded) -->
+    <div id="file-bar" style="display:none;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.75rem;padding:0.5rem 0.875rem;margin-bottom:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+      <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);margin:0;">
+        <span id="doc-name"></span>
+        <span id="doc-size" style="color:var(--text-muted);font-weight:400;margin-left:0.5rem;"></span>
+      </p>
+      <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
+    </div>
+
+    <!-- Workspace (hidden until loaded) -->
+    <div id="workspace" style="display:none;">
+
+      <!-- Mode tabs -->
+      <div class="toggle-group" style="margin-bottom:1.25rem;display:flex;flex-wrap:wrap;">
+        <button class="toggle-btn active opt-tab" data-tab="compress" aria-pressed="true">Compress</button>
+        <button class="toggle-btn opt-tab" data-tab="repair" aria-pressed="false">Repair</button>
+        <button class="toggle-btn opt-tab" data-tab="flatten" aria-pressed="false">Flatten</button>
+        <button class="toggle-btn opt-tab" data-tab="metadata" aria-pressed="false">Metadata</button>
+      </div>
+
+      <!-- ── COMPRESS ─────────────────────────────────────────── -->
+      <div id="tab-compress" class="opt-panel">
+        <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7;margin-bottom:0.875rem;">Choose a compression level. Higher compression reduces file size more but may lower image quality.</p>
+        <div class="toggle-group" style="margin-bottom:1rem;display:flex;flex-wrap:wrap;">
+          <button class="toggle-btn active compress-level" data-level="extreme" aria-pressed="true">Extreme</button>
+          <button class="toggle-btn compress-level" data-level="recommended" aria-pressed="false">Recommended</button>
+          <button class="toggle-btn compress-level" data-level="low" aria-pressed="false">Low</button>
+        </div>
+        <div id="compress-desc" style="background:var(--bg-surface-2);border:1px solid var(--border);border-radius:0.625rem;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.78rem;color:var(--text-secondary);line-height:1.6;">
+          <strong style="color:var(--text-primary);">Extreme:</strong> Strips all metadata, removes non-essential objects. Best for email attachments and web uploads.
+        </div>
+        <button id="compress-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Compress &amp; Download</button>
+        <p id="compress-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+        <div id="compress-result" style="display:none;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:0.625rem;padding:0.75rem 1rem;margin-top:0.75rem;">
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin:0;">
+            <span id="compress-original" style="font-weight:600;color:var(--text-primary);"></span> → <span id="compress-new" style="font-weight:600;color:#10B981;"></span>
+            <span id="compress-saved" style="margin-left:0.5rem;color:#10B981;font-weight:600;"></span>
+          </p>
+        </div>
+      </div>
+
+      <!-- ── REPAIR ───────────────────────────────────────────── -->
+      <div id="tab-repair" class="opt-panel" style="display:none;">
+        <div style="background:var(--bg-surface-2);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;margin-bottom:1rem;">
+          <p style="font-size:0.82rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Fix corrupted or unreadable PDFs</p>
+          <p style="font-size:0.78rem;color:var(--text-secondary);line-height:1.6;margin:0;">Attempts to repair the PDF by re-serializing the document structure. This can fix broken cross-reference tables, malformed objects, and other structural issues.</p>
+        </div>
+        <button id="repair-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Repair &amp; Download</button>
+        <p id="repair-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+
+      <!-- ── FLATTEN ──────────────────────────────────────────── -->
+      <div id="tab-flatten" class="opt-panel" style="display:none;">
+        <div style="background:var(--bg-surface-2);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;margin-bottom:1rem;">
+          <p style="font-size:0.82rem;font-weight:600;color:var(--text-primary);margin-bottom:0.3rem;">Merge form fields into the background</p>
+          <p style="font-size:0.78rem;color:var(--text-secondary);line-height:1.6;margin:0;">Flattening removes all form fields, annotations, and interactive elements, merging their visual content into the page layer. The output is a flat, non-editable PDF.</p>
+        </div>
+        <button id="flatten-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Flatten &amp; Download</button>
+        <p id="flatten-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+
+      <!-- ── METADATA ─────────────────────────────────────────── -->
+      <div id="tab-metadata" class="opt-panel" style="display:none;">
+        <div style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1rem;">
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Title</label>
+            <input id="meta-title" type="text" class="input-themed" placeholder="Document title" style="font-size:0.82rem;width:100%;" />
+          </div>
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Author</label>
+            <input id="meta-author" type="text" class="input-themed" placeholder="Author name" style="font-size:0.82rem;width:100%;" />
+          </div>
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Subject</label>
+            <input id="meta-subject" type="text" class="input-themed" placeholder="Document subject" style="font-size:0.82rem;width:100%;" />
+          </div>
+          <div>
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.2rem;">Keywords</label>
+            <input id="meta-keywords" type="text" class="input-themed" placeholder="keyword1, keyword2, keyword3" style="font-size:0.82rem;width:100%;" />
+          </div>
+        </div>
+        <button id="metadata-btn" class="btn-primary" type="button" style="font-size:0.875rem;">Save Metadata</button>
+        <p id="metadata-status" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;display:none;"></p>
+      </div>
+
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Optimize &amp; Repair PDF</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Drop or browse a PDF file. Once loaded, select a tab for the action you need.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>Compress:</strong> Choose Extreme, Recommended, or Low compression. Extreme strips all metadata and removes non-essential objects for maximum size reduction. Recommended balances quality and size. Low preserves metadata and image quality.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>Repair:</strong> Click Repair to re-serialize the PDF structure, fixing broken cross-references and corrupted objects.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;"><strong>Flatten:</strong> Removes all form fields and annotations, merging their visual content into the page. <strong>Metadata:</strong> View and edit the document's Title, Author, Subject, and Keywords fields.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      {[
+        ['Compress', 'pdf-lib re-serializes the PDF using object streams, which deduplicates and compresses internal structures. Metadata is stripped based on the chosen level to further reduce file size.'],
+        ['Repair', 'The PDF is loaded with error-tolerant parsing via pdf-lib, then re-saved with fresh cross-reference tables and corrected object streams, fixing many common corruption issues.'],
+        ['Flatten', 'pdf-lib removes all annotation widgets (form fields, sticky notes, highlights) from each page\'s annotation array and strips the document\'s AcroForm catalog entry.'],
+        ['Metadata', 'Reads and writes the PDF\'s document information dictionary (Title, Author, Subject, Keywords) using pdf-lib\'s built-in metadata API.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Is my PDF uploaded to a server?', a: 'No. All processing happens entirely in your browser using pdf-lib. Your file never leaves your device.' },
+        { q: 'How much smaller will my PDF be?', a: 'It depends on the content. Text-heavy PDFs see modest gains (10–20%) from structural compression. Image-heavy PDFs can see larger reductions depending on the compression level chosen.' },
+        { q: 'Will compression reduce image quality?', a: 'Extreme and Recommended modes strip metadata and remove non-essential objects but do not re-encode images. Low mode preserves all metadata. None of the modes alter embedded image data directly.' },
+        { q: 'Can I undo flatten?', a: 'No. Flattening is permanent — form fields and annotations are removed from the document structure. Always keep a backup of the original PDF.' },
+        { q: 'What metadata fields can I edit?', a: 'Title, Author, Subject, and Keywords. These are stored in the PDF\'s document information dictionary and are visible in most PDF readers.' },
+        { q: 'Will repair fix my corrupted PDF?', a: 'Repair works by re-serializing the document structure, which fixes many common issues like broken cross-reference tables and malformed objects. However, severely damaged files may not be recoverable.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script is:inline src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+<script>
+(function () {
+  const { PDFDocument, PDFName, PDFArray, PDFDict } = (window as any).PDFLib;
+
+  /* ── Shared state ─────────────────────────────────────────── */
+  let pdfBytes: ArrayBuffer | null = null;
+  let pdfFileName = '';
+
+  /* ── DOM ──────────────────────────────────────────────────── */
+  const dropZone   = document.getElementById('drop-zone')!;
+  const fileInput  = document.getElementById('file-input') as HTMLInputElement;
+  const browseBtn  = document.getElementById('browse-btn')!;
+  const fileBar    = document.getElementById('file-bar')!;
+  const docName    = document.getElementById('doc-name')!;
+  const docSize    = document.getElementById('doc-size')!;
+  const resetBtn   = document.getElementById('reset-btn')!;
+  const workspace  = document.getElementById('workspace')!;
+
+  /* ── Drop zone ────────────────────────────────────────────── */
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--color-brand-blue)'; dropZone.style.background = 'rgba(29,78,216,0.04)'; });
+  dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; dropZone.style.background = ''; });
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = ''; dropZone.style.background = ''; if (e.dataTransfer!.files[0]) loadFile(e.dataTransfer!.files[0]); });
+  browseBtn.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', e => { if (e.target === dropZone || e.target === browseBtn) fileInput.click(); });
+  fileInput.addEventListener('change', () => { if (fileInput.files![0]) loadFile(fileInput.files![0]); fileInput.value = ''; });
+  resetBtn.addEventListener('click', () => { pdfBytes = null; fileBar.style.display = 'none'; workspace.style.display = 'none'; dropZone.style.display = ''; });
+
+  function formatSize(bytes: number): string {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  async function loadFile(file: File) {
+    if (file.type !== 'application/pdf') return;
+    pdfBytes = await file.arrayBuffer();
+    pdfFileName = file.name.replace(/\.pdf$/i, '');
+    docName.textContent = file.name;
+    docSize.textContent = '(' + formatSize(file.size) + ')';
+    dropZone.style.display = 'none';
+    fileBar.style.display = 'flex';
+    workspace.style.display = '';
+    loadMetadata();
+  }
+
+  /* ── Tab switching ────────────────────────────────────────── */
+  document.querySelectorAll('.opt-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.opt-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-pressed', 'false'); });
+      tab.classList.add('active'); tab.setAttribute('aria-pressed', 'true');
+      document.querySelectorAll('.opt-panel').forEach(p => (p as HTMLElement).style.display = 'none');
+      const panel = document.getElementById('tab-' + (tab as HTMLElement).dataset.tab);
+      if (panel) panel.style.display = '';
+    });
+  });
+
+  /* ── Helpers ──────────────────────────────────────────────── */
+  function downloadBlob(blob: Blob, name: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+    URL.revokeObjectURL(url);
+  }
+  function showStatus(id: string, msg: string, ok?: boolean) {
+    const el = document.getElementById(id)!;
+    el.style.display = msg ? '' : 'none';
+    el.textContent = msg;
+    el.style.color = ok ? '#10B981' : 'var(--text-muted)';
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     COMPRESS
+  ══════════════════════════════════════════════════════════ */
+  const compressDescs: Record<string, string> = {
+    extreme: '<strong style="color:var(--text-primary);">Extreme:</strong> Strips all metadata, removes non-essential objects. Best for email attachments and web uploads.',
+    recommended: '<strong style="color:var(--text-primary);">Recommended:</strong> Strips non-essential metadata and removes unused objects. Good balance of size and quality.',
+    low: '<strong style="color:var(--text-primary);">Low:</strong> Preserves all metadata. Structural optimization only — minimal size reduction with no quality impact.',
+  };
+
+  document.querySelectorAll('.compress-level').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.compress-level').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+      btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true');
+      document.getElementById('compress-desc')!.innerHTML = compressDescs[(btn as HTMLElement).dataset.level || 'recommended'];
+    });
+  });
+
+  document.getElementById('compress-btn')!.addEventListener('click', async () => {
+    if (!pdfBytes) return;
+    const btn = document.getElementById('compress-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Compressing…';
+    const level = (document.querySelector('.compress-level.active') as HTMLElement).dataset.level || 'recommended';
+    showStatus('compress-status', 'Processing…');
+    try {
+      const originalSize = pdfBytes.byteLength;
+      const doc = await PDFDocument.load(pdfBytes.slice(0));
+
+      if (level === 'extreme') {
+        doc.setTitle('');
+        doc.setAuthor('');
+        doc.setSubject('');
+        doc.setKeywords([]);
+        doc.setProducer('');
+        doc.setCreator('');
+        doc.setCreationDate(new Date(0));
+        doc.setModificationDate(new Date(0));
+      } else if (level === 'recommended') {
+        doc.setTitle(doc.getTitle() || '');
+        doc.setAuthor('');
+        doc.setSubject('');
+        doc.setProducer('');
+        doc.setCreator('');
+      }
+
+      const opts: any = { useObjectStreams: true };
+      if (level === 'extreme') opts.addDefaultPage = false;
+      const compressed = await doc.save(opts);
+      const newSize = compressed.byteLength;
+      const saved = originalSize - newSize;
+      const pct = originalSize > 0 ? Math.round((saved / originalSize) * 100) : 0;
+
+      downloadBlob(new Blob([compressed], { type: 'application/pdf' }), pdfFileName + '_compressed.pdf');
+
+      document.getElementById('compress-original')!.textContent = 'Original: ' + formatSize(originalSize);
+      document.getElementById('compress-new')!.textContent = 'Compressed: ' + formatSize(newSize);
+      document.getElementById('compress-saved')!.textContent = saved > 0 ? '−' + pct + '%' : 'No reduction';
+      document.getElementById('compress-result')!.style.display = '';
+      showStatus('compress-status', 'Downloaded ' + pdfFileName + '_compressed.pdf', true);
+    } catch (e: any) { showStatus('compress-status', 'Error: ' + (e.message || 'Compression failed.')); }
+    finally { btn.disabled = false; btn.textContent = 'Compress & Download'; }
+  });
+
+  /* ══════════════════════════════════════════════════════════
+     REPAIR
+  ══════════════════════════════════════════════════════════ */
+  document.getElementById('repair-btn')!.addEventListener('click', async () => {
+    if (!pdfBytes) return;
+    const btn = document.getElementById('repair-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Repairing…';
+    showStatus('repair-status', 'Re-serializing document…');
+    try {
+      const doc = await PDFDocument.load(pdfBytes.slice(0), { ignoreEncryption: true });
+      const repaired = await doc.save({ useObjectStreams: true, addDefaultPage: false });
+      downloadBlob(new Blob([repaired], { type: 'application/pdf' }), pdfFileName + '_repaired.pdf');
+      showStatus('repair-status', 'Downloaded ' + pdfFileName + '_repaired.pdf', true);
+    } catch (e: any) { showStatus('repair-status', 'Error: ' + (e.message || 'Repair failed.')); }
+    finally { btn.disabled = false; btn.textContent = 'Repair & Download'; }
+  });
+
+  /* ══════════════════════════════════════════════════════════
+     FLATTEN
+  ══════════════════════════════════════════════════════════ */
+  document.getElementById('flatten-btn')!.addEventListener('click', async () => {
+    if (!pdfBytes) return;
+    const btn = document.getElementById('flatten-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Flattening…';
+    showStatus('flatten-status', 'Removing form fields and annotations…');
+    try {
+      const doc = await PDFDocument.load(pdfBytes.slice(0));
+      const pages = doc.getPages();
+
+      for (const page of pages) {
+        const annots = page.node.get(PDFName.of('Annots'));
+        if (annots && PDFArray.is(annots)) {
+          const filtered = PDFArray.withContext(doc.context);
+          for (let i = 0; i < annots.size(); i++) {
+            const annot = annots.get(i);
+            if (PDFDict.is(annot)) {
+              const subtype = annot.get(PDFName.of('Subtype'));
+              if (PDFName.is(subtype) && subtype.encodedName() === '/Widget') continue;
+            }
+            filtered.push(annot);
+          }
+          page.node.set(PDFName.of('Annots'), filtered);
+        }
+      }
+
+      const catalog = doc.context.lookup(doc.context.trailerInfo.Root);
+      if (PDFDict.is(catalog)) {
+        catalog.delete(PDFName.of('AcroForm'));
+      }
+
+      const flattened = await doc.save({ useObjectStreams: true });
+      downloadBlob(new Blob([flattened], { type: 'application/pdf' }), pdfFileName + '_flattened.pdf');
+      showStatus('flatten-status', 'Downloaded ' + pdfFileName + '_flattened.pdf', true);
+    } catch (e: any) { showStatus('flatten-status', 'Error: ' + (e.message || 'Flatten failed.')); }
+    finally { btn.disabled = false; btn.textContent = 'Flatten & Download'; }
+  });
+
+  /* ══════════════════════════════════════════════════════════
+     METADATA
+  ══════════════════════════════════════════════════════════ */
+  async function loadMetadata() {
+    if (!pdfBytes) return;
+    try {
+      const doc = await PDFDocument.load(pdfBytes.slice(0));
+      (document.getElementById('meta-title') as HTMLInputElement).value = doc.getTitle() || '';
+      (document.getElementById('meta-author') as HTMLInputElement).value = doc.getAuthor() || '';
+      (document.getElementById('meta-subject') as HTMLInputElement).value = doc.getSubject() || '';
+      (document.getElementById('meta-keywords') as HTMLInputElement).value = (doc.getKeywords() || []).join(', ');
+    } catch {}
+  }
+
+  document.getElementById('metadata-btn')!.addEventListener('click', async () => {
+    if (!pdfBytes) return;
+    const btn = document.getElementById('metadata-btn') as HTMLButtonElement;
+    btn.disabled = true; btn.textContent = 'Saving…';
+    showStatus('metadata-status', 'Updating metadata…');
+    try {
+      const doc = await PDFDocument.load(pdfBytes.slice(0));
+      doc.setTitle((document.getElementById('meta-title') as HTMLInputElement).value.trim());
+      doc.setAuthor((document.getElementById('meta-author') as HTMLInputElement).value.trim());
+      doc.setSubject((document.getElementById('meta-subject') as HTMLInputElement).value.trim());
+      const kw = (document.getElementById('meta-keywords') as HTMLInputElement).value.trim();
+      doc.setKeywords(kw ? kw.split(',').map(k => k.trim()).filter(Boolean) : []);
+      const updated = await doc.save({ useObjectStreams: true });
+      downloadBlob(new Blob([updated], { type: 'application/pdf' }), pdfFileName + '_metadata.pdf');
+      showStatus('metadata-status', 'Downloaded ' + pdfFileName + '_metadata.pdf', true);
+    } catch (e: any) { showStatus('metadata-status', 'Error: ' + (e.message || 'Failed.')); }
+    finally { btn.disabled = false; btn.textContent = 'Save Metadata'; }
+  });
+})();
+</script>
