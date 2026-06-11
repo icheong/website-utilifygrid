@@ -1,0 +1,284 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'coin-flipper')!;
+
+const logoHtml = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 32 32" fill="none">
+  <rect x="1.5" y="1.5" width="14" height="14" rx="3" fill="#3A1E00"/>
+  <rect x="19.5" y="1.5" width="14" height="14" rx="3" fill="#2E0E00"/>
+  <rect x="1.5" y="19.5" width="14" height="14" rx="3" fill="#0A1540"/>
+  <rect x="19.5" y="19.5" width="14" height="14" rx="3" fill="#3A2200"/>
+  <rect x="-0.8" y="-0.8" width="14" height="14" rx="3" fill="#FFD870"/>
+  <rect x="17.2" y="-0.8" width="14" height="14" rx="3" fill="#FF9050"/>
+  <rect x="-0.8" y="17.2" width="14" height="14" rx="3" fill="#70B8FF"/>
+  <rect x="17.2" y="17.2" width="14" height="14" rx="3" fill="#FFD060"/>
+  <rect width="14" height="14" rx="3" fill="#F59E0B"/>
+  <rect x="18" width="14" height="14" rx="3" fill="#EA580C"/>
+  <rect y="18" width="14" height="14" rx="3" fill="#3B82F6"/>
+  <rect x="18" y="18" width="14" height="14" rx="3" fill="#F59E0B" opacity="0.85"/>
+</svg>`;
+
+const logoHtmlSilver = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 32 32" fill="none">
+  <rect x="1.5" y="1.5" width="14" height="14" rx="3" fill="#282828"/>
+  <rect x="19.5" y="1.5" width="14" height="14" rx="3" fill="#222222"/>
+  <rect x="1.5" y="19.5" width="14" height="14" rx="3" fill="#303030"/>
+  <rect x="19.5" y="19.5" width="14" height="14" rx="3" fill="#252525"/>
+  <rect x="-0.8" y="-0.8" width="14" height="14" rx="3" fill="#FFFFFF"/>
+  <rect x="17.2" y="-0.8" width="14" height="14" rx="3" fill="#F0F0F0"/>
+  <rect x="-0.8" y="17.2" width="14" height="14" rx="3" fill="#F8F8F8"/>
+  <rect x="17.2" y="17.2" width="14" height="14" rx="3" fill="#F0F0F0"/>
+  <rect width="14" height="14" rx="3" fill="#B0B0B0"/>
+  <rect x="18" width="14" height="14" rx="3" fill="#909090"/>
+  <rect y="18" width="14" height="14" rx="3" fill="#C0C0C0"/>
+  <rect x="18" y="18" width="14" height="14" rx="3" fill="#A0A0A0"/>
+</svg>`;
+
+const kangarooHtml = `<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 64 64" fill="#808080">
+  <!-- Ears -->
+  <ellipse cx="22" cy="8" rx="3" ry="7" transform="rotate(-10 22 8)"/>
+  <ellipse cx="30" cy="7" rx="3" ry="7" transform="rotate(10 30 7)"/>
+  <!-- Head -->
+  <ellipse cx="26" cy="14" rx="9" ry="7"/>
+  <!-- Snout -->
+  <ellipse cx="18" cy="17" rx="5" ry="3.5"/>
+  <!-- Neck -->
+  <rect x="22" y="19" width="9" height="10" rx="4"/>
+  <!-- Body -->
+  <ellipse cx="27" cy="35" rx="12" ry="11"/>
+  <!-- Front arms -->
+  <path d="M17 30 Q14 33 13 37 Q12 39 14 40 L16 39 Q17 37 18 34 Z"/>
+  <path d="M36 30 Q38 33 39 36 Q39 38 38 39 L36 38 Q35 36 35 33 Z"/>
+  <!-- Hind legs -->
+  <path d="M20 42 Q17 44 16 48 Q15 52 17 55 L19 55 Q20 52 21 48 Q22 45 23 43 Z"/>
+  <path d="M34 40 Q38 42 40 46 Q42 50 40 54 Q39 56 37 56 L35 56 Q36 52 35 48 Q34 44 32 42 Z"/>
+  <!-- Hind feet -->
+  <ellipse cx="17" cy="56" rx="5" ry="2"/>
+  <ellipse cx="38" cy="56" rx="6" ry="2"/>
+  <!-- Tail -->
+  <path d="M32 36 Q36 33 42 28 Q48 23 53 20 Q55 19 55 21 Q55 24 52 27 Q47 33 41 39 Q36 44 32 48 Z"/>
+</svg>`;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:linear-gradient(135deg,#F59E0B,#D97706); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 12px rgba(245,158,11,0.35);">
+        <span style="font-size:1.2rem;">🪙</span>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">Coin Flipper</h2>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">Heads or Tails — instant binary decision maker</p>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; align-items:center; padding:2rem 0 1.5rem;">
+      <div style="width:150px; height:150px; perspective:800px;">
+        <div id="coin" style="width:150px;height:150px;position:relative;transform-style:preserve-3d;transition:transform 0.15s ease;cursor:default;">
+
+          <!-- HEADS (Gold) -->
+          <div id="heads-face" style="position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;z-index:2;overflow:hidden;background:radial-gradient(ellipse at 30% 25%,rgba(255,255,255,0.5) 0%,transparent 45%),radial-gradient(ellipse at 70% 80%,rgba(0,0,0,0.15) 0%,transparent 45%),conic-gradient(from 180deg,#D4941C 0%,#F0C040 12%,#C88520 25%,#E8A317 37%,#B87A18 50%,#F0C040 62%,#C88520 75%,#E8A317 87%,#D4941C 100%);box-shadow:inset 0 3px 6px rgba(255,230,130,0.7),inset 0 -3px 6px rgba(100,50,0,0.35),0 0 0 4px #C88520,0 0 0 5.5px rgba(0,0,0,0.12),0 0 0 7px #A06B15,0 0 0 8px rgba(0,0,0,0.08);">
+            <!-- Outer ring -->
+            <div style="position:absolute;inset:3px;border-radius:50%;border:2.5px solid rgba(0,0,0,0.12);box-shadow:inset 0 2px 4px rgba(255,230,130,0.6),inset 0 -2px 4px rgba(100,50,0,0.35);background:radial-gradient(ellipse at 35% 30%,rgba(255,255,255,0.35) 0%,transparent 55%),conic-gradient(from 200deg,#D4941C,#F0C040,#B87A18,#E8A317,#C88520,#F0C040,#D4941C);">
+              <!-- Inner circle -->
+              <div style="position:absolute;inset:7px;border-radius:50%;border:2px solid rgba(180,120,30,0.3);box-shadow:inset 0 2px 3px rgba(255,230,130,0.5),inset 0 -2px 3px rgba(100,50,0,0.3);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.5rem;background:radial-gradient(ellipse at 35% 30%,rgba(255,255,255,0.3) 0%,transparent 55%),conic-gradient(from 200deg,#D4941C,#F0C040,#B87A18,#E8A317,#C88520,#F0C040,#D4941C);">
+                <!-- UtilifyGrid logo (embossed) -->
+                <div set:html={logoHtml} style="position:relative;z-index:1;filter:drop-shadow(1.5px 1.5px 0 rgba(90,48,0,0.6)) drop-shadow(-1px -1px 0 rgba(255,216,112,0.5));" />
+              </div>
+            </div>
+            <!-- Specular highlight -->
+            <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse at 30% 25%,rgba(255,255,255,0.4) 0%,rgba(255,255,255,0.15) 20%,transparent 50%);pointer-events:none;z-index:5;"></div>
+          </div>
+
+          <!-- TAILS (Gold) -->
+          <div id="tails-face" style="position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;transform:rotateX(180deg) translateZ(7px);z-index:2;overflow:hidden;background:radial-gradient(ellipse at 30% 25%,rgba(255,255,255,0.5) 0%,transparent 45%),radial-gradient(ellipse at 70% 80%,rgba(0,0,0,0.15) 0%,transparent 45%),conic-gradient(from 180deg,#D4941C 0%,#F0C040 12%,#C88520 25%,#E8A317 37%,#B87A18 50%,#F0C040 62%,#C88520 75%,#E8A317 87%,#D4941C 100%);box-shadow:inset 0 3px 6px rgba(255,230,130,0.7),inset 0 -3px 6px rgba(100,50,0,0.35),0 0 0 4px #C88520,0 0 0 5.5px rgba(0,0,0,0.12),0 0 0 7px #A06B15,0 0 0 8px rgba(0,0,0,0.08);">
+            <!-- Outer ring -->
+            <div style="position:absolute;inset:3px;border-radius:50%;border:2.5px solid rgba(0,0,0,0.12);box-shadow:inset 0 2px 4px rgba(255,230,130,0.6),inset 0 -2px 4px rgba(100,50,0,0.35);background:radial-gradient(ellipse at 35% 30%,rgba(255,255,255,0.35) 0%,transparent 55%),conic-gradient(from 200deg,#D4941C,#F0C040,#B87A18,#E8A317,#C88520,#F0C040,#D4941C);">
+              <!-- Inner circle -->
+              <div style="position:absolute;inset:7px;border-radius:50%;border:2px solid rgba(180,120,30,0.3);box-shadow:inset 0 2px 3px rgba(255,230,130,0.5),inset 0 -2px 3px rgba(100,50,0,0.3);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.5rem;background:radial-gradient(ellipse at 35% 30%,rgba(255,255,255,0.3) 0%,transparent 55%),conic-gradient(from 200deg,#D4941C,#F0C040,#B87A18,#E8A317,#C88520,#F0C040,#D4941C);">
+                <!-- Embossed kangaroo -->
+                <div set:html={kangarooHtml} style="position:relative;z-index:1;filter:drop-shadow(1.5px 1.5px 0 rgba(90,48,0,0.6)) drop-shadow(-1px -1px 0 rgba(255,216,112,0.5));" />
+              </div>
+            </div>
+            <!-- Specular highlight -->
+            <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse at 30% 25%,rgba(255,255,255,0.45) 0%,rgba(255,255,255,0.18) 20%,transparent 50%);pointer-events:none;z-index:5;"></div>
+          </div>
+
+          <!-- COIN EDGE (thickness) -->
+          <div style="position:absolute;inset:0;transform-style:preserve-3d;">
+            {[...Array(12)].map((_, i) => (
+              <div style={`position:absolute;inset:0;border-radius:50%;background:linear-gradient(180deg,#C88520 0%,#A06B15 20%,#8B5E10 50%,#A06B15 80%,#C88520 100%);border-top:1px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(0,0,0,0.2);transform:translateZ(${-6 + i * 0.5}px);`} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div id="coin-shadow" style="width:130px;height:16px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,0.25) 0%,transparent 70%);margin:0 auto 0.5rem;transition:all 0.4s ease;"></div>
+
+      <div id="result-area" style="text-align:center;min-height:2.5rem;margin-bottom:1.25rem;">
+        <span id="result-text" style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:600;color:var(--text-secondary);">Tap to flip</span>
+      </div>
+
+      <button id="flip-btn" class="btn-primary" style="padding:0.75rem 2.5rem;border-radius:0.75rem;font-size:1rem;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;border:none;background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;box-shadow:0 4px 16px rgba(245,158,11,0.35);transition:all 0.2s ease;">Flip Coin</button>
+    </div>
+
+    <div id="history-section" style="display:none;border-top:1px solid var(--border);padding-top:1.25rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+        <h3 style="font-family:'Sora',sans-serif;font-size:0.85rem;font-weight:700;color:var(--text-primary);margin:0;">Flip History</h3>
+        <button id="clear-history" class="btn-secondary" style="padding:0.3rem 0.7rem;font-size:0.72rem;border-radius:0.4rem;cursor:pointer;border:none;">Clear</button>
+      </div>
+      <div id="history-list" style="display:flex;flex-wrap:wrap;gap:0.4rem;"></div>
+      <div id="history-stats" style="display:flex;gap:1.5rem;margin-top:0.75rem;font-size:0.78rem;color:var(--text-muted);"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the Coin Flipper</h2>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+      Click the <strong>Flip Coin</strong> button (or press <strong>Space</strong>) to toss the coin. The coin spins in 3D and lands on either <strong>Heads</strong> or <strong>Tails</strong> with equal probability.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">
+      Your flip history is shown below the coin. Each flip is recorded with a running tally of heads vs tails so you can track results over time.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.875rem;">How it works</h2>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Randomness</span><span class="info-value">Uses <code>crypto.getRandomValues()</code> for cryptographically secure randomness</span></div>
+      <div class="info-row"><span class="info-label">Probability</span><span class="info-value">Exactly 50 / 50 — each flip is independent</span></div>
+      <div class="info-row"><span class="info-label">Animation</span><span class="info-value">CSS 3D transforms simulate a physical coin toss with realistic spin</span></div>
+      <div class="info-row"><span class="info-label">Privacy</span><span class="info-value">Everything runs in your browser — no data is stored or transmitted</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: "Is the coin flip truly random?", a: "Yes. It uses the Web Crypto API (crypto.getRandomValues) which produces cryptographically secure random numbers — the same quality used in encryption and security applications." },
+        { q: "Why does the coin animation look different each time?", a: "The animation uses a randomised number of full rotations and a slight wobble to simulate the unpredictability of a real coin toss. The final result is always 50/50." },
+        { q: "Can I use this to make fair decisions?", a: "Absolutely. A coin flip is one of the simplest and fairest ways to decide between two options — each side has an equal chance." },
+        { q: "Does my flip history get saved?", a: "No. All data stays in your browser's memory. If you refresh the page, the history resets." }
+      ].map(item => (
+        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name" style="font-family:'Sora',sans-serif;font-size:0.9rem;font-weight:700;color:var(--text-primary);margin:0 0 0.35rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  (function () {
+    const coin = document.getElementById('coin') as HTMLElement;
+    const flipBtn = document.getElementById('flip-btn') as HTMLButtonElement;
+    const resultText = document.getElementById('result-text') as HTMLElement;
+    const historySection = document.getElementById('history-section') as HTMLElement;
+    const historyList = document.getElementById('history-list') as HTMLElement;
+    const historyStats = document.getElementById('history-stats') as HTMLElement;
+    const clearBtn = document.getElementById('clear-history') as HTMLButtonElement;
+
+    let flipping = false;
+    let totalRotations = 0;
+    let history: string[] = [];
+
+    function getResult(): string {
+      const arr = new Uint8Array(1);
+      crypto.getRandomValues(arr);
+      return arr[0] % 2 === 0 ? 'heads' : 'tails';
+    }
+
+    function updateHistory() {
+      if (history.length === 0) {
+        historySection.style.display = 'none';
+        return;
+      }
+      historySection.style.display = 'block';
+      historyList.innerHTML = '';
+      history.forEach(h => {
+        const badge = document.createElement('span');
+        badge.textContent = h === 'heads' ? 'H' : 'T';
+        badge.style.cssText = `
+          display:inline-flex; align-items:center; gap:0.25rem;
+          padding:0.25rem 0.55rem; border-radius:999px; font-size:0.72rem; font-weight:600;
+          font-family:'Sora',sans-serif;
+          ${h === 'heads'
+            ? 'background:rgba(245,158,11,0.12); color:#D97706; border:1px solid rgba(245,158,11,0.25);'
+            : 'background:rgba(107,114,128,0.12); color:#4B5563; border:1px solid rgba(107,114,128,0.25);'}
+        `;
+        historyList.appendChild(badge);
+      });
+
+      const heads = history.filter(h => h === 'heads').length;
+      const tails = history.length - heads;
+      historyStats.innerHTML = `
+        <span>Total: <strong>${history.length}</strong></span>
+        <span style="color:#D97706;">Heads: <strong>${heads}</strong> (${Math.round(heads / history.length * 100)}%)</span>
+        <span style="color:#4B5563;">Tails: <strong>${tails}</strong> (${Math.round(tails / history.length * 100)}%)</span>
+      `;
+    }
+
+    function flip() {
+      if (flipping) return;
+      flipping = true;
+      flipBtn.disabled = true;
+      flipBtn.style.opacity = '0.6';
+      resultText.textContent = 'Flipping...';
+      resultText.style.color = 'var(--text-muted)';
+
+      const shadow = document.getElementById('coin-shadow') as HTMLElement;
+
+      const result = getResult();
+      const spins = 4 + Math.floor(Math.random() * 3);
+      const target = result === 'heads' ? 0 : 180;
+      totalRotations += spins * 360 + target;
+      const currentMod = totalRotations % 360;
+      const correction = currentMod === target ? 0 : target - currentMod;
+      totalRotations += correction + (correction < 0 ? 360 : 0);
+
+      shadow.style.transition = 'all 0.45s ease-in';
+      shadow.style.width = '80px';
+      shadow.style.opacity = '0.4';
+      setTimeout(() => {
+        shadow.style.transition = 'all 1.35s cubic-bezier(0.22,1,0.36,1)';
+        shadow.style.width = '130px';
+        shadow.style.opacity = '1';
+      }, 450);
+
+      coin.style.transition = 'transform 1.8s cubic-bezier(0.22, 1, 0.36, 1)';
+      coin.style.transform = `rotateX(${totalRotations}deg)`;
+
+      setTimeout(() => {
+        flipping = false;
+        flipBtn.disabled = false;
+        flipBtn.style.opacity = '1';
+
+        const label = result === 'heads' ? 'Heads!' : 'Tails!';
+        resultText.textContent = label;
+        resultText.style.color = result === 'heads' ? '#D97706' : '#4B5563';
+
+        history.unshift(result);
+        updateHistory();
+      }, 1900);
+    }
+
+    flipBtn.addEventListener('click', flip);
+    clearBtn.addEventListener('click', () => {
+      history = [];
+      updateHistory();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !flipping && e.target === document.body) {
+        e.preventDefault();
+        flip();
+      }
+    });
+  })();
+</script>
