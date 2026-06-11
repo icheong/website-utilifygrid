@@ -195,7 +195,7 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
         ['Word-level diff for near-matches', 'For near-match pairs, a word-level diff is computed using the longest common subsequence (LCS) algorithm. Words present in one sentence but absent from the other are highlighted in amber, giving a precise view of what was altered, added, or removed.'],
         ['Similarity score', 'The headline similarity percentage is calculated as the proportion of Document A sentences that have at least one match (exact or near) in Document B, weighted by the average match score across those pairs. Unique sentences in both documents contribute 0 to the score.'],
       ].map(([label, desc]) => (
-        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+        <div class="result-card">
           <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
           <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
         </div>
@@ -579,7 +579,7 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
       to   { opacity:1; transform:translateY(0); }
     }
     #doc-a:focus, #doc-b:focus {
-      border-color:#1E3A8A !important;
+      border-color:var(--color-brand-blue) !important;
       box-shadow:0 0 0 3px rgba(30,58,138,0.12);
     }
     @media (max-width:640px) {

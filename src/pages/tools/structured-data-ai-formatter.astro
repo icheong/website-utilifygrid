@@ -8,20 +8,20 @@ const tool = tools.find(t => t.slug === 'structured-data-ai-formatter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Structured Data AI Formatter</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Structured Data AI Formatter</h2>
 
     <textarea id="raw-text" placeholder="Paste raw AI-generated text here. Include product details, FAQ pairs, or recipe steps…"
-      style="width:100%; height:180px; padding:0.875rem; border:1.5px solid #E9D5FF; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit;"
+      style="width:100%; height:180px; padding:0.875rem; border:1.5px solid #E9D5FF; border-radius:0.625rem; font-size:0.875rem; color:var(--text-primary); resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit; background:var(--bg-surface);"
       onfocus="this.style.borderColor='#9333EA'" onblur="this.style.borderColor='#E9D5FF'"></textarea>
 
     <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
       <button class="schema-btn" data-type="Product"
         style="padding:0.5rem 1rem; background:#7C3AED; color:#fff; border:none; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Product</button>
-      <button class="schema-btn" data-type="FAQPage"
-        style="padding:0.5rem 1rem; background:#F8FAFC; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">FAQ</button>
-      <button class="schema-btn" data-type="Recipe"
-        style="padding:0.5rem 1rem; background:#F8FAFC; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Recipe</button>
-      <button id="copy-ld" style="margin-left:auto; padding:0.5rem 1rem; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; color:#475569; background:#F8FAFC; cursor:pointer;">Copy JSON-LD</button>
+      <button class="schema-btn btn-secondary" data-type="FAQPage"
+        style="padding:0.5rem 1rem;">FAQ</button>
+      <button class="schema-btn btn-secondary" data-type="Recipe"
+        style="padding:0.5rem 1rem;">Recipe</button>
+      <button id="copy-ld" class="btn-secondary" style="margin-left:auto;">Copy JSON-LD</button>
     </div>
 
     <div id="preview-tag" style="font-size:0.7rem; font-family:'Fira Code',monospace; color:#9333EA; margin-bottom:0.25rem;">&lt;script type="application/ld+json"&gt;</div>
@@ -30,19 +30,19 @@ const tool = tools.find(t => t.slug === 'structured-data-ai-formatter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to format structured data</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste AI-generated text and select a schema type. The tool parses the text to extract relevant fields and generates valid JSON-LD markup. Copy the output and paste it into the <code style="background:#F1F5F9;padding:0.1rem 0.3rem;border-radius:0.25rem;">&lt;head&gt;</code> or body of your HTML page.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">For best results: Product — include a product name, price, and description. FAQ — write Q&amp;A pairs with "Q:" and "A:" prefixes. Recipe — include ingredients on separate lines and a title.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to format structured data</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste AI-generated text and select a schema type. The tool parses the text to extract relevant fields and generates valid JSON-LD markup. Copy the output and paste it into the <code style="background:var(--bg-surface-2);padding:0.1rem 0.3rem;border-radius:0.25rem;">&lt;head&gt;</code> or body of your HTML page.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">For best results: Product — include a product name, price, and description. FAQ — write Q&amp;A pairs with "Q:" and "A:" prefixes. Recipe — include ingredients on separate lines and a title.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">What is JSON-LD structured data?</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">JSON-LD (JSON for Linked Data) is the Google-recommended format for embedding structured data in web pages. It uses Schema.org vocabulary to describe page content in a machine-readable way. Search engines use it to generate rich results (FAQ accordions, product pricing, recipe cards) in search result pages.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The formatter uses heuristics (line structure, Q:/A: prefixes, price patterns) to extract fields from unstructured text. Always review and edit the output — it is a starting scaffold, not a definitive parse.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What is JSON-LD structured data?</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">JSON-LD (JSON for Linked Data) is the Google-recommended format for embedding structured data in web pages. It uses Schema.org vocabulary to describe page content in a machine-readable way. Search engines use it to generate rich results (FAQ accordions, product pricing, recipe cards) in search result pages.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The formatter uses heuristics (line structure, Q:/A: prefixes, price patterns) to extract fields from unstructured text. Always review and edit the output — it is a starting scaffold, not a definitive parse.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'Does structured data directly improve SEO rankings?', a: 'Structured data does not directly boost rankings, but it enables rich results in Google Search (FAQ dropdowns, star ratings, recipe cards, price panels) which significantly increase click-through rates. Google also uses structured data to understand page content better, which can improve indexing accuracy and Featured Snippet eligibility.' },
@@ -51,10 +51,10 @@ const tool = tools.find(t => t.slug === 'structured-data-ai-formatter')!;
         { q: 'Can I include multiple schema types on one page?', a: 'Yes — a page can contain multiple JSON-LD blocks, each with a different @type. For example, a product page might have both a Product schema (for the main product) and a BreadcrumbList schema (for navigation). Each block should be a separate <script type="application/ld+json"> tag.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          class="result-card">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -137,9 +137,10 @@ const tool = tools.find(t => t.slug === 'structured-data-ai-formatter')!;
     btn.addEventListener('click', () => {
       currentType = (btn as HTMLElement).dataset.type!;
       document.querySelectorAll('.schema-btn').forEach(b => {
-        (b as HTMLButtonElement).style.background = b === btn ? '#7C3AED' : '#F8FAFC';
-        (b as HTMLButtonElement).style.color      = b === btn ? '#fff' : '#475569';
-        (b as HTMLButtonElement).style.border     = b === btn ? 'none' : '1.5px solid #E2E8F0';
+        const isActive = b === btn;
+        (b as HTMLButtonElement).style.background = isActive ? '#7C3AED' : 'var(--bg-surface-2)';
+        (b as HTMLButtonElement).style.color      = isActive ? '#fff' : 'var(--text-secondary)';
+        (b as HTMLButtonElement).style.border     = isActive ? 'none' : '1.5px solid var(--border)';
       });
       generate();
     });

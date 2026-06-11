@@ -25,9 +25,6 @@ saas-churn-ltv-cac-calculator
 car-loan-amortization-calculator
 phev-novated-lease-calculator
 freelance-invoice-tax-calculator
-
-### Style Initial
-
 hex-rgb-tailwind-generator
 sql-schema-syntax-translator
 epub-to-pdf-formatter
@@ -68,3 +65,7 @@ slug-generator
 bulk-case-mutator
 duplicate-line-remover
 json-unescaper
+
+### Style Initial
+
+

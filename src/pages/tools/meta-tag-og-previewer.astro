@@ -8,7 +8,7 @@ const tool = tools.find(t => t.slug === 'meta-tag-og-previewer')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Meta Tag &amp; Social Card Previewer</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Meta Tag &amp; Social Card Previewer</h2>
 
     <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.25rem;">
       {[
@@ -19,10 +19,9 @@ const tool = tools.find(t => t.slug === 'meta-tag-og-previewer')!;
         ['Site Name', 'og-site', 'text', 'My Site Name'],
       ].map(([label, id, type, placeholder]) => (
         <div>
-          <label style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.3rem;">{label}</label>
+          <label style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.3rem;">{label}</label>
           <input id={id} type={type} placeholder={placeholder as string}
-            style="width:100%; padding:0.6rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; box-sizing:border-box; outline:none;"
-            onfocus="this.style.borderColor='#0284C7'" onblur="this.style.borderColor='#E2E8F0'"/>
+            class="input-themed"/>
         </div>
       ))}
     </div>
@@ -30,46 +29,46 @@ const tool = tools.find(t => t.slug === 'meta-tag-og-previewer')!;
     <!-- Social previews -->
     <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.25rem;">
       <!-- Google preview -->
-      <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.75rem; padding:1rem;">
-        <div style="font-size:0.72rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.625rem;">Google Search Preview</div>
-        <div id="google-title" style="font-size:1rem; color:#1A0DAB; margin-bottom:0.25rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Page Title</div>
+      <div class="result-card">
+        <div style="font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.625rem;">Google Search Preview</div>
+        <div id="google-title" style="font-size:1rem; color:var(--color-brand-blue); margin-bottom:0.25rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Page Title</div>
         <div id="google-url" style="font-size:0.78rem; color:#006621; margin-bottom:0.25rem;">https://yoursite.com/page</div>
-        <div id="google-desc" style="font-size:0.875rem; color:#545454; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">Meta description appears here.</div>
+        <div id="google-desc" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">Meta description appears here.</div>
       </div>
 
       <!-- Twitter/X card -->
-      <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.875rem; overflow:hidden;">
-        <div style="height:120px; background:#F1F5F9; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+      <div class="result-card" style="padding:0; overflow:hidden;">
+        <div style="height:120px; background:var(--bg-surface-2); display:flex; align-items:center; justify-content:center; overflow:hidden;">
           <img id="twitter-img" src="" alt="" style="width:100%; height:100%; object-fit:cover; display:none;"/>
-          <span id="twitter-img-placeholder" style="font-size:2rem; color:#CBD5E1;">🖼️</span>
+          <span id="twitter-img-placeholder" style="font-size:2rem; color:var(--text-muted);">🖼️</span>
         </div>
         <div style="padding:0.75rem 1rem;">
-          <div style="font-size:0.72rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.35rem;">𝕏 / Twitter Card</div>
-          <div id="twitter-title" style="font-size:0.9rem; font-weight:700; color:#0F172A; margin-bottom:0.2rem;">Page Title</div>
-          <div id="twitter-desc" style="font-size:0.8rem; color:#475569; line-height:1.4; margin-bottom:0.2rem;">Description here.</div>
-          <div id="twitter-url" style="font-size:0.75rem; color:#94A3B8;">yoursite.com</div>
+          <div style="font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.35rem;">𝕏 / Twitter Card</div>
+          <div id="twitter-title" style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:0.2rem;">Page Title</div>
+          <div id="twitter-desc" style="font-size:0.8rem; color:var(--text-secondary); line-height:1.4; margin-bottom:0.2rem;">Description here.</div>
+          <div id="twitter-url" style="font-size:0.75rem; color:var(--text-muted);">yoursite.com</div>
         </div>
       </div>
     </div>
 
     <!-- Generated code -->
-    <div style="border:1.5px solid #BAE6FD; border-radius:0.875rem; overflow:hidden;">
-      <div style="background:#F0F9FF; padding:0.625rem 1rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #BAE6FD;">
-        <span style="font-size:0.75rem; font-weight:600; color:#0284C7;">Generated Meta Tags</span>
-        <button id="copy-tags" style="font-size:0.75rem; color:#0284C7; background:none; border:none; cursor:pointer; font-weight:600;">Copy HTML</button>
+    <div class="result-card" style="padding:0; overflow:hidden;">
+      <div style="background:var(--bg-surface-2); padding:0.625rem 1rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border);">
+        <span style="font-size:0.75rem; font-weight:600; color:var(--text-primary);">Generated Meta Tags</span>
+        <button id="copy-tags" style="font-size:0.75rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:600;">Copy HTML</button>
       </div>
-      <pre id="meta-output" style="margin:0; padding:1rem; font-family:'Fira Code',monospace; font-size:0.75rem; color:#0F172A; background:#F8FAFC; white-space:pre-wrap; word-break:break-all; line-height:1.7; max-height:260px; overflow-y:auto;"></pre>
+      <pre id="meta-output" style="margin:0; padding:1rem; font-family:'Fira Code',monospace; font-size:0.75rem; color:var(--text-primary); background:var(--bg-surface); white-space:pre-wrap; word-break:break-all; line-height:1.7; max-height:260px; overflow-y:auto;"></pre>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Meta Tag Previewer</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Fill in the fields above and watch the Google search snippet and Twitter card preview update live. Once you are happy with how the page will appear when shared, copy the generated HTML and paste it inside the <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">&lt;head&gt;</code> of your page.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The OG image should be 1200×630 pixels for best results across platforms. Use an absolute URL including <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">https://</code>.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Meta Tag Previewer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Fill in the fields above and watch the Google search snippet and Twitter card preview update live. Once you are happy with how the page will appear when shared, copy the generated HTML and paste it inside the <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">&lt;head&gt;</code> of your page.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The OG image should be 1200×630 pixels for best results across platforms. Use an absolute URL including <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">https://</code>.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">What tags are generated</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What tags are generated</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;">
       {[
         ['Standard Meta Tags', '<title> and <meta name="description"> for search engines. These are the primary signals Google uses for search snippets.'],
@@ -77,16 +76,16 @@ const tool = tools.find(t => t.slug === 'meta-tag-og-previewer')!;
         ['Twitter Card', 'twitter:card, twitter:title, twitter:description, twitter:image. Allows Twitter/X to display rich media cards when your link is shared.'],
         ['Canonical URL', 'rel="canonical" tells search engines which URL is the authoritative version of the page, preventing duplicate content issues.'],
       ].map(([label, desc]) => (
-        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
         </div>
       ))}
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'How long should a meta description be?', a: 'Google displays up to about 155–160 characters on desktop. Aim for 120–155 characters to ensure it displays fully on both desktop and mobile. Include your primary keyword naturally and write it as a human-readable summary, not a keyword list.' },
@@ -95,10 +94,10 @@ const tool = tools.find(t => t.slug === 'meta-tag-og-previewer')!;
         { q: 'Why isn\'t my social card updating after I changed the tags?', a: 'Social platforms aggressively cache link previews. To force a refresh: Facebook has a Sharing Debugger tool at developers.facebook.com/tools/debug; Twitter has a Card Validator at cards-dev.twitter.com/validator; LinkedIn has a Post Inspector at linkedin.com/post-inspector.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}

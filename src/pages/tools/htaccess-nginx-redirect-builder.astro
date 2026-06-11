@@ -8,27 +8,27 @@ const tool = tools.find(t => t.slug === 'htaccess-nginx-redirect-builder')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Redirect Rule Builder</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Redirect Rule Builder</h2>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Source URL / Path</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Source URL / Path</label>
         <input id="source" type="text" value="/old-page" placeholder="/old-page or /blog/(.*)$"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.9rem; font-family:'Fira Code',monospace; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#E2E8F0'"/>
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Destination URL</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Destination URL</label>
         <input id="dest" type="text" value="/new-page" placeholder="/new-page or https://example.com/$1"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.9rem; font-family:'Fira Code',monospace; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#E2E8F0'"/>
+          class="input-themed"
+          style="font-family:'Fira Code',monospace;"/>
       </div>
     </div>
 
     <div style="display:flex; gap:1rem; margin-bottom:1.25rem;">
       <div style="flex:1;">
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Redirect Type</label>
-        <select id="type" style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.9rem; color:#0F172A; background:#fff; outline:none; box-sizing:border-box;">
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Redirect Type</label>
+        <select id="type" class="select-themed">
           <option value="301">301 Permanent</option>
           <option value="302">302 Temporary</option>
           <option value="307">307 Temporary (preserve method)</option>
@@ -36,31 +36,31 @@ const tool = tools.find(t => t.slug === 'htaccess-nginx-redirect-builder')!;
         </select>
       </div>
       <div style="flex:1;">
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Server</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Server</label>
         <div style="display:flex; gap:0.5rem;">
-          <button id="btn-htaccess" onclick="setServer('htaccess')" style="flex:1; padding:0.625rem; background:#059669; color:#fff; border:none; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">.htaccess</button>
-          <button id="btn-nginx"    onclick="setServer('nginx')"    style="flex:1; padding:0.625rem; background:#F1F5F9; color:#64748B; border:1px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Nginx</button>
+          <button id="btn-htaccess" onclick="setServer('htaccess')" class="toggle-btn active" style="flex:1;">.htaccess</button>
+          <button id="btn-nginx"    onclick="setServer('nginx')"    class="toggle-btn" style="flex:1;">Nginx</button>
         </div>
       </div>
     </div>
 
-    <div style="border:1.5px solid #D1FAE5; border-radius:0.875rem; overflow:hidden;">
-      <div style="background:#F0FDF4; padding:0.625rem 1rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #D1FAE5;">
-        <span id="output-label" style="font-family:'Fira Code',monospace; font-size:0.78rem; font-weight:600; color:#059669;">.htaccess</span>
-        <button id="copy-btn" style="font-size:0.75rem; color:#059669; background:none; border:none; cursor:pointer; font-weight:600; padding:0;">Copy</button>
+    <div class="result-card" style="overflow:hidden; padding:0;">
+      <div style="background:var(--bg-surface-2); padding:0.625rem 1rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border);">
+        <span id="output-label" style="font-family:'Fira Code',monospace; font-size:0.78rem; font-weight:600; color:var(--text-primary);">.htaccess</span>
+        <button id="copy-btn" style="font-size:0.75rem; color:var(--text-muted); background:none; border:none; cursor:pointer; font-weight:600; padding:0;">Copy</button>
       </div>
-      <pre id="output" style="margin:0; padding:1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:#0F172A; background:#F8FAFC; white-space:pre-wrap; word-break:break-all; line-height:1.7;"></pre>
+      <pre id="output" style="margin:0; padding:1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:var(--text-primary); background:var(--bg-surface); white-space:pre-wrap; word-break:break-all; line-height:1.7;"></pre>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Redirect Builder</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter the source path (the URL you want to redirect from) and the destination URL. Select 301 for a permanent redirect (page moved forever) or 302 for temporary. Toggle between .htaccess (Apache) and Nginx config output using the server buttons.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">For wildcard redirects, use regex capture groups: put the wildcard pattern in the source (e.g. <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">/blog/(.*)</code>) and reference the capture with <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">$1</code> in the destination.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Redirect Builder</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter the source path (the URL you want to redirect from) and the destination URL. Select 301 for a permanent redirect (page moved forever) or 302 for temporary. Toggle between .htaccess (Apache) and Nginx config output using the server buttons.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">For wildcard redirects, use regex capture groups: put the wildcard pattern in the source (e.g. <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">/blog/(.*)</code>) and reference the capture with <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">$1</code> in the destination.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">301 vs 302 redirects explained</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">301 vs 302 redirects explained</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;">
       {[
         ['301 Permanent', 'Tells browsers and search engines the page has moved permanently. Search engines transfer link equity to the new URL and update their index. Use for site migrations, URL restructures, and domain changes.'],
@@ -68,16 +68,16 @@ const tool = tools.find(t => t.slug === 'htaccess-nginx-redirect-builder')!;
         ['307/308', '307 is a temporary redirect that preserves the HTTP method (POST stays POST). 308 is the permanent equivalent. Useful for form submissions and API endpoints.'],
         ['Query Strings', 'To preserve query strings in .htaccess, add QSA (query string append) flag. The generated code includes this where appropriate.'],
       ].map(([label, desc]) => (
-        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
         </div>
       ))}
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'Where do I put the .htaccess redirect rules?', a: 'Place them in your site\'s root .htaccess file, inside a <IfModule mod_rewrite.c> block. Rules are processed in order, so more specific rules should come before catch-all rules. Ensure mod_rewrite is enabled on your Apache server.' },
@@ -86,10 +86,10 @@ const tool = tools.find(t => t.slug === 'htaccess-nginx-redirect-builder')!;
         { q: 'How do I redirect an entire domain?', a: 'For Apache: RewriteEngine On / RewriteCond %{HTTP_HOST} ^old-domain\\.com [NC] / RewriteRule ^(.*)$ https://new-domain.com/$1 [R=301,L]. For Nginx: server { server_name old-domain.com; return 301 https://new-domain.com$request_uri; }' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -104,8 +104,8 @@ const tool = tools.find(t => t.slug === 'htaccess-nginx-redirect-builder')!;
     server = s;
     const ht = document.getElementById('btn-htaccess')!;
     const ng = document.getElementById('btn-nginx')!;
-    ht.style.cssText = s === 'htaccess' ? 'flex:1;padding:0.625rem;background:#059669;color:#fff;border:none;border-radius:0.5rem;font-size:0.82rem;font-weight:600;cursor:pointer;' : 'flex:1;padding:0.625rem;background:#F1F5F9;color:#64748B;border:1px solid #E2E8F0;border-radius:0.5rem;font-size:0.82rem;font-weight:600;cursor:pointer;';
-    ng.style.cssText  = s === 'nginx'    ? 'flex:1;padding:0.625rem;background:#059669;color:#fff;border:none;border-radius:0.5rem;font-size:0.82rem;font-weight:600;cursor:pointer;' : 'flex:1;padding:0.625rem;background:#F1F5F9;color:#64748B;border:1px solid #E2E8F0;border-radius:0.5rem;font-size:0.82rem;font-weight:600;cursor:pointer;';
+    ht.className = s === 'htaccess' ? 'toggle-btn active' : 'toggle-btn';
+    ng.className = s === 'nginx'    ? 'toggle-btn active' : 'toggle-btn';
     (document.getElementById('output-label') as HTMLElement).textContent = s === 'htaccess' ? '.htaccess' : 'nginx.conf';
     generate();
   }

@@ -8,18 +8,18 @@ const tool = tools.find(t => t.slug === 'freelance-project-scope-estimator')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Freelance Project Scope Estimator</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Freelance Project Scope Estimator</h2>
 
     <div style="margin-bottom:1rem;">
-      <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Your Hourly Rate ($)</label>
+      <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Your Hourly Rate ($)</label>
       <input id="hourly-rate" type="number" value="100" min="1" step="5"
-        style="width:200px; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-        onfocus="this.style.borderColor='#4F46E5'" onblur="this.style.borderColor='#E2E8F0'"/>
+        class="input-themed"
+        style="width:200px;"/>
     </div>
 
     <div id="scope-list" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.25rem;"></div>
 
-    <button id="add-item" style="width:100%; padding:0.625rem; border:1.5px dashed #C7D2FE; border-radius:0.625rem; background:#F8F7FF; color:#4F46E5; font-size:0.875rem; font-weight:600; cursor:pointer;">+ Add Scope Item</button>
+    <button id="add-item" class="btn-secondary" style="width:100%; padding:0.625rem; border-style:dashed;">+ Add Scope Item</button>
 
     <div style="background:linear-gradient(135deg,#4F46E5,#6366F1); border-radius:0.875rem; padding:1.25rem; color:#fff; margin-top:1.25rem; text-align:center;">
       <div style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; opacity:0.85; margin-bottom:0.25rem;">Total Estimate Range</div>
@@ -31,18 +31,18 @@ const tool = tools.find(t => t.slug === 'freelance-project-scope-estimator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this estimator</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your hourly rate, then review the pre-loaded scope items. Toggle each item on or off, adjust the estimated hours range for each deliverable, and add any custom items specific to your project. The total estimate updates live.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The range (low–high) uses the minimum and maximum hours you specify, multiplied by your hourly rate. This is ideal for providing clients with a scoped estimate while preserving flexibility.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this estimator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your hourly rate, then review the pre-loaded scope items. Toggle each item on or off, adjust the estimated hours range for each deliverable, and add any custom items specific to your project. The total estimate updates live.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The range (low–high) uses the minimum and maximum hours you specify, multiplied by your hourly rate. This is ideal for providing clients with a scoped estimate while preserving flexibility.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">Scope item structure</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Each scope item has a name, a minimum hours estimate, and a maximum hours estimate. The total low = sum of all enabled item mins × rate. The total high = sum of all enabled item maxes × rate. Include a 10–20% buffer in your max hours for unknowns and client revisions.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Scope item structure</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Each scope item has a name, a minimum hours estimate, and a maximum hours estimate. The total low = sum of all enabled item mins × rate. The total high = sum of all enabled item maxes × rate. Include a 10–20% buffer in your max hours for unknowns and client revisions.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'Should I quote fixed price or hourly?', a: 'Fixed-price projects provide clients with budget certainty and let you earn more if you are efficient. Hourly works better for ongoing or poorly-defined work where scope changes are frequent. Many freelancers use a fixed price for discovery/design phases and hourly for development, with a monthly retainer for maintenance.' },
@@ -51,10 +51,10 @@ const tool = tools.find(t => t.slug === 'freelance-project-scope-estimator')!;
         { q: 'How should I present this estimate to a client?', a: 'Present a range (e.g., $4,500–$6,000) rather than a single figure, with a clear breakdown by deliverable. Explain that the range depends on final scope decisions and revision rounds. This sets honest expectations and makes the lower end feel like a win for the client.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -99,18 +99,19 @@ const tool = tools.find(t => t.slug === 'freelance-project-scope-estimator')!;
     list.innerHTML = '';
     items.forEach(item => {
       const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;background:#fff;border:1.5px solid #E2E8F0;border-radius:0.625rem;padding:0.5rem 0.75rem;';
+      row.className = 'result-card';
+      row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;';
       row.innerHTML = `
-        <input type="checkbox" ${item.enabled ? 'checked' : ''} data-id="${item.id}" style="accent-color:#4F46E5;width:16px;height:16px;cursor:pointer;flex-shrink:0;"/>
+        <input type="checkbox" ${item.enabled ? 'checked' : ''} data-id="${item.id}" style="accent-color:var(--color-brand-blue);width:16px;height:16px;cursor:pointer;flex-shrink:0;"/>
         <input type="text" value="${item.label}" data-id="${item.id}" data-field="label"
-          style="flex:1;border:none;outline:none;font-size:0.85rem;color:#0F172A;background:transparent;min-width:0;"/>
+          style="flex:1;border:none;outline:none;font-size:0.85rem;color:var(--text-primary);background:transparent;min-width:0;"/>
         <input type="number" value="${item.min}" min="0" data-id="${item.id}" data-field="min"
-          style="width:52px;padding:0.2rem 0.4rem;border:1px solid #E2E8F0;border-radius:0.35rem;font-size:0.78rem;text-align:center;color:#475569;outline:none;"/>
-        <span style="font-size:0.72rem;color:#94A3B8;">–</span>
+          style="width:52px;padding:0.2rem 0.4rem;border:1px solid var(--border);border-radius:0.35rem;font-size:0.78rem;text-align:center;color:var(--text-secondary);outline:none;background:var(--bg-surface);"/>
+        <span style="font-size:0.72rem;color:var(--text-muted);">–</span>
         <input type="number" value="${item.max}" min="0" data-id="${item.id}" data-field="max"
-          style="width:52px;padding:0.2rem 0.4rem;border:1px solid #E2E8F0;border-radius:0.35rem;font-size:0.78rem;text-align:center;color:#475569;outline:none;"/>
-        <span style="font-size:0.72rem;color:#94A3B8;">hrs</span>
-        <button data-id="${item.id}" data-action="remove" style="background:none;border:none;cursor:pointer;color:#CBD5E1;font-size:1.1rem;padding:0;line-height:1;flex-shrink:0;">×</button>
+          style="width:52px;padding:0.2rem 0.4rem;border:1px solid var(--border);border-radius:0.35rem;font-size:0.78rem;text-align:center;color:var(--text-secondary);outline:none;background:var(--bg-surface);"/>
+        <span style="font-size:0.72rem;color:var(--text-muted);">hrs</span>
+        <button data-id="${item.id}" data-action="remove" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:0;line-height:1;flex-shrink:0;">×</button>
       `;
       list.appendChild(row);
     });

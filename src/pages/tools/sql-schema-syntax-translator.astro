@@ -8,21 +8,21 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">SQL Schema Translator</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">SQL Schema Translator</h2>
 
     <div style="display:flex; gap:1rem; margin-bottom:1rem; align-items:flex-end;">
       <div style="flex:1;">
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">From</label>
-        <select id="from-db" style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.9rem; color:#0F172A; background:#fff; outline:none; box-sizing:border-box;">
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">From</label>
+        <select id="from-db" class="select-themed" style="width:100%;">
           <option value="mysql">MySQL</option>
           <option value="postgres">PostgreSQL</option>
           <option value="sqlite">SQLite</option>
         </select>
       </div>
-      <div style="font-size:1.25rem; color:#94A3B8; padding-bottom:0.6rem;">→</div>
+      <div style="font-size:1.25rem; color:var(--text-muted); padding-bottom:0.6rem;">→</div>
       <div style="flex:1;">
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">To</label>
-        <select id="to-db" style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.9rem; color:#0F172A; background:#fff; outline:none; box-sizing:border-box;">
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">To</label>
+        <select id="to-db" class="select-themed" style="width:100%;">
           <option value="mysql">MySQL</option>
           <option value="postgres" selected>PostgreSQL</option>
           <option value="sqlite">SQLite</option>
@@ -32,35 +32,35 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem;">
       <div>
-        <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Input SQL</div>
+        <div style="font-size:0.75rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Input SQL</div>
         <textarea id="sql-input"
           placeholder="CREATE TABLE users (&#10;  id INT AUTO_INCREMENT PRIMARY KEY,&#10;  name VARCHAR(255) NOT NULL,&#10;  created_at DATETIME DEFAULT CURRENT_TIMESTAMP&#10;);"
-          style="width:100%; height:240px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.8rem; font-family:'Fira Code',monospace; color:#0F172A; resize:none; box-sizing:border-box; outline:none; line-height:1.7;"
-          onfocus="this.style.borderColor='#4F46E5'" onblur="this.style.borderColor='#E2E8F0'"></textarea>
+          class="input-themed"
+          style="width:100%; height:240px; font-family:'Fira Code',monospace; font-size:0.8rem; resize:none; line-height:1.7;"></textarea>
       </div>
       <div>
-        <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Translated SQL</div>
+        <div style="font-size:0.75rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Translated SQL</div>
         <textarea id="sql-output" readonly
-          style="width:100%; height:240px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.8rem; font-family:'Fira Code',monospace; color:#0F172A; background:#F8FAFC; resize:none; box-sizing:border-box; outline:none; line-height:1.7;"></textarea>
+          class="input-themed"
+          style="width:100%; height:240px; font-family:'Fira Code',monospace; font-size:0.8rem; resize:none; line-height:1.7; background:var(--bg-surface-2);"></textarea>
       </div>
     </div>
 
     <div style="margin-top:0.875rem; display:flex; gap:0.75rem;">
-      <button id="copy-btn" style="flex:1; padding:0.625rem; background:#4F46E5; color:#fff; border:none; border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
-        onmouseover="this.style.background='#4338CA'" onmouseout="this.style.background='#4F46E5'">Copy Output</button>
+      <button id="copy-btn" class="btn-primary" type="button" style="flex:1;">Copy Output</button>
     </div>
 
     <div id="notes" style="margin-top:0.75rem; display:none;"></div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the SQL Translator</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste your CREATE TABLE SQL statement into the left panel, select the source database dialect and target dialect, and the translated schema appears instantly in the right panel. Supports MySQL, PostgreSQL, and SQLite.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Translation notes appear below the editor when a conversion requires a compatibility decision (for example, AUTO_INCREMENT to SERIAL in PostgreSQL).</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the SQL Translator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste your CREATE TABLE SQL statement into the left panel, select the source database dialect and target dialect, and the translated schema appears instantly in the right panel. Supports MySQL, PostgreSQL, and SQLite.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Translation notes appear below the editor when a conversion requires a compatibility decision (for example, AUTO_INCREMENT to SERIAL in PostgreSQL).</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">What gets translated</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What gets translated</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;">
       {[
         ['Auto Increment', 'MySQL AUTO_INCREMENT → PostgreSQL SERIAL or BIGSERIAL; SQLite INTEGER PRIMARY KEY (implicit autoincrement).'],
@@ -69,16 +69,16 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
         ['NULL Handling', 'DEFAULT NULL and NOT NULL constraints are preserved across all dialects.'],
         ['Current Timestamp', 'NOW(), CURRENT_TIMESTAMP, and GETDATE() are normalised to the appropriate default expression for the target dialect.'],
       ].map(([label, desc]) => (
-        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0;">{desc}</p>
         </div>
       ))}
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'Does this translate stored procedures and views?', a: 'No. This tool focuses on CREATE TABLE schema definitions. Stored procedures, views, triggers, and query DML (SELECT, INSERT, UPDATE, DELETE) have significantly more dialect-specific syntax and are not currently supported.' },
@@ -87,10 +87,10 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
         { q: 'How does SQLite differ from MySQL and PostgreSQL?', a: 'SQLite uses dynamic typing — column type declarations are advisory only. There is no native auto-increment; instead, a column declared as INTEGER PRIMARY KEY is implicitly a rowid alias. SQLite has limited ALTER TABLE support and no stored procedures.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -161,7 +161,7 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
     const notesEl = document.getElementById('notes')!;
     if (notes.length > 0 && sql.trim()) {
       notesEl.style.display = 'block';
-      notesEl.innerHTML = notes.map(n => `<div style="padding:0.5rem 0.875rem; background:#FFFBEB; border:1px solid #FDE68A; border-radius:0.5rem; font-size:0.8rem; color:#92400E; margin-bottom:0.375rem;">⚠️ ${n}</div>`).join('');
+      notesEl.innerHTML = notes.map(n => `<div style="padding:0.5rem 0.875rem; background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.5rem; font-size:0.8rem; color:var(--text-secondary); margin-bottom:0.375rem;">⚠️ ${n}</div>`).join('');
     } else {
       notesEl.style.display = 'none';
     }

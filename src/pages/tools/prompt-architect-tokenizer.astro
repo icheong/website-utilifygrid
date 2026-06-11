@@ -8,10 +8,10 @@ const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Prompt Architect &amp; Tokenizer</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Prompt Architect &amp; Tokenizer</h2>
 
     <textarea id="prompt-input" placeholder="Type or paste your AI prompt here…"
-      style="width:100%; height:160px; padding:0.875rem; border:1.5px solid #DDD6FE; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit;"
+      style="width:100%; height:160px; padding:0.875rem; border:1.5px solid #DDD6FE; border-radius:0.625rem; font-size:0.875rem; color:var(--text-primary); resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit; background:var(--bg-surface);"
       onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor='#DDD6FE'"></textarea>
 
     <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
@@ -21,7 +21,7 @@ const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
           {label}
         </button>
       ))}
-      <button id="copy-formatted" style="margin-left:auto; padding:0.4rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; color:#475569; background:#F8FAFC; cursor:pointer;">Copy</button>
+      <button id="copy-formatted" class="btn-secondary" style="margin-left:auto;">Copy</button>
     </div>
 
     <!-- Stats row -->
@@ -36,9 +36,8 @@ const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
 
     <!-- Cost inputs -->
     <div style="display:flex; gap:0.75rem; align-items:center; margin-bottom:0.875rem; flex-wrap:wrap;">
-      <label style="font-size:0.78rem; font-weight:600; color:#475569;">$/1K tokens:</label>
-      <input id="cost-rate" type="number" value="0.003" min="0" step="0.001"
-        style="width:90px; padding:0.35rem 0.625rem; border:1px solid #E2E8F0; border-radius:0.375rem; font-size:0.82rem; outline:none;"/>
+      <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary);">$/1K tokens:</label>
+      <input id="cost-rate" type="number" value="0.003" min="0" step="0.001" class="input-themed" style="width:90px;"/>
     </div>
 
     <!-- Formatted output -->
@@ -46,13 +45,13 @@ const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Prompt Architect</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Type or paste your prompt text, then click a format button to see it structured for Claude (XML tags), GPT (JSON messages array), or Gemini (plain structured). The token count, word count, and estimated API cost update live based on your $/1K tokens setting.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Use this to compare prompt structures across models and estimate costs before running large-scale inference.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Prompt Architect</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Type or paste your prompt text, then click a format button to see it structured for Claude (XML tags), GPT (JSON messages array), or Gemini (plain structured). The token count, word count, and estimated API cost update live based on your $/1K tokens setting.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Use this to compare prompt structures across models and estimate costs before running large-scale inference.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">Format structures explained</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Format structures explained</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;">
       {[
         ['Claude XML', 'Anthropic recommends wrapping context, instructions, and data in XML tags like <instructions>, <context>, and <task>. This helps Claude understand structure and reduces prompt injection risk.'],
@@ -60,16 +59,16 @@ const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
         ['Gemini Structured', 'Google Gemini works best with clearly delineated sections using markdown-style headers and plain structured prose. Context, role, and task are clearly separated as labelled paragraphs.'],
         ['Token Count', 'Estimated as total characters / 4 (a common approximation). Actual token counts depend on the model\'s tokeniser. Use the model\'s native tokenisation API for precision pricing.'],
       ].map(([label, desc]) => (
-        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        <div class="result-card">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0;">{desc}</p>
         </div>
       ))}
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'How accurate is the token count?', a: 'The chars/4 estimate is within 10–15% for most English text. Code, non-Latin scripts, and special characters may tokenise differently. For pricing accuracy, use tiktoken (OpenAI) or the Anthropic/Google SDKs which count tokens precisely using the model\'s actual tokeniser.' },
@@ -78,10 +77,10 @@ const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
         { q: 'How can I reduce token costs?', a: 'Shorten prompts by removing verbose explanations and using concise phrasing. Use few-shot examples only when necessary. Cache system prompts using provider prompt caching features. For high-volume tasks, batch API calls. Consider smaller/cheaper models for simple classification tasks where quality is sufficient.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          class="result-card">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}

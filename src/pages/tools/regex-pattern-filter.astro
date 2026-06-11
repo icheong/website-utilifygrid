@@ -8,20 +8,20 @@ const tool = tools.find(t => t.slug === 'regex-pattern-filter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Regex Pattern Filter</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Regex Pattern Filter</h2>
 
     <div style="display:flex; gap:0.5rem; align-items:flex-end; margin-bottom:0.75rem;">
       <div style="flex:1;">
-        <label style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.35rem;">Pattern</label>
+        <label style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.35rem;">Pattern</label>
         <input id="regex-input" type="text" placeholder="e.g. \b[A-Z][a-z]+\b" value="\b\d{4}\b"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #FDE68A; border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.875rem; color:#0F172A; box-sizing:border-box; outline:none;"
+          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #FDE68A; border-radius:0.625rem; font-family:'Fira Code',monospace; font-size:0.875rem; color:var(--text-primary); box-sizing:border-box; outline:none; background:var(--bg-surface);"
           onfocus="this.style.borderColor='#EAB308'" onblur="this.style.borderColor='#FDE68A'"/>
       </div>
       <div>
-        <label style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.35rem;">Flags</label>
+        <label style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.35rem;">Flags</label>
         <div style="display:flex; gap:0.25rem;">
           {['g','i','m'].map(f => (
-            <label style="display:flex; align-items:center; gap:0.25rem; background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:0.375rem; padding:0.4rem 0.625rem; cursor:pointer; font-family:'Fira Code',monospace; font-size:0.8rem; font-weight:600; color:#475569;">
+            <label style="display:flex; align-items:center; gap:0.25rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.375rem; padding:0.4rem 0.625rem; cursor:pointer; font-family:'Fira Code',monospace; font-size:0.8rem; font-weight:600; color:var(--text-secondary);">
               <input type="checkbox" class="flag-box" value={f} checked={f === 'g'} style="accent-color:#EAB308;"/>
               {f}
             </label>
@@ -33,11 +33,10 @@ const tool = tools.find(t => t.slug === 'regex-pattern-filter')!;
     <div id="regex-error" style="display:none; margin-bottom:0.625rem; padding:0.5rem 0.75rem; background:#FEF2F2; border:1px solid #FECACA; border-radius:0.5rem; font-size:0.78rem; color:#DC2626; font-family:'Fira Code',monospace;"></div>
 
     <textarea id="text-input" placeholder="Paste text to filter and highlight matches…"
-      style="width:100%; height:160px; padding:0.75rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.85rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.6; margin-bottom:0.875rem; font-family:inherit;"
-      onfocus="this.style.borderColor='#EAB308'" onblur="this.style.borderColor='#E2E8F0'">In 2019 the project began with a budget of $1,200 and by 2021 it grew to $4,500. There were 123 participants in 2022 and 456 in 2023.</textarea>
+      style="width:100%; height:160px; padding:0.75rem; border:1.5px solid var(--border); border-radius:0.625rem; font-size:0.85rem; color:var(--text-primary); resize:vertical; box-sizing:border-box; outline:none; line-height:1.6; margin-bottom:0.875rem; font-family:inherit; background:var(--bg-surface);">In 2019 the project began with a budget of $1,200 and by 2021 it grew to $4,500. There were 123 participants in 2022 and 456 in 2023.</textarea>
 
     <div style="display:flex; gap:0.75rem; margin-bottom:0.875rem;">
-      <div style="background:#FEFCE8; border:1.5px solid #FEF08A; border-radius:0.75rem; padding:0.75rem 1.25rem;">
+      <div class="result-card" style="padding:0.75rem 1.25rem; border-color:#FEF08A; background:#FEFCE8;">
         <span id="match-count" style="font-family:'Sora',sans-serif; font-size:1.25rem; font-weight:700; color:#CA8A04;">0</span>
         <span style="font-size:0.75rem; font-weight:600; color:#EAB308; margin-left:0.35rem; text-transform:uppercase; letter-spacing:0.04em;">Matches</span>
       </div>
@@ -45,30 +44,30 @@ const tool = tools.find(t => t.slug === 'regex-pattern-filter')!;
 
     <!-- Highlighted output -->
     <div style="margin-bottom:0.875rem;">
-      <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Highlighted Text</div>
-      <div id="highlighted" style="background:#fff; border:1.5px solid #FEF08A; border-radius:0.625rem; padding:0.875rem; font-size:0.875rem; line-height:1.75; min-height:60px; word-break:break-word;"></div>
+      <div style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Highlighted Text</div>
+      <div id="highlighted" style="background:var(--bg-surface); border:1.5px solid #FEF08A; border-radius:0.625rem; padding:0.875rem; font-size:0.875rem; line-height:1.75; min-height:60px; word-break:break-word;"></div>
     </div>
 
     <!-- Matches list -->
     <div>
-      <div style="font-size:0.75rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Extracted Matches</div>
+      <div style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Extracted Matches</div>
       <div id="matches-list" style="display:flex; flex-wrap:wrap; gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Regex Filter</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter a regular expression pattern in the pattern field. Toggle flags: <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">g</code> for global (find all matches), <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">i</code> for case-insensitive, <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">m</code> for multiline. Paste your text and matches will be highlighted and listed in real time.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Useful for extracting data from logs, testing patterns against sample text, or learning regex.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Regex Filter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter a regular expression pattern in the pattern field. Toggle flags: <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">g</code> for global (find all matches), <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">i</code> for case-insensitive, <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">m</code> for multiline. Paste your text and matches will be highlighted and listed in real time.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Useful for extracting data from logs, testing patterns against sample text, or learning regex.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How it works</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The pattern is compiled using JavaScript's native <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">RegExp</code> constructor with the selected flags. The text is split at match boundaries to interleave highlighted and unhighlighted spans. Any syntax error in the pattern is caught and displayed. Matching always includes the global flag for counting purposes.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The pattern is compiled using JavaScript's native <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">RegExp</code> constructor with the selected flags. The text is split at match boundaries to interleave highlighted and unhighlighted spans. Any syntax error in the pattern is caught and displayed. Matching always includes the global flag for counting purposes.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'What does the \\b word boundary metacharacter do?', a: '\\b matches the position between a word character (\\w: letters, digits, underscore) and a non-word character. It does not consume any characters. \\bcat\\b matches "cat" but not "catfish" or "concatenate". It is useful for matching whole words only.' },
@@ -77,10 +76,10 @@ const tool = tools.find(t => t.slug === 'regex-pattern-filter')!;
         { q: 'Why are my newlines not matching?', a: 'By default, the dot (.) metacharacter does not match newline characters. To match any character including newlines, use [\\s\\S] instead of .. Enable the multiline flag (m) to make ^ and $ match the start and end of each line rather than the entire string.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          class="result-card">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}

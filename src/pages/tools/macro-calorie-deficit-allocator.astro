@@ -8,31 +8,29 @@ const tool = tools.find(t => t.slug === 'macro-calorie-deficit-allocator')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Macro Nutrient Allocator</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Macro Nutrient Allocator</h2>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Daily Calorie Target</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Daily Calorie Target</label>
         <input id="calories" type="number" value="2000" min="800" max="6000" step="50"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#E2E8F0'"/>
+          class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Body Weight (kg)</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Body Weight (kg)</label>
         <input id="weight" type="number" value="75" min="30" max="300" step="0.5"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#E2E8F0'"/>
+          class="input-themed"/>
       </div>
     </div>
 
     <div style="margin-bottom:1.25rem;">
-      <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.5rem;">Goal</label>
+      <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.5rem;">Goal</label>
       <div style="display:flex; gap:0.5rem;">
         {[['cut','Cut (deficit)','#3B82F6'],['maintain','Maintain','#059669'],['bulk','Bulk (surplus)','#F97316']].map(([val, label, color]) => (
           <button
-            class="goal-btn"
+            class="goal-btn toggle-btn"
             data-val={val}
-            style={`flex:1; padding:0.5rem; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer; border:1.5px solid; transition:all 0.15s; background:${val === 'maintain' ? color : '#F8FAFC'}; color:${val === 'maintain' ? '#fff' : '#64748B'}; border-color:${val === 'maintain' ? color : '#E2E8F0'};`}>
+            style={`flex:1; ${val === 'maintain' ? `background:${color}; color:#fff; border-color:${color};` : ''}`}>
             {label}
           </button>
         ))}
@@ -45,10 +43,10 @@ const tool = tools.find(t => t.slug === 'macro-calorie-deficit-allocator')!;
         ['Carbohydrates', 'out-carbs', '#F97316', '#FFF7ED', '#FED7AA'],
         ['Fat', 'out-fat', '#EAB308', '#FEFCE8', '#FEF08A'],
       ].map(([label, id, fg, bg, border]) => (
-        <div style={`background:${bg}; border:1.5px solid ${border}; border-radius:0.75rem; padding:0.875rem 1rem;`}>
+        <div class="result-card" style={`background:${bg}; border-color:${border};`}>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
             <span style={`font-size:0.82rem; font-weight:700; color:${fg};`}>{label}</span>
-            <span id={id + '-kcal'} style="font-size:0.78rem; color:#64748B;"></span>
+            <span id={id + '-kcal'} style="font-size:0.78rem; color:var(--text-muted);"></span>
           </div>
           <div style="display:flex; align-items:center; gap:0.875rem;">
             <div id={id + '-bar-wrap'} style="flex:1; height:8px; background:rgba(0,0,0,0.08); border-radius:999px; overflow:hidden;">
@@ -62,13 +60,13 @@ const tool = tools.find(t => t.slug === 'macro-calorie-deficit-allocator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this tool</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your target daily calorie intake and your body weight. Select your goal: Cut (calorie deficit for fat loss), Maintain, or Bulk (calorie surplus for muscle gain). The macro distribution updates instantly.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Protein is allocated first based on body weight (a standard recommendation for muscle preservation), then remaining calories are split between carbohydrates and fat according to goal-specific ratios.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this tool</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your target daily calorie intake and your body weight. Select your goal: Cut (calorie deficit for fat loss), Maintain, or Bulk (calorie surplus for muscle gain). The macro distribution updates instantly.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Protein is allocated first based on body weight (a standard recommendation for muscle preservation), then remaining calories are split between carbohydrates and fat according to goal-specific ratios.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How macros are calculated</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How macros are calculated</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;">
       {[
         ['Protein', 'Cut: 2.2g per kg bodyweight. Maintain: 1.8g/kg. Bulk: 2.0g/kg. Each gram of protein provides 4 kcal.'],
@@ -76,16 +74,16 @@ const tool = tools.find(t => t.slug === 'macro-calorie-deficit-allocator')!;
         ['Fat', 'Fills remaining calorie allocation. Each gram provides 9 kcal. Fat is kept at a minimum of 20% of total calories for hormonal health.'],
         ['Caloric Density', '1g Protein = 4 kcal. 1g Carbohydrate = 4 kcal. 1g Fat = 9 kcal. These are the standard values used by all major dietary tracking applications.'],
       ].map(([label, desc]) => (
-        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
         </div>
       ))}
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'How do I know my daily calorie target?', a: 'Calculate your Total Daily Energy Expenditure (TDEE) using the BMR Katch-McArdle Calculator tool. Your TDEE is your maintenance calories. Subtract 300–500 kcal for a cut; add 200–300 kcal for a lean bulk.' },
@@ -94,10 +92,10 @@ const tool = tools.find(t => t.slug === 'macro-calorie-deficit-allocator')!;
         { q: 'Should I use net carbs or total carbs?', a: 'Net carbs (total carbs minus dietary fibre) are used by those following a ketogenic or low-carb diet, as fibre has minimal impact on blood sugar. For general fitness goals, tracking total carbohydrates is standard practice.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -120,9 +118,15 @@ const tool = tools.find(t => t.slug === 'macro-calorie-deficit-allocator')!;
       goal = (btn as HTMLElement).dataset.val!;
       document.querySelectorAll('.goal-btn').forEach((b: Element) => {
         const el = b as HTMLElement; const v = el.dataset.val!;
-        el.style.background   = v === goal ? GOAL_COLORS[v] : '#F8FAFC';
-        el.style.color        = v === goal ? '#fff' : '#64748B';
-        el.style.borderColor  = v === goal ? GOAL_COLORS[v] : '#E2E8F0';
+        if (v === goal) {
+          el.style.background  = GOAL_COLORS[v];
+          el.style.color       = '#fff';
+          el.style.borderColor = GOAL_COLORS[v];
+        } else {
+          el.style.background  = '';
+          el.style.color       = '';
+          el.style.borderColor = '';
+        }
       });
       calc();
     });

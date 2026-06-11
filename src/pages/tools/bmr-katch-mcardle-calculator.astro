@@ -8,28 +8,24 @@ const tool = tools.find(t => t.slug === 'bmr-katch-mcardle-calculator')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">BMR &amp; TDEE Calculator (Katch-McArdle)</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">BMR &amp; TDEE Calculator (Katch-McArdle)</h2>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Total Weight (kg)</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Total Weight (kg)</label>
         <input id="total-weight" type="number" value="80" min="30" max="300" step="0.5"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#E2E8F0'"/>
+          class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Body Fat %</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Body Fat %</label>
         <input id="body-fat" type="number" value="20" min="3" max="60" step="0.5"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#E2E8F0'"/>
+          class="input-themed"/>
       </div>
     </div>
 
     <div style="margin-bottom:1.25rem;">
-      <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Activity Level</label>
-      <select id="activity"
-        style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; box-sizing:border-box; outline:none; background:#fff;"
-        onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#E2E8F0'">
+      <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Activity Level</label>
+      <select id="activity" class="select-themed">
         <option value="1.2">Sedentary (desk job, little exercise)</option>
         <option value="1.375">Lightly active (1–3 days/week)</option>
         <option value="1.55" selected>Moderately active (3–5 days/week)</option>
@@ -39,11 +35,11 @@ const tool = tools.find(t => t.slug === 'bmr-katch-mcardle-calculator')!;
     </div>
 
     <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:0.75rem; margin-bottom:1rem;">
-      <div style="background:#FFF7ED; border:1.5px solid #FED7AA; border-radius:0.75rem; padding:1rem; text-align:center;">
+      <div class="result-card" style="background:#FFF7ED; border-color:#FED7AA; text-align:center;">
         <div id="out-lbm" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#F97316;">—</div>
         <div style="font-size:0.72rem; font-weight:600; color:#FB923C; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Lean Body Mass</div>
       </div>
-      <div style="background:#FEF2F2; border:1.5px solid #FECACA; border-radius:0.75rem; padding:1rem; text-align:center;">
+      <div class="result-card" style="background:#FEF2F2; border-color:#FECACA; text-align:center;">
         <div id="out-bmr" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#DC2626;">—</div>
         <div style="font-size:0.72rem; font-weight:600; color:#F87171; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">BMR (kcal/day)</div>
       </div>
@@ -57,25 +53,25 @@ const tool = tools.find(t => t.slug === 'bmr-katch-mcardle-calculator')!;
 
     <div style="margin-top:1rem; display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem;">
       {[['Cut','-400 kcal','#3B82F6'],['Lean Bulk','+200 kcal','#059669'],['Aggressive Bulk','+500 kcal','#F97316']].map(([label, adj, color]) => (
-        <div style={`background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.625rem 0.5rem; text-align:center;`}>
+        <div class="result-card" style="text-align:center;">
           <div style={`font-size:0.72rem; font-weight:600; color:${color}; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:0.2rem;`}>{label}</div>
-          <div id={`out-${(label as string).toLowerCase().replace(' ','-')}`} style={`font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:700; color:#0F172A;`}>—</div>
-          <div style="font-size:0.68rem; color:#94A3B8; margin-top:0.1rem;">{adj}</div>
+          <div id={`out-${(label as string).toLowerCase().replace(' ','-')}`} style="font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:700; color:var(--text-primary);">—</div>
+          <div style="font-size:0.68rem; color:var(--text-muted); margin-top:0.1rem;">{adj}</div>
         </div>
       ))}
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this calculator</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your total body weight in kilograms and your body fat percentage. If you don't know your body fat %, a DEXA scan or body composition scale can measure it. Reasonable estimates: lean athletic male ~10–15%, average male ~20–25%, lean athletic female ~18–25%, average female ~28–35%.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Select your activity level that best matches your weekly exercise and daily movement. Your TDEE (Total Daily Energy Expenditure) is the calorie intake needed to maintain your current weight.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this calculator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your total body weight in kilograms and your body fat percentage. If you don't know your body fat %, a DEXA scan or body composition scale can measure it. Reasonable estimates: lean athletic male ~10–15%, average male ~20–25%, lean athletic female ~18–25%, average female ~28–35%.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Select your activity level that best matches your weekly exercise and daily movement. Your TDEE (Total Daily Energy Expenditure) is the calorie intake needed to maintain your current weight.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">The Katch-McArdle formula</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Unlike Harris-Benedict or Mifflin-St Jeor, the Katch-McArdle formula uses <strong>Lean Body Mass</strong> directly, making it more accurate for muscular athletes or those with higher body fat percentages.</p>
-    <div style="background:#FFF7ED; border:1px solid #FED7AA; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:#0F172A; line-height:1.8;">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">The Katch-McArdle formula</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Unlike Harris-Benedict or Mifflin-St Jeor, the Katch-McArdle formula uses <strong>Lean Body Mass</strong> directly, making it more accurate for muscular athletes or those with higher body fat percentages.</p>
+    <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:var(--text-primary); line-height:1.8;">
       LBM = Total Weight × (1 − Body Fat% / 100)<br/>
       BMR = 370 + (21.6 × LBM in kg)<br/>
       TDEE = BMR × Activity Multiplier
@@ -83,7 +79,7 @@ const tool = tools.find(t => t.slug === 'bmr-katch-mcardle-calculator')!;
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'How accurate is the Katch-McArdle formula?', a: 'Katch-McArdle is generally considered the most accurate BMR formula when you know your body fat percentage, with studies showing it is within 5–8% of measured RMR for most individuals. The main source of error is inaccurate body fat measurement, not the formula itself.' },
@@ -92,10 +88,10 @@ const tool = tools.find(t => t.slug === 'bmr-katch-mcardle-calculator')!;
         { q: 'Why is my BMR different from other calculators?', a: 'Other calculators (Mifflin-St Jeor, Harris-Benedict) estimate lean mass from height, weight, age, and sex. Katch-McArdle uses measured body fat directly, so it will differ from estimates. If your body composition is unusual (very muscular or high body fat), Katch-McArdle tends to be more accurate.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}

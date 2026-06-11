@@ -8,10 +8,10 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Hallucination Fact-Check Guard</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Hallucination Fact-Check Guard</h2>
 
     <textarea id="ai-text" placeholder="Paste AI-generated text here to scan for claims that need fact-checking…"
-      style="width:100%; height:180px; padding:0.875rem; border:1.5px solid #FED7AA; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit;"
+      style="width:100%; height:180px; padding:0.875rem; border:1.5px solid #FED7AA; border-radius:0.625rem; font-size:0.875rem; color:var(--text-primary); resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit; background:var(--bg-surface);"
       onfocus="this.style.borderColor='#F97316'" onblur="this.style.borderColor='#FED7AA'"></textarea>
 
     <button id="scan-btn" style="padding:0.625rem 1.5rem; background:#EA580C; color:#fff; border:none; border-radius:0.5rem; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:1.25rem;">Scan for Claims</button>
@@ -19,7 +19,7 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
       <div>
         <div style="font-size:0.78rem; font-weight:700; color:#EA580C; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;">Highlighted Text</div>
-        <div id="highlighted-output" style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.625rem; padding:0.875rem; font-size:0.85rem; color:#475569; line-height:1.75; min-height:120px; word-break:break-word;"></div>
+        <div id="highlighted-output" class="result-card" style="font-size:0.85rem; color:var(--text-secondary); line-height:1.75; min-height:120px; word-break:break-word;"></div>
       </div>
       <div>
         <div style="font-size:0.78rem; font-weight:700; color:#EA580C; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;">Verification Checklist</div>
@@ -31,18 +31,18 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
       {[['#FEF9C3','#CA8A04','years'],['#FEF2F2','#DC2626','$$ amounts'],['#F0FDF4','#16A34A','proper nouns'],['#EFF6FF','#1D4ED8','statistics']].map(([bg,c,label]) => (
         <span style={`background:${bg};color:${c};padding:0.2rem 0.5rem;border-radius:0.25rem;font-weight:600;`}>{label}</span>
       ))}
-      <span style="color:#94A3B8; margin-left:0.25rem; align-self:center;">= highlight legend</span>
+      <span style="color:var(--text-muted); margin-left:0.25rem; align-self:center;">= highlight legend</span>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Fact-Check Guard</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste any AI-generated text into the box and click Scan. The tool highlights four categories of claims that are most likely to be hallucinated: years and dates, monetary figures, proper nouns (people, places, organisations), and statistics. Each match appears as a checklist item on the right for you to verify.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Use this as a first-pass review before publishing AI-generated content. High-risk claims are those with specific numbers, named entities, or recent events.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Fact-Check Guard</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste any AI-generated text into the box and click Scan. The tool highlights four categories of claims that are most likely to be hallucinated: years and dates, monetary figures, proper nouns (people, places, organisations), and statistics. Each match appears as a checklist item on the right for you to verify.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Use this as a first-pass review before publishing AI-generated content. High-risk claims are those with specific numbers, named entities, or recent events.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">Detection patterns used</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Detection patterns used</h2>
     <div style="display:flex; flex-direction:column; gap:0.625rem;">
       {[
         ['Years (1900–2099)', 'Regex: /\\b(19|20)\\d{2}\\b/ — matches any 4-digit year in the 20th–21st century. AI models frequently hallucinate dates, publication years, and event timelines.'],
@@ -50,16 +50,16 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
         ['Proper nouns', 'Regex: /\\b[A-Z][a-z]{2,}(?:\\s[A-Z][a-z]+)*\\b/ — heuristically matches Title Case words (2+ chars) as potential named entities. Has false positives (sentence starts), so review contextually.'],
         ['Statistics', 'Regex: /\\d+(?:\\.\\d+)?\\s?%/ — catches percentage figures. AI frequently invents plausible-sounding statistics that do not appear in its training data.'],
       ].map(([label, desc]) => (
-        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.75rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        <div class="result-card">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0;">{desc}</p>
         </div>
       ))}
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'What is an AI hallucination?', a: 'Hallucination refers to when a large language model generates text that is factually incorrect but presented with confidence. Models predict likely word sequences based on patterns — they do not look up facts. This means they can generate plausible-sounding but wrong citations, statistics, dates, and names, especially for obscure or recent topics.' },
@@ -68,10 +68,10 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
         { q: 'Which AI models hallucinate the most?', a: 'All current LLMs hallucinate to varying degrees. Smaller models, models with older training cutoffs, and models used outside their knowledge domain hallucinate more. Retrieval-Augmented Generation (RAG) significantly reduces hallucination by grounding responses in verified source documents. Always verify AI output on high-stakes claims.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          class="result-card">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -98,7 +98,6 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
     const text   = (document.getElementById('ai-text') as HTMLTextAreaElement).value;
     const claims: { label: string; match: string; bg: string; color: string }[] = [];
 
-    // Build replacement map with positions
     type Span = { start: number; end: number; bg: string; color: string; label: string; };
     const spans: Span[] = [];
 
@@ -111,7 +110,6 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
       }
     });
 
-    // Sort by start, resolve overlaps
     spans.sort((a, b) => a.start - b.start);
     let html  = '';
     let pos   = 0;
@@ -123,17 +121,17 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
     }
     html += escapeHtml(text.slice(pos));
 
-    (document.getElementById('highlighted-output') as HTMLElement).innerHTML = html || '<span style="color:#94A3B8;font-size:0.82rem;">No text scanned yet.</span>';
+    (document.getElementById('highlighted-output') as HTMLElement).innerHTML = html || '<span style="color:var(--text-muted);font-size:0.82rem;">No text scanned yet.</span>';
 
     const cl = document.getElementById('checklist')!;
     if (claims.length === 0) {
-      cl.innerHTML = '<span style="color:#94A3B8;font-size:0.82rem;">No claims flagged.</span>';
+      cl.innerHTML = '<span style="color:var(--text-muted);font-size:0.82rem;">No claims flagged.</span>';
     } else {
       cl.innerHTML = claims.slice(0, 30).map(c =>
         `<div style="display:flex;align-items:flex-start;gap:0.4rem;padding:0.375rem 0.5rem;background:${c.bg};border-radius:0.375rem;">
           <input type="checkbox" style="margin-top:0.15rem;flex-shrink:0;accent-color:${c.color};"/>
           <span style="font-size:0.78rem;color:${c.color};font-weight:600;">${c.label}:</span>
-          <span style="font-size:0.78rem;color:#0F172A;word-break:break-word;">${escapeHtml(c.match)}</span>
+          <span style="font-size:0.78rem;color:var(--text-primary);word-break:break-word;">${escapeHtml(c.match)}</span>
         </div>`
       ).join('');
     }

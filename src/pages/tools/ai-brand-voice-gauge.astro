@@ -8,19 +8,19 @@ const tool = tools.find(t => t.slug === 'ai-brand-voice-gauge')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">AI Brand Voice Gauge</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">AI Brand Voice Gauge</h2>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:0.875rem;">
       <div>
         <label style="display:block; font-size:0.78rem; font-weight:700; color:#BE185D; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.375rem;">Reference Brand Text</label>
         <textarea id="brand-text" placeholder="Paste your brand's own writing — website copy, case studies, emails…"
-          style="width:100%; height:180px; padding:0.75rem; border:1.5px solid #FBCFE8; border-radius:0.625rem; font-size:0.82rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; font-family:inherit;"
+          style="width:100%; height:180px; padding:0.75rem; border:1.5px solid #FBCFE8; border-radius:0.625rem; font-size:0.82rem; color:var(--text-primary); resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; font-family:inherit; background:var(--bg-surface);"
           onfocus="this.style.borderColor='#BE185D'" onblur="this.style.borderColor='#FBCFE8'"></textarea>
       </div>
       <div>
         <label style="display:block; font-size:0.78rem; font-weight:700; color:#7C3AED; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.375rem;">AI-Generated Output</label>
         <textarea id="ai-output" placeholder="Paste the AI-generated text to compare against your brand voice…"
-          style="width:100%; height:180px; padding:0.75rem; border:1.5px solid #DDD6FE; border-radius:0.625rem; font-size:0.82rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; font-family:inherit;"
+          style="width:100%; height:180px; padding:0.75rem; border:1.5px solid #DDD6FE; border-radius:0.625rem; font-size:0.82rem; color:var(--text-primary); resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; font-family:inherit; background:var(--bg-surface);"
           onfocus="this.style.borderColor='#7C3AED'" onblur="this.style.borderColor='#DDD6FE'"></textarea>
       </div>
     </div>
@@ -31,7 +31,7 @@ const tool = tools.find(t => t.slug === 'ai-brand-voice-gauge')!;
     <div id="score-section" style="display:none;">
       <div style="text-align:center; margin-bottom:1.25rem; padding:1.25rem; background:linear-gradient(135deg,#FDF4FF,#FFF1F2); border-radius:1rem; border:1.5px solid #E9D5FF;">
         <div id="match-pct" style="font-family:'Sora',sans-serif; font-size:3rem; font-weight:800; background:linear-gradient(135deg,#BE185D,#7C3AED); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">0%</div>
-        <div style="font-size:0.875rem; font-weight:600; color:#6B7280;">Brand Voice Match Score</div>
+        <div style="font-size:0.875rem; font-weight:600; color:var(--text-muted);">Brand Voice Match Score</div>
         <div style="height:10px; background:#E9D5FF; border-radius:9999px; overflow:hidden; margin-top:0.875rem;">
           <div id="match-bar" style="height:100%; background:linear-gradient(90deg,#BE185D,#7C3AED); border-radius:9999px; transition:width 0.6s; width:0%;"></div>
         </div>
@@ -40,10 +40,10 @@ const tool = tools.find(t => t.slug === 'ai-brand-voice-gauge')!;
       <!-- Metrics grid -->
       <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.625rem; margin-bottom:1rem;">
         {[['m-sent','Avg Sentence Length','words'],['m-vocab','Vocabulary Overlap','% shared'],['m-words','Power Words','match']].map(([id,label,unit]) => (
-          <div style="background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:0.625rem; padding:0.75rem; text-align:center;">
-            <div id={id} style="font-family:'Sora',sans-serif; font-size:1.25rem; font-weight:700; color:#0F172A;">—</div>
-            <div style="font-size:0.7rem; font-weight:600; color:#64748B; margin-top:0.2rem;">{label}</div>
-            <div style="font-size:0.65rem; color:#94A3B8;">{unit}</div>
+          <div class="result-card" style="text-align:center;">
+            <div id={id} style="font-family:'Sora',sans-serif; font-size:1.25rem; font-weight:700; color:var(--text-primary);">—</div>
+            <div style="font-size:0.7rem; font-weight:600; color:var(--text-muted); margin-top:0.2rem;">{label}</div>
+            <div style="font-size:0.65rem; color:var(--text-muted);">{unit}</div>
           </div>
         ))}
       </div>
@@ -55,29 +55,29 @@ const tool = tools.find(t => t.slug === 'ai-brand-voice-gauge')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Brand Voice Gauge</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste examples of your brand's authentic writing in the left panel — website copy, email campaigns, blog posts, or social media content. Paste AI-generated content you want to evaluate in the right panel. Click Analyse to receive a match score and specific discrepancy breakdown.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Longer reference samples produce more accurate results. Aim for at least 200 words in each panel.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Brand Voice Gauge</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste examples of your brand's authentic writing in the left panel — website copy, email campaigns, blog posts, or social media content. Paste AI-generated content you want to evaluate in the right panel. Click Analyse to receive a match score and specific discrepancy breakdown.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Longer reference samples produce more accurate results. Aim for at least 200 words in each panel.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">What the gauge measures</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What the gauge measures</h2>
     <div style="display:flex; flex-direction:column; gap:0.625rem;">
       {[
         ['Sentence Length', 'Calculates average words per sentence for both texts. Long average sentence length signals formal/academic writing. Short averages signal punchy or conversational voice. Brands with a distinctive rhythm will score poorly on AI content that diverges significantly.'],
         ['Vocabulary Overlap', 'Extracts the top 50 most frequent non-stopword tokens from each text and calculates the intersection size as a percentage. Low overlap means the AI is using different terminology than your brand, which can feel inauthentic.'],
         ['Power Word Density', 'Measures frequency of emotionally resonant "power words" (e.g., proven, exclusive, transform, effortless). Compares density between reference and AI text. Large differences indicate tonal mismatch — generic AI text often lacks the specific power word signature of a brand.'],
       ].map(([label, desc]) => (
-        <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.625rem; padding:0.75rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:#64748B; line-height:1.6; margin:0;">{desc}</p>
+        <div class="result-card">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0;">{desc}</p>
         </div>
       ))}
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'What is brand voice and why does it matter for AI content?', a: 'Brand voice is the consistent personality, tone, vocabulary, and style a brand uses across all communications. It differentiates the brand and builds recognition. AI models default to a generic, averaged writing style unless carefully prompted. Content that does not match brand voice can feel inauthentic, erode trust, and confuse audience expectations.' },
@@ -86,10 +86,10 @@ const tool = tools.find(t => t.slug === 'ai-brand-voice-gauge')!;
         { q: 'Can this tool detect plagiarism or duplicate content?', a: 'No. The Brand Voice Gauge measures stylistic similarity, not content overlap. It compares vocabulary distribution, sentence structure patterns, and word choice — not the specific phrases or sentences used. For duplicate content detection, use dedicated plagiarism tools like Copyscape, Originality.ai, or Turnitin.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          class="result-card">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -177,7 +177,7 @@ const tool = tools.find(t => t.slug === 'ai-brand-voice-gauge')!;
       row.style.cssText = `background:${isWarn?'#FFF7ED':'#F0FDF4'};border:1px solid ${isWarn?'#FED7AA':'#BBF7D0'};border-radius:0.5rem;padding:0.625rem 0.875rem;`;
       row.innerHTML = `
         <div style="font-size:0.82rem;font-weight:700;color:${isWarn?'#C2410C':'#15803D'};margin-bottom:0.2rem;">${isWarn?'⚠':' ✓'} ${issue.label}</div>
-        <div style="font-size:0.78rem;color:#475569;line-height:1.55;">${issue.detail}</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.55;">${issue.detail}</div>
       `;
       disc.appendChild(row);
     });

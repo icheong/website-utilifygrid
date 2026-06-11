@@ -8,11 +8,11 @@ const tool = tools.find(t => t.slug === 'context-window-analyzer')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Context Window Analyzer</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Context Window Analyzer</h2>
 
     <textarea id="ctx-input" placeholder="Paste a long prompt or document to analyze token distribution across paragraphs…"
-      style="width:100%; height:180px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.875rem; color:#0F172A; resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit;"
-      onfocus="this.style.borderColor='#0EA5E9'" onblur="this.style.borderColor='#E2E8F0'"></textarea>
+      style="width:100%; height:180px; padding:0.875rem; border:1.5px solid #BAE6FD; border-radius:0.625rem; font-size:0.875rem; color:var(--text-primary); resize:vertical; box-sizing:border-box; outline:none; line-height:1.65; margin-bottom:0.875rem; font-family:inherit; background:var(--bg-surface);"
+      onfocus="this.style.borderColor='#0EA5E9'" onblur="this.style.borderColor='#BAE6FD'"></textarea>
 
     <!-- Stats bar -->
     <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; margin-bottom:1rem;">
@@ -26,20 +26,18 @@ const tool = tools.find(t => t.slug === 'context-window-analyzer')!;
 
     <!-- Cost config -->
     <div style="display:flex; gap:0.75rem; align-items:center; margin-bottom:1rem; flex-wrap:wrap;">
-      <label style="font-size:0.78rem; font-weight:600; color:#475569;">Context limit (tokens):</label>
-      <input id="ctx-limit" type="number" value="128000" min="1000" step="1000"
-        style="width:100px; padding:0.35rem 0.625rem; border:1px solid #E2E8F0; border-radius:0.375rem; font-size:0.82rem; outline:none;"/>
-      <label style="font-size:0.78rem; font-weight:600; color:#475569;">$/1K tokens:</label>
-      <input id="ctx-rate" type="number" value="0.003" min="0" step="0.001"
-        style="width:80px; padding:0.35rem 0.625rem; border:1px solid #E2E8F0; border-radius:0.375rem; font-size:0.82rem; outline:none;"/>
+      <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary);">Context limit (tokens):</label>
+      <input id="ctx-limit" type="number" value="128000" min="1000" step="1000" class="input-themed" style="width:100px;"/>
+      <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary);">$/1K tokens:</label>
+      <input id="ctx-rate" type="number" value="0.003" min="0" step="0.001" class="input-themed" style="width:80px;"/>
     </div>
 
     <!-- Context usage bar -->
     <div style="margin-bottom:1rem;">
-      <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:600; color:#64748B; margin-bottom:0.375rem;">
+      <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:600; color:var(--text-muted); margin-bottom:0.375rem;">
         <span>Context usage</span><span id="ctx-pct">0%</span>
       </div>
-      <div style="height:10px; background:#E2E8F0; border-radius:9999px; overflow:hidden;">
+      <div style="height:10px; background:var(--bg-surface-2); border-radius:9999px; overflow:hidden;">
         <div id="ctx-bar" style="height:100%; width:0%; background:linear-gradient(90deg,#0EA5E9,#7C3AED); border-radius:9999px; transition:width 0.3s;"></div>
       </div>
     </div>
@@ -49,7 +47,7 @@ const tool = tools.find(t => t.slug === 'context-window-analyzer')!;
     <div id="heatmap" style="display:flex; flex-direction:column; gap:0.25rem;"></div>
 
     <!-- Legend -->
-    <div style="display:flex; gap:0.375rem; margin-top:0.75rem; font-size:0.68rem; color:#64748B; align-items:center;">
+    <div style="display:flex; gap:0.375rem; margin-top:0.75rem; font-size:0.68rem; color:var(--text-muted); align-items:center;">
       <span>Low</span>
       {['#EFF6FF','#BAE6FD','#7DD3FC','#38BDF8','#0EA5E9','#0284C7','#0369A1'].map(c => (
         <span style={`width:18px;height:12px;background:${c};border-radius:2px;display:inline-block;`}></span>
@@ -59,19 +57,19 @@ const tool = tools.find(t => t.slug === 'context-window-analyzer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the Context Window Analyzer</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste a long prompt, document, or multi-section context into the text area. The tool estimates total tokens (chars/4), shows how much of your chosen model's context window is used, and displays a paragraph-level heatmap so you can see where tokens are concentrated.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Adjust the context limit and $/1K tokens inputs to match your model. Use this to identify and trim the heaviest sections before sending to the API.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Context Window Analyzer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste a long prompt, document, or multi-section context into the text area. The tool estimates total tokens (chars/4), shows how much of your chosen model's context window is used, and displays a paragraph-level heatmap so you can see where tokens are concentrated.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Adjust the context limit and $/1K tokens inputs to match your model. Use this to identify and trim the heaviest sections before sending to the API.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How context window analysis works</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The text is split into paragraphs (double newline boundaries). Each paragraph's token count is estimated as characters ÷ 4. The maximum paragraph count is used to normalise heat intensity (darkest blue = most tokens in that section). Cost is calculated as total tokens ÷ 1,000 × rate.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The context bar turns orange when usage exceeds 80% and red at 100% to signal that content may be truncated.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How context window analysis works</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The text is split into paragraphs (double newline boundaries). Each paragraph's token count is estimated as characters ÷ 4. The maximum paragraph count is used to normalise heat intensity (darkest blue = most tokens in that section). Cost is calculated as total tokens ÷ 1,000 × rate.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The context bar turns orange when usage exceeds 80% and red at 100% to signal that content may be truncated.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'What happens when my prompt exceeds the context window?', a: 'Most models truncate input that exceeds the context window, typically from the middle of the conversation history (keeping the system prompt and most recent messages). Some providers return an error. The result is that earlier context is lost, which can cause the model to lose track of earlier instructions or facts.' },
@@ -80,10 +78,10 @@ const tool = tools.find(t => t.slug === 'context-window-analyzer')!;
         { q: 'What is the Lost in the Middle problem?', a: 'Research shows LLMs perform worse at retrieving information from the middle of long contexts vs. the beginning or end. When designing long prompts, put the most important instructions and facts at the start (system/first user turn) or at the very end (just before the generation). Middle sections have the highest "forgetting" rate.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          class="result-card">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -134,7 +132,7 @@ const tool = tools.find(t => t.slug === 'context-window-analyzer')!;
       const row   = document.createElement('div');
       row.style.cssText = `display:flex;align-items:center;gap:0.5rem;`;
       row.innerHTML = `
-        <div style="flex:1;background:${color};border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.75rem;color:#0F172A;line-height:1.5;overflow:hidden;max-height:3.2em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
+        <div style="flex:1;background:${color};border-radius:0.375rem;padding:0.5rem 0.75rem;font-size:0.75rem;color:var(--text-primary);line-height:1.5;overflow:hidden;max-height:3.2em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
           ${p.slice(0,120).replace(/</g,'&lt;').replace(/>/g,'&gt;')}${p.length > 120 ? '…' : ''}
         </div>
         <span style="flex-shrink:0;font-size:0.72rem;font-weight:700;color:#0284C7;min-width:52px;text-align:right;">${t} tok</span>

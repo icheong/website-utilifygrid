@@ -8,45 +8,41 @@ const tool = tools.find(t => t.slug === 'hydration-fluid-loss-calculator')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Hydration &amp; Fluid Loss Calculator</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Hydration &amp; Fluid Loss Calculator</h2>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Pre-workout Weight (kg)</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Pre-workout Weight (kg)</label>
         <input id="pre-wt" type="number" value="75" min="30" max="300" step="0.1"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#0284C7'" onblur="this.style.borderColor='#E2E8F0'"/>
+          class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Post-workout Weight (kg)</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Post-workout Weight (kg)</label>
         <input id="post-wt" type="number" value="74.2" min="30" max="300" step="0.1"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#0284C7'" onblur="this.style.borderColor='#E2E8F0'"/>
+          class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Exercise Duration (min)</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Exercise Duration (min)</label>
         <input id="duration" type="number" value="60" min="5" max="600" step="5"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#0284C7'" onblur="this.style.borderColor='#E2E8F0'"/>
+          class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Fluids Consumed (ml)</label>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Fluids Consumed (ml)</label>
         <input id="consumed" type="number" value="500" min="0" max="5000" step="50"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#0284C7'" onblur="this.style.borderColor='#E2E8F0'"/>
+          class="input-themed"/>
       </div>
     </div>
 
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1.25rem;">
-      <div style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:1rem; text-align:center;">
+      <div class="result-card" style="background:#EFF6FF; border-color:#BFDBFE; text-align:center;">
         <div id="out-lost" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#1D4ED8;">—</div>
         <div style="font-size:0.72rem; font-weight:600; color:#60A5FA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.04em;">Total Fluid Lost (L)</div>
       </div>
-      <div style="background:#F0F9FF; border:1.5px solid #BAE6FD; border-radius:0.75rem; padding:1rem; text-align:center;">
+      <div class="result-card" style="background:#F0F9FF; border-color:#BAE6FD; text-align:center;">
         <div id="out-rate" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#0284C7;">—</div>
         <div style="font-size:0.72rem; font-weight:600; color:#38BDF8; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.04em;">Sweat Rate (L/hr)</div>
       </div>
-      <div style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem; text-align:center;">
+      <div class="result-card" style="background:#F0FDF4; border-color:#BBF7D0; text-align:center;">
         <div id="out-replace" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#16A34A;">—</div>
         <div style="font-size:0.72rem; font-weight:600; color:#4ADE80; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.04em;">Replace / hr (ml)</div>
       </div>
@@ -54,36 +50,36 @@ const tool = tools.find(t => t.slug === 'hydration-fluid-loss-calculator')!;
 
     <div id="dehydration-bar" style="margin-bottom:0.875rem;">
       <div style="display:flex; justify-content:space-between; margin-bottom:0.35rem;">
-        <span style="font-size:0.78rem; font-weight:600; color:#475569;">Dehydration Level</span>
-        <span id="dehy-pct" style="font-size:0.78rem; font-weight:700; color:#0F172A;"></span>
+        <span style="font-size:0.78rem; font-weight:600; color:var(--text-secondary);">Dehydration Level</span>
+        <span id="dehy-pct" style="font-size:0.78rem; font-weight:700; color:var(--text-primary);"></span>
       </div>
-      <div style="height:10px; background:#F1F5F9; border-radius:999px; overflow:hidden;">
+      <div style="height:10px; background:var(--bg-surface-2); border-radius:999px; overflow:hidden;">
         <div id="dehy-fill" style="height:100%; width:0%; background:#0284C7; border-radius:999px; transition:width 0.3s, background 0.3s;"></div>
       </div>
-      <div style="font-size:0.72rem; color:#94A3B8; margin-top:0.3rem; text-align:right;">Under 2% = optimal; 2–4% = impaired; 5%+ = serious</div>
+      <div style="font-size:0.72rem; color:var(--text-muted); margin-top:0.3rem; text-align:right;">Under 2% = optimal; 2–4% = impaired; 5%+ = serious</div>
     </div>
 
-    <div id="tip-box" style="padding:0.75rem 1rem; border-radius:0.625rem; font-size:0.82rem; line-height:1.6; border:1px solid #E2E8F0; color:#475569;"></div>
+    <div id="tip-box" style="padding:0.75rem 1rem; border-radius:0.625rem; font-size:0.82rem; line-height:1.6; border:1px solid var(--border); color:var(--text-secondary);"></div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this calculator</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Weigh yourself (without clothing) immediately before and after exercise. Note how long you exercised and how much fluid you drank during the session. The calculator will tell you your total fluid loss, hourly sweat rate, and recommended replacement volume.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Tracking sweat rate across multiple sessions in different conditions helps you build a personalised hydration protocol for races or long training blocks.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this calculator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Weigh yourself (without clothing) immediately before and after exercise. Note how long you exercised and how much fluid you drank during the session. The calculator will tell you your total fluid loss, hourly sweat rate, and recommended replacement volume.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Tracking sweat rate across multiple sessions in different conditions helps you build a personalised hydration protocol for races or long training blocks.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How fluid loss is calculated</h2>
-    <div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:#0F172A; line-height:1.8; margin-bottom:0.875rem;">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How fluid loss is calculated</h2>
+    <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:var(--text-primary); line-height:1.8; margin-bottom:0.875rem;">
       Total Lost (L) = (Pre-wt − Post-wt) + Consumed(ml)/1000<br/>
       Sweat Rate (L/hr) = Total Lost / (Duration / 60)<br/>
       Replace (ml/hr) = Sweat Rate × 1000
     </div>
-    <p style="color:#475569; font-size:0.875rem; line-height:1.7;">The 1:1 rule (1 ml replacement per 1 ml lost) is generally recommended during exercise, though some sports scientists suggest replacing only 80% during activity to avoid over-hydration (hyponatraemia risk).</p>
+    <p style="color:var(--text-secondary); font-size:0.875rem; line-height:1.7;">The 1:1 rule (1 ml replacement per 1 ml lost) is generally recommended during exercise, though some sports scientists suggest replacing only 80% during activity to avoid over-hydration (hyponatraemia risk).</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'Should I drink to thirst or to a schedule?', a: 'For most recreational exercise under 60 minutes, drinking to thirst is sufficient and safe. For prolonged exercise (over 60–90 minutes) in heat, a planned hydration schedule prevents you from falling behind — thirst typically kicks in only when you are already 1–2% dehydrated.' },
@@ -92,10 +88,10 @@ const tool = tools.find(t => t.slug === 'hydration-fluid-loss-calculator')!;
         { q: 'What is a normal sweat rate?', a: 'Sweat rates vary enormously: 0.5–1.5 L/hr is typical for moderate exercise in mild conditions. Elite athletes in hot, humid conditions can sweat 2–3+ L/hr. Heat acclimatisation increases sweat rate (good for cooling), but also increases fluid and electrolyte requirements.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}

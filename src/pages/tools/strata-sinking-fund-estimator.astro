@@ -8,74 +8,66 @@ const tool = tools.find(t => t.slug === 'strata-sinking-fund-estimator')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Strata Sinking Fund Estimator</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Strata Sinking Fund Estimator</h2>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:1rem;">
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Number of Units</label>
-        <input id="units" type="number" value="12" min="1" max="500"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#64748B'" onblur="this.style.borderColor='#E2E8F0'"/>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Number of Units</label>
+        <input id="units" type="number" value="12" min="1" max="500" class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Current Fund Balance ($)</label>
-        <input id="current-fund" type="number" value="80000" min="0" step="1000"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#64748B'" onblur="this.style.borderColor='#E2E8F0'"/>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Current Fund Balance ($)</label>
+        <input id="current-fund" type="number" value="80000" min="0" step="1000" class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Building Age (years)</label>
-        <input id="building-age" type="number" value="10" min="0" max="100"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#64748B'" onblur="this.style.borderColor='#E2E8F0'"/>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Building Age (years)</label>
+        <input id="building-age" type="number" value="10" min="0" max="100" class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Planning Horizon (years)</label>
-        <input id="horizon" type="number" value="10" min="1" max="30"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem; color:#0F172A; box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#64748B'" onblur="this.style.borderColor='#E2E8F0'"/>
+        <label style="font-size:0.78rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Planning Horizon (years)</label>
+        <input id="horizon" type="number" value="10" min="1" max="30" class="input-themed"/>
       </div>
     </div>
 
     <div id="assets-list" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.875rem;"></div>
-    <button id="add-asset" style="width:100%; padding:0.5rem; border:1.5px dashed #CBD5E1; border-radius:0.5rem; background:#F8FAFC; color:#475569; font-size:0.82rem; font-weight:600; cursor:pointer; margin-bottom:1.25rem;">+ Add Asset</button>
+    <button id="add-asset" class="btn-secondary" style="width:100%; margin-bottom:1.25rem;">+ Add Asset</button>
 
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1rem;">
-      <div style="background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:0.75rem; padding:1rem; text-align:center;">
-        <div id="out-required" style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A;">—</div>
-        <div style="font-size:0.68rem; font-weight:600; color:#94A3B8; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Required Fund</div>
+      <div class="result-card" style="text-align:center;">
+        <div id="out-required" style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary);">—</div>
+        <div style="font-size:0.68rem; font-weight:600; color:var(--text-muted); margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Required Fund</div>
       </div>
-      <div style="background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:0.75rem; padding:1rem; text-align:center;">
-        <div id="out-adequacy" style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A;">—%</div>
-        <div style="font-size:0.68rem; font-weight:600; color:#94A3B8; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Adequacy</div>
+      <div class="result-card" style="text-align:center;">
+        <div id="out-adequacy" style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary);">—%</div>
+        <div style="font-size:0.68rem; font-weight:600; color:var(--text-muted); margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Adequacy</div>
       </div>
-      <div style="background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:0.75rem; padding:1rem; text-align:center;">
-        <div id="out-levy" style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A;">—</div>
-        <div style="font-size:0.68rem; font-weight:600; color:#94A3B8; margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Annual Levy/Unit</div>
+      <div class="result-card" style="text-align:center;">
+        <div id="out-levy" style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary);">—</div>
+        <div style="font-size:0.68rem; font-weight:600; color:var(--text-muted); margin-top:0.2rem; text-transform:uppercase; letter-spacing:0.04em;">Annual Levy/Unit</div>
       </div>
     </div>
 
     <div id="adequacy-bar-wrap" style="margin-bottom:0.5rem;">
-      <div style="height:10px; background:#F1F5F9; border-radius:999px; overflow:hidden;">
-        <div id="adequacy-bar" style="height:100%; width:0%; background:#64748B; border-radius:999px; transition:width 0.4s ease, background 0.3s;"></div>
+      <div style="height:10px; background:var(--bg-surface-2); border-radius:999px; overflow:hidden;">
+        <div id="adequacy-bar" style="height:100%; width:0%; background:var(--text-secondary); border-radius:999px; transition:width 0.4s ease, background 0.3s;"></div>
       </div>
     </div>
-    <div id="adequacy-msg" style="font-size:0.78rem; color:#475569; text-align:right;"></div>
+    <div id="adequacy-msg" style="font-size:0.78rem; color:var(--text-secondary); text-align:right;"></div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this estimator</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your building's unit count, current sinking fund balance, building age, and planning horizon. Review the pre-loaded asset list (roof, lifts, etc.), update replacement costs to your building's specifics, and adjust lifespans. The tool calculates what portion of each asset's replacement cost should be accumulated over the planning horizon.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">This is a planning aid only. Australian strata legislation requires a formal 10-year capital works fund plan prepared by a qualified quantity surveyor or engineer every 5 years.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this estimator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your building's unit count, current sinking fund balance, building age, and planning horizon. Review the pre-loaded asset list (roof, lifts, etc.), update replacement costs to your building's specifics, and adjust lifespans. The tool calculates what portion of each asset's replacement cost should be accumulated over the planning horizon.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">This is a planning aid only. Australian strata legislation requires a formal 10-year capital works fund plan prepared by a qualified quantity surveyor or engineer every 5 years.</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How the required fund is calculated</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">For each asset, the tool calculates the replacement cost attributable to the planning horizon based on the asset's age and lifespan. The sum of these contributions is the total required fund. Adequacy = Current Balance / Required Fund × 100. The annual levy is the shortfall divided by the horizon divided by the number of units.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the required fund is calculated</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">For each asset, the tool calculates the replacement cost attributable to the planning horizon based on the asset's age and lifespan. The sum of these contributions is the total required fund. Adequacy = Current Balance / Required Fund × 100. The annual levy is the shortfall divided by the horizon divided by the number of units.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'What is a sinking fund?', a: 'A sinking fund (also called a capital works fund) is money collected from owners in advance to fund major repairs and replacement of common property assets (roofs, lifts, pools, driveways, façades). It differs from the administrative fund, which covers ongoing running costs like insurance and cleaning.' },
@@ -84,10 +76,10 @@ const tool = tools.find(t => t.slug === 'strata-sinking-fund-estimator')!;
         { q: 'How often should a capital works plan be reviewed?', a: 'Most states require a review every 5 years. However, the plan should also be reviewed after any major unexpected expenditure, significant changes to the building, or when asset lifespans are revised based on new inspections or engineering reports.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          class="result-card">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -146,18 +138,19 @@ const tool = tools.find(t => t.slug === 'strata-sinking-fund-estimator')!;
     list.innerHTML = '';
     assets.forEach(a => {
       const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;background:#fff;border:1px solid #E2E8F0;border-radius:0.5rem;padding:0.45rem 0.625rem;';
+      row.className = 'result-card';
+      row.style.cssText = 'display:flex;align-items:center;gap:0.5rem;padding:0.45rem 0.625rem;';
       row.innerHTML = `
         <input type="text" value="${a.label}" data-id="${a.id}" data-field="label"
-          style="flex:1;border:none;outline:none;font-size:0.82rem;color:#0F172A;background:transparent;min-width:0;"/>
-        <span style="font-size:0.72rem;color:#94A3B8;white-space:nowrap;">Cost $</span>
+          class="input-themed" style="flex:1;border:none;min-width:0;"/>
+        <span style="font-size:0.72rem;color:var(--text-muted);white-space:nowrap;">Cost $</span>
         <input type="number" value="${a.cost}" min="0" step="1000" data-id="${a.id}" data-field="cost"
-          style="width:80px;padding:0.2rem 0.35rem;border:1px solid #E2E8F0;border-radius:0.35rem;font-size:0.78rem;text-align:right;outline:none;"/>
-        <span style="font-size:0.72rem;color:#94A3B8;">Life</span>
+          class="input-themed" style="width:80px;text-align:right;"/>
+        <span style="font-size:0.72rem;color:var(--text-muted);">Life</span>
         <input type="number" value="${a.lifespan}" min="1" max="100" data-id="${a.id}" data-field="lifespan"
-          style="width:46px;padding:0.2rem 0.35rem;border:1px solid #E2E8F0;border-radius:0.35rem;font-size:0.78rem;text-align:center;outline:none;"/>
-        <span style="font-size:0.72rem;color:#94A3B8;">yr</span>
-        <button data-id="${a.id}" style="background:none;border:none;cursor:pointer;color:#CBD5E1;font-size:1.1rem;padding:0;">×</button>
+          class="input-themed" style="width:46px;text-align:center;"/>
+        <span style="font-size:0.72rem;color:var(--text-muted);">yr</span>
+        <button data-id="${a.id}" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:0;">×</button>
       `;
       list.appendChild(row);
     });

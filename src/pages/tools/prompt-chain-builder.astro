@@ -8,34 +8,34 @@ const tool = tools.find(t => t.slug === 'prompt-chain-builder')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Prompt Chain Builder</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Prompt Chain Builder</h2>
 
     <div id="chain-list" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.875rem;"></div>
 
-    <button id="add-step" style="width:100%; padding:0.625rem; border:1.5px dashed #C4B5FD; border-radius:0.625rem; background:#F5F3FF; color:#7C3AED; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:1.25rem;">+ Add Step</button>
+    <button id="add-step" class="btn-secondary" style="width:100%; border-color:#C4B5FD; color:#7C3AED; background:#F5F3FF; margin-bottom:1.25rem;">+ Add Step</button>
 
     <div style="display:flex; gap:0.5rem; margin-bottom:0.875rem;">
-      <button id="export-json" style="padding:0.5rem 1rem; background:#7C3AED; color:#fff; border:none; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Export JSON</button>
-      <button id="export-text" style="padding:0.5rem 1rem; background:#F8FAFC; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer;">Export Text</button>
-      <button id="copy-export" style="margin-left:auto; padding:0.5rem 1rem; border:1.5px solid #E2E8F0; border-radius:0.5rem; font-size:0.82rem; font-weight:600; color:#475569; background:#F8FAFC; cursor:pointer;">Copy</button>
+      <button id="export-json" class="btn-primary" style="background:#7C3AED;">Export JSON</button>
+      <button id="export-text" class="btn-secondary">Export Text</button>
+      <button id="copy-export" class="btn-secondary" style="margin-left:auto;">Copy</button>
     </div>
 
     <pre id="export-output" style="margin:0; background:#1E1E2E; border-radius:0.875rem; padding:1rem; font-family:'Fira Code',monospace; font-size:0.75rem; color:#E2E8F0; white-space:pre-wrap; word-break:break-all; max-height:280px; overflow-y:auto; line-height:1.7;"></pre>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to build a prompt chain</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Add steps to your chain using the button below. Each step has a role (system, user, or assistant) and a content field. Reorder steps using the up/down arrows. Export as JSON (for direct API use) or as a readable text preview. Use the chain to design multi-turn conversations or iterative refinement workflows.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">A typical chain: system → user (task) → assistant (expected response template) → user (refinement instruction).</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to build a prompt chain</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Add steps to your chain using the button below. Each step has a role (system, user, or assistant) and a content field. Reorder steps using the up/down arrows. Export as JSON (for direct API use) or as a readable text preview. Use the chain to design multi-turn conversations or iterative refinement workflows.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">A typical chain: system → user (task) → assistant (expected response template) → user (refinement instruction).</p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">What is a prompt chain?</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">A prompt chain is a structured sequence of messages passed to an LLM API as the messages array. Rather than a single prompt, multi-turn chains let you pre-fill the conversation history to guide the model's reasoning, set up personas, provide worked examples, and build iterative refinement loops. The exported JSON can be pasted directly into the OpenAI or Anthropic API playground.</p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What is a prompt chain?</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">A prompt chain is a structured sequence of messages passed to an LLM API as the messages array. Rather than a single prompt, multi-turn chains let you pre-fill the conversation history to guide the model's reasoning, set up personas, provide worked examples, and build iterative refinement loops. The exported JSON can be pasted directly into the OpenAI or Anthropic API playground.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'What is the "system" role used for?', a: 'The system message sets the context, persona, and constraints for the model. It is processed before any user messages and is most effective for defining tone, output format requirements, and what the model should and should not do. In GPT models it is passed as {role:"system"}; in Claude it can be a separate system parameter.' },
@@ -44,10 +44,10 @@ const tool = tools.find(t => t.slug === 'prompt-chain-builder')!;
         { q: 'Can I use this chain with Claude as well as GPT?', a: 'Yes with adaptation. The JSON messages format exports in OpenAI format. For Anthropic Claude API, the system message should be passed as a separate system parameter, and the remaining messages array contains only user/assistant alternating turns. The text export works as a human-readable reference for both.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          class="result-card">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
           </div>
         </div>
       ))}
@@ -79,11 +79,12 @@ const tool = tools.find(t => t.slug === 'prompt-chain-builder')!;
     steps.forEach((step, idx) => {
       const [_dark, fg, bg] = ROLE_COLORS[step.role];
       const row = document.createElement('div');
-      row.style.cssText = `background:${bg};border:1.5px solid ${fg};border-radius:0.75rem;padding:0.75rem;`;
+      row.className = 'result-card';
+      row.style.cssText = `background:${bg};border-color:${fg};padding:0.75rem;`;
       row.innerHTML = `
         <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
           <select data-id="${step.id}" data-field="role"
-            style="padding:0.25rem 0.5rem;border:none;border-radius:0.375rem;font-size:0.78rem;font-weight:700;color:${fg};background:transparent;outline:none;cursor:pointer;">
+            style="padding:0.25rem 0.5rem;border:none;border-radius:0.375rem;font-size:0.78rem;font-weight:700;color:${fg};background:transparent;cursor:pointer;">
             <option ${step.role==='system'?'selected':''}>system</option>
             <option ${step.role==='user'?'selected':''}>user</option>
             <option ${step.role==='assistant'?'selected':''}>assistant</option>
@@ -100,7 +101,7 @@ const tool = tools.find(t => t.slug === 'prompt-chain-builder')!;
         </div>
         <textarea data-id="${step.id}" data-field="content" rows="3"
           placeholder="${step.role === 'assistant' ? 'Leave empty to let the model respond, or pre-fill to guide output…' : 'Enter message content…'}"
-          style="width:100%;border:none;outline:none;background:transparent;font-size:0.82rem;color:#0F172A;resize:vertical;line-height:1.55;box-sizing:border-box;">${step.content}</textarea>
+          style="width:100%;border:none;outline:none;background:transparent;font-size:0.82rem;color:var(--text-primary);resize:vertical;line-height:1.55;box-sizing:border-box;">${step.content}</textarea>
       `;
       list.appendChild(row);
     });
