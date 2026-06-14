@@ -1,0 +1,653 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'dice-roll-simulator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:linear-gradient(135deg,#7C3AED,#6D28D9); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 12px rgba(124,58,237,0.35);">
+        <span style="font-size:1.2rem;">🎲</span>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">Dice Roller</h2>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">Roll virtual 3D dice for RPGs, board games, and more</p>
+      </div>
+    </div>
+
+    <label style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem;">Die Types</label>
+    <div id="die-tags" style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.75rem;"></div>
+    <div id="type-counts" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;"></div>
+
+    <div id="error-msg" style="display:none; padding:0.6rem 0.875rem; margin-bottom:1rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:0.625rem; font-size:0.82rem; color:#EF4444; font-weight:500;"></div>
+
+    <div id="dice-area" style="position:relative; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:2rem 2.5rem; padding:2rem 1rem; background:var(--bg-surface-2); border-radius:1rem; border:2px solid var(--border); box-shadow:inset 0 2px 8px rgba(0,0,0,0.08); margin-bottom:1.25rem; min-height:9rem;">
+      <div id="placeholder-text" style="font-size:0.85rem; color:var(--text-muted); font-weight:500;">Click Roll to throw your dice</div>
+    </div>
+
+    <div id="result-area" style="display:none; text-align:center; margin-bottom:1.25rem;">
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+        <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Result</span>
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+      </div>
+      <div id="result-text" style="font-family:'Sora',sans-serif; font-size:1.6rem; font-weight:800; color:#7C3AED;"></div>
+      <div id="result-breakdown" style="font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem;"></div>
+    </div>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem;">
+      <button id="roll-btn" class="btn-primary"
+        style="flex:1; padding:0.8rem 1.5rem; background:linear-gradient(135deg,#7C3AED,#6D28D9); border-radius:0.75rem; font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:700; letter-spacing:0.02em; box-shadow:0 4px 14px rgba(124,58,237,0.4); display:flex; align-items:center; justify-content:center; gap:0.5rem;"
+      >
+        <span id="roll-icon">🎲</span>
+        <span id="btn-label">Roll Dice</span>
+        <span style="font-size:0.6rem; font-weight:500; opacity:0.7; padding:0.15rem 0.4rem; background:rgba(255,255,255,0.15); border-radius:0.25rem; letter-spacing:0.04em;">SPACE</span>
+      </button>
+      <button id="btn-copy" class="btn-secondary"
+        style="flex:0 0 auto; padding:0.8rem 1rem;"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span id="copy-label">Copy</span>
+      </button>
+    </div>
+
+    <div id="history-section" style="display:none; border-top:1px solid var(--border); padding-top:1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <h3 style="font-family:'Sora',sans-serif; font-size:0.85rem; font-weight:700; color:var(--text-primary); margin:0;">Roll History</h3>
+        <button id="clear-history" class="btn-secondary" style="padding:0.3rem 0.7rem; font-size:0.72rem; border-radius:0.4rem;">Clear</button>
+      </div>
+      <div id="history-list" style="display:flex; flex-wrap:wrap; gap:0.4rem;"></div>
+      <div id="history-stats" style="margin-top:0.75rem; font-size:0.78rem; color:var(--text-muted);"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Dice Roller</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Click the <strong>die type tags</strong> (d4, d4t, d6, d8, d10, d12, d20, d%) to select which dice to roll. Use the <strong>+/−</strong> controls to set how many of each type (up to 6 per type, 12 total). Then click <strong>Roll Dice</strong> to throw your dice.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Keyboard shortcut:</strong> Press <strong>Space</strong> to roll the dice quickly without clicking.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Each die is rendered as a true 3D object using Three.js that tumbles through space before landing on its result. You can select <strong>multiple die types</strong> to roll them all at once — perfect for RPG spell attacks or board game turns.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Perfect 100:</strong> When rolling d10 + d% together, if d10 shows 0 and d% shows 00, you've rolled a Perfect 100 — the rarest percentile roll!
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Click <strong>Copy</strong> to copy the latest roll result to your clipboard.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How it works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row">
+        <span class="info-label">Randomness</span>
+        <span class="info-value">Uses <code style="font-family:'Fira Code',monospace; font-size:0.8rem; background:var(--bg-surface-3); padding:0.15rem 0.4rem; border-radius:0.25rem;">crypto.getRandomValues()</code> for cryptographically secure results.</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Fairness</span>
+        <span class="info-value">Each die face has an equal probability — 1/N for an N-sided die.</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">3D Rendering</span>
+        <span class="info-value">All dice use Three.js with real 3D geometries and canvas-based face textures with purple gradients.</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Animation</span>
+        <span class="info-value">Three.js dice tumble with quaternion slerp for smooth rotation. Twinkle particles burst on result.</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Privacy</span>
+        <span class="info-value">Everything runs in your browser. No data is sent to any server.</span>
+      </div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: "Is the dice roll truly random?", a: "Yes. Each roll uses the Web Crypto API's crypto.getRandomValues(), which is cryptographically secure and suitable for gaming, simulations, and statistical sampling." },
+        { q: "Can I roll multiple die types at once?", a: "Yes! Click multiple die type tags to select them, then use the +/- controls to set how many of each type. All selected dice will roll simultaneously." },
+        { q: "What dice types are supported?", a: "The roller supports all standard RPG dice: d4 (bottom-read tetrahedron), d4t (top-read tetrahedron), d6 (cube), d8 (octahedron), d10 (pentagonal trapezohedron), d12 (dodecahedron), d20 (icosahedron), and d% (percentile, numbered 00-90)." },
+        { q: "What is a Perfect 100?", a: "When rolling d10 + d% together, any pair of d10 showing 0 and d% showing 00 counts as a Perfect 100 (value 100). With multiple dice, each such pair triggers!" },
+        { q: "Is this fair for actual gameplay?", a: "Yes — each face has exactly equal probability. The randomness source is the same cryptographic API used by banking and security software." }
+      ].map(item => (
+        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name" style="font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:700; color:var(--text-primary); margin:0 0 0.35rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.85rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  /* ── Die tag chips ── */
+  :global(.die-tag) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 2px solid var(--border);
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  :global(.die-tag:hover) {
+    border-color: #A78BFA;
+    color: #7C3AED;
+  }
+  :global(.die-tag.active) {
+    background: linear-gradient(135deg, #7C3AED, #6D28D9);
+    color: #fff;
+    border-color: #7C3AED;
+    box-shadow: 0 2px 8px rgba(124,58,237,0.35);
+  }
+
+  /* ── Type count row ── */
+  :global(.type-count-row) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  :global(.type-count-row button) {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 0.3rem;
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: all 0.15s ease;
+  }
+  :global(.type-count-row button:hover) {
+    background: #7C3AED;
+    color: #fff;
+    border-color: #7C3AED;
+  }
+  :global(.type-count-row .count-val) {
+    min-width: 1rem;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #7C3AED;
+  }
+  /* ── Shadow ── */
+  :global(.dice-shadow) {
+    width: 3rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.2) 0%, transparent 70%);
+    margin: 0 auto;
+    transition: all 0.3s ease;
+  }
+
+  /* ── Settle wobble on landing container ── */
+  @keyframes settleWobble {
+    0%   { transform: scale(1); }
+    15%  { transform: scale(1.06); }
+    35%  { transform: scale(0.97); }
+    55%  { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+
+  :global(.dice-landed) {
+    animation: settleWobble 0.3s ease-out;
+  }
+
+  /* ── Twinkle ── */
+  @keyframes twinkle {
+    0%   { opacity: 0; transform: scale(0) rotate(0deg); }
+    30%  { opacity: 1; transform: scale(1.3) rotate(90deg); }
+    60%  { opacity: 0.7; transform: scale(0.8) rotate(200deg); }
+    100% { opacity: 0; transform: scale(0) rotate(360deg); }
+  }
+
+  :global(.twinkle-particle) {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: twinkle 0.7s ease-out forwards;
+  }
+
+  /* ── Roll badge ── */
+  :global(.roll-badge) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-family: 'Fira Code', monospace;
+    background: rgba(124,58,237,0.1);
+    color: #7C3AED;
+    border: 1px solid rgba(124,58,237,0.2);
+  }
+</style>
+
+<script>
+  import { ThreeDice } from '../../lib/three-dice';
+
+  const DIE_TYPES = [
+    { value: 4, label: 'd4' },
+    { value: 40, label: 'd4t' },
+    { value: 6, label: 'd6' },
+    { value: 8, label: 'd8' },
+    { value: 10, label: 'd10' },
+    { value: 12, label: 'd12' },
+    { value: 20, label: 'd20' },
+    { value: 100, label: 'd%' },
+  ];
+
+  (function () {
+    const dieTags = document.getElementById('die-tags')!;
+    const typeCounts = document.getElementById('type-counts')!;
+    const diceArea = document.getElementById('dice-area')!;
+    const placeholderText = document.getElementById('placeholder-text')!;
+    const resultArea = document.getElementById('result-area')!;
+    const resultText = document.getElementById('result-text')!;
+    const resultBreakdown = document.getElementById('result-breakdown')!;
+    const rollBtn = document.getElementById('roll-btn') as HTMLButtonElement;
+    const btnLabel = document.getElementById('btn-label')!;
+    const btnCopy = document.getElementById('btn-copy') as HTMLButtonElement;
+    const copyLabel = document.getElementById('copy-label')!;
+    const historySection = document.getElementById('history-section')!;
+    const historyList = document.getElementById('history-list')!;
+    const historyStats = document.getElementById('history-stats')!;
+    const clearBtn = document.getElementById('clear-history') as HTMLButtonElement;
+
+    let rolling = false;
+    let lastResult = '';
+    let history: { breakdown: string; total: number }[] = [];
+    let activeDice: ThreeDice[] = [];
+
+    /* ── State: { type: count } ── */
+    const selected: Record<number, number> = {};
+
+    /* ── Build tag buttons ── */
+    DIE_TYPES.forEach(dt => {
+      const btn = document.createElement('button');
+      btn.className = 'die-tag';
+      btn.textContent = dt.label;
+      btn.dataset.type = String(dt.value);
+      btn.addEventListener('click', () => toggleType(dt.value, btn));
+      dieTags.appendChild(btn);
+    });
+
+    function toggleType(type: number, btn: HTMLElement) {
+      if (selected[type]) {
+        delete selected[type];
+        btn.classList.remove('active');
+      } else {
+        selected[type] = 1;
+        btn.classList.add('active');
+      }
+      renderCounts();
+    }
+
+    function renderCounts() {
+      typeCounts.innerHTML = '';
+      for (const type of Object.keys(selected).map(Number)) {
+        const dt = DIE_TYPES.find(d => d.value === type)!;
+        const row = document.createElement('div');
+        row.className = 'type-count-row';
+
+        const minus = document.createElement('button');
+        minus.textContent = '\u2212';
+        minus.addEventListener('click', () => {
+          if (selected[type] > 1) { selected[type]--; renderCounts(); }
+        });
+
+        const val = document.createElement('span');
+        val.className = 'count-val';
+        val.textContent = String(selected[type]);
+
+        const plus = document.createElement('button');
+        plus.textContent = '+';
+        plus.addEventListener('click', () => {
+          if (selected[type] < 6) { selected[type]++; renderCounts(); }
+        });
+
+        row.appendChild(document.createTextNode(dt.label + ' '));
+        row.appendChild(minus);
+        row.appendChild(val);
+        row.appendChild(plus);
+        typeCounts.appendChild(row);
+      }
+    }
+
+    function getTotalDice(): number {
+      return Object.values(selected).reduce((a, b) => a + b, 0);
+    }
+
+    function secureRandInt(min: number, max: number): number {
+      const range = max - min + 1;
+      const arr = new Uint32Array(1);
+      const limit = Math.floor(0xFFFFFFFF / range) * range;
+      do { crypto.getRandomValues(arr); } while (arr[0] > limit);
+      return min + (arr[0] % range);
+    }
+
+    function dieLabel(type: number): string {
+      if (type === 100) return 'd%';
+      if (type === 40) return 'd4t';
+      return 'd' + type;
+    }
+
+    function dieValueLabel(type: number, val: number): string {
+      if (type === 100) return String(val);
+      return String(val);
+    }
+
+    function computeProbability(sel: Record<number, number>, targetSum: number): number {
+      let dist = new Map<number, number>();
+      dist.set(0, 1);
+      for (const [type, count] of Object.entries(sel).map(([k, v]) => [Number(k), v as number])) {
+        const dieVals: number[] = [];
+        if (type === 100) {
+          for (let i = 0; i < 10; i++) dieVals.push(i * 10);
+        } else if (type === 10) {
+          if (sel[100]) { for (let i = 0; i < 10; i++) dieVals.push(i); }
+          else { for (let i = 1; i <= 10; i++) dieVals.push(i); }
+        } else {
+          const mx = type === 40 ? 4 : type;
+          for (let i = 1; i <= mx; i++) dieVals.push(i);
+        }
+        const p = 1 / dieVals.length;
+        for (let d = 0; d < count; d++) {
+          const nd = new Map<number, number>();
+          for (const [s, pr] of dist) {
+            for (const v of dieVals) {
+              nd.set(s + v, (nd.get(s + v) || 0) + pr * p);
+            }
+          }
+          dist = nd;
+        }
+      }
+      return dist.get(targetSum) || 0;
+    }
+
+    function getRarity(prob: number) {
+      if (prob > 0.15) return { e: '😐', l: 'Very Common' };
+      if (prob > 0.10) return { e: '🙂', l: 'Common' };
+      if (prob > 0.05) return { e: '😊', l: 'Uncommon' };
+      if (prob > 0.02) return { e: '😮', l: 'Rare' };
+      if (prob > 0.01) return { e: '😲', l: 'Very Rare' };
+      return { e: '🤯', l: 'Ultra Rare' };
+    }
+
+    function createThreeDiceElement(val: number, type: number): HTMLElement {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:0.35rem; padding-top:1.5rem; padding-bottom:1.5rem; position:relative; width:7.5rem;';
+
+      const dice = new ThreeDice(type, val);
+      activeDice.push(dice);
+
+      const canvas = dice.getElement();
+      canvas.style.cssText = 'width:120px; height:120px; display:block;';
+      wrapper.appendChild(canvas);
+
+      const label = document.createElement('span');
+      label.style.cssText = 'font-family:Inter,sans-serif; font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);';
+      label.textContent = dieLabel(type);
+      wrapper.appendChild(label);
+
+      const shadow = document.createElement('div');
+      shadow.className = 'dice-shadow';
+      shadow.style.cssText = 'position:absolute; bottom:0.5rem; left:50%; transform:translateX(-50%);';
+      wrapper.appendChild(shadow);
+
+      return wrapper;
+    }
+
+    function spawnTwinkles(diceEl: HTMLElement) {
+      const rect = diceEl.getBoundingClientRect();
+      const areaRect = diceArea.getBoundingClientRect();
+      const cx = rect.left - areaRect.left + rect.width / 2;
+      const cy = rect.top - areaRect.top + rect.height / 2;
+      const colors = ['#8B5CF6','#A78BFA','#C4B5FD','#EDE9FE','#F5F3FF','#fff'];
+
+      for (let i = 0; i < 10; i++) {
+        const p = document.createElement('div');
+        p.className = 'twinkle-particle';
+        const angle = (Math.PI * 2 * i) / 10 + (Math.random() - 0.5) * 0.5;
+        const dist = 25 + Math.random() * 30;
+        p.style.left = (cx + Math.cos(angle) * dist) + 'px';
+        p.style.top = (cy + Math.sin(angle) * dist) + 'px';
+        p.style.background = colors[i % colors.length];
+        p.style.boxShadow = `0 0 6px ${colors[i % colors.length]}`;
+        p.style.animationDelay = (Math.random() * 0.2) + 's';
+        diceArea.appendChild(p);
+        setTimeout(() => p.remove(), 900);
+      }
+    }
+
+    function roll() {
+      if (rolling) return;
+      const totalDice = getTotalDice();
+      if (totalDice === 0) {
+        const err = document.getElementById('error-msg')!;
+        err.style.display = 'block';
+        err.textContent = 'Select at least one die type to roll.';
+        setTimeout(() => { err.style.display = 'none'; }, 2500);
+        return;
+      }
+      if (totalDice > 12) {
+        const err = document.getElementById('error-msg')!;
+        err.style.display = 'block';
+        err.textContent = 'Maximum 12 dice per roll.';
+        setTimeout(() => { err.style.display = 'none'; }, 2500);
+        return;
+      }
+
+      rolling = true;
+      rollBtn.disabled = true;
+      rollBtn.style.opacity = '0.6';
+      btnLabel.textContent = 'Rolling\u2026';
+
+      activeDice.forEach(d => d.dispose());
+      activeDice = [];
+
+      placeholderText.style.display = 'none';
+
+      /* Generate all rolls */
+      const rolls: { type: number; value: number }[] = [];
+      const typeBreakdowns: Record<number, number[]> = {};
+      for (const type of Object.keys(selected).map(Number)) {
+        const count = selected[type];
+        const maxVal = type === 100 ? 10 : (type === 40 ? 4 : type);
+        typeBreakdowns[type] = [];
+        for (let i = 0; i < count; i++) {
+          let val: number;
+          if (type === 100) {
+            val = secureRandInt(0, 9) * 10;
+          } else if (type === 10) {
+            const faceIdx = secureRandInt(0, 9);
+            /* Face "0" = value 10 when d10 alone, value 0 when paired with d% */
+            val = faceIdx === 0 ? (selected[100] ? 0 : 10) : faceIdx;
+          } else {
+            val = secureRandInt(1, maxVal);
+          }
+          rolls.push({ type, value: val });
+          typeBreakdowns[type].push(val);
+        }
+      }
+
+      /* Check for Perfect 100 pairs: d10=0 + d%=00 */
+      let perfect100Count = 0;
+      if (selected[10] && selected[100]) {
+        const d10Zeros = typeBreakdowns[10].filter(v => v === 0).length;
+        const d100Zeros = typeBreakdowns[100].filter(v => v === 0).length;
+        perfect100Count = Math.min(d10Zeros, d100Zeros);
+      }
+
+      /* Remove all previous dice */
+      Array.from(diceArea.children).forEach(child => {
+        if (child !== placeholderText) child.remove();
+      });
+
+      /* Create dice elements */
+      let animIdx = 0;
+      for (const { type, value } of rolls) {
+        /* For 3D rendering, map value to face index */
+        let faceVal: number;
+        if (type === 100) {
+          faceVal = value / 10;
+        } else if (type === 10) {
+          faceVal = value === 10 ? 0 : value;
+        } else if (type === 40) {
+          /* d4t: pass value directly, ThreeDice handles vertex orientation */
+          faceVal = value;
+        } else {
+          faceVal = value;
+        }
+        const wrapper = createThreeDiceElement(faceVal, type);
+        diceArea.appendChild(wrapper);
+
+        const dice = activeDice[activeDice.length - 1];
+        const idx = animIdx++;
+        setTimeout(() => {
+          dice.tumble(1400, () => {
+            spawnTwinkles(dice.getElement());
+            wrapper.classList.add('dice-landed');
+            setTimeout(() => wrapper.classList.remove('dice-landed'), 350);
+          });
+        }, idx * 100);
+      }
+
+      const total = rolls.reduce((s, r) => s + r.value, 0) + (100 * perfect100Count);
+      const totalAnimDuration = 1400 + (rolls.length - 1) * 100 + 350;
+
+      setTimeout(() => {
+        rolling = false;
+        rollBtn.disabled = false;
+        rollBtn.style.opacity = '1';
+        btnLabel.textContent = 'Roll Dice';
+
+        resultArea.style.display = 'block';
+        const baseSum = total - 100 * perfect100Count;
+        const prob = computeProbability(selected, baseSum);
+        const rarity = getRarity(prob);
+        resultText.textContent = `You rolled a ${total} ${rarity.e}`;
+        resultText.title = rarity.l;
+
+        /* Build breakdown string */
+        const parts: string[] = [];
+        if (perfect100Count > 0) {
+          parts.push(`${perfect100Count}x Perfect 100!`);
+        }
+        let d10ZerosUsed = 0;
+        let d100ZerosUsed = 0;
+        for (const type of Object.keys(typeBreakdowns).map(Number)) {
+          const vals = typeBreakdowns[type];
+          const label = dieLabel(type);
+          const displayVals = vals.filter(v => {
+            if (v === 0 && type === 10 && d10ZerosUsed < perfect100Count) {
+              d10ZerosUsed++;
+              return false;
+            }
+            if (v === 0 && type === 100 && d100ZerosUsed < perfect100Count) {
+              d100ZerosUsed++;
+              return false;
+            }
+            return true;
+          });
+          if (displayVals.length > 0) {
+            parts.push(`${label}: ${displayVals.join(', ')}`);
+          }
+        }
+        resultBreakdown.textContent = parts.join('  |  ');
+
+        const breakdownStr = parts.join(', ');
+        lastResult = `Rolled ${rolls.map(r => dieLabel(r.type)).join('+')}: ${breakdownStr} (You rolled a ${total})`;
+
+        history.unshift({ breakdown: breakdownStr, total });
+        updateHistory();
+      }, totalAnimDuration);
+    }
+
+    function updateHistory() {
+      if (history.length === 0) {
+        historySection.style.display = 'none';
+        return;
+      }
+      historySection.style.display = 'block';
+      historyList.innerHTML = '';
+
+      history.slice(0, 30).forEach(entry => {
+        const badge = document.createElement('span');
+        badge.className = 'roll-badge';
+        badge.textContent = `\uD83C\uDFB2 ${entry.total}`;
+        badge.title = entry.breakdown;
+        historyList.appendChild(badge);
+      });
+
+      const allTotals = history.map(h => h.total);
+      const avg = (allTotals.reduce((a, b) => a + b, 0) / allTotals.length).toFixed(1);
+      const max = Math.max(...allTotals);
+      const min = Math.min(...allTotals);
+
+      historyStats.innerHTML = `
+        <span>${history.length} roll${history.length > 1 ? 's' : ''}</span>
+        <span>Avg: ${avg}</span>
+        <span>Best: ${max}</span>
+        <span>Worst: ${min}</span>
+      `;
+    }
+
+    rollBtn.addEventListener('click', roll);
+    clearBtn.addEventListener('click', () => { history = []; updateHistory(); });
+
+    btnCopy.addEventListener('click', () => {
+      if (!lastResult) return;
+      navigator.clipboard.writeText(lastResult).then(() => {
+        copyLabel.textContent = '\u2713 Copied!';
+        btnCopy.classList.add('btn-success');
+        setTimeout(() => {
+          copyLabel.textContent = 'Copy';
+          btnCopy.classList.remove('btn-success');
+        }, 2000);
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !rolling && e.target === document.body) {
+        e.preventDefault();
+        roll();
+      }
+    });
+  })();
+</script>

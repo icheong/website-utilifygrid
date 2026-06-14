@@ -1,0 +1,658 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'date-randomizer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:linear-gradient(135deg,#92400E,#78350F); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 12px rgba(146,64,14,0.35);">
+        <span style="font-size:1.2rem;">📅</span>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">Date Randomizer</h2>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">Pick a completely random date and time within any range</p>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:0.75rem; margin-bottom:1rem;">
+      <div style="flex:1;">
+        <label for="start-date" style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;">Start Date</label>
+        <input id="start-date" type="date" class="input-themed" style="text-align:center; font-family:'Fira Code',monospace; font-weight:600;" />
+      </div>
+      <div style="flex:1;">
+        <label for="end-date" style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;">End Date</label>
+        <input id="end-date" type="date" class="input-themed" style="text-align:center; font-family:'Fira Code',monospace; font-weight:600;" />
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap;">
+      <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-size:0.78rem; font-weight:600; color:var(--text-secondary); user-select:none;">
+        <input id="include-time" type="checkbox" style="accent-color:#92400E; width:1rem; height:1rem;" />
+        Include time
+      </label>
+      <label id="time-format-wrap" style="display:none; align-items:center; gap:0.35rem; font-size:0.78rem; font-weight:600; color:var(--text-secondary); user-select:none;">
+        <select id="time-format" class="select-themed" style="padding:0.2rem 0.4rem; font-size:0.72rem; font-weight:600;">
+          <option value="24h">24-hour</option>
+          <option value="ampm">AM / PM</option>
+        </select>
+      </label>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1.25rem;">
+      <span style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:flex; align-items:center; margin-right:0.25rem;">Quick:</span>
+      <button class="preset-chip" data-preset="this-year" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#92400E';this.style.color='#78350F';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">This Year</button>
+      <button class="preset-chip" data-preset="next-30" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#92400E';this.style.color='#78350F';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Next 30 Days</button>
+      <button class="preset-chip" data-preset="next-year" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#92400E';this.style.color='#78350F';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Next Year</button>
+      <button class="preset-chip" data-preset="historical" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#92400E';this.style.color='#78350F';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Historical (1900–2000)</button>
+      <button class="preset-chip" data-preset="weekend" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#92400E';this.style.color='#78350F';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Random Weekend</button>
+    </div>
+
+    <div id="error-msg" style="display:none; padding:0.6rem 0.875rem; margin-bottom:1rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:0.625rem; font-size:0.82rem; color:#EF4444; font-weight:500;"></div>
+
+    <button id="generate-btn" class="btn-primary"
+      style="width:100%; padding:0.8rem 1.5rem; background:linear-gradient(135deg,#92400E,#78350F); border-radius:0.75rem; font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:700; letter-spacing:0.02em; box-shadow:0 4px 14px rgba(146,64,14,0.4);"
+    >
+      <span>📅</span>
+      <span id="btn-label">Pick Random Date</span>
+    </button>
+
+    <div id="result-area" style="display:none;">
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem;">
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+        <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Result</span>
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+      </div>
+
+      <div id="flip-display" style="display:flex; align-items:center; justify-content:center; gap:0.5rem; flex-wrap:wrap; padding:1.5rem 1rem; background:var(--bg-surface-2); border-radius:1rem; border:2px solid var(--border); box-shadow:inset 0 2px 8px rgba(0,0,0,0.08); margin-bottom:1.25rem;">
+      </div>
+
+      <div id="formats-area" style="display:none; margin-bottom:1.25rem;">
+        <span style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:0.5rem;">Quick copy:</span>
+        <div id="formats-list" style="display:flex; flex-direction:column; gap:0.4rem;"></div>
+      </div>
+
+      <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem;">
+        <button id="btn-copy" class="btn-secondary"
+          style="flex:1;"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span id="copy-label">Copy</span>
+        </button>
+        <button id="btn-again" class="btn-secondary"
+          style="flex:1;"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          <span>Again</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="history-section" style="display:none; border-top:1px solid var(--border); padding-top:1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <h3 style="font-family:'Sora',sans-serif; font-size:0.85rem; font-weight:700; color:var(--text-primary); margin:0;">History</h3>
+        <button id="clear-history" class="btn-secondary" style="padding:0.3rem 0.7rem; font-size:0.72rem; border-radius:0.4rem;">Clear</button>
+      </div>
+      <div id="history-list" style="display:flex; flex-wrap:wrap; gap:0.4rem;"></div>
+      <div id="history-stats" style="margin-top:0.75rem; font-size:0.78rem; color:var(--text-muted);"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Date Randomizer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Set a <strong>start date</strong> and <strong>end date</strong> to define your range, then click <strong>Pick Random Date</strong>. The tool selects a completely random day within that range. Toggle <strong>Include time</strong> to also generate a random hour and minute.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Use the <em>Quick</em> chips to instantly set common ranges like "This Year" or "Historical (1900–2000)". The result is displayed in a split-flap animation and shown in multiple date formats — click any format to copy it.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Ideal for: writers creating historical settings, developers generating dummy data, couples picking a random weekend for a trip, or any situation where you need an impartial random date.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How it works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Randomness</span><span class="info-value">Uses <code>crypto.getRandomValues()</code> for cryptographically secure random selection</span></div>
+      <div class="info-row"><span class="info-label">Range</span><span class="info-value">Inclusive — both start and end dates can appear as results</span></div>
+      <div class="info-row"><span class="info-label">Animation</span><span class="info-value">Split-flap display — each date component cycles through values and locks left to right</span></div>
+      <div class="info-row"><span class="info-label">Privacy</span><span class="info-value">Everything runs in your browser — no data is stored or transmitted</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: "Is the random date truly random?",
+          a: "Yes. It uses the Web Crypto API (crypto.getRandomValues) which produces cryptographically secure random numbers. Every day in your selected range has an equal probability of being chosen."
+        },
+        {
+          q: "Can I include a specific time?",
+          a: "Yes. Toggle the 'Include time' checkbox and the tool will also generate a random hour (0–23) and minute (0–59). The time is displayed alongside the date in all copy formats."
+        },
+        {
+          q: "What date range can I use?",
+          a: "Any range where the start date is before the end date. Very large ranges (thousands of years) work fine. The practical limit is your browser's Date object precision."
+        },
+        {
+          q: "Can I use this for generating dummy data?",
+          a: "Absolutely. Developers frequently need random dates for testing databases, filling spreadsheets, or populating test environments. The ISO 8601 format is especially useful for this."
+        },
+        {
+          q: "Does my generation history get saved?",
+          a: "No. All data stays in your browser's memory. If you refresh the page, the history resets. Nothing is stored on any server."
+        }
+      ].map(item => (
+        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name" style="font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:700; color:var(--text-primary); margin:0 0 0.35rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.85rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  @keyframes flipIn {
+    0% { transform: rotateX(90deg); opacity: 0; }
+    100% { transform: rotateX(0deg); opacity: 1; }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(146,64,14,0); }
+    50% { box-shadow: 0 0 20px 4px rgba(146,64,14,0.15); }
+  }
+  .pulse-glow {
+    animation: pulseGlow 1.5s ease-in-out infinite;
+  }
+  :global(.flip-card) {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    perspective: 600px;
+    flex-shrink: 0;
+  }
+  :global(.flip-card-inner) {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    background: var(--bg-surface);
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transform-origin: top center;
+    white-space: nowrap;
+  }
+  :global(.flip-card.rolling .flip-card-inner) {
+    animation: flapRoll 0.08s linear infinite;
+  }
+  :global(.flip-card.locking .flip-card-inner) {
+    animation: flapSettle 0.25s ease-out forwards;
+  }
+  :global(.flip-card.locked .flip-card-inner) {
+    transform: rotateX(0deg);
+    border: 2px solid #92400E !important;
+    box-shadow: 0 0 12px rgba(146,64,14,0.15), 0 2px 8px rgba(0,0,0,0.08);
+  }
+  @keyframes flapRoll {
+    0% { transform: rotateX(0deg); }
+    50% { transform: rotateX(12deg); }
+    100% { transform: rotateX(0deg); }
+  }
+  @keyframes flapSettle {
+    0% { transform: rotateX(18deg); }
+    100% { transform: rotateX(0deg); }
+  }
+  :global(.flip-label) {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+  }
+  :global(.flip-value) {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--color-brand-brown);
+    line-height: 1.2;
+  }
+  :global(.flip-value-time) {
+    font-size: 1.6rem;
+  }
+  :global(.flip-card-time) {
+    min-width: 6.5rem;
+  }
+  :global(.format-row) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    transition: border-color 0.15s;
+  }
+  :global(.format-row:hover) {
+    border-color: var(--color-brand-brown);
+  }
+  :global(.format-text) {
+    flex: 1;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  :global(.format-copy) {
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.35rem;
+    border: 1px solid var(--border);
+    background: var(--bg-surface-2);
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  :global(.format-copy:hover) {
+    border-color: var(--color-brand-brown);
+    color: var(--color-brand-brown);
+  }
+</style>
+
+<script>
+  (function () {
+    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const ORDINALS = ['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','13th','14th','15th','16th','17th','18th','19th','20th','21st','22nd','23rd','24th','25th','26th','27th','28th','29th','30th','31st'];
+
+    const startDate = document.getElementById('start-date') as HTMLInputElement;
+    const endDate = document.getElementById('end-date') as HTMLInputElement;
+    const includeTime = document.getElementById('include-time') as HTMLInputElement;
+    const timeFormatWrap = document.getElementById('time-format-wrap')!;
+    const timeFormatSelect = document.getElementById('time-format') as HTMLSelectElement;
+    const generateBtn = document.getElementById('generate-btn') as HTMLButtonElement;
+    const btnLabel = document.getElementById('btn-label')!;
+    const errorMsg = document.getElementById('error-msg')!;
+    const resultArea = document.getElementById('result-area')!;
+    const flipDisplay = document.getElementById('flip-display')!;
+    const formatsArea = document.getElementById('formats-area')!;
+    const formatsList = document.getElementById('formats-list')!;
+    const btnCopy = document.getElementById('btn-copy')!;
+    const copyLabel = document.getElementById('copy-label')!;
+    const btnAgain = document.getElementById('btn-again')!;
+    const historySection = document.getElementById('history-section')!;
+    const historyList = document.getElementById('history-list')!;
+    const historyStats = document.getElementById('history-stats')!;
+    const clearBtn = document.getElementById('clear-history') as HTMLButtonElement;
+
+    let rolling = false;
+    let lastResult: Date | null = null;
+    let history: Date[] = [];
+    let activeIntervals: number[] = [];
+
+    includeTime.addEventListener('change', () => {
+      timeFormatWrap.style.display = includeTime.checked ? 'inline-flex' : 'none';
+    });
+
+    const now = new Date();
+    startDate.value = `${now.getFullYear()}-01-01`;
+    endDate.value = `${now.getFullYear()}-12-31`;
+
+    function showError(msg: string) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+    }
+
+    function hideError() {
+      errorMsg.style.display = 'none';
+    }
+
+    function validate(): { start: Date; end: Date } | null {
+      hideError();
+      const s = new Date(startDate.value);
+      const e = new Date(endDate.value);
+      if (isNaN(s.getTime()) || isNaN(e.getTime())) {
+        showError('Please enter valid dates for both fields.');
+        return null;
+      }
+      if (s >= e) {
+        showError('Start date must be before end date.');
+        return null;
+      }
+      return { start: s, end: e };
+    }
+
+    function secureRandInt(min: number, max: number): number {
+      const range = max - min + 1;
+      const arr = new Uint32Array(1);
+      const limit = Math.floor(0xFFFFFFFF / range) * range;
+      do { crypto.getRandomValues(arr); } while (arr[0] > limit);
+      return min + (arr[0] % range);
+    }
+
+    function clearActiveIntervals() {
+      activeIntervals.forEach(id => clearInterval(id));
+      activeIntervals = [];
+    }
+
+    function formatDate(d: Date): string {
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function toAmPm(h: number, m: number): string {
+      const period = h < 12 ? 'AM' : 'PM';
+      const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      return `${h12}:${String(m).padStart(2,'0')} ${period}`;
+    }
+
+    function formatTime(d: Date): string {
+      if (timeFormatSelect.value === 'ampm') return toAmPm(d.getHours(), d.getMinutes());
+      return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+
+    function buildFormats(d: Date): { label: string; value: string }[] {
+      const day = d.getDate();
+      const month = MONTHS[d.getMonth()];
+      const year = d.getFullYear();
+      const dayName = DAYS[d.getDay()];
+      const timeStr = includeTime.checked ? ` ${formatTime(d)}` : '';
+      const isoTime = includeTime.checked ? `T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '';
+
+      const formats = [
+        { label: 'Literary', value: `The ${ORDINALS[day]} of ${month}, ${year}${timeStr}` },
+        { label: 'US', value: `${month} ${day}, ${year}${timeStr}` },
+        { label: 'International', value: `${day} ${month} ${year}${timeStr}` },
+        { label: 'ISO 8601', value: `${year}-${String(d.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}${isoTime}` },
+        { label: 'DD/MM/YYYY', value: `${String(day).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${year}${timeStr}` },
+        { label: 'With day', value: `${dayName}, ${month} ${day}, ${year}${timeStr}` },
+      ];
+      return formats;
+    }
+
+    function renderFormats(d: Date) {
+      formatsList.innerHTML = '';
+      const formats = buildFormats(d);
+      formats.forEach(f => {
+        const row = document.createElement('div');
+        row.className = 'format-row';
+
+        const label = document.createElement('span');
+        label.style.cssText = 'font-size:0.65rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;min-width:3.5rem;';
+        label.textContent = f.label;
+
+        const text = document.createElement('span');
+        text.className = 'format-text';
+        text.textContent = f.value;
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'format-copy';
+        copyBtn.textContent = 'Copy';
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(f.value).then(() => {
+            copyBtn.textContent = '\u2713';
+            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+          });
+        });
+
+        row.appendChild(label);
+        row.appendChild(text);
+        row.appendChild(copyBtn);
+        formatsList.appendChild(row);
+      });
+      formatsArea.style.display = 'block';
+    }
+
+    function rollAnimation(target: Date, cb: () => void) {
+      rolling = true;
+      generateBtn.disabled = true;
+      generateBtn.style.opacity = '0.6';
+      btnLabel.textContent = 'Picking\u2026';
+
+      clearActiveIntervals();
+      flipDisplay.innerHTML = '';
+
+      const showTime = includeTime.checked;
+      const components: { label: string; value: string; options: string[] }[] = [
+        { label: 'Day', value: DAYS[target.getDay()], options: DAYS },
+        { label: 'Date', value: String(target.getDate()), options: Array.from({length:31}, (_,i) => String(i+1)) },
+        { label: 'Month', value: MONTHS[target.getMonth()], options: MONTHS },
+        { label: 'Year', value: String(target.getFullYear()), options: Array.from({length:201}, (_,i) => String(1900+i)) },
+      ];
+      if (showTime) {
+        const isAmPm = timeFormatSelect.value === 'ampm';
+        const timeOptions = Array.from({length:1440}, (_,i) => {
+          const hh = Math.floor(i/60);
+          const mm = i%60;
+          if (isAmPm) return toAmPm(hh, mm);
+          return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+        });
+        components.push({ label: 'Time', value: formatTime(target), options: timeOptions });
+      }
+
+      const totalDuration = 2000;
+      const lockInterval = totalDuration / components.length;
+
+      const cards: HTMLElement[] = [];
+
+      components.forEach(comp => {
+        const card = document.createElement('div');
+        card.className = 'flip-card rolling' + (comp.label === 'Time' ? ' flip-card-time' : '');
+
+        const inner = document.createElement('div');
+        inner.className = 'flip-card-inner';
+
+        const valueEl = document.createElement('div');
+        valueEl.className = 'flip-value' + (comp.label === 'Time' ? ' flip-value-time' : '');
+        valueEl.textContent = comp.options[secureRandInt(0, comp.options.length - 1)];
+
+        const labelEl = document.createElement('div');
+        labelEl.className = 'flip-label';
+        labelEl.textContent = comp.label;
+
+        inner.appendChild(valueEl);
+        card.appendChild(inner);
+        card.appendChild(labelEl);
+        flipDisplay.appendChild(card);
+
+        const longest = comp.options.reduce((a, b) => a.length > b.length ? a : b);
+        valueEl.textContent = longest;
+        card.style.width = inner.offsetWidth + 'px';
+        valueEl.textContent = comp.options[secureRandInt(0, comp.options.length - 1)];
+
+        cards.push(card);
+      });
+
+      components.forEach((comp, i) => {
+        const card = cards[i];
+        const valueEl = card.querySelector('.flip-value') as HTMLElement;
+        const lockTime = lockInterval * (i + 1);
+        let elapsed = 0;
+        const tickRate = 60;
+
+        const intervalId = window.setInterval(() => {
+          elapsed += tickRate;
+
+          if (elapsed >= lockTime) {
+            clearInterval(intervalId);
+            valueEl.textContent = comp.value;
+            card.className = 'flip-card locking';
+            card.addEventListener('animationend', () => {
+              card.className = 'flip-card locked';
+            }, { once: true });
+            return;
+          }
+
+          valueEl.textContent = comp.options[secureRandInt(0, comp.options.length - 1)];
+        }, tickRate);
+
+        activeIntervals.push(intervalId);
+      });
+
+      setTimeout(() => {
+        clearActiveIntervals();
+
+        components.forEach((comp, i) => {
+          const valueEl = cards[i].querySelector('.flip-value') as HTMLElement;
+          valueEl.textContent = comp.value;
+          cards[i].className = 'flip-card locked';
+        });
+
+        flipDisplay.classList.add('pulse-glow');
+
+        setTimeout(() => {
+          rolling = false;
+          generateBtn.disabled = false;
+          generateBtn.style.opacity = '1';
+          btnLabel.textContent = 'Pick Random Date';
+          cb();
+        }, 300);
+      }, totalDuration + 200);
+    }
+
+    function generate() {
+      if (rolling) return;
+      const range = validate();
+      if (!range) return;
+
+      const startMs = range.start.getTime();
+      const endMs = range.end.getTime();
+      const randomMs = startMs + secureRandInt(0, Math.floor((endMs - startMs) / 86400000)) * 86400000;
+      const result = new Date(randomMs);
+
+      if (includeTime.checked) {
+        result.setHours(secureRandInt(0, 23), secureRandInt(0, 59), 0, 0);
+      } else {
+        result.setHours(0, 0, 0, 0);
+      }
+
+      resultArea.style.display = 'block';
+      flipDisplay.classList.remove('pulse-glow');
+      rollAnimation(result, () => {
+        lastResult = result;
+        history.unshift(result);
+        updateHistory();
+        renderFormats(result);
+      });
+
+      setTimeout(() => resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+    }
+
+    function updateHistory() {
+      if (history.length === 0) {
+        historySection.style.display = 'none';
+        return;
+      }
+      historySection.style.display = 'block';
+      historyList.innerHTML = '';
+      history.forEach((d, i) => {
+        const badge = document.createElement('span');
+        badge.textContent = `${MONTHS[d.getMonth()].slice(0,3)} ${d.getDate()}, ${d.getFullYear()}`;
+        badge.style.cssText = `
+          display:inline-flex; align-items:center;
+          padding:0.3rem 0.65rem; border-radius:999px; font-size:0.75rem; font-weight:600;
+          font-family:'Fira Code',monospace;
+          background:rgba(146,64,14,0.1); color:#78350F; border:1px solid rgba(146,64,14,0.25);
+          ${i === 0 ? 'box-shadow:0 0 0 2px rgba(146,64,14,0.2);' : ''}
+        `;
+        historyList.appendChild(badge);
+      });
+
+      const monthCount: Record<string, number> = {};
+      history.forEach(d => {
+        const m = MONTHS[d.getMonth()];
+        monthCount[m] = (monthCount[m] || 0) + 1;
+      });
+      const sorted = Object.entries(monthCount).sort((a, b) => b[1] - a[1]);
+      const topMonth = sorted.length > 0 ? sorted[0] : null;
+
+      historyStats.innerHTML = `
+        <span>Total: <strong>${history.length}</strong></span>
+        ${topMonth ? `<span style="margin-left:0.75rem;">Most common: <strong>${topMonth[0]}</strong> (${topMonth[1]}x)</span>` : ''}
+      `;
+    }
+
+    generateBtn.addEventListener('click', generate);
+    btnAgain.addEventListener('click', generate);
+
+    btnCopy.addEventListener('click', () => {
+      if (lastResult === null) return;
+      const text = buildFormats(lastResult)[0].value;
+      navigator.clipboard.writeText(text).then(() => {
+        copyLabel.textContent = '\u2713 Copied!';
+        btnCopy.classList.add('btn-success');
+        setTimeout(() => {
+          copyLabel.textContent = 'Copy';
+          btnCopy.classList.remove('btn-success');
+        }, 2000);
+      });
+    });
+
+    clearBtn.addEventListener('click', () => {
+      history = [];
+      updateHistory();
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('.preset-chip[data-preset]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const preset = btn.dataset.preset;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (preset === 'this-year') {
+          startDate.value = `${today.getFullYear()}-01-01`;
+          endDate.value = `${today.getFullYear()}-12-31`;
+        } else if (preset === 'next-30') {
+          const end = new Date(today);
+          end.setDate(end.getDate() + 30);
+          startDate.value = formatDate(today);
+          endDate.value = formatDate(end);
+        } else if (preset === 'next-year') {
+          startDate.value = `${today.getFullYear() + 1}-01-01`;
+          endDate.value = `${today.getFullYear() + 1}-12-31`;
+        } else if (preset === 'historical') {
+          startDate.value = '1900-01-01';
+          endDate.value = '2000-12-31';
+        } else if (preset === 'weekend') {
+          const end = new Date(today);
+          end.setDate(end.getDate() + 60);
+          startDate.value = formatDate(today);
+          endDate.value = formatDate(end);
+        }
+        hideError();
+      });
+    });
+
+    [startDate, endDate].forEach(input => {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') generate();
+      });
+    });
+  })();
+</script>

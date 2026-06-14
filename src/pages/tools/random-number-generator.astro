@@ -1,0 +1,487 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'random-number-generator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:linear-gradient(135deg,#F59E0B,#EA580C); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 12px rgba(245,158,11,0.35);">
+        <span style="font-size:1.2rem;">🎰</span>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">Random Number Generator</h2>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">Generate a truly random integer within any range</p>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:0.75rem; margin-bottom:1rem;">
+      <div style="flex:1;">
+        <label for="min-input" style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;">Min</label>
+        <input id="min-input" type="number" value="1" class="input-themed" style="text-align:center; font-family:'Fira Code',monospace; font-weight:600;" />
+      </div>
+      <div style="flex:1;">
+        <label for="max-input" style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;">Max</label>
+        <input id="max-input" type="number" value="100" class="input-themed" style="text-align:center; font-family:'Fira Code',monospace; font-weight:600;" />
+      </div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1.25rem;">
+      <span style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:flex; align-items:center; margin-right:0.25rem;">Quick:</span>
+      <button class="preset-chip" data-min="1" data-max="10" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#F59E0B';this.style.color='#D97706';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">1–10</button>
+      <button class="preset-chip" data-min="1" data-max="100" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#F59E0B';this.style.color='#D97706';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">1–100</button>
+      <button class="preset-chip" data-min="1" data-max="1000" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#F59E0B';this.style.color='#D97706';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">1–1,000</button>
+      <button class="preset-chip" data-min="1" data-max="10000" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#F59E0B';this.style.color='#D97706';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">1–10,000</button>
+      <button class="preset-chip" data-min="1" data-max="1000000" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='#F59E0B';this.style.color='#D97706';"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">1–1,000,000</button>
+    </div>
+
+    <div id="error-msg" style="display:none; padding:0.6rem 0.875rem; margin-bottom:1rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:0.625rem; font-size:0.82rem; color:#EF4444; font-weight:500;"></div>
+
+    <button id="generate-btn" class="btn-primary"
+      style="width:100%; padding:0.8rem 1.5rem; background:linear-gradient(135deg,#F59E0B,#EA580C); border-radius:0.75rem; font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:700; letter-spacing:0.02em; box-shadow:0 4px 14px rgba(245,158,11,0.4);"
+    >
+      <span>🎰</span>
+      <span id="btn-label">Generate Number</span>
+    </button>
+
+    <div id="result-area" style="display:none;">
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem;">
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+        <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Result</span>
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+      </div>
+
+      <div style="text-align:center; margin-bottom:1.25rem;">
+        <div id="roll-container" style="display:flex; align-items:center; justify-content:center; padding:2rem 1rem; background:var(--bg-surface-2); border-radius:1rem; border:2px solid var(--border); box-shadow:inset 0 2px 8px rgba(0,0,0,0.08); overflow:hidden; max-width:100%;">
+          <div id="digit-track" style="display:flex; align-items:center; justify-content:center; gap:6px; min-width:0;">
+            <span id="result-number" style="display:none;">0</span>
+          </div>
+        </div>
+        <div style="font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-top:0.75rem;">Your random number</div>
+      </div>
+
+      <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem;">
+        <button id="btn-copy" class="btn-secondary"
+          style="flex:1;"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span id="copy-label">Copy</span>
+        </button>
+        <button id="btn-again" class="btn-secondary"
+          style="flex:1;"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          <span>Again</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="history-section" style="display:none; border-top:1px solid var(--border); padding-top:1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <h3 style="font-family:'Sora',sans-serif; font-size:0.85rem; font-weight:700; color:var(--text-primary); margin:0;">History</h3>
+        <button id="clear-history" class="btn-secondary" style="padding:0.3rem 0.7rem; font-size:0.72rem; border-radius:0.4rem;">Clear</button>
+      </div>
+      <div id="history-list" style="display:flex; flex-wrap:wrap; gap:0.4rem;"></div>
+      <div id="history-stats" style="margin-top:0.75rem; font-size:0.78rem; color:var(--text-muted);"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Random Number Generator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Enter a <strong>minimum</strong> and <strong>maximum</strong> value to define your range, then click <strong>Generate Number</strong>. The tool produces a truly random integer between those two bounds (inclusive). Use the <em>Quick</em> chips to instantly set common ranges like 1–100 or 1–6 for dice rolls.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Your generated numbers appear with a rolling animation and are added to the <strong>History</strong> section below. Click <strong>Copy</strong> to save the latest number to your clipboard, or <strong>Again</strong> to generate a new one without changing your range.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Ideal for: raffle draws, giveaway winners, classroom sampling, statistical analysis, picking a random page, selecting a lottery number, or any situation where you need an impartial random integer.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How it works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Randomness</span><span class="info-value">Uses <code>crypto.getRandomValues()</code> for cryptographically secure random integers</span></div>
+      <div class="info-row"><span class="info-label">Range</span><span class="info-value">Inclusive — both min and max values can appear as results</span></div>
+      <div class="info-row"><span class="info-label">Animation</span><span class="info-value">2.5-second slot-machine roll — each digit locks left to right with blur clearing</span></div>
+      <div class="info-row"><span class="info-label">Privacy</span><span class="info-value">Everything runs in your browser — no data is stored or transmitted</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: "Is the random number truly random?",
+          a: "Yes. It uses the Web Crypto API (crypto.getRandomValues) which produces cryptographically secure random numbers — the same quality used in encryption and security applications. Each call draws from the operating system's entropy pool."
+        },
+        {
+          q: "Are both the min and max values included in the range?",
+          a: "Yes. The range is fully inclusive — if you set min=1 and max=100, both 1 and 100 are possible results. Every integer in the range has an equal probability of being selected."
+        },
+        {
+          q: "What is the maximum range I can use?",
+          a: "The tool works with any positive integer range. Very large ranges (billions) work fine mathematically, though the rolling animation duration stays the same. The practical limit is your browser's integer precision (2^53 - 1)."
+        },
+        {
+          q: "Can I use this for giveaways or raffles?",
+          a: "Absolutely. Assign each participant a number and use this tool to draw a winner. For high-stakes draws, screen-record the generation so participants can verify the result was fair."
+        },
+        {
+          q: "Does my generation history get saved?",
+          a: "No. All data stays in your browser's memory. If you refresh the page, the history resets. Nothing is stored on any server."
+        }
+      ].map(item => (
+        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name" style="font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:700; color:var(--text-primary); margin:0 0 0.35rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.85rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  @keyframes digitLock {
+    0% { transform: scale(1.15); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  .digit-locked {
+    animation: digitLock 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
+    50% { box-shadow: 0 0 20px 4px rgba(245,158,11,0.15); }
+  }
+  .pulse-glow {
+    animation: pulseGlow 1.5s ease-in-out infinite;
+  }
+  :global(.digit-slot) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Sora', sans-serif;
+    font-size: var(--digit-size, 3rem);
+    font-weight: 800;
+    color: var(--color-brand-blue);
+    width: 1.2em;
+    height: 1.4em;
+    background: var(--bg-surface);
+    border-radius: 0.5rem;
+    border: 2px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: filter 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  :global(.digit-slot::after) {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+    border-radius: 0.5rem 0.5rem 0 0;
+    pointer-events: none;
+  }
+  :global(.digit-slot.rolling) {
+    filter: blur(12px);
+    color: var(--text-muted);
+    border-color: var(--color-brand-amber);
+    box-shadow: 0 0 12px rgba(245,158,11,0.2), 0 2px 8px rgba(0,0,0,0.08);
+  }
+  :global(.digit-slot.locking) {
+    filter: blur(0px) !important;
+    color: var(--color-brand-amber) !important;
+    border-color: var(--color-brand-amber) !important;
+    box-shadow: 0 0 24px rgba(245,158,11,0.3), 0 4px 12px rgba(0,0,0,0.1) !important;
+    text-shadow: 0 0 12px rgba(245,158,11,0.4);
+  }
+  :global(.digit-slot.locked) {
+    filter: blur(0px);
+    color: var(--color-brand-amber);
+    border-color: var(--color-brand-amber);
+    box-shadow: 0 0 12px rgba(245,158,11,0.2), 0 2px 8px rgba(0,0,0,0.08);
+    text-shadow: none;
+  }
+  :global(.digit-comma) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Sora', sans-serif;
+    font-size: var(--digit-size, 3rem);
+    font-weight: 800;
+    color: var(--text-muted);
+    width: 0.3em;
+    height: 1.4em;
+  }
+</style>
+
+<script>
+  (function () {
+    const minInput = document.getElementById('min-input') as HTMLInputElement;
+    const maxInput = document.getElementById('max-input') as HTMLInputElement;
+    const generateBtn = document.getElementById('generate-btn') as HTMLButtonElement;
+    const btnLabel = document.getElementById('btn-label')!;
+    const errorMsg = document.getElementById('error-msg')!;
+    const resultArea = document.getElementById('result-area')!;
+    const resultNumber = document.getElementById('result-number')!;
+    const digitTrack = document.getElementById('digit-track')!;
+    const rollContainer = document.getElementById('roll-container')!;
+    const btnCopy = document.getElementById('btn-copy')!;
+    const copyLabel = document.getElementById('copy-label')!;
+    const btnAgain = document.getElementById('btn-again')!;
+    const historySection = document.getElementById('history-section')!;
+    const historyList = document.getElementById('history-list')!;
+    const historyStats = document.getElementById('history-stats')!;
+    const clearBtn = document.getElementById('clear-history') as HTMLButtonElement;
+
+    let rolling = false;
+    let lastResult: number | null = null;
+    let history: number[] = [];
+    let activeIntervals: number[] = [];
+
+    function showError(msg: string) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+    }
+
+    function hideError() {
+      errorMsg.style.display = 'none';
+    }
+
+    function validate(): { min: number; max: number } | null {
+      hideError();
+      const min = parseInt(minInput.value, 10);
+      const max = parseInt(maxInput.value, 10);
+
+      if (isNaN(min) || isNaN(max)) {
+        showError('Please enter valid numbers for both Min and Max.');
+        return null;
+      }
+      if (!Number.isInteger(min) || !Number.isInteger(max)) {
+        showError('Only whole numbers are accepted.');
+        return null;
+      }
+      if (min > max) {
+        showError('Min must be less than or equal to Max.');
+        return null;
+      }
+      if (max - min > 1000000000) {
+        showError('Range too large. Please use a range under 1 billion.');
+        return null;
+      }
+      return { min, max };
+    }
+
+    function secureRandInt(min: number, max: number): number {
+      const range = max - min + 1;
+      const arr = new Uint32Array(1);
+      const limit = Math.floor(0xFFFFFFFF / range) * range;
+      do { crypto.getRandomValues(arr); } while (arr[0] > limit);
+      return min + (arr[0] % range);
+    }
+
+    function formatNumber(n: number): string {
+      return n.toLocaleString();
+    }
+
+    function getRawDigits(n: number): string[] {
+      return String(n).split('');
+    }
+
+    function clearActiveIntervals() {
+      activeIntervals.forEach(id => clearInterval(id));
+      activeIntervals = [];
+    }
+
+    function rollAnimation(target: number, min: number, max: number, cb: () => void) {
+      rolling = true;
+      generateBtn.disabled = true;
+      generateBtn.style.opacity = '0.6';
+      btnLabel.textContent = 'Rolling…';
+
+      clearActiveIntervals();
+      resultNumber.style.display = 'none';
+      digitTrack.innerHTML = '';
+
+      const rawDigits = getRawDigits(target);
+      const totalDuration = 2500;
+      const digitCount = rawDigits.length;
+      const lockInterval = totalDuration / digitCount;
+
+      const baseSize = 5;
+      const scaledSize = digitCount <= 1 ? baseSize : digitCount <= 2 ? baseSize * 0.85 : digitCount <= 3 ? baseSize * 0.7 : digitCount <= 4 ? baseSize * 0.55 : digitCount <= 5 ? baseSize * 0.45 : baseSize * 0.35;
+      digitTrack.style.setProperty('--digit-size', `${scaledSize}rem`);
+
+      const slots: HTMLSpanElement[] = [];
+      const commaSpans: HTMLSpanElement[] = [];
+
+      rawDigits.forEach((d, i) => {
+        const slot = document.createElement('span');
+        slot.className = 'digit-slot rolling';
+        slot.textContent = String(Math.floor(Math.random() * 10));
+        digitTrack.appendChild(slot);
+        slots.push(slot);
+
+        const formatted = formatNumber(target);
+        if (i < rawDigits.length - 1 && formatted.includes(',') && (rawDigits.length - 1 - i) % 3 === 0 && rawDigits.length - 1 - i > 0) {
+          const comma = document.createElement('span');
+          comma.className = 'digit-comma';
+          comma.textContent = ',';
+          digitTrack.appendChild(comma);
+          commaSpans.push(comma);
+        }
+      });
+
+      rawDigits.forEach((targetDigit, i) => {
+        const slot = slots[i];
+        const lockTime = lockInterval * (i + 1);
+        let elapsed = 0;
+        const tickRate = 50;
+
+        const intervalId = window.setInterval(() => {
+          elapsed += tickRate;
+
+          if (elapsed >= lockTime) {
+            clearInterval(intervalId);
+            slot.textContent = targetDigit;
+            slot.className = 'digit-slot locking';
+            slot.classList.add('digit-locked');
+            slot.addEventListener('animationend', () => {
+              slot.classList.remove('digit-locked');
+              slot.classList.add('locked');
+            }, { once: true });
+            return;
+          }
+
+          slot.textContent = String(Math.floor(Math.random() * 10));
+        }, tickRate);
+
+        activeIntervals.push(intervalId);
+      });
+
+      setTimeout(() => {
+        clearActiveIntervals();
+
+        rawDigits.forEach((d, i) => {
+          slots[i].textContent = d;
+          slots[i].className = 'digit-slot locked';
+        });
+
+        rollContainer.classList.add('pulse-glow');
+
+        setTimeout(() => {
+          rolling = false;
+          generateBtn.disabled = false;
+          generateBtn.style.opacity = '1';
+          btnLabel.textContent = 'Generate Number';
+          cb();
+        }, 300);
+      }, totalDuration + 200);
+    }
+
+    function generate() {
+      if (rolling) return;
+      const range = validate();
+      if (!range) return;
+
+      const result = secureRandInt(range.min, range.max);
+
+      resultArea.style.display = 'block';
+      rollContainer.classList.remove('pulse-glow');
+      rollAnimation(result, range.min, range.max, () => {
+        lastResult = result;
+        history.unshift(result);
+        updateHistory();
+      });
+
+      setTimeout(() => resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+    }
+
+    function updateHistory() {
+      if (history.length === 0) {
+        historySection.style.display = 'none';
+        return;
+      }
+      historySection.style.display = 'block';
+      historyList.innerHTML = '';
+      history.forEach((num, i) => {
+        const badge = document.createElement('span');
+        badge.textContent = formatNumber(num);
+        badge.style.cssText = `
+          display:inline-flex; align-items:center;
+          padding:0.3rem 0.65rem; border-radius:999px; font-size:0.75rem; font-weight:600;
+          font-family:'Fira Code',monospace;
+          background:rgba(245,158,11,0.1); color:#D97706; border:1px solid rgba(245,158,11,0.25);
+          ${i === 0 ? 'box-shadow:0 0 0 2px rgba(245,158,11,0.2);' : ''}
+        `;
+        historyList.appendChild(badge);
+      });
+
+      const min = Math.min(...history);
+      const max = Math.max(...history);
+      const avg = history.reduce((a, b) => a + b, 0) / history.length;
+      historyStats.innerHTML = `
+        <span>Total: <strong>${history.length}</strong></span>
+        <span style="margin-left:0.75rem;">Min: <strong>${formatNumber(min)}</strong></span>
+        <span style="margin-left:0.75rem;">Max: <strong>${formatNumber(max)}</strong></span>
+        <span style="margin-left:0.75rem;">Avg: <strong>${formatNumber(Math.round(avg))}</strong></span>
+      `;
+    }
+
+    generateBtn.addEventListener('click', generate);
+    btnAgain.addEventListener('click', generate);
+
+    btnCopy.addEventListener('click', () => {
+      if (lastResult === null) return;
+      navigator.clipboard.writeText(String(lastResult)).then(() => {
+        copyLabel.textContent = '✓ Copied!';
+        btnCopy.classList.add('btn-success');
+        setTimeout(() => {
+          copyLabel.textContent = 'Copy';
+          btnCopy.classList.remove('btn-success');
+        }, 2000);
+      });
+    });
+
+    clearBtn.addEventListener('click', () => {
+      history = [];
+      updateHistory();
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('.preset-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        minInput.value = btn.dataset.min!;
+        maxInput.value = btn.dataset.max!;
+        hideError();
+      });
+    });
+
+    [minInput, maxInput].forEach(input => {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') generate();
+      });
+    });
+  })();
+</script>

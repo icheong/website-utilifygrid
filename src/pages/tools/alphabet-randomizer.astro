@@ -1,0 +1,564 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'alphabet-randomizer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
+      <div style="width:2.5rem; height:2.5rem; border-radius:0.75rem; background:linear-gradient(135deg,#10B981,#059669); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 12px rgba(16,185,129,0.35);">
+        <span style="font-size:1.2rem;">🅰️</span>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0 0 0.15rem;">Alphabet Randomizer</h2>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">Pick a random letter from A to Z with optional exclusions</p>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:0.75rem; margin-bottom:1rem; align-items:flex-end;">
+      <div style="flex:0 0 auto;">
+        <label for="count-input" style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;">Letters</label>
+        <input id="count-input" type="number" value="1" min="1" max="10" class="input-themed" style="text-align:center; font-family:'Fira Code',monospace; font-weight:600; width:4.5rem;" />
+      </div>
+      <div style="flex:1;">
+        <span style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:0.35rem;">Quick:</span>
+        <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+          <button class="preset-chip" data-count="1" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+            onmouseover="this.style.borderColor='#10B981';this.style.color='#059669';"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">1</button>
+          <button class="preset-chip" data-count="2" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+            onmouseover="this.style.borderColor='#10B981';this.style.color='#059669';"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">2</button>
+          <button class="preset-chip" data-count="3" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+            onmouseover="this.style.borderColor='#10B981';this.style.color='#059669';"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">3</button>
+          <button class="preset-chip" data-count="5" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+            onmouseover="this.style.borderColor='#10B981';this.style.color='#059669';"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">5</button>
+          <button class="preset-chip" data-count="10" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+            onmouseover="this.style.borderColor='#10B981';this.style.color='#059669';"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">10</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1.25rem;">
+      <span style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:0.5rem;">Exclude letters:</span>
+      <div style="display:flex; flex-wrap:wrap; gap:0.35rem; margin-bottom:0.5rem;">
+        <button id="excl-vowels" class="preset-chip" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+          onmouseover="this.style.borderColor='#10B981';this.style.color='#059669';"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Exclude vowels</button>
+        <button id="excl-consonants" class="preset-chip" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+          onmouseover="this.style.borderColor='#10B981';this.style.color='#059669';"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Exclude consonants</button>
+        <button id="excl-none" class="preset-chip" style="padding:0.25rem 0.7rem; border-radius:999px; border:1px solid var(--border); background:var(--bg-surface-2); color:var(--text-secondary); font-size:0.72rem; font-weight:600; cursor:pointer; transition:all 0.15s;"
+          onmouseover="this.style.borderColor='#10B981';this.style.color='#059669';"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)';">Clear all</button>
+      </div>
+      <div id="letter-grid" style="display:flex; flex-wrap:wrap; gap:0.35rem;"></div>
+      <p id="pool-warning" style="display:none; font-size:0.75rem; color:#DC2626; margin-top:0.5rem; font-weight:500;"></p>
+    </div>
+
+    <div id="error-msg" style="display:none; padding:0.6rem 0.875rem; margin-bottom:1rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:0.625rem; font-size:0.82rem; color:#EF4444; font-weight:500;"></div>
+
+    <button id="generate-btn" class="btn-primary"
+      style="width:100%; padding:0.8rem 1.5rem; background:linear-gradient(135deg,#10B981,#059669); border-radius:0.75rem; font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:700; letter-spacing:0.02em; box-shadow:0 4px 14px rgba(16,185,129,0.4);"
+    >
+      <span>🅰️</span>
+      <span id="btn-label">Generate Letter</span>
+    </button>
+
+    <div id="result-area" style="display:none;">
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem;">
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+        <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Result</span>
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+      </div>
+
+      <div style="text-align:center; margin-bottom:1.25rem;">
+        <div id="roll-container" style="display:flex; align-items:center; justify-content:center; padding:2rem 1rem; background:var(--bg-surface-2); border-radius:1rem; border:2px solid var(--border); box-shadow:inset 0 2px 8px rgba(0,0,0,0.08); overflow:hidden; max-width:100%;">
+          <div id="letter-track" style="display:flex; align-items:center; justify-content:center; gap:6px; min-width:0;"></div>
+        </div>
+        <div style="font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-top:0.75rem;">Your random letter<span id="plural-label"></span></div>
+      </div>
+
+      <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem;">
+        <button id="btn-copy" class="btn-secondary"
+          style="flex:1;"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span id="copy-label">Copy</span>
+        </button>
+        <button id="btn-again" class="btn-secondary"
+          style="flex:1;"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          <span>Again</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="history-section" style="display:none; border-top:1px solid var(--border); padding-top:1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <h3 style="font-family:'Sora',sans-serif; font-size:0.85rem; font-weight:700; color:var(--text-primary); margin:0;">History</h3>
+        <button id="clear-history" class="btn-secondary" style="padding:0.3rem 0.7rem; font-size:0.72rem; border-radius:0.4rem;">Clear</button>
+      </div>
+      <div id="history-list" style="display:flex; flex-wrap:wrap; gap:0.4rem;"></div>
+      <div id="history-stats" style="margin-top:0.75rem; font-size:0.78rem; color:var(--text-muted);"></div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Alphabet Randomizer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Choose how many letters you want (1–10) using the count input or the quick-select chips. Optionally toggle off letters you want to exclude — Q, X, and Z are excluded by default. Click <strong>Generate Letter</strong> and watch the slots spin.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Your generated letters appear with a rolling animation and are saved to the <strong>History</strong> section. Click <strong>Copy</strong> to grab the result, or <strong>Again</strong> to roll fresh letters with the same settings.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Ideal for: Scattergories, classroom vocabulary games, creative writing prompts, word-of-the-day picks, team name generators, or any situation where you need a random letter.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How it works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Randomness</span><span class="info-value">Uses <code>crypto.getRandomValues()</code> for cryptographically secure random selection</span></div>
+      <div class="info-row"><span class="info-label">Pool</span><span class="info-value">Starts with A–Z; excluded letters are removed before selection</span></div>
+      <div class="info-row"><span class="info-label">Animation</span><span class="info-value">2.5-second slot-machine roll — each letter slot locks left to right with blur clearing</span></div>
+      <div class="info-row"><span class="info-label">Privacy</span><span class="info-value">Everything runs in your browser — no data is stored or transmitted</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: "Is the random letter truly random?",
+          a: "Yes. It uses the Web Crypto API (crypto.getRandomValues) which produces cryptographically secure random numbers — the same quality used in encryption and security applications. Each letter in the pool has an equal probability of being selected."
+        },
+        {
+          q: "Why are Q, X, and Z excluded by default?",
+          a: "These are the least common letters in English. Excluding them by default makes the tool more useful for games like Scattergories where rare letters are harder to work with. You can toggle them back on anytime."
+        },
+        {
+          q: "Can I pick more than one letter at a time?",
+          a: "Yes. Set the count to any value from 1 to 10. Each letter slot is independently randomized from the same pool, so you may get duplicates — just like drawing letters with replacement."
+        },
+        {
+          q: "Can I use this for classroom activities?",
+          a: "Absolutely. It's perfect for vocabulary games, spelling bees, phonics exercises, or assigning random starting letters for creative writing. The exclusion toggles let you focus on specific letter groups."
+        },
+        {
+          q: "Does my generation history get saved?",
+          a: "No. All data stays in your browser's memory. If you refresh the page, the history resets. Nothing is stored on any server."
+        }
+      ].map(item => (
+        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name" style="font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:700; color:var(--text-primary); margin:0 0 0.35rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.85rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  @keyframes letterLock {
+    0% { transform: scale(1.15); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  .letter-locked {
+    animation: letterLock 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+    50% { box-shadow: 0 0 20px 4px rgba(16,185,129,0.15); }
+  }
+  .pulse-glow {
+    animation: pulseGlow 1.5s ease-in-out infinite;
+  }
+  :global(.letter-slot) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Sora', sans-serif;
+    font-size: var(--letter-size, 4.5rem);
+    font-weight: 800;
+    color: var(--color-brand-blue);
+    width: 1.3em;
+    height: 1.4em;
+    background: var(--bg-surface);
+    border-radius: 0.5rem;
+    border: 2px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: filter 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  :global(.letter-slot::after) {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+    border-radius: 0.5rem 0.5rem 0 0;
+    pointer-events: none;
+  }
+  :global(.letter-slot.rolling) {
+    filter: blur(12px);
+    color: var(--text-muted);
+    border-color: var(--color-brand-emerald);
+    box-shadow: 0 0 12px rgba(16,185,129,0.2), 0 2px 8px rgba(0,0,0,0.08);
+  }
+  :global(.letter-slot.locking) {
+    filter: blur(0px) !important;
+    color: var(--color-brand-emerald) !important;
+    border-color: var(--color-brand-emerald) !important;
+    box-shadow: 0 0 24px rgba(16,185,129,0.3), 0 4px 12px rgba(0,0,0,0.1) !important;
+    text-shadow: 0 0 12px rgba(16,185,129,0.4);
+  }
+  :global(.letter-slot.locked) {
+    filter: blur(0px);
+    color: var(--color-brand-emerald);
+    border-color: var(--color-brand-emerald);
+    box-shadow: 0 0 12px rgba(16,185,129,0.2), 0 2px 8px rgba(0,0,0,0.08);
+    text-shadow: none;
+  }
+  :global(.letter-toggle) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 0.4rem;
+    border: 1.5px solid var(--border);
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+    font-family: 'Sora', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  :global(.letter-toggle.excluded) {
+    background: rgba(239,68,68,0.08);
+    border-color: rgba(239,68,68,0.3);
+    color: #DC2626;
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  :global(.letter-toggle:not(.excluded):hover) {
+    border-color: var(--color-brand-emerald);
+    color: #059669;
+  }
+</style>
+
+<script>
+  (function () {
+    const ALL_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const VOWELS = new Set(['A', 'E', 'I', 'O', 'U']);
+    const DEFAULT_EXCLUDED = new Set(['Q', 'X', 'Z']);
+
+    const countInput = document.getElementById('count-input') as HTMLInputElement;
+    const letterGrid = document.getElementById('letter-grid')!;
+    const poolWarning = document.getElementById('pool-warning')!;
+    const generateBtn = document.getElementById('generate-btn') as HTMLButtonElement;
+    const btnLabel = document.getElementById('btn-label')!;
+    const errorMsg = document.getElementById('error-msg')!;
+    const resultArea = document.getElementById('result-area')!;
+    const letterTrack = document.getElementById('letter-track')!;
+    const rollContainer = document.getElementById('roll-container')!;
+    const pluralLabel = document.getElementById('plural-label')!;
+    const btnCopy = document.getElementById('btn-copy')!;
+    const copyLabel = document.getElementById('copy-label')!;
+    const btnAgain = document.getElementById('btn-again')!;
+    const historySection = document.getElementById('history-section')!;
+    const historyList = document.getElementById('history-list')!;
+    const historyStats = document.getElementById('history-stats')!;
+    const clearBtn = document.getElementById('clear-history') as HTMLButtonElement;
+
+    let rolling = false;
+    let lastResult: string | null = null;
+    let history: string[][] = [];
+    let activeIntervals: number[] = [];
+    let excludedLetters = new Set(DEFAULT_EXCLUDED);
+
+    function buildLetterGrid() {
+      letterGrid.innerHTML = '';
+      ALL_LETTERS.forEach(letter => {
+        const btn = document.createElement('button');
+        btn.className = 'letter-toggle' + (excludedLetters.has(letter) ? ' excluded' : '');
+        btn.textContent = letter;
+        btn.addEventListener('click', () => {
+          if (excludedLetters.has(letter)) {
+            excludedLetters.delete(letter);
+          } else {
+            excludedLetters.add(letter);
+          }
+          btn.classList.toggle('excluded');
+          validatePool();
+        });
+        letterGrid.appendChild(btn);
+      });
+    }
+
+    function refreshGrid() {
+      const buttons = letterGrid.querySelectorAll('.letter-toggle');
+      buttons.forEach((btn, i) => {
+        btn.classList.toggle('excluded', excludedLetters.has(ALL_LETTERS[i]));
+      });
+    }
+
+    function excludeSet(letters: Set<string>) {
+      letters.forEach(l => excludedLetters.add(l));
+      refreshGrid();
+      validatePool();
+    }
+
+    document.getElementById('excl-vowels')!.addEventListener('click', () => excludeSet(VOWELS));
+    document.getElementById('excl-consonants')!.addEventListener('click', () => {
+      const consonants = new Set(ALL_LETTERS.filter(l => !VOWELS.has(l)));
+      excludeSet(consonants);
+    });
+    document.getElementById('excl-none')!.addEventListener('click', () => {
+      excludedLetters.clear();
+      refreshGrid();
+      validatePool();
+    });
+
+    function validatePool() {
+      const pool = getPool();
+      if (pool.length < 3) {
+        poolWarning.textContent = `Only ${pool.length} letter${pool.length === 1 ? '' : 's'} remain — need at least 3 to generate.`;
+        poolWarning.style.display = 'block';
+        generateBtn.disabled = true;
+        generateBtn.style.opacity = '0.5';
+      } else {
+        poolWarning.style.display = 'none';
+        generateBtn.disabled = false;
+        generateBtn.style.opacity = '1';
+      }
+    }
+
+    function getPool(): string[] {
+      return ALL_LETTERS.filter(l => !excludedLetters.has(l));
+    }
+
+    function showError(msg: string) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+    }
+
+    function hideError() {
+      errorMsg.style.display = 'none';
+    }
+
+    function validate(): number | null {
+      hideError();
+      const count = parseInt(countInput.value, 10);
+      if (isNaN(count) || count < 1 || count > 10) {
+        showError('Please enter a number between 1 and 10.');
+        return null;
+      }
+      if (getPool().length < 3) {
+        showError('Not enough letters in the pool. Uncheck some exclusions.');
+        return null;
+      }
+      return count;
+    }
+
+    function secureRandInt(min: number, max: number): number {
+      const range = max - min + 1;
+      const arr = new Uint32Array(1);
+      const limit = Math.floor(0xFFFFFFFF / range) * range;
+      do { crypto.getRandomValues(arr); } while (arr[0] > limit);
+      return min + (arr[0] % range);
+    }
+
+    function clearActiveIntervals() {
+      activeIntervals.forEach(id => clearInterval(id));
+      activeIntervals = [];
+    }
+
+    function rollAnimation(targets: string[], cb: () => void) {
+      rolling = true;
+      generateBtn.disabled = true;
+      generateBtn.style.opacity = '0.6';
+      btnLabel.textContent = 'Rolling\u2026';
+
+      clearActiveIntervals();
+      letterTrack.innerHTML = '';
+
+      const pool = getPool();
+      const totalDuration = 2500;
+      const letterCount = targets.length;
+      const lockInterval = totalDuration / letterCount;
+
+      const baseSize = 4.5;
+      const scaledSize = letterCount <= 1 ? baseSize : letterCount <= 2 ? baseSize * 0.85 : letterCount <= 3 ? baseSize * 0.7 : letterCount <= 5 ? baseSize * 0.55 : baseSize * 0.4;
+      letterTrack.style.setProperty('--letter-size', `${scaledSize}rem`);
+
+      const slots: HTMLSpanElement[] = [];
+
+      targets.forEach((_, i) => {
+        const slot = document.createElement('span');
+        slot.className = 'letter-slot rolling';
+        slot.textContent = pool[secureRandInt(0, pool.length - 1)];
+        letterTrack.appendChild(slot);
+        slots.push(slot);
+      });
+
+      targets.forEach((targetLetter, i) => {
+        const slot = slots[i];
+        const lockTime = lockInterval * (i + 1);
+        let elapsed = 0;
+        const tickRate = 50;
+
+        const intervalId = window.setInterval(() => {
+          elapsed += tickRate;
+
+          if (elapsed >= lockTime) {
+            clearInterval(intervalId);
+            slot.textContent = targetLetter;
+            slot.className = 'letter-slot locking';
+            slot.classList.add('letter-locked');
+            slot.addEventListener('animationend', () => {
+              slot.classList.remove('letter-locked');
+              slot.classList.add('locked');
+            }, { once: true });
+            return;
+          }
+
+          slot.textContent = pool[secureRandInt(0, pool.length - 1)];
+        }, tickRate);
+
+        activeIntervals.push(intervalId);
+      });
+
+      setTimeout(() => {
+        clearActiveIntervals();
+
+        targets.forEach((d, i) => {
+          slots[i].textContent = d;
+          slots[i].className = 'letter-slot locked';
+        });
+
+        rollContainer.classList.add('pulse-glow');
+
+        setTimeout(() => {
+          rolling = false;
+          generateBtn.disabled = false;
+          generateBtn.style.opacity = '1';
+          btnLabel.textContent = 'Generate Letter' + (targets.length > 1 ? 's' : '');
+          pluralLabel.textContent = targets.length > 1 ? 's' : '';
+          cb();
+        }, 300);
+      }, totalDuration + 200);
+    }
+
+    function generate() {
+      if (rolling) return;
+      const count = validate();
+      if (!count) return;
+
+      const pool = getPool();
+      const targets: string[] = [];
+      for (let i = 0; i < count; i++) {
+        targets.push(pool[secureRandInt(0, pool.length - 1)]);
+      }
+
+      resultArea.style.display = 'block';
+      pluralLabel.textContent = count > 1 ? 's' : '';
+      btnLabel.textContent = count > 1 ? 'Generate Letters' : 'Generate Letter';
+      rollContainer.classList.remove('pulse-glow');
+      rollAnimation(targets, () => {
+        lastResult = targets.join('');
+        history.unshift(targets);
+        updateHistory();
+      });
+
+      setTimeout(() => resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+    }
+
+    function updateHistory() {
+      if (history.length === 0) {
+        historySection.style.display = 'none';
+        return;
+      }
+      historySection.style.display = 'block';
+      historyList.innerHTML = '';
+
+      history.forEach((letters, i) => {
+        const badge = document.createElement('span');
+        badge.textContent = letters.join('');
+        badge.style.cssText = `
+          display:inline-flex; align-items:center;
+          padding:0.3rem 0.65rem; border-radius:999px; font-size:0.75rem; font-weight:600;
+          font-family:'Fira Code',monospace; letter-spacing:0.08em;
+          background:rgba(16,185,129,0.1); color:#059669; border:1px solid rgba(16,185,129,0.25);
+          ${i === 0 ? 'box-shadow:0 0 0 2px rgba(16,185,129,0.2);' : ''}
+        `;
+        historyList.appendChild(badge);
+      });
+
+      const allLetters = history.flat();
+      const freq: Record<string, number> = {};
+      allLetters.forEach(l => { freq[l] = (freq[l] || 0) + 1; });
+      const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+      const mostCommon = sorted.length > 0 ? sorted[0] : null;
+
+      historyStats.innerHTML = `
+        <span>Total: <strong>${history.length}</strong></span>
+        <span style="margin-left:0.75rem;">Letters: <strong>${allLetters.length}</strong></span>
+        ${mostCommon ? `<span style="margin-left:0.75rem;">Most common: <strong>${mostCommon[0]}</strong> (${mostCommon[1]}x)</span>` : ''}
+      `;
+    }
+
+    generateBtn.addEventListener('click', generate);
+    btnAgain.addEventListener('click', generate);
+
+    btnCopy.addEventListener('click', () => {
+      if (lastResult === null) return;
+      navigator.clipboard.writeText(lastResult).then(() => {
+        copyLabel.textContent = '\u2713 Copied!';
+        btnCopy.classList.add('btn-success');
+        setTimeout(() => {
+          copyLabel.textContent = 'Copy';
+          btnCopy.classList.remove('btn-success');
+        }, 2000);
+      });
+    });
+
+    clearBtn.addEventListener('click', () => {
+      history = [];
+      updateHistory();
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('.preset-chip[data-count]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        countInput.value = btn.dataset.count!;
+        hideError();
+      });
+    });
+
+    countInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') generate();
+    });
+
+    buildLetterGrid();
+    validatePool();
+  })();
+</script>
