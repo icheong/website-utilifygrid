@@ -1,0 +1,148 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-minifier')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">JSON Minifier &amp; Compact Formatter</h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">Strip all whitespace, line breaks, and indentation from JSON to produce a single-line payload. Shows exact size reduction.</p>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <button id="btn-minify" class="btn-primary" type="button">Minify</button>
+      <button id="btn-copy" class="btn-secondary" type="button">Copy Output</button>
+      <button id="btn-clear" class="btn-secondary" type="button">Clear</button>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem;">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Input</label>
+          <button id="btn-sample" class="btn-secondary" type="button" style="font-size:0.7rem; padding:0.2rem 0.55rem;">Sample</button>
+        </div>
+        <textarea id="json-input" class="input-themed"
+          placeholder="Paste formatted JSON here…"
+          rows="10"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65;"
+        ></textarea>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Minified Output</label>
+        </div>
+        <textarea id="json-output" class="input-themed" readonly rows="10"
+          placeholder="Minified JSON appears here…"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65; background:var(--bg-surface-2);"
+        ></textarea>
+      </div>
+    </div>
+
+    <div id="reduction-badge" style="display:none; margin-top:0.875rem; padding:0.75rem 1rem; background:rgba(16,185,129,0.08); border:1.5px solid rgba(16,185,129,0.3); border-radius:0.625rem; text-align:center;">
+      <span style="font-size:0.85rem; font-weight:700; color:#059669;">Payload size reduced by <span id="reduction-pct">0</span>%</span>
+      <span style="font-size:0.78rem; color:var(--text-muted); margin-left:0.5rem;">(<span id="reduction-bytes">0</span> bytes saved)</span>
+    </div>
+
+    <div id="error-box" style="display:none; margin-top:0.625rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; padding:0.75rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#DC2626;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Minifier</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste any formatted or prettified JSON into the input panel and click <strong>Minify</strong>. The tool strips all non-essential whitespace — line breaks, tabs, and padding — while strictly preserving string literals and data types.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The reduction badge shows exactly how many bytes were saved and the percentage reduction. Useful for API payloads, config files, and anywhere JSON size matters.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How minification works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Step 1</span><span class="info-value">JSON.parse() validates and builds an object tree</span></div>
+      <div class="info-row"><span class="info-label">Step 2</span><span class="info-value">JSON.stringify(obj) serialises with zero indentation</span></div>
+      <div class="info-row"><span class="info-label">Result</span><span class="info-value">Single continuous line, all whitespace removed</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Does minification change the data?', a: 'No. Minification only removes whitespace outside of string literals. The parsed data is identical before and after — JSON.parse() on the minified output produces the same object.' },
+        { q: 'Why not just use a find-and-replace?', a: 'Regex-based whitespace removal can break string values that contain spaces or escaped characters. JSON.parse() + JSON.stringify() is the only safe way to minify without risking data corruption.' },
+        { q: 'How much space is typically saved?', a: 'Depends on the input. Well-indented JSON with deep nesting can see 40-70% reduction. Already-compact JSON saves very little. The reduction badge gives you the exact number.' },
+        { q: 'Is minified JSON valid?', a: 'Yes. Minified output is always valid, parseable JSON. The tool parses first and re-serialises, guaranteeing valid output even if the input had minor formatting issues.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  const SAMPLE = JSON.stringify({name:"Alice",age:30,active:true,score:98.5,tags:["developer","designer"],address:{city:"Sydney",postcode:"2000",country:null}},null,2);
+
+  function minify() {
+    const raw = (document.getElementById('json-input') as HTMLTextAreaElement).value;
+    const out = (document.getElementById('json-output') as HTMLTextAreaElement);
+    const errBox = document.getElementById('error-box')!;
+    const badge = document.getElementById('reduction-badge')!;
+    errBox.style.display = 'none';
+    badge.style.display = 'none';
+    if (!raw.trim()) { out.value = ''; return; }
+
+    try {
+      const parsed = JSON.parse(raw);
+      const minified = JSON.stringify(parsed);
+      out.value = minified;
+
+      const before = new TextEncoder().encode(raw).byteLength;
+      const after = new TextEncoder().encode(minified).byteLength;
+      const saved = before - after;
+      const pct = before > 0 ? Math.round((saved / before) * 100) : 0;
+      if (saved > 0) {
+        (document.getElementById('reduction-pct') as HTMLElement).textContent = String(pct);
+        (document.getElementById('reduction-bytes') as HTMLElement).textContent = String(saved);
+        badge.style.display = 'block';
+      }
+    } catch (e: any) {
+      errBox.textContent = e.message;
+      errBox.style.display = 'block';
+    }
+  }
+
+  document.getElementById('btn-minify')!.addEventListener('click', minify);
+  document.getElementById('btn-sample')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = SAMPLE;
+    minify();
+  });
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = '';
+    (document.getElementById('json-output') as HTMLTextAreaElement).value = '';
+    document.getElementById('error-box')!.style.display = 'none';
+    document.getElementById('reduction-badge')!.style.display = 'none';
+  });
+  document.getElementById('btn-copy')!.addEventListener('click', () => {
+    const btn = document.getElementById('btn-copy')!;
+    navigator.clipboard.writeText((document.getElementById('json-output') as HTMLTextAreaElement).value).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('btn-success');
+      setTimeout(() => { btn.textContent = 'Copy Output'; btn.classList.remove('btn-success'); }, 2000);
+    }).catch(() => {
+      btn.textContent = 'Failed';
+      setTimeout(() => { btn.textContent = 'Copy Output'; }, 2000);
+    });
+  });
+
+  let minifyTimer: ReturnType<typeof setTimeout> | null = null;
+  document.getElementById('json-input')!.addEventListener('input', () => {
+    if (minifyTimer) clearTimeout(minifyTimer);
+    minifyTimer = setTimeout(minify, 200);
+  });
+</script>

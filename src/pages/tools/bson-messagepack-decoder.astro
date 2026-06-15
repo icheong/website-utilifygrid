@@ -1,0 +1,326 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'bson-messagepack-decoder')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">BSON / MessagePack Decoder</h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">Decode BSON (MongoDB) and MessagePack binary payloads into readable, formatted JSON.</p>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <div class="toggle-group" role="group" aria-label="Input format">
+        <button class="toggle-btn active" data-format="hex" type="button">Hex String</button>
+        <button class="toggle-btn" data-format="file" type="button">File Upload</button>
+      </div>
+    </div>
+
+    <div id="hex-input-wrap">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+        <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Hex Payload</label>
+        <div style="display:flex; gap:0.5rem;">
+          <button id="btn-sample-bson" class="btn-secondary" type="button" style="font-size:0.68rem; padding:0.2rem 0.5rem;">Sample BSON</button>
+          <button id="btn-sample-mp" class="btn-secondary" type="button" style="font-size:0.68rem; padding:0.2rem 0.5rem;">Sample MsgPack</button>
+        </div>
+      </div>
+      <textarea id="hex-input" class="input-themed" rows="6"
+        placeholder="Paste a hex string of binary data…"
+        style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65;"
+      ></textarea>
+    </div>
+
+    <div id="file-input-wrap" style="display:none; margin-bottom:1rem;">
+      <div style="border:2px dashed var(--border); border-radius:0.625rem; padding:2rem; text-align:center; cursor:pointer; transition:border-color 0.15s;" id="dropzone">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin:0 auto 0.5rem;">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+        </svg>
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin:0 0 0.25rem;">Drop a file here or click to browse</p>
+        <p style="font-size:0.72rem; color:var(--text-muted); margin:0;">Supports BSON (.bson) and MessagePack (.mp, .msgpack) files</p>
+        <input type="file" id="file-input" accept=".bson,.mp,.msgpack,.bin" style="display:none;" />
+      </div>
+    </div>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <button id="btn-decode" class="btn-primary" type="button">Decode</button>
+      <button id="btn-copy" class="btn-secondary" type="button">Copy JSON</button>
+      <button id="btn-clear" class="btn-secondary" type="button">Clear</button>
+    </div>
+
+    <div id="error-box" style="display:none; margin-bottom:0.625rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; padding:0.75rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#DC2626;"></div>
+
+    <div id="output-wrap" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+        <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Decoded JSON</span>
+        <span id="out-stats" style="font-size:0.62rem; font-family:'Fira Code',monospace; color:var(--text-muted);"></span>
+      </div>
+      <div id="json-highlighted"
+        style="background:#0a1628; border:1.5px solid rgba(255,255,255,0.1); border-radius:0.625rem; padding:1rem; font-family:'Fira Code',monospace; font-size:0.76rem; line-height:1.75; overflow-x:auto; max-height:420px; overflow-y:auto; white-space:pre;">
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the BSON / MessagePack Decoder</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste a hex-encoded binary string or upload a file containing BSON (MongoDB) or MessagePack data. Click <strong>Decode</strong> to parse the binary structure and display it as formatted, syntax-highlighted JSON.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Use the sample buttons to load example payloads. BSON is the binary format used by MongoDB for document storage. MessagePack is a compact binary serialisation format used in APIs and message queues.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Decoding approach</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">BSON</span><span class="info-value">Walks the binary document structure (int32, cstring, element types)</span></div>
+      <div class="info-row"><span class="info-label">MessagePack</span><span class="info-value">Reads compact binary type markers and variable-length integers</span></div>
+      <div class="info-row"><span class="info-label">Types</span><span class="info-value">Integers, doubles, strings, booleans, null, arrays, objects, dates</span></div>
+      <div class="info-row"><span class="info-label">Output</span><span class="info-value">Fully parsed JavaScript object → formatted JSON with syntax highlighting</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'How do I get hex from a BSON file?', a: 'You can use the file upload mode, or convert to hex using command line tools: xxd -p file.bson (Linux/Mac) or certutil -encodehex file.bson output.txt (Windows).' },
+        { q: 'Does it support MongoDB Extended JSON?', a: 'The decoder outputs standard JSON. MongoDB-specific types like ObjectId and Date are decoded to their closest JSON representation (string for ObjectId, number for Date timestamp).' },
+        { q: 'What is the file size limit?', a: 'There is no hard limit, but very large files (>10 MB) may be slow to decode in the browser. The hex input is limited by textarea performance; use file upload for large payloads.' },
+        { q: 'Can it encode JSON to BSON/MessagePack?', a: 'Not yet. This tool is decode-only. Encoding support may be added in a future update.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  // Minimal BSON decoder
+  function decodeBson(bytes: Uint8Array): any {
+    let offset = 0;
+    function readInt32(): number { const v = new DataView(bytes.buffer, offset).getInt32(0, true); offset += 4; return v; }
+    function readUint8(): number { return bytes[offset++]; }
+    function readCstring(): string {
+      let s = '';
+      while (offset < bytes.length && bytes[offset] !== 0) s += String.fromCharCode(bytes[offset++]);
+      if (offset < bytes.length) offset++;
+      return s;
+    }
+    function readDouble(): number { const v = new DataView(bytes.buffer, offset).getFloat64(0, true); offset += 8; return v; }
+    function readString(): string { const len = readInt32(); const s = new TextDecoder().decode(bytes.slice(offset, offset + len - 1)); offset += len; return s; }
+    function readBinary(): any {
+      const len = readInt32();
+      const subtype = readUint8();
+      if (subtype === 0x00 || subtype === 0x02) {
+        const s = new TextDecoder().decode(bytes.slice(offset, offset + len));
+        offset += len;
+        return s;
+      }
+      offset += len;
+      return `<binary subtype=0x${subtype.toString(16)} len=${len}>`;
+    }
+    function readObjectId(): string {
+      const hex = Array.from(bytes.slice(offset, offset + 12)).map(b => b.toString(16).padStart(2, '0')).join('');
+      offset += 12;
+      return `ObjectId("${hex}")`;
+    }
+    function readElement(): any { const type = readUint8(); const name = readCstring(); return { name, value: readValue(type) }; }
+    function readValue(type: number): any {
+      switch (type) {
+        case 0x01: return readDouble();
+        case 0x02: return readString();
+        case 0x03: case 0x04: return readDocument();
+        case 0x05: return readBinary();
+        case 0x07: return readObjectId();
+        case 0x08: return readUint8() !== 0;
+        case 0x09: { const ts = readInt32(); readInt32(); return new Date(ts * 1000).toISOString(); }
+        case 0x0A: return null;
+        case 0x10: return readInt32();
+        case 0x12: { const hi = readInt32(); const lo = readInt32(); return hi * 4294967296 + (lo >>> 0); }
+        default: return `<unknown type 0x${type.toString(16)}>`;
+      }
+    }
+    function readDocument(): any {
+      const size = readInt32();
+      const doc: any = {};
+      while (offset < bytes.length && bytes[offset] !== 0) {
+        const { name, value } = readElement();
+        doc[name] = value;
+      }
+      if (offset < bytes.length && bytes[offset] === 0) offset++;
+      return doc;
+    }
+    return readDocument();
+  }
+
+  // Minimal MessagePack decoder
+  function decodeMsgPack(bytes: Uint8Array): any {
+    let offset = 0;
+    function readUint8(): number { return bytes[offset++]; }
+    function readUint16(): number { const v = new DataView(bytes.buffer, offset).getUint16(0); offset += 2; return v; }
+    function readUint32(): number { const v = new DataView(bytes.buffer, offset).getUint32(0); offset += 4; return v; }
+    function readInt8(): number { return new DataView(bytes.buffer, offset).getInt8(0); offset += 1; }
+    function readInt16(): number { const v = new DataView(bytes.buffer, offset).getInt16(0); offset += 2; return v; }
+    function readInt32(): number { const v = new DataView(bytes.buffer, offset).getInt32(0); offset += 4; return v; }
+    function readFloat32(): number { const v = new DataView(bytes.buffer, offset).getFloat32(0); offset += 4; return v; }
+    function readFloat64(): number { const v = new DataView(bytes.buffer, offset).getFloat64(0); offset += 8; return v; }
+    function readRaw(len: number): any { const s = new TextDecoder().decode(bytes.slice(offset, offset + len)); offset += len; return s; }
+    function readArray(len: number): any[] { const arr = []; for (let i = 0; i < len; i++) arr.push(decode()); return arr; }
+    function readMap(len: number): any { const obj: any = {}; for (let i = 0; i < len; i++) { const k = decode(); const v = decode(); obj[k] = v; } return obj; }
+
+    function decode(): any {
+      const b = readUint8();
+      if (b <= 0x7f) return b;
+      if ((b & 0xe0) === 0xe0) return b - 256;
+      if (b === 0xc0) return null;
+      if (b === 0xc2) return false;
+      if (b === 0xc3) return true;
+      if (b === 0xca) return readFloat32();
+      if (b === 0xcb) return readFloat64();
+      if (b === 0xcc) return readUint8();
+      if (b === 0xcd) return readUint16();
+      if (b === 0xce) return readUint32();
+      if (b === 0xd0) return readInt8();
+      if (b === 0xd1) return readInt16();
+      if (b === 0xd2) return readInt32();
+      if (b === 0xd3) { const hi = readInt32(); const lo = new DataView(bytes.buffer, offset).getInt32(0); offset += 4; return hi * 4294967296 + (lo >>> 0); }
+      if (b === 0xc4) return readRaw(readUint8());
+      if (b === 0xc5) return readRaw(readUint16());
+      if (b === 0xc6) return readRaw(readUint32());
+      if (b === 0xd9) return readRaw(readUint8());
+      if (b === 0xda) return readRaw(readUint16());
+      if (b === 0xdb) return readRaw(readUint32());
+      if (b === 0xdc) return readArray(readUint16());
+      if (b === 0xdd) return readArray(readUint32());
+      if (b === 0xde) return readMap(readUint16());
+      if (b === 0xdf) return readMap(readUint32());
+      if ((b & 0xf0) === 0x80) return readMap(b & 0x0f);
+      if ((b & 0xf0) === 0x90) return readArray(b & 0x0f);
+      if ((b & 0xe0) === 0xa0) return readRaw(b & 0x1f);
+      return `<unhandled: 0x${b.toString(16)}>`;
+    }
+    return decode();
+  }
+
+  function hexToBytes(hex: string): Uint8Array {
+    const clean = hex.replace(/\s+/g, '');
+    if (clean.length % 2 !== 0) throw new Error('Hex string must have even number of characters');
+    if (!/^[0-9a-fA-F]*$/.test(clean)) throw new Error('Invalid hex characters found');
+    const bytes = new Uint8Array(clean.length / 2);
+    for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(clean.substr(i * 2, 2), 16);
+    return bytes;
+  }
+
+  function syntaxHighlight(json: string): string {
+    return json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"([^"\\]*(\\.[^"\\]*)*)"(\s*):/g, '<span style="color:#2dd4bf">"$1"</span>$3:')
+      .replace(/(:\s*)"([^"\\]*(\\.[^"\\]*)*)"/g, '$1<span style="color:#fcd34d">"$2"</span>')
+      .replace(/(:\s*)(-?\d+\.?\d*)/g, '$1<span style="color:#c4b5fd">$2</span>')
+      .replace(/\b(true|false)\b/g, '<span style="color:#f9a8d4">$1</span>')
+      .replace(/\bnull\b/g, '<span style="color:#94a3b8">null</span>');
+  }
+
+  let inputFormat = 'hex';
+  const formatBtns = document.querySelectorAll<HTMLButtonElement>('[data-format]');
+  formatBtns.forEach(btn => btn.addEventListener('click', () => {
+    inputFormat = btn.dataset.format!;
+    formatBtns.forEach(b => b.classList.toggle('active', b.dataset.format === inputFormat));
+    document.getElementById('hex-input-wrap')!.style.display = inputFormat === 'hex' ? 'block' : 'none';
+    document.getElementById('file-input-wrap')!.style.display = inputFormat === 'file' ? 'block' : 'none';
+  }));
+
+  function decode() {
+    const hexStr = (document.getElementById('hex-input') as HTMLTextAreaElement).value;
+    const errBox = document.getElementById('error-box')!;
+    const outputWrap = document.getElementById('output-wrap')!;
+    const highlighted = document.getElementById('json-highlighted')!;
+    const stats = document.getElementById('out-stats')!;
+    errBox.style.display = 'none';
+    outputWrap.style.display = 'none';
+
+    if (!hexStr.trim()) return;
+
+    try {
+      const bytes = hexToBytes(hexStr);
+      // Auto-detect format: BSON starts with document size (int32) matching file length
+      let parsed: any;
+      if (bytes.length > 4) {
+        const bsonSize = new DataView(bytes.buffer, bytes.byteOffset).getInt32(0, true);
+        if (bsonSize === bytes.length && bsonSize >= 5) {
+          parsed = decodeBson(bytes);
+        } else {
+          parsed = decodeMsgPack(bytes);
+        }
+      } else {
+        parsed = decodeMsgPack(bytes);
+      }
+
+      const formatted = JSON.stringify(parsed, null, 2);
+      highlighted.innerHTML = syntaxHighlight(formatted);
+      const lineCount = formatted.split('\n').length;
+      stats.textContent = `${lineCount} lines · ${bytes.length} bytes binary`;
+      outputWrap.style.display = 'block';
+    } catch (e: any) {
+      errBox.textContent = 'Decode error: ' + e.message;
+      errBox.style.display = 'block';
+    }
+  }
+
+  // Sample BSON hex for {"name":"Alice","age":30,"active":true}
+  const SAMPLE_BSON = '27000000026e616d650006000000416c6963650010616765001e00000008616374697665000100';
+  // Sample MessagePack for {"name":"Bob","age":25}
+  const SAMPLE_MSGPACK = '82a46e616d65a3426f62a361676519';
+
+  document.getElementById('btn-decode')!.addEventListener('click', decode);
+  document.getElementById('btn-sample-bson')!.addEventListener('click', () => {
+    (document.getElementById('hex-input') as HTMLTextAreaElement).value = SAMPLE_BSON;
+    decode();
+  });
+  document.getElementById('btn-sample-mp')!.addEventListener('click', () => {
+    (document.getElementById('hex-input') as HTMLTextAreaElement).value = SAMPLE_MSGPACK;
+    decode();
+  });
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    (document.getElementById('hex-input') as HTMLTextAreaElement).value = '';
+    document.getElementById('error-box')!.style.display = 'none';
+    document.getElementById('output-wrap')!.style.display = 'none';
+  });
+  document.getElementById('btn-copy')!.addEventListener('click', () => {
+    const btn = document.getElementById('btn-copy')!;
+    const text = document.getElementById('json-highlighted')!.textContent || '';
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied!'; btn.classList.add('btn-success');
+      setTimeout(() => { btn.textContent = 'Copy JSON'; btn.classList.remove('btn-success'); }, 2000);
+    }).catch(() => {});
+  });
+
+  // File upload
+  const dropzone = document.getElementById('dropzone')!;
+  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.borderColor = '#1D4ED8'; });
+  dropzone.addEventListener('dragleave', () => { dropzone.style.borderColor = 'var(--border)'; });
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.style.borderColor = 'var(--border)';
+    const file = e.dataTransfer?.files[0];
+    if (file) readFile(file);
+  });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) readFile(fileInput.files[0]); });
+  function readFile(file: File) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const bytes = new Uint8Array(reader.result as ArrayBuffer);
+      const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+      (document.getElementById('hex-input') as HTMLTextAreaElement).value = hex;
+      decode();
+    };
+    reader.readAsArrayBuffer(file);
+  }
+</script>

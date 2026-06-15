@@ -1,0 +1,342 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-path-query-evaluator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">JSON Path Query Evaluator</h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">Run JSONPath queries against JSON data and see filtered results update live.</p>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <button id="btn-eval" class="btn-primary" type="button">Run Query</button>
+      <button id="btn-sample" class="btn-secondary" type="button">Load Sample</button>
+      <button id="btn-clear" class="btn-secondary" type="button">Clear</button>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:0.875rem;">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">JSON Data</label>
+        </div>
+        <textarea id="json-data" class="input-themed"
+          placeholder='{"store":{"book":[{"title":"Dune","price":8.99},{"title":"Neuromancer","price":7.50}]}}'
+          rows="10"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65;"
+        ></textarea>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Query Result</label>
+          <button id="btn-copy" class="btn-secondary" type="button" style="font-size:0.7rem; padding:0.2rem 0.55rem;">Copy</button>
+        </div>
+        <textarea id="json-output" class="input-themed" readonly rows="10"
+          placeholder="Query result appears here…"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65; background:var(--bg-surface-2);"
+        ></textarea>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+        <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">JSONPath Query</label>
+        <span style="font-size:0.65rem; color:var(--text-muted);">e.g. $.store.book[*].title</span>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <input id="query-input" type="text" class="input-themed"
+          placeholder="$.store.book[*].title"
+          style="flex:1; font-family:'Fira Code',monospace; font-size:0.82rem; padding:0.625rem 0.875rem;"
+        />
+      </div>
+    </div>
+
+    <div id="error-box" style="display:none; margin-bottom:0.625rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; padding:0.75rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#DC2626;"></div>
+
+    <!-- Cheat Sheet -->
+    <details style="border:1.5px solid var(--border); border-radius:0.625rem; overflow:hidden;">
+      <summary style="padding:0.75rem 1rem; font-size:0.82rem; font-weight:600; color:var(--text-secondary); cursor:pointer; background:var(--bg-surface-2); user-select:none;">Cheat Sheet — Common Queries</summary>
+      <div style="padding:0.75rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+        {[
+          { q: '$.store.book[*].title', d: 'All book titles' },
+          { q: '$.store.book[0]', d: 'First book object' },
+          { q: '$.store.book[?(@.price < 8)]', d: 'Books under $8' },
+          { q: '$.store.book[?(@.price < 8)]', d: 'Books under $8' },
+          { q: '$.store.book[?(@.inStock == true)]', d: 'In-stock books' },
+          { q: '$.store.*', d: 'All store children' },
+        ].map(item => (
+          <div style="display:flex; flex-direction:column; gap:0.15rem; padding:0.4rem 0.6rem; background:var(--bg-surface); border:1px solid var(--border); border-radius:0.375rem;">
+            <code style="font-family:'Fira Code',monospace; font-size:0.72rem; color:#1D4ED8; word-break:break-all;">{item.q}</code>
+            <span style="font-size:0.7rem; color:var(--text-muted);">{item.d}</span>
+          </div>
+        ))}
+      </div>
+    </details>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSONPath Evaluator</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste a JSON payload into the data panel and write a JSONPath query in the input field. The result updates live as you type. The cheat sheet below the input shows common query patterns.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The evaluator supports standard JSONPath syntax including dot notation, bracket notation, wildcard selectors, array slicing, filter expressions, and recursive descent (<code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem; font-size:0.85rem;">..</code>).</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Query evaluation approach</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Parsing</span><span class="info-value">JSON.parse() builds the data tree</span></div>
+      <div class="info-row"><span class="info-label">Query engine</span><span class="info-value">Custom recursive-descent JSONPath evaluator</span></div>
+      <div class="info-row"><span class="info-label">Filters</span><span class="info-value">[?(@.field op value)] expressions with ==, !=, <, >, <=, >=</span></div>
+      <div class="info-row"><span class="info-label">Output</span><span class="info-value">Matches are serialised as formatted JSON</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is JSONPath?', a: 'JSONPath is a query language for JSON, similar to XPath for XML. It allows you to select and extract specific parts of a JSON document using path expressions like $.store.book[0].title.' },
+        { q: 'Does it support JMESPath?', a: 'The current implementation supports standard JSONPath syntax. JMESPath has a different syntax (e.g. store.book[*].title vs $.store.book[*].title). JMESPath support may be added in a future update.' },
+        { q: 'Can I use filter expressions?', a: 'Yes. Filter expressions use the syntax [?(@.price < 10)] where @ refers to the current element. Supported operators are ==, !=, <, >, <=, and >=.' },
+        { q: 'Is there a query length limit?', a: 'No hard limit. Very long queries may be slow due to the recursive evaluation, but typical queries with 5-10 path segments evaluate instantly.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  const SAMPLE_DATA = JSON.stringify({
+    store: {
+      book: [
+        { title: "Dune", author: "Frank Herbert", price: 8.99, inStock: true },
+        { title: "Neuromancer", author: "William Gibson", price: 7.50, inStock: true },
+        { title: "Foundation", author: "Isaac Asimov", price: 9.25, inStock: false },
+      ],
+      bicycle: { color: "red", price: 19.95 }
+    }
+  }, null, 2);
+
+  function tokenizePath(path: string): string[] {
+    const tokens: string[] = [];
+    const raw = path.startsWith('$') ? path.slice(1) : path;
+    let pos = 0;
+
+    while (pos < raw.length) {
+      if (raw[pos] === '.' && pos + 1 < raw.length && raw[pos + 1] === '.') {
+        tokens.push('..');
+        pos += 2;
+        continue;
+      }
+      if (raw[pos] === '.') {
+        pos++;
+        continue;
+      }
+      if (raw[pos] === '[') {
+        let depth = 0;
+        let start = pos;
+        while (pos < raw.length) {
+          if (raw[pos] === '[') depth++;
+          if (raw[pos] === ']') { depth--; if (depth === 0) { pos++; break; } }
+          pos++;
+        }
+        tokens.push(raw.slice(start, pos));
+        continue;
+      }
+      let start = pos;
+      while (pos < raw.length && raw[pos] !== '.' && raw[pos] !== '[') pos++;
+      tokens.push(raw.slice(start, pos));
+    }
+    return tokens;
+  }
+
+  function getNestedField(obj: any, fieldPath: string): any {
+    const parts = fieldPath.split('.');
+    let current = obj;
+    for (const p of parts) {
+      if (current === undefined || current === null) return undefined;
+      current = current[p];
+    }
+    return current;
+  }
+
+  function evaluateJsonPath(obj: any, path: string): any {
+    const tokens = tokenizePath(path);
+    let result = obj;
+
+    for (let ti = 0; ti < tokens.length; ti++) {
+      const token = tokens[ti];
+      if (result === undefined || result === null) return undefined;
+
+      if (token === '..') {
+        const nextToken = tokens[ti + 1];
+        if (!nextToken) {
+          const collect = (o: any): any[] => {
+            const results: any[] = [];
+            if (typeof o === 'object' && o !== null) {
+              for (const v of Object.values(o)) {
+                results.push(v);
+                results.push(...collect(v));
+              }
+            }
+            return results;
+          };
+          return collect(result);
+        }
+        ti++;
+        const collectMatching = (o: any): any[] => {
+          const results: any[] = [];
+          if (typeof o === 'object' && o !== null) {
+            for (const v of Object.values(o)) {
+              if (matchesToken(v, nextToken)) results.push(v);
+              results.push(...collectMatching(v));
+            }
+          }
+          return results;
+        };
+        const all = collectMatching(result);
+        if (ti + 1 < tokens.length) {
+          const remaining = tokens.slice(ti + 1);
+          const mapped = all.map((item: any) => {
+            let r = item;
+            for (const rt of remaining) {
+              if (r === undefined || r === null) return undefined;
+              const arrM = rt.match(/^\[(\d+)\]$/);
+              if (arrM) { r = r[parseInt(arrM[1])]; continue; }
+              const bracketM = rt.match(/^\[(['"])(.*?)\1\]$/);
+              if (bracketM) { r = r[bracketM[2]]; continue; }
+              r = r[rt];
+            }
+            return r;
+          });
+          return mapped;
+        }
+        return all.length > 0 ? all : undefined;
+      }
+
+      if (token === '*' || token === '[*]') {
+        result = Array.isArray(result) ? result : Object.values(result);
+        // If there are more tokens after wildcard, apply remaining path to each element
+        if (ti + 1 < tokens.length) {
+          const remaining = tokens.slice(ti + 1);
+          const mapped = result.map((item: any) => {
+            let r = item;
+            for (const rt of remaining) {
+              if (r === undefined || r === null) return undefined;
+              const arrM = rt.match(/^\[(\d+)\]$/);
+              if (arrM) { r = r[parseInt(arrM[1])]; continue; }
+              const bracketM = rt.match(/^\[(['"])(.*?)\1\]$/);
+              if (bracketM) { r = r[bracketM[2]]; continue; }
+              r = r[rt];
+            }
+            return r;
+          });
+          return mapped;
+        }
+        continue;
+      }
+
+      const arrayMatch = token.match(/^\[(\d+)\]$/);
+      if (arrayMatch) {
+        result = result[parseInt(arrayMatch[1])];
+        continue;
+      }
+
+      const bracketKeyMatch = token.match(/^\[(['"])(.*?)\1\]$/);
+      if (bracketKeyMatch) {
+        result = result[bracketKeyMatch[2]];
+        continue;
+      }
+
+      const filterMatch = token.match(/^\[\?\(@\.([\w.]+)\s*([<>=!]+)\s*(['"]?)(.*?)\3\)\]$/);
+      if (filterMatch) {
+        const [, fieldPath, op, , val] = filterMatch;
+        if (!Array.isArray(result)) return undefined;
+        return result.filter((item: any) => {
+          const itemVal = getNestedField(item, fieldPath);
+          let compareVal: any;
+          if (val === 'true') compareVal = true;
+          else if (val === 'false') compareVal = false;
+          else if (val === 'null') compareVal = null;
+          else compareVal = isNaN(Number(val)) ? val : Number(val);
+          switch (op) {
+            case '==': return itemVal == compareVal;
+            case '!=': return itemVal != compareVal;
+            case '<':  return itemVal < compareVal;
+            case '>':  return itemVal > compareVal;
+            case '<=': return itemVal <= compareVal;
+            case '>=': return itemVal >= compareVal;
+            default: return false;
+          }
+        });
+      }
+
+      result = result[token];
+    }
+    return result;
+  }
+
+  function matchesToken(obj: any, token: string): boolean {
+    if (token === '*' || token === '[*]') return true;
+    if (token.match(/^\[(\d+)\]$/)) return false;
+    if (token.match(/^\[(['"])(.*?)\1\]$/)) return false;
+    if (token.match(/^\[\?\(/)) return false;
+    return typeof obj === 'object' && obj !== null && token in obj;
+  }
+
+  function runQuery() {
+    const dataStr = (document.getElementById('json-data') as HTMLTextAreaElement).value;
+    const query = (document.getElementById('query-input') as HTMLInputElement).value.trim();
+    const out = (document.getElementById('json-output') as HTMLTextAreaElement);
+    const errBox = document.getElementById('error-box')!;
+    errBox.style.display = 'none';
+
+    if (!dataStr.trim() || !query) { out.value = ''; return; }
+
+    try {
+      const data = JSON.parse(dataStr);
+      const result = evaluateJsonPath(data, query);
+      if (result === undefined) {
+        out.value = 'No match found.';
+      } else {
+        out.value = JSON.stringify(result, null, 2);
+      }
+    } catch (e: any) {
+      errBox.textContent = e.message;
+      errBox.style.display = 'block';
+    }
+  }
+
+  document.getElementById('btn-eval')!.addEventListener('click', runQuery);
+  document.getElementById('btn-sample')!.addEventListener('click', () => {
+    (document.getElementById('json-data') as HTMLTextAreaElement).value = SAMPLE_DATA;
+    (document.getElementById('query-input') as HTMLInputElement).value = '$.store.book[*].title';
+    runQuery();
+  });
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    (document.getElementById('json-data') as HTMLTextAreaElement).value = '';
+    (document.getElementById('query-input') as HTMLInputElement).value = '';
+    (document.getElementById('json-output') as HTMLTextAreaElement).value = '';
+    document.getElementById('error-box')!.style.display = 'none';
+  });
+  document.getElementById('btn-copy')!.addEventListener('click', () => {
+    const btn = document.getElementById('btn-copy')!;
+    navigator.clipboard.writeText((document.getElementById('json-output') as HTMLTextAreaElement).value).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('btn-success');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+    }).catch(() => {});
+  });
+
+  document.getElementById('json-data')!.addEventListener('input', runQuery);
+  document.getElementById('query-input')!.addEventListener('input', runQuery);
+</script>

@@ -1,0 +1,279 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-fixer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">JSON Fixer &amp; Automatic Repair Tool</h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">Paste malformed, corrupted, or non-strict JSON and automatically repair common syntax issues.</p>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <button id="btn-fix" class="btn-primary" type="button">Fix &amp; Format</button>
+      <button id="btn-copy" class="btn-secondary" type="button">Copy Fixed</button>
+      <button id="btn-clear" class="btn-secondary" type="button">Clear</button>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem;">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Broken JSON</label>
+          <div style="display:flex; gap:0.5rem;">
+            <button id="btn-sample-1" class="btn-secondary" type="button" style="font-size:0.68rem; padding:0.2rem 0.5rem;">Sample 1</button>
+            <button id="btn-sample-2" class="btn-secondary" type="button" style="font-size:0.68rem; padding:0.2rem 0.5rem;">Sample 2</button>
+          </div>
+        </div>
+        <textarea id="json-input" class="input-themed"
+          placeholder="Paste broken JSON here…"
+          rows="10"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65;"
+        ></textarea>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Fixed Output</label>
+        </div>
+        <textarea id="json-output" class="input-themed" readonly rows="10"
+          placeholder="Fixed JSON appears here…"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65; background:var(--bg-surface-2);"
+        ></textarea>
+      </div>
+    </div>
+
+    <div id="fix-log" style="display:none; margin-top:0.875rem;">
+      <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+        <span style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted);">Repairs applied</span>
+        <span id="fix-count" style="font-size:0.62rem; font-weight:700; font-family:'Fira Code',monospace; padding:0.1rem 0.45rem; border-radius:999px; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.35); color:#059669;"></span>
+      </div>
+      <div id="fix-list" style="display:flex; flex-direction:column; gap:0.3rem;"></div>
+    </div>
+
+    <div id="error-box" style="display:none; margin-top:0.625rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; padding:0.75rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#DC2626;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Fixer</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste any malformed JSON — with trailing commas, single quotes, unquoted keys, missing brackets, or mixed quotes — and click <strong>Fix &amp; Format</strong>. The tool automatically detects and repairs each issue.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">A detailed repair log shows exactly what was changed (e.g. "Fixed 2 trailing commas, wrapped 1 key in quotes"). Use the sample buttons to see common broken-JSON patterns.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the repair pipeline works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      {[
+        ['Quote Normalisation', 'Single quotes are swapped for double quotes where they wrap string values or keys.'],
+        ['Trailing Comma Removal', 'Commas after the last element in arrays or objects are stripped.'],
+        ['Unquoted Key Wrapping', 'Property names not wrapped in double quotes are automatically quoted.'],
+        ['Bracket Balancing', 'Missing closing braces or brackets are appended to form a valid structure.'],
+        ['Validation', 'The repaired string is parsed with JSON.parse(). If still invalid, the error is reported.'],
+      ].map(([label, desc]) => (
+        <div class="info-row"><span class="info-label">{label}</span><span class="info-value">{desc}</span></div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Can it fix completely broken JSON?', a: 'It handles the most common issues: trailing commas, single quotes, unquoted keys, and missing brackets. If the JSON is fundamentally malformed (e.g. missing entire sections), the tool will report the remaining error after attempting repairs.' },
+        { q: 'Does fixing change the data?', a: 'No. The repairs only fix syntax — no values, types, or structure are altered. The repaired JSON is semantically identical to what the original author intended.' },
+        { q: 'What if the fix is wrong?', a: 'Always review the repair log. The tool makes conservative assumptions — for example, it only wraps keys that clearly look like bare identifiers (no spaces, not already quoted). Edge cases may need manual review.' },
+        { q: 'Why does my JSON have trailing commas?', a: 'Many languages (JavaScript, Python dicts, YAML) allow trailing commas. When JSON is generated or edited in these contexts, trailing commas often sneak in. The JSON spec (RFC 8259) does not allow them.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  const SAMPLES = [
+    `{'name': 'Alice', 'age': 30, 'tags': ['dev', 'design',], 'address': {'city': 'Sydney',}}`,
+    `{"name": "Bob", "scores": [98, 85, 72], "meta": {"created": "2024-01-15", "active": true,}}`
+  ];
+
+  function fixJson(raw: string): { fixed: string; fixes: string[] } {
+    const fixes: string[] = [];
+    let s = raw;
+
+    // Helper: strip string literals to avoid matching inside them
+    function stripStrings(str: string): string {
+      return str.replace(/"(?:[^"\\]|\\.)*"/g, '""');
+    }
+
+    // Fix 1: Swap single quotes for double quotes (context-aware)
+    const hasSingleQuotes = /'([^']*?)'/.test(stripStrings(s));
+    if (hasSingleQuotes) {
+      // Only replace single quotes that are NOT inside double-quoted strings
+      let result = '';
+      let inDouble = false;
+      for (let i = 0; i < s.length; i++) {
+        if (s[i] === '\\' && inDouble) { result += s[i] + (s[i + 1] || ''); i++; continue; }
+        if (s[i] === '"') inDouble = !inDouble;
+        if (!inDouble && s[i] === "'") result += '"';
+        else result += s[i];
+      }
+      s = result;
+      fixes.push('Swapped single quotes for double quotes');
+    }
+
+    // Fix 2: Remove trailing commas (context-aware)
+    const strippedForCommas = stripStrings(s);
+    const hasTrailingCommas = /,\s*[\]}]/.test(strippedForCommas);
+    if (hasTrailingCommas) {
+      let result = '';
+      let inStr = false;
+      for (let i = 0; i < s.length; i++) {
+        if (s[i] === '\\' && inStr) { result += s[i] + (s[i + 1] || ''); i++; continue; }
+        if (s[i] === '"') inStr = !inStr;
+        if (!inStr && s[i] === ',' && s[i + 1] && /[\s]*[\]}]/.test(s.slice(i + 1))) {
+          let j = i + 1;
+          while (j < s.length && s[j] === ' ') j++;
+          if (j < s.length && (s[j] === '}' || s[j] === ']')) {
+            result += s[j];
+            i = j;
+            continue;
+          }
+        }
+        result += s[i];
+      }
+      s = result;
+      fixes.push('Removed trailing commas');
+    }
+
+    // Fix 3: Wrap unquoted keys (context-aware)
+    const strippedForKeys = stripStrings(s);
+    const hasUnquotedKeys = /{\s*[a-zA-Z_$][a-zA-Z0-9_$]*\s*:/.test(strippedForKeys) ||
+      /[\n,{]\s*[a-zA-Z_$][a-zA-Z0-9_$]*\s*:/.test(strippedForKeys);
+    if (hasUnquotedKeys) {
+      let result = '';
+      let inStr = false;
+      for (let i = 0; i < s.length; i++) {
+        if (s[i] === '\\' && inStr) { result += s[i] + (s[i + 1] || ''); i++; continue; }
+        if (s[i] === '"') inStr = !inStr;
+        if (!inStr) {
+          const before = i > 0 ? s[i - 1] : '';
+          if ((before === '{' || before === ',' || before === '\n' || before === ' ') &&
+              s[i].match(/[a-zA-Z_$]/)) {
+            let keyEnd = i;
+            while (keyEnd < s.length && s[keyEnd].match(/[a-zA-Z0-9_$]/)) keyEnd++;
+            if (keyEnd < s.length && s.slice(keyEnd).match(/^\s*:/)) {
+              result += '"' + s.slice(i, keyEnd) + '"';
+              i = keyEnd - 1;
+              continue;
+            }
+          }
+        }
+        result += s[i];
+      }
+      s = result;
+      fixes.push('Wrapped unquoted keys in double quotes');
+    }
+
+    // Fix 4: Balance brackets (stack-based, respecting strings)
+    const stack: string[] = [];
+    let inString = false;
+    for (let i = 0; i < s.length; i++) {
+      if (s[i] === '\\' && inString) { i++; continue; }
+      if (s[i] === '"') inString = !inString;
+      if (!inString) {
+        if (s[i] === '{' || s[i] === '[') stack.push(s[i]);
+        else if (s[i] === '}' || s[i] === ']') {
+          const expected = s[i] === '}' ? '{' : '[';
+          if (stack.length > 0 && stack[stack.length - 1] === expected) stack.pop();
+        }
+      }
+    }
+    let missing = '';
+    while (stack.length > 0) {
+      const open = stack.pop();
+      missing += open === '{' ? '}' : ']';
+    }
+    if (missing) {
+      s += missing;
+      const braceCount = (missing.match(/}/g) || []).length;
+      const bracketCount = (missing.match(/]/g) || []).length;
+      if (braceCount) fixes.push(`Added ${braceCount} missing closing brace(s)`);
+      if (bracketCount) fixes.push(`Added ${bracketCount} missing closing bracket(s)`);
+    }
+
+    return { fixed: s, fixes };
+  }
+
+  function runFix() {
+    const raw = (document.getElementById('json-input') as HTMLTextAreaElement).value;
+    const out = (document.getElementById('json-output') as HTMLTextAreaElement);
+    const errBox = document.getElementById('error-box')!;
+    const fixLog = document.getElementById('fix-log')!;
+    const fixList = document.getElementById('fix-list')!;
+    const fixCount = document.getElementById('fix-count')!;
+    errBox.style.display = 'none';
+    fixLog.style.display = 'none';
+    if (!raw.trim()) { out.value = ''; return; }
+
+    // Try parsing as-is first
+    try {
+      const parsed = JSON.parse(raw);
+      out.value = JSON.stringify(parsed, null, 2);
+      fixLog.style.display = 'none';
+      return;
+    } catch {}
+
+    const { fixed, fixes } = fixJson(raw);
+
+    try {
+      const parsed = JSON.parse(fixed);
+      out.value = JSON.stringify(parsed, null, 2);
+
+      if (fixes.length > 0) {
+        fixLog.style.display = 'block';
+        fixCount.textContent = `${fixes.length} fix${fixes.length !== 1 ? 'es' : ''}`;
+        fixList.innerHTML = '';
+        fixes.forEach(f => {
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex; align-items:center; gap:0.5rem; padding:0.35rem 0.75rem; background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.2); border-radius:0.5rem; font-size:0.78rem;';
+          row.innerHTML = `<span style="color:#059669; font-weight:700;">✓</span><span style="color:var(--text-secondary);">${f}</span>`;
+          fixList.appendChild(row);
+        });
+      }
+    } catch (e: any) {
+      errBox.textContent = 'Could not auto-repair: ' + e.message;
+      errBox.style.display = 'block';
+    }
+  }
+
+  document.getElementById('btn-fix')!.addEventListener('click', runFix);
+  document.getElementById('btn-sample-1')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = SAMPLES[0];
+    runFix();
+  });
+  document.getElementById('btn-sample-2')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = SAMPLES[1];
+    runFix();
+  });
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = '';
+    (document.getElementById('json-output') as HTMLTextAreaElement).value = '';
+    document.getElementById('error-box')!.style.display = 'none';
+    document.getElementById('fix-log')!.style.display = 'none';
+  });
+  document.getElementById('btn-copy')!.addEventListener('click', () => {
+    const btn = document.getElementById('btn-copy')!;
+    navigator.clipboard.writeText((document.getElementById('json-output') as HTMLTextAreaElement).value).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('btn-success');
+      setTimeout(() => { btn.textContent = 'Copy Fixed'; btn.classList.remove('btn-success'); }, 2000);
+    }).catch(() => {});
+  });
+</script>

@@ -1,0 +1,160 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-string-escaper')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">JSON String Escaper / Unescaper</h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">Escape JSON into source-code string literals, or unescape escaped strings back to readable JSON.</p>
+
+    <div class="toggle-group" style="margin-bottom:1rem;" role="group" aria-label="Mode">
+      <button class="toggle-btn active" data-mode="escape" type="button">Escape Mode</button>
+      <button class="toggle-btn" data-mode="unescape" type="button">Unescape Mode</button>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:1rem;">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label id="input-label" style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">JSON Input</label>
+          <button id="btn-sample" class="btn-secondary" type="button" style="font-size:0.7rem; padding:0.2rem 0.55rem;">Sample</button>
+        </div>
+        <textarea id="json-input" class="input-themed" rows="10"
+          placeholder='{"key": "value"}'
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65;"
+        ></textarea>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label id="output-label" style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Escaped Output</label>
+          <button id="btn-copy" class="btn-secondary" type="button" style="font-size:0.7rem; padding:0.2rem 0.55rem;">Copy</button>
+        </div>
+        <textarea id="json-output" class="input-themed" readonly rows="10"
+          placeholder="Escaped string appears here…"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65; background:var(--bg-surface-2);"
+        ></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:0.5rem;">
+      <button id="btn-run" class="btn-primary" type="button">Escape</button>
+      <button id="btn-clear" class="btn-secondary" type="button">Clear</button>
+    </div>
+
+    <div id="error-box" style="display:none; margin-top:0.625rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; padding:0.75rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#DC2626;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON String Escaper</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>Escape Mode:</strong> Paste raw JSON and click Escape. The output is a single-line string with all double quotes backslash-escaped (<code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">\"</code>), ready to paste into Java, C#, C++, or any language that needs a JSON string literal.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;"><strong>Unescape Mode:</strong> Paste an escaped string (e.g. from a log or source file) and click Unescape. The output is the original readable, formatted JSON.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Escaping process</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Escape</span><span class="info-value">JSON.stringify() wraps all special chars in backslashes</span></div>
+      <div class="info-row"><span class="info-label">Unescape</span><span class="info-value">JSON.parse() reverses all escape sequences</span></div>
+      <div class="info-row"><span class="info-label">Chars escaped</span><span class="info-value">&quot; \ / b f n r t and Unicode escapes</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'When would I use escape mode?', a: 'When you need to embed JSON inside a string literal in source code — for example, test fixtures in Java, C#, Python, or shell scripts. The escaped output can be pasted directly into a quoted string.' },
+        { q: 'What characters are escaped?', a: 'Double quotes ("), backslashes (backslash), forward slashes (/), and control characters: backspace (backspace), form feed (form feed), newline (newline), carriage return (carriage return), and tab (tab). Non-printable characters use Unicode escape notation.' },
+        { q: 'Can I escape invalid JSON?', a: 'No. The tool first parses the input with JSON.parse(). If it is not valid JSON, an error is shown. Fix the JSON first, then escape it.' },
+        { q: 'What languages does this work with?', a: 'The escaped output is valid in any language that uses backslash-escape sequences: Java, C#, C++, JavaScript, Python, Go, Rust, Ruby, PHP, and more.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  const SAMPLE_JSON = JSON.stringify({name:"Alice",age:30,message:'She said "hello"',path:"C:\\Users\\Alice"},null,2);
+  const SAMPLE_ESCAPED = '{"name":"Alice","age":30,"message":"She said \\\\"hello\\\\\"","path":"C:\\\\\\\\Users\\\\\\\\Alice"}';
+
+  let mode = 'escape';
+
+  const modeBtns = document.querySelectorAll<HTMLButtonElement>('[data-mode]');
+  modeBtns.forEach(btn => btn.addEventListener('click', () => {
+    mode = btn.dataset.mode!;
+    modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+    (document.getElementById('input-label') as HTMLElement).textContent = mode === 'escape' ? 'JSON Input' : 'Escaped Input';
+    (document.getElementById('output-label') as HTMLElement).textContent = mode === 'escape' ? 'Escaped Output' : 'Unescaped Output';
+    (document.getElementById('btn-run') as HTMLElement).textContent = mode === 'escape' ? 'Escape' : 'Unescape';
+  }));
+
+  function run() {
+    const raw = (document.getElementById('json-input') as HTMLTextAreaElement).value;
+    const out = (document.getElementById('json-output') as HTMLTextAreaElement);
+    const errBox = document.getElementById('error-box')!;
+    errBox.style.display = 'none';
+    if (!raw.trim()) { out.value = ''; return; }
+
+    try {
+      if (mode === 'escape') {
+        const parsed = JSON.parse(raw);
+        out.value = JSON.stringify(JSON.stringify(parsed));
+      } else {
+        // Try to unescape
+        let str = raw.trim();
+        // First try to parse as-is (might be valid JSON)
+        try {
+          const parsed = JSON.parse(str);
+          if (typeof parsed === 'object' && parsed !== null) {
+            out.value = JSON.stringify(parsed, null, 2);
+            return;
+          }
+        } catch {}
+        // Strip surrounding quotes if present
+        if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+          str = JSON.parse(str);
+        } else {
+          str = JSON.parse(`"${str}"`);
+        }
+        // Try to parse as JSON
+        try {
+          out.value = JSON.stringify(JSON.parse(str), null, 2);
+        } catch {
+          out.value = str;
+        }
+      }
+    } catch (e: any) {
+      errBox.textContent = e.message;
+      errBox.style.display = 'block';
+    }
+  }
+
+  document.getElementById('btn-run')!.addEventListener('click', run);
+  document.getElementById('btn-sample')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = mode === 'escape' ? SAMPLE_JSON : SAMPLE_ESCAPED;
+    run();
+  });
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = '';
+    (document.getElementById('json-output') as HTMLTextAreaElement).value = '';
+    document.getElementById('error-box')!.style.display = 'none';
+  });
+  document.getElementById('btn-copy')!.addEventListener('click', () => {
+    const btn = document.getElementById('btn-copy')!;
+    navigator.clipboard.writeText((document.getElementById('json-output') as HTMLTextAreaElement).value).then(() => {
+      btn.textContent = '✓ Copied!'; btn.classList.add('btn-success');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+    }).catch(() => {});
+  });
+</script>

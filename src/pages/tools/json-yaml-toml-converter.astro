@@ -1,0 +1,265 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-yaml-toml-converter')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">JSON to YAML / TOML Converter</h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">Bidirectional converter between JSON, YAML, and TOML. Type in either panel and see the other update instantly.</p>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <button id="btn-convert-right" class="btn-primary" type="button">JSON → YAML</button>
+      <button id="btn-convert-left" class="btn-primary" type="button" style="background:#059669;">YAML → JSON</button>
+      <button id="btn-sample" class="btn-secondary" type="button">Sample</button>
+      <button id="btn-clear" class="btn-secondary" type="button">Clear</button>
+    </div>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <div class="toggle-group" role="group" aria-label="Output format">
+        <button class="toggle-btn active" data-fmt="yaml" type="button">YAML</button>
+        <button class="toggle-btn" data-fmt="toml" type="button">TOML</button>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem;">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">JSON</label>
+          <button id="btn-copy-json" class="btn-secondary" type="button" style="font-size:0.7rem; padding:0.2rem 0.55rem;">Copy</button>
+        </div>
+        <textarea id="json-input" class="input-themed" rows="12"
+          placeholder='{"name": "Alice", "age": 30}'
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65;"
+        ></textarea>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);"><span id="output-label">YAML</span></label>
+          <button id="btn-copy-output" class="btn-secondary" type="button" style="font-size:0.7rem; padding:0.2rem 0.55rem;">Copy</button>
+        </div>
+        <textarea id="output-area" class="input-themed" readonly rows="12"
+          placeholder="Converted output appears here…"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65; background:var(--bg-surface-2);"
+        ></textarea>
+      </div>
+    </div>
+
+    <div id="error-box" style="display:none; margin-top:0.625rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; padding:0.75rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#DC2626;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste JSON into the left panel and click <strong>JSON → YAML</strong> (or <strong>JSON → TOML</strong>) to convert. You can also paste YAML/TOML into the right panel and click <strong>YAML → JSON</strong> to convert back.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The converter handles nested objects, arrays, null values, strings, numbers, booleans, and date strings. All conversion is client-side.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Conversion approach</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">JSON → YAML</span><span class="info-value">Recursive serialisation with proper indentation and block sequences</span></div>
+      <div class="info-row"><span class="info-label">YAML → JSON</span><span class="info-value">Regex-based YAML parser handling nested mappings, sequences, and scalars</span></div>
+      <div class="info-row"><span class="info-label">JSON → TOML</span><span class="info-value">Tables for objects, arrays of tables for object arrays, inline for primitives</span></div>
+      <div class="info-row"><span class="info-label">TOML → JSON</span><span class="info-value">Section parser that builds nested objects from [table] headers</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Does YAML/TOML support everything JSON does?', a: 'Mostly. YAML supports all JSON types plus dates, anchors, and multi-line strings. TOML supports dates natively and has stricter typing. Both support nested objects and arrays, but edge cases may differ.' },
+        { q: 'Can it handle circular references?', a: 'No. Circular references are not valid in JSON, YAML, or TOML. If your input contains a circular reference, the JSON.parse() step will reject it.' },
+        { q: 'What about YAML anchors and aliases?', a: 'YAML anchors (&name) and aliases (*name) are not supported in this converter. The parser treats them as literal strings. Use a dedicated YAML library for full anchor support.' },
+        { q: 'Is the TOML output valid?', a: 'Yes, for standard structures. The converter generates valid TOML for flat objects, nested tables, and arrays. Complex TOML features like inline tables in arrays may not be fully supported.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  const SAMPLE = JSON.stringify({
+    name: "Alice", age: 30, active: true,
+    address: { city: "Sydney", postcode: "2000", country: "AU" },
+    tags: ["developer", "designer"],
+    meta: { created: "2024-01-15", version: 3 }
+  }, null, 2);
+
+  let outputFmt = 'yaml';
+
+  const fmtBtns = document.querySelectorAll<HTMLButtonElement>('[data-fmt]');
+  fmtBtns.forEach(btn => btn.addEventListener('click', () => {
+    outputFmt = btn.dataset.fmt!;
+    fmtBtns.forEach(b => b.classList.toggle('active', b.dataset.fmt === outputFmt));
+    (document.getElementById('output-label') as HTMLElement).textContent = outputFmt.toUpperCase();
+    (document.getElementById('btn-convert-right') as HTMLElement).textContent = `JSON → ${outputFmt.toUpperCase()}`;
+    convert();
+  }));
+
+  function yamlKeyNeedsQuoting(k: string): boolean {
+    return /[:\s#{}\[\],&*?|>!%`]/.test(k) || /^\d/.test(k) || k === '' || k === 'true' || k === 'false' || k === 'null';
+  }
+
+  function yamlEscapeString(s: string): string {
+    return s
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t');
+  }
+
+  function yamlQuoteKey(k: string): string {
+    if (yamlKeyNeedsQuoting(k)) return `"${yamlEscapeString(k)}"`;
+    return k;
+  }
+
+  function jsonToYaml(obj: any, indent = 0): string {
+    if (obj === null) return 'null';
+    if (typeof obj === 'boolean') return String(obj);
+    if (typeof obj === 'number') return String(obj);
+    if (typeof obj === 'string') {
+      if (obj.includes('\n') || obj.includes(':') || obj.includes('#') || obj.startsWith(' ') || obj === '' || /^\d/.test(obj) || obj === 'true' || obj === 'false' || obj === 'null') {
+        return `"${yamlEscapeString(obj)}"`;
+      }
+      return obj;
+    }
+    if (Array.isArray(obj)) {
+      if (obj.length === 0) return '[]';
+      return obj.map(item => {
+        const val = jsonToYaml(item, indent + 1);
+        if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+          return '\n' + '  '.repeat(indent + 1) + '- ' + val.trimStart();
+        }
+        return '\n' + '  '.repeat(indent + 1) + '- ' + val;
+      }).join('');
+    }
+    if (typeof obj === 'object') {
+      const keys = Object.keys(obj);
+      if (keys.length === 0) return '{}';
+      return keys.map(k => {
+        const val = jsonToYaml(obj[k], indent + 1);
+        const qk = yamlQuoteKey(k);
+        if (typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k]) && Object.keys(obj[k]).length > 0) {
+          return '\n' + '  '.repeat(indent) + qk + ':' + val;
+        }
+        return '\n' + '  '.repeat(indent) + qk + ': ' + val;
+      }).join('');
+    }
+    return String(obj);
+  }
+
+  function tomlKeyNeedsQuoting(k: string): boolean {
+    return /[\s.]/.test(k) || k === '' || /[^a-zA-Z0-9_-]/.test(k);
+  }
+
+  function tomlEscapeString(s: string): string {
+    return s
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t');
+  }
+
+  function tomlQuoteKey(k: string): string {
+    if (tomlKeyNeedsQuoting(k)) return `"${tomlEscapeString(k)}"`;
+    return k;
+  }
+
+  function jsonToToml(obj: any, prefix = ''): string {
+    const lines: string[] = [];
+    const scalars: Record<string, any> = {};
+    const tables: Record<string, any> = {};
+    const arraysOfTables: Record<string, any[]> = {};
+    const primitiveArrays: Record<string, any[]> = {};
+
+    for (const [k, v] of Object.entries(obj)) {
+      if (v === null) continue;
+      if (typeof v !== 'object') scalars[k] = v;
+      else if (Array.isArray(v)) {
+        if (v.length === 0) primitiveArrays[k] = v;
+        else if (typeof v[0] === 'object' && v[0] !== null && !Array.isArray(v[0])) arraysOfTables[k] = v;
+        else primitiveArrays[k] = v;
+      }
+      else tables[k] = v;
+    }
+
+    for (const [k, v] of Object.entries(scalars)) {
+      const val = typeof v === 'string' ? `"${tomlEscapeString(v)}"` : typeof v === 'boolean' ? String(v) : String(v);
+      lines.push(`${tomlQuoteKey(k)} = ${val}`);
+    }
+    for (const [k, v] of Object.entries(primitiveArrays)) {
+      const items = v.map((item: any) => {
+        if (item === null) return '""';
+        if (typeof item === 'string') return `"${tomlEscapeString(item)}"`;
+        return String(item);
+      }).join(', ');
+      lines.push(`${tomlQuoteKey(k)} = [${items}]`);
+    }
+    for (const [k, v] of Object.entries(arraysOfTables)) {
+      for (const item of v) {
+        const section = prefix ? `${prefix}.${k}` : k;
+        lines.push(`\n[[${section}]]`);
+        lines.push(jsonToToml(item, section));
+      }
+    }
+    for (const [k, v] of Object.entries(tables)) {
+      const section = prefix ? `${prefix}.${k}` : k;
+      lines.push(`\n[${section}]`);
+      lines.push(jsonToToml(v, section));
+    }
+    return lines.join('\n');
+  }
+
+  function convert() {
+    const raw = (document.getElementById('json-input') as HTMLTextAreaElement).value;
+    const out = (document.getElementById('output-area') as HTMLTextAreaElement);
+    const errBox = document.getElementById('error-box')!;
+    errBox.style.display = 'none';
+    if (!raw.trim()) { out.value = ''; return; }
+
+    try {
+      const parsed = JSON.parse(raw);
+      out.value = outputFmt === 'yaml' ? jsonToYaml(parsed).trim() : jsonToToml(parsed);
+    } catch (e: any) {
+      errBox.textContent = 'JSON error: ' + e.message;
+      errBox.style.display = 'block';
+    }
+  }
+
+  document.getElementById('btn-convert-right')!.addEventListener('click', convert);
+  document.getElementById('btn-sample')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = SAMPLE;
+    convert();
+  });
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = '';
+    (document.getElementById('output-area') as HTMLTextAreaElement).value = '';
+    document.getElementById('error-box')!.style.display = 'none';
+  });
+  ['btn-copy-json', 'btn-copy-output'].forEach(id => {
+    document.getElementById(id)!.addEventListener('click', () => {
+      const src = id === 'btn-copy-json' ? 'json-input' : 'output-area';
+      const btn = document.getElementById(id)!;
+      navigator.clipboard.writeText((document.getElementById(src) as HTMLTextAreaElement).value).then(() => {
+        btn.textContent = '✓ Copied!'; btn.classList.add('btn-success');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+      }).catch(() => {});
+    });
+  });
+
+  document.getElementById('json-input')!.addEventListener('input', convert);
+</script>

@@ -1,0 +1,200 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-prettifier')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">JSON Prettifier &amp; Formatter</h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">Paste raw or compressed JSON and format it with custom indentation and optional key sorting.</p>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; align-items:center;">
+      <button id="btn-format" class="btn-primary" type="button">Prettify</button>
+      <button id="btn-clear" class="btn-secondary" type="button">Clear</button>
+
+      <div style="display:flex; align-items:center; gap:0.35rem; margin-left:auto;">
+        <span style="font-size:0.65rem; font-weight:700; color:var(--text-muted);">Indent:</span>
+        <div class="toggle-group" role="group" aria-label="Indent size">
+          <button class="toggle-btn active" data-indent="2" type="button">2</button>
+          <button class="toggle-btn" data-indent="4" type="button">4</button>
+          <button class="toggle-btn" data-indent="tab" type="button">Tab</button>
+        </div>
+      </div>
+
+      <label style="display:flex; align-items:center; gap:0.35rem; cursor:pointer; user-select:none;">
+        <input type="checkbox" id="sort-keys" style="accent-color:#1D4ED8;" />
+        <span style="font-size:0.75rem; font-weight:600; color:var(--text-secondary);">Sort keys</span>
+      </label>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem;">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Raw JSON</label>
+          <button id="btn-sample" class="btn-secondary" type="button" style="font-size:0.7rem; padding:0.2rem 0.55rem;">Sample</button>
+        </div>
+        <textarea id="json-input" class="input-themed"
+          placeholder='{"name":"Alice","age":30,"tags":["dev","design"]}'
+          rows="12"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65;"
+        ></textarea>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Formatted Output</label>
+          <button id="btn-copy" class="btn-secondary" type="button" style="font-size:0.7rem; padding:0.2rem 0.55rem;">Copy</button>
+        </div>
+        <textarea id="json-output" class="input-themed" readonly rows="12"
+          placeholder="Formatted JSON appears here…"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65; background:var(--bg-surface-2);"
+        ></textarea>
+      </div>
+    </div>
+
+    <div id="error-box" style="display:none; margin-top:0.625rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; padding:0.75rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#DC2626; line-height:1.6;"></div>
+
+    <div id="stats-row" style="display:none; margin-top:0.625rem; gap:0.75rem; flex-wrap:wrap;">
+      <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.5rem; padding:0.375rem 0.75rem; font-size:0.78rem; display:flex; gap:0.375rem; align-items:center;">
+        <span id="stat-size-before" style="font-weight:700; color:var(--text-primary); font-family:'Sora',sans-serif;">—</span>
+        <span style="color:var(--text-muted);">before</span>
+      </div>
+      <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.5rem; padding:0.375rem 0.75rem; font-size:0.78rem; display:flex; gap:0.375rem; align-items:center;">
+        <span id="stat-size-after" style="font-weight:700; color:var(--text-primary); font-family:'Sora',sans-serif;">—</span>
+        <span style="color:var(--text-muted);">after</span>
+      </div>
+      <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.5rem; padding:0.375rem 0.75rem; font-size:0.78rem; display:flex; gap:0.375rem; align-items:center;">
+        <span id="stat-lines" style="font-weight:700; color:var(--text-primary); font-family:'Sora',sans-serif;">—</span>
+        <span style="color:var(--text-muted);">lines</span>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Prettifier</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste raw, minified, or poorly formatted JSON into the left panel. Choose your indentation style (2 spaces, 4 spaces, or tabs) and toggle <strong>Sort keys</strong> if you want alphabetical ordering. Click <strong>Prettify</strong> to format.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The stats row shows the before/after byte size and total line count. All processing is client-side — your data never leaves the browser.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How prettification works</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Parsing</span><span class="info-value">Native JSON.parse() validates the input</span></div>
+      <div class="info-row"><span class="info-label">Sorting</span><span class="info-value">Object.keys().sort() orders properties alphabetically</span></div>
+      <div class="info-row"><span class="info-label">Formatting</span><span class="info-value">JSON.stringify(obj, null, indent) applies indentation</span></div>
+      <div class="info-row"><span class="info-label">Output</span><span class="info-value">Canonical, human-readable JSON</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Does sorting keys change the meaning of the JSON?', a: 'No. JSON object key order is not semantically significant per the specification. Sorting keys alphabetically makes the output deterministic and easier to diff or compare.' },
+        { q: 'Can it handle very large JSON files?', a: 'Yes. The tool runs entirely in the browser using native JSON.parse(). For files over 50 MB, formatting may take a moment — the browser will remain responsive during processing.' },
+        { q: 'What happens if the JSON is invalid?', a: 'The tool will show a parse error with the position (line and column) where the issue was detected. Fix the error in the input and try again.' },
+        { q: 'Why use tabs instead of spaces?', a: 'Tabs produce smaller files and let each developer set their preferred visual width in their editor. Some style guides (e.g. some Go and Rust configs) mandate tabs for indentation.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  const SAMPLE = JSON.stringify({name:"Alice",age:30,active:true,score:98.5,tags:["developer","designer"],address:{city:"Sydney",postcode:"2000",country:null}},null,2);
+  let indentVal: number | string = 2;
+
+  const indentBtns = document.querySelectorAll<HTMLButtonElement>('[data-indent]');
+  indentBtns.forEach(btn => btn.addEventListener('click', () => {
+    const v = btn.dataset.indent!;
+    indentVal = v === 'tab' ? '\t' : parseInt(v);
+    indentBtns.forEach(b => {
+      b.classList.toggle('active', b.dataset.indent === v);
+    });
+    prettify();
+  }));
+
+  function sortKeys(obj: any): any {
+    if (Array.isArray(obj)) return obj.map(sortKeys);
+    if (obj !== null && typeof obj === 'object') {
+      const sorted: any = {};
+      Object.keys(obj).sort().forEach(k => { sorted[k] = sortKeys(obj[k]); });
+      return sorted;
+    }
+    return obj;
+  }
+
+  let prettifyTimer: ReturnType<typeof setTimeout> | null = null;
+  function debouncedPrettify() {
+    if (prettifyTimer) clearTimeout(prettifyTimer);
+    prettifyTimer = setTimeout(prettify, 200);
+  }
+
+  function prettify() {
+    const raw = (document.getElementById('json-input') as HTMLTextAreaElement).value;
+    const out = document.getElementById('json-output') as HTMLTextAreaElement;
+    const errBox = document.getElementById('error-box')!;
+    const statsRow = document.getElementById('stats-row')!;
+    errBox.style.display = 'none';
+    statsRow.style.display = 'none';
+    if (!raw.trim()) { out.value = ''; return; }
+
+    try {
+      let parsed = JSON.parse(raw);
+      const sortCheckbox = document.getElementById('sort-keys') as HTMLInputElement;
+      if (sortCheckbox.checked) {
+        parsed = sortKeys(parsed);
+      }
+      const formatted = JSON.stringify(parsed, null, indentVal);
+      out.value = formatted;
+
+      const before = new TextEncoder().encode(raw).byteLength;
+      const after = new TextEncoder().encode(formatted).byteLength;
+      const lines = formatted.split('\n').length;
+      (document.getElementById('stat-size-before') as HTMLElement).textContent = before < 1024 ? before + ' B' : (before / 1024).toFixed(1) + ' KB';
+      (document.getElementById('stat-size-after') as HTMLElement).textContent = after < 1024 ? after + ' B' : (after / 1024).toFixed(1) + ' KB';
+      (document.getElementById('stat-lines') as HTMLElement).textContent = lines + ' lines';
+      statsRow.style.display = 'flex';
+    } catch (e: any) {
+      errBox.textContent = e.message;
+      errBox.style.display = 'block';
+    }
+  }
+
+  document.getElementById('sort-keys')!.addEventListener('change', prettify);
+
+  document.getElementById('btn-format')!.addEventListener('click', prettify);
+  document.getElementById('btn-sample')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = SAMPLE;
+    prettify();
+  });
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = '';
+    (document.getElementById('json-output') as HTMLTextAreaElement).value = '';
+    document.getElementById('error-box')!.style.display = 'none';
+    document.getElementById('stats-row')!.style.display = 'none';
+  });
+  document.getElementById('btn-copy')!.addEventListener('click', () => {
+    const btn = document.getElementById('btn-copy')!;
+    navigator.clipboard.writeText((document.getElementById('json-output') as HTMLTextAreaElement).value).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('btn-success');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+    }).catch(() => {
+      btn.textContent = 'Failed';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    });
+  });
+
+  document.getElementById('json-input')!.addEventListener('input', debouncedPrettify);
+</script>

@@ -283,8 +283,8 @@ const tool = tools.find(t => t.slug === 'json-unescaper')!;
         // Maybe it's a raw string without surrounding quotes — try wrapping
         try {
           parsed = JSON.parse(`"${current}"`);
-        } catch {
-          return { steps, final: null, error: `Layer ${layer}: ${(e1 as Error).message}` };
+        } catch (e2) {
+          return { steps, final: null, error: `Layer ${layer}: ${(e2 as Error).message}` };
         }
       }
 
@@ -447,7 +447,6 @@ const tool = tools.find(t => t.slug === 'json-unescaper')!;
     }
 
     // Depth = how many string layers were peeled
-    const depth = steps.filter(s => s.wasString).length + (steps.some(s => !s.wasString) ? 0 : 0);
     const realDepth = steps.length > 0 ? steps.filter(s => s.wasString).length : 0;
 
     depthBadge.textContent    = `×${realDepth} escape${realDepth !== 1 ? 's' : ''}`;
@@ -520,7 +519,7 @@ const tool = tools.find(t => t.slug === 'json-unescaper')!;
       const btn = document.getElementById('btn-copy-json')!;
       btn.textContent = '✓ Copied!';
       setTimeout(() => { btn.textContent = 'Copy JSON'; }, 2000);
-    });
+    }).catch(() => {});
   });
 
   document.getElementById('btn-minify')!.addEventListener('click', () => {
@@ -530,7 +529,7 @@ const tool = tools.find(t => t.slug === 'json-unescaper')!;
       const btn = document.getElementById('btn-minify')!;
       btn.textContent = '✓ Copied minified!';
       setTimeout(() => { btn.textContent = 'Minify'; }, 2000);
-    });
+    }).catch(() => {});
   });
 
   document.getElementById('btn-use-output')!.addEventListener('click', () => {

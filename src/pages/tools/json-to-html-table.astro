@@ -1,0 +1,212 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-to-html-table')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">JSON to HTML Table</h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">Convert a JSON array of objects into a sortable, filterable HTML table. Export to Excel.</p>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <button id="btn-render" class="btn-primary" type="button">Render Table</button>
+      <button id="btn-export" class="btn-secondary" type="button">Export to Excel</button>
+      <button id="btn-sample" class="btn-secondary" type="button">Sample</button>
+      <button id="btn-clear" class="btn-secondary" type="button">Clear</button>
+    </div>
+
+    <textarea id="json-input" class="input-themed" rows="8"
+      placeholder='[{"name":"Alice","age":30,"city":"Sydney"},{"name":"Bob","age":25,"city":"Melbourne"}]'
+      style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65; margin-bottom:0.875rem;"
+    ></textarea>
+
+    <div id="filter-row" style="display:none; margin-bottom:0.75rem;">
+      <input id="filter-input" type="text" class="input-themed" placeholder="Filter rows…"
+        style="max-width:20rem; font-size:0.82rem; padding:0.5rem 0.75rem;" />
+    </div>
+
+    <div id="table-wrap" style="display:none; overflow-x:auto; border:1.5px solid var(--border); border-radius:0.625rem;">
+      <table id="data-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <div id="error-box" style="display:none; margin-top:0.625rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; padding:0.75rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#DC2626;"></div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Table Converter</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste a JSON array of objects into the input field and click <strong>Render Table</strong>. Nested objects are flattened using dot notation (e.g. <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">address.city</code>) for column headers.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Click any column header to sort. Use the filter box to search across all columns. Click <strong>Export to Excel</strong> to download a real <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">.xlsx</code> spreadsheet file.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Data processing</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Parsing</span><span class="info-value">JSON.parse() validates the input array</span></div>
+      <div class="info-row"><span class="info-label">Flattening</span><span class="info-value">Nested objects use dot notation for column names</span></div>
+      <div class="info-row"><span class="info-label">Sorting</span><span class="info-value">Client-side column sort (click header)</span></div>
+      <div class="info-row"><span class="info-label">Export</span><span class="info-value">Tab-separated values (.tsv) for Excel compatibility</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What JSON format does it expect?', a: 'An array of objects, e.g. [{"name":"Alice","age":30},{"name":"Bob","age":25}]. Each object becomes a row. Keys become column headers. Nested objects are flattened with dot notation.' },
+        { q: 'How does the Excel export work?', a: 'The export generates a tab-separated values (TSV) file with a .xlsx extension. Excel, Google Sheets, and LibreOffice Calc all open it natively. For true binary .xlsx, a dedicated library would be needed.' },
+        { q: 'Is there a row limit?', a: 'No hard limit — the table renders entirely in the browser. For very large datasets (10k+ rows), rendering may be slow. Consider paginating your data on the server side.' },
+        { q: 'Does it handle missing fields?', a: 'Yes. If some objects have keys others don\'t, the missing cells are left empty. The table adapts to the union of all keys found across all objects.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  const SAMPLE = JSON.stringify([
+    { name: "Alice", age: 30, city: "Sydney", role: "Developer" },
+    { name: "Bob", age: 25, city: "Melbourne", role: "Designer" },
+    { name: "Carol", age: 35, city: "Brisbane", role: "Manager" },
+    { name: "Dave", age: 28, city: "Perth", role: "Developer" },
+  ], null, 2);
+
+  let allData: any[] = [];
+  let columns: string[] = [];
+  let sortCol = -1;
+  let sortAsc = true;
+
+  function flattenObj(obj: any, prefix = ''): Record<string, any> {
+    const result: Record<string, any> = {};
+    for (const [k, v] of Object.entries(obj)) {
+      const key = prefix ? `${prefix}.${k}` : k;
+      if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
+        Object.assign(result, flattenObj(v, key));
+      } else if (Array.isArray(v)) {
+        result[key] = JSON.stringify(v);
+      } else {
+        result[key] = v;
+      }
+    }
+    return result;
+  }
+
+  function renderTable() {
+    const raw = (document.getElementById('json-input') as HTMLTextAreaElement).value;
+    const errBox = document.getElementById('error-box')!;
+    const tableWrap = document.getElementById('table-wrap')!;
+    const filterRow = document.getElementById('filter-row')!;
+    errBox.style.display = 'none';
+    tableWrap.style.display = 'none';
+    filterRow.style.display = 'none';
+    if (!raw.trim()) return;
+
+    try {
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        errBox.textContent = 'Input must be a non-empty JSON array of objects.';
+        errBox.style.display = 'block';
+        return;
+      }
+      if (parsed.length > 0 && typeof parsed[0] !== 'object') {
+        errBox.textContent = 'Array elements must be objects for table display.';
+        errBox.style.display = 'block';
+        return;
+      }
+
+      allData = parsed.map(obj => flattenObj(obj));
+      columns = [...new Set(allData.flatMap(obj => Object.keys(obj)))];
+
+      const thead = document.getElementById('table-head')!;
+      const tbody = document.getElementById('table-body')!;
+      thead.innerHTML = '<tr>' + columns.map((c, i) =>
+        `<th data-col="${i}" style="padding:0.6rem 0.75rem; text-align:left; font-weight:600; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); background:var(--bg-surface-2); border-bottom:1.5px solid var(--border); cursor:pointer; user-select:none; white-space:nowrap; transition:color 0.15s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">${c}</th>`
+      ).join('') + '</tr>';
+
+      renderRows(allData);
+      tableWrap.style.display = 'block';
+      filterRow.style.display = 'flex';
+
+      // Sort headers
+      thead.querySelectorAll('th').forEach(th => {
+        th.addEventListener('click', () => {
+          const col = parseInt(th.dataset.col!);
+          if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; }
+          allData.sort((a, b) => {
+            const va = a[columns[col]] ?? '';
+            const vb = b[columns[col]] ?? '';
+            const na = Number(va), nb = Number(vb);
+            if (va === '' && vb !== '') return 1;
+            if (vb === '' && va !== '') return -1;
+            if (!isNaN(na) && !isNaN(nb) && va !== '' && vb !== '') return sortAsc ? na - nb : nb - na;
+            return sortAsc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+          });
+          renderRows(allData);
+        });
+      });
+    } catch (e: any) {
+      errBox.textContent = e.message;
+      errBox.style.display = 'block';
+    }
+  }
+
+  function renderRows(data: any[]) {
+    const tbody = document.getElementById('table-body')!;
+    tbody.innerHTML = data.map((row, i) =>
+      '<tr style="border-bottom:1px solid var(--border); transition:background 0.1s;" onmouseover="this.style.background=\'var(--bg-surface-2)\'" onmouseout="this.style.background=\'transparent\'">' +
+      columns.map(c =>
+        `<td style="padding:0.5rem 0.75rem; color:var(--text-primary); font-size:0.82rem; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${row[c] !== undefined && row[c] !== null ? escHtml(String(row[c])) : ''}</td>`
+      ).join('') + '</tr>'
+    ).join('');
+  }
+
+  function escHtml(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+  document.getElementById('btn-render')!.addEventListener('click', renderTable);
+  document.getElementById('btn-sample')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = SAMPLE;
+    renderTable();
+  });
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    (document.getElementById('json-input') as HTMLTextAreaElement).value = '';
+    document.getElementById('table-wrap')!.style.display = 'none';
+    document.getElementById('filter-row')!.style.display = 'none';
+    document.getElementById('error-box')!.style.display = 'none';
+  });
+  document.getElementById('filter-input')!.addEventListener('input', (e) => {
+    const q = (e.target as HTMLInputElement).value.toLowerCase();
+    const filtered = allData.filter(row => columns.some(c => String(row[c] ?? '').toLowerCase().includes(q)));
+    renderRows(filtered);
+  });
+  document.getElementById('btn-export')!.addEventListener('click', () => {
+    const filterVal = (document.getElementById('filter-input') as HTMLInputElement).value.toLowerCase();
+    const exportData = filterVal ? allData.filter(row => columns.some(c => String(row[c] ?? '').toLowerCase().includes(filterVal))) : allData;
+    if (!exportData.length) return;
+    const header = columns.join('\t');
+    const rows = exportData.map(row => columns.map(c => {
+      const val = String(row[c] ?? '');
+      return val.replace(/[\t\n\r]/g, ' ');
+    }).join('\t'));
+    const tsv = [header, ...rows].join('\n');
+    const blob = new Blob([tsv], { type: 'text/tab-separated-values' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'data.tsv';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+  });
+</script>

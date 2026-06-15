@@ -1,0 +1,252 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'json-diff-patch-comparer')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">JSON Diff &amp; Patch Comparer</h2>
+    <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">Compare two JSON documents side by side. Additions in green, deletions in red, modifications in yellow.</p>
+
+    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+      <button id="btn-diff" class="btn-primary" type="button">Compare</button>
+      <button id="btn-sample" class="btn-secondary" type="button">Load Sample</button>
+      <button id="btn-clear" class="btn-secondary" type="button">Clear</button>
+    </div>
+
+    <!-- View mode toggle -->
+    <div class="toggle-group" style="margin-bottom:1rem;" role="group" aria-label="View mode">
+      <button class="toggle-btn active" data-view="side" type="button">Side by Side</button>
+      <button class="toggle-btn" data-view="unified" type="button">Unified</button>
+      <button class="toggle-btn" data-view="patch" type="button">JSON Patch</button>
+    </div>
+
+    <div id="side-view" style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem; margin-bottom:1rem;">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Original (Source)</label>
+        </div>
+        <textarea id="json-source" class="input-themed" rows="12"
+          placeholder="Original JSON…"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65;"
+        ></textarea>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Modified (Target)</label>
+        </div>
+        <textarea id="json-target" class="input-themed" rows="12"
+          placeholder="Modified JSON…"
+          style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65;"
+        ></textarea>
+      </div>
+    </div>
+
+    <div id="unified-view" style="display:none; margin-bottom:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+        <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">Unified Diff</label>
+        <button id="btn-copy-diff" class="btn-secondary" type="button" style="font-size:0.7rem; padding:0.2rem 0.55rem;">Copy</button>
+      </div>
+      <div id="diff-output" style="background:#0a1628; border:1.5px solid rgba(255,255,255,0.1); border-radius:0.625rem; padding:1rem; font-family:'Fira Code',monospace; font-size:0.76rem; line-height:1.75; overflow-x:auto; max-height:500px; overflow-y:auto; white-space:pre;"></div>
+    </div>
+
+    <div id="patch-view" style="display:none; margin-bottom:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+        <label style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted);">RFC 6902 JSON Patch</label>
+        <button id="btn-copy-patch" class="btn-secondary" type="button" style="font-size:0.7rem; padding:0.2rem 0.55rem;">Copy</button>
+      </div>
+      <textarea id="patch-output" class="input-themed" readonly rows="12"
+        placeholder="JSON Patch operations appear here…"
+        style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65; background:var(--bg-surface-2);"
+      ></textarea>
+    </div>
+
+    <div id="error-box" style="display:none; margin-top:0.625rem; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:0.5rem; padding:0.75rem 1rem; font-family:'Fira Code',monospace; font-size:0.8rem; color:#DC2626;"></div>
+
+    <div id="stats-row" style="display:none; gap:0.75rem; flex-wrap:wrap; margin-bottom:0.5rem;">
+      <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.25); border-radius:0.5rem; padding:0.375rem 0.75rem; font-size:0.78rem; display:flex; gap:0.375rem; align-items:center;">
+        <span id="stat-add" style="font-weight:700; color:#059669; font-family:'Sora',sans-serif;">0</span>
+        <span style="color:var(--text-muted);">added</span>
+      </div>
+      <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:0.5rem; padding:0.375rem 0.75rem; font-size:0.78rem; display:flex; gap:0.375rem; align-items:center;">
+        <span id="stat-del" style="font-weight:700; color:#DC2626; font-family:'Sora',sans-serif;">0</span>
+        <span style="color:var(--text-muted);">removed</span>
+      </div>
+      <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); border-radius:0.5rem; padding:0.375rem 0.75rem; font-size:0.78rem; display:flex; gap:0.375rem; align-items:center;">
+        <span id="stat-mod" style="font-weight:700; color:#D97706; font-family:'Sora',sans-serif;">0</span>
+        <span style="color:var(--text-muted);">modified</span>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Diff Tool</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste the original JSON into the Source panel and the modified version into the Target panel. Click <strong>Compare</strong> to see a visual diff. Switch between Side by Side, Unified, and JSON Patch views.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The JSON Patch view produces an RFC 6902 compliant array of operations (add, remove, replace, move, copy, test) that describe exactly how to transform the source into the target.</p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Diff algorithm</h2>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <div class="info-row"><span class="info-label">Comparison</span><span class="info-value">Recursive deep comparison of both JSON trees</span></div>
+      <div class="info-row"><span class="info-label">Additions</span><span class="info-value">Keys present in target but not source (green)</span></div>
+      <div class="info-row"><span class="info-label">Deletions</span><span class="info-value">Keys present in source but not target (red)</span></div>
+      <div class="info-row"><span class="info-label">Modifications</span><span class="info-value">Keys with different values in source and target (yellow)</span></div>
+      <div class="info-row"><span class="info-label">Patch generation</span><span class="info-value">RFC 6902 operations with JSON Pointer paths</span></div>
+    </div>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'What is RFC 6902?', a: 'RFC 6902 is the standard for JSON Patch — a JSON document describing a series of operations (add, remove, replace, move, copy, test) to transform one JSON document into another. It is widely used in REST APIs (e.g. PATCH requests).' },
+        { q: 'Does order of array elements matter?', a: 'Yes. Arrays are compared element-by-element. If elements are reordered, the diff will show deletions and additions rather than modifications. This is because JSON Patch operates on array indices.' },
+        { q: 'Can it handle deeply nested changes?', a: 'Yes. The diff algorithm recursively walks the entire JSON tree and generates JSON Pointer paths (e.g. /a/b/0/c) for every change, no matter how deeply nested.' },
+        { q: 'Is the patch output valid?', a: 'Yes. The generated patch follows RFC 6902 exactly. You can use it with any compliant JSON Patch library (e.g. json-patch in Python, fast-json-patch in JavaScript).' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<script>
+  const SAMPLE_SOURCE = JSON.stringify({name:"Alice",age:30,role:"developer",skills:["js","python"],address:{city:"Sydney",country:"AU"}},null,2);
+  const SAMPLE_TARGET = JSON.stringify({name:"Alice",age:31,role:"senior developer",skills:["js","python","rust"],address:{city:"Melbourne",country:"AU"},remote:true},null,2);
+
+  let currentView = 'side';
+  let lastDiff: { adds: number; dels: number; mods: number; unified: string; unifiedPlain: string; patch: any[] } | null = null;
+
+  // View toggle
+  const viewBtns = document.querySelectorAll<HTMLButtonElement>('[data-view]');
+  viewBtns.forEach(btn => btn.addEventListener('click', () => {
+    currentView = btn.dataset.view!;
+    viewBtns.forEach(b => b.classList.toggle('active', b.dataset.view === currentView));
+    document.getElementById('side-view')!.style.display = currentView === 'side' ? 'grid' : 'none';
+    document.getElementById('unified-view')!.style.display = currentView === 'unified' ? 'block' : 'none';
+    document.getElementById('patch-view')!.style.display = currentView === 'patch' ? 'block' : 'none';
+  }));
+
+  function deepDiff(source: any, target: any, path = ''): { op: string; path: string; value?: any; oldValue?: any }[] {
+    const patches: { op: string; path: string; value?: any; oldValue?: any }[] = [];
+
+    if (source === target) return patches;
+    if (source === null || target === null || typeof source !== 'object' || typeof target !== 'object') {
+      patches.push({ op: 'replace', path: path || '/', value: target, oldValue: source });
+      return patches;
+    }
+
+    if (Array.isArray(source) && Array.isArray(target)) {
+      const maxLen = Math.max(source.length, target.length);
+      for (let i = 0; i < maxLen; i++) {
+        const p = path + '/' + i;
+        if (i >= source.length) patches.push({ op: 'add', path: p, value: target[i] });
+        else if (i >= target.length) patches.push({ op: 'remove', path: p, oldValue: source[i] });
+        else patches.push(...deepDiff(source[i], target[i], p));
+      }
+      return patches;
+    }
+
+    const allKeys = new Set([...Object.keys(source), ...Object.keys(target)]);
+    for (const key of allKeys) {
+      const p = path + '/' + key;
+      if (!(key in source)) patches.push({ op: 'add', path: p, value: target[key] });
+      else if (!(key in target)) patches.push({ op: 'remove', path: p, oldValue: source[key] });
+      else patches.push(...deepDiff(source[key], target[key], p));
+    }
+    return patches;
+  }
+
+  function generateDiff() {
+    const sourceStr = (document.getElementById('json-source') as HTMLTextAreaElement).value;
+    const targetStr = (document.getElementById('json-target') as HTMLTextAreaElement).value;
+    const errBox = document.getElementById('error-box')!;
+
+    try {
+      const source = JSON.parse(sourceStr);
+      const target = JSON.parse(targetStr);
+      const patches = deepDiff(source, target);
+
+      let adds = 0, dels = 0, mods = 0;
+      patches.forEach(p => { if (p.op === 'add') adds++; else if (p.op === 'remove') dels++; else mods++; });
+
+      (document.getElementById('stat-add') as HTMLElement).textContent = String(adds);
+      (document.getElementById('stat-del') as HTMLElement).textContent = String(dels);
+      (document.getElementById('stat-mod') as HTMLElement).textContent = String(mods);
+      document.getElementById('stats-row')!.style.display = 'flex';
+
+      // Generate unified diff
+      const lines: string[] = [];
+      const plainLines: string[] = [];
+      patches.forEach(p => {
+        if (p.op === 'replace') {
+          lines.push(`<span style="color:#fbbf24;">~ ${p.path}: ${escHtml(JSON.stringify(p.oldValue))} → ${escHtml(JSON.stringify(p.value))}</span>`);
+          plainLines.push(`~ ${p.path}: ${JSON.stringify(p.oldValue)} → ${JSON.stringify(p.value)}`);
+        } else if (p.op === 'remove') {
+          lines.push(`<span style="color:#f87171;">- ${p.path}: ${escHtml(JSON.stringify(p.oldValue))}</span>`);
+          plainLines.push(`- ${p.path}: ${JSON.stringify(p.oldValue)}`);
+        } else if (p.op === 'add') {
+          lines.push(`<span style="color:#4ade80;">+ ${p.path}: ${escHtml(JSON.stringify(p.value))}</span>`);
+          plainLines.push(`+ ${p.path}: ${JSON.stringify(p.value)}`);
+        }
+      });
+      document.getElementById('diff-output')!.innerHTML = lines.join('\n') || '<span style="color:#64748b;">No differences found.</span>';
+
+      // Generate patch
+      const patchOps = patches.map(p => {
+        if (p.op === 'replace') return { op: 'replace', path: p.path, value: p.value };
+        if (p.op === 'remove') return { op: 'remove', path: p.path };
+        return { op: 'add', path: p.path, value: p.value };
+      });
+      (document.getElementById('patch-output') as HTMLTextAreaElement).value = JSON.stringify(patchOps, null, 2);
+
+      lastDiff = { adds, dels, mods, unified: lines.join('\n'), unifiedPlain: plainLines.join('\n'), patch: patchOps };
+    } catch (e: any) {
+      errBox.textContent = e.message;
+      errBox.style.display = 'block';
+    }
+  }
+
+  function escHtml(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  document.getElementById('btn-diff')!.addEventListener('click', generateDiff);
+  document.getElementById('btn-sample')!.addEventListener('click', () => {
+    (document.getElementById('json-source') as HTMLTextAreaElement).value = SAMPLE_SOURCE;
+    (document.getElementById('json-target') as HTMLTextAreaElement).value = SAMPLE_TARGET;
+    generateDiff();
+  });
+  document.getElementById('btn-clear')!.addEventListener('click', () => {
+    (document.getElementById('json-source') as HTMLTextAreaElement).value = '';
+    (document.getElementById('json-target') as HTMLTextAreaElement).value = '';
+    document.getElementById('error-box')!.style.display = 'none';
+    document.getElementById('stats-row')!.style.display = 'none';
+    document.getElementById('diff-output')!.innerHTML = '';
+    (document.getElementById('patch-output') as HTMLTextAreaElement).value = '';
+  });
+  document.getElementById('btn-copy-diff')!.addEventListener('click', () => {
+    if (!lastDiff) return;
+    navigator.clipboard.writeText(lastDiff.unifiedPlain).then(() => {
+      const btn = document.getElementById('btn-copy-diff')!;
+      btn.textContent = '✓ Copied!'; btn.classList.add('btn-success');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+    }).catch(() => {});
+  });
+  document.getElementById('btn-copy-patch')!.addEventListener('click', () => {
+    const btn = document.getElementById('btn-copy-patch')!;
+    navigator.clipboard.writeText((document.getElementById('patch-output') as HTMLTextAreaElement).value).then(() => {
+      btn.textContent = '✓ Copied!'; btn.classList.add('btn-success');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('btn-success'); }, 2000);
+    }).catch(() => {});
+  });
+</script>
