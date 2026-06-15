@@ -31,6 +31,8 @@ Please rebuild and expand the content into the following strict structure:
 
 6. [OPTIONAL] Add reference hyperlinks to official sources or highly authentic documentation to support the information provided.
 
+7. update seoclean-tooltracing.MD to move the tools updated from TODO to DONE.
+
 Tone Constraints:
 - Analytical, direct, professional, and clear.
 - Avoid promotional fluff, exclamation marks, or overly enthusiastic language ("Revolutionize your workflow!").

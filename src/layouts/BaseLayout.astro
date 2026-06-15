@@ -43,7 +43,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
-  <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`} crossorigin="anonymous"></script>
+  {isProd && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`} crossorigin="anonymous"></script>}
   {structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org", "@type": "WebSite", "name": siteName, "url": siteUrl,
@@ -250,6 +250,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
     </div>
   </header>
 
+  {isProd && (
   <!-- Leaderboard Ad -->
   <div style="background:var(--ad-bg); border-bottom:1px solid var(--border);">
     <div class="max-w-7xl mx-auto px-4 py-2 flex justify-center">
@@ -257,6 +258,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
         data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true" aria-label="Advertisement"></ins>
     </div>
   </div>
+  )}
 
   <main class="flex-1"><slot /></main>
 
@@ -545,8 +547,10 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
       try { localStorage.setItem('ug-theme', going ? 'dark' : 'light'); } catch (_) {}
     });
 
-    /* ── AdSense ── */
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
+    /* ── AdSense — guard against missing script (dev / not yet approved) ── */
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (_) { /* AdSense not loaded */ }
   </script>
 
 </body>

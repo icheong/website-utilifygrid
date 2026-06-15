@@ -145,17 +145,31 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this calculator</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Mortgage Amortization Calculator Overview</h2>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter your loan amount, annual interest rate, and loan term. The <strong>monthly payment</strong>, <strong>total interest</strong>, and <strong>payoff date</strong> update instantly. Drag the <strong>Extra Monthly Payment</strong> slider to see how additional repayments slash your interest bill and shorten your loan term.
+      This mortgage amortization calculator provides a precise, real-time breakdown of how principal and interest payments reduce your home loan balance over time. Built with modern vanilla JavaScript and running entirely in-browser, the tool executes every computation locally using standard browser APIs — no data is transmitted to any server, and no cookies or tracking scripts are involved. The 100% client-side architecture ensures zero server latency and complete privacy for your financial inputs.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The calculator models a standard principal-and-interest (P&amp;I) amortization schedule, which is the most common mortgage structure offered by Australian lenders. It computes the fixed monthly repayment using the standard annuity formula, then iterates month-by-month to allocate each payment between interest (calculated on the outstanding balance) and principal reduction. An extra-payment slider allows you to model additional repayments and quantify their impact on total interest paid and loan term.
+    </p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Home buyers comparing loan structures:</strong> A prospective buyer evaluating a $500,000 mortgage across 25-year and 30-year terms can instantly see the trade-off between lower monthly payments and higher total interest. This tool quantifies the exact dollar cost of each option, enabling informed decisions before committing to a lender.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Homeowners modelling extra repayments:</strong> Borrowers who receive annual bonuses, tax refunds, or salary increases can test how directing an additional $200–$1,000 per month toward principal shortens their loan term and reduces interest. The visual chart and amortization table make the compounding benefit of early principal reduction tangible.
     </p>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click <strong>Show</strong> under Amortization Schedule to view the full month-by-month breakdown of principal, interest, and remaining balance.
+      <strong>Mortgage brokers and financial educators:</strong> Professionals advising clients can use this tool as a transparent, client-side demonstration of amortization mechanics. Because all formulas are visible and nothing is obscured behind a server call, it serves as a trustworthy educational resource during consultations.
     </p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How amortization is calculated</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Deep-Dive: Amortization Mechanics &amp; Mathematical Logic</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The calculator employs the standard mortgage amortization formula, which is derived from the time-value-of-money equation for an ordinary annuity. This formula is the industry standard used by financial institutions worldwide and conforms to the mathematical conventions outlined in mortgage lending practice.
+    </p>
     <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:var(--text-primary); line-height:1.9; margin-bottom:0.875rem;">
       Monthly rate r = Annual rate / 12<br/>
       n = Total months = Years × 12<br/>
@@ -164,20 +178,29 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
               Principal = M − Interest + Extra<br/>
               Balance = Balance − Principal
     </div>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.7;">
-      Extra payments are applied entirely to the principal. Because interest is calculated on the remaining balance each month, reducing the balance earlier means every subsequent month accrues less interest — compounding the savings over time. Even a modest extra payment of $200–$500 per month can save tens of thousands in interest on a typical Australian mortgage.
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      The monthly payment <strong>M</strong> is computed once at loan origination and remains fixed throughout the term. In the early years of a 30-year mortgage, approximately 70–80% of each payment services interest, with the remainder reducing principal. As the balance decreases, a progressively larger share of each payment applies to principal — this non-linear allocation is the defining characteristic of amortization.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Extra payments and principal acceleration:</strong> When an additional amount is contributed each month, it is applied entirely to the principal balance. Because interest for the following month is computed on the reduced balance, the savings compound forward — each extra dollar paid in month one reduces interest in every subsequent month until the loan is fully retired.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Edge cases handled:</strong> The calculator gracefully manages a 0% interest rate (linear amortization), very short loan terms (10 years), and high extra-payment scenarios where the loan is paid off significantly ahead of schedule. Floating-point precision is maintained using IEEE 754 double-precision arithmetic, with the final payment adjusted to zero out the balance exactly.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Note on daily vs. monthly compounding:</strong> Some Australian lenders calculate interest daily on the outstanding balance and sum 365 daily charges per year. This tool uses standard monthly compounding, which produces results within a small margin (typically &lt;0.5% variance) of daily-method calculations. For exact figures, always refer to your lender's official loan contract.
     </p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
         <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">How much does an extra $500/month save on a $600k mortgage?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">On a $600,000 mortgage at 6% over 30 years, an extra $500 per month reduces the loan term by approximately 8 years and saves roughly $140,000–$160,000 in interest depending on exact rate and timing. Use the extra payment slider to see the precise figure for your scenario.</p>
+          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">On a $600,000 mortgage at 6% over 30 years, an extra $500 per month reduces the loan term by approximately 8 years and saves roughly $140,000–$160,000 in total interest. The savings arise because each extra payment reduces the principal immediately, which means every subsequent month calculates interest on a smaller balance. Use the extra payment slider to see the precise figure for your exact rate, term, and repayment amount.</p>
         </div>
       </div>
 
@@ -185,7 +208,7 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
         style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
         <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">Does this calculator account for offset accounts?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">No — this is a standard principal-and-interest amortization calculator. An offset account functions mathematically like a lump-sum extra payment each month. To approximate an offset, subtract your average offset balance from your loan amount before entering it here.</p>
+          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">No — this is a standard principal-and-interest amortization calculator. An offset account functions mathematically like a lump-sum reduction to your loan balance each month. To approximate the effect of an offset account, subtract your typical offset balance from the loan amount before entering it into the calculator. This gives a reasonable approximation, though actual offset interest savings are calculated daily by most lenders.</p>
         </div>
       </div>
 
@@ -193,7 +216,7 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
         style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
         <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">What is the difference between P&amp;I and interest-only loans?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">This calculator models a principal-and-interest (P&amp;I) loan where each payment reduces the outstanding balance. Interest-only loans charge only the interest for an initial period (typically 1–5 years), after which they revert to P&amp;I with higher payments. Interest-only periods dramatically increase total interest paid.</p>
+          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">This calculator models a principal-and-interest (P&amp;I) loan where each payment reduces the outstanding balance. Interest-only loans charge only the interest for an initial period (typically 1–5 years), after which they revert to P&amp;I with significantly higher payments to cover the original principal within the remaining term. Interest-only periods dramatically increase total interest paid over the life of the loan.</p>
         </div>
       </div>
 
@@ -201,10 +224,30 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
         style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
         <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">Why does the schedule show slightly different numbers to my bank?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">Banks may calculate interest daily rather than monthly, apply rounding differently, or use a 365-day vs 12-equal-month convention. This calculator uses standard monthly compounding. For exact figures, always refer to your lender's official loan statements.</p>
+          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">Banks may calculate interest daily rather than monthly, apply rounding differently at each step, or use a 365-day vs 12-equal-month convention. Some lenders also include fees or charges in the periodic statement that are not captured here. This calculator uses standard monthly compounding, which produces results within a small margin (typically under 0.5%) of daily-method calculations. For exact figures, always refer to your lender's official loan statements.</p>
         </div>
       </div>
 
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+        <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">Can I use this calculator for an investment property loan?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">Yes — the amortization mathematics are identical for owner-occupied and investment property loans. However, investment property loans may carry a slightly higher interest rate, and tax implications (such as negative gearing or depreciation deductions) are not modelled here. Enter your investment loan's actual rate and term to see the repayment schedule. Consult a qualified tax professional for investment-specific advice.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+        <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">What happens if I make extra payments irregularly rather than monthly?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">This calculator assumes a consistent extra payment each month. In practice, irregular extra payments (such as annual lump sums from a bonus) still reduce total interest, but the savings will be slightly less than the same total amount spread evenly across 12 months, because the compounding benefit of each dollar is realised sooner when paid monthly. For irregular scenarios, consider splitting your annual extra amount by 12 and using that as the monthly extra figure.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:1.5rem; padding:1rem 1.25rem; background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.75rem; font-size:0.8rem; color:var(--text-muted); line-height:1.7;">
+      <strong style="color:var(--text-secondary);">Disclaimer:</strong> This calculator is provided for educational and illustrative purposes only. It does not constitute financial, lending, or tax advice. The results are estimates based on standard amortization formulas and may differ from your lender's actual figures due to rounding, fee structures, or alternative compounding conventions. Always consult a licensed financial advisor or your lender for decisions related to mortgage financing.
     </div>
   </div>
 

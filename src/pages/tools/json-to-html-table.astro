@@ -11,8 +11,9 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
     <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">JSON to HTML Table</h2>
     <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.25rem;">Convert a JSON array of objects into a sortable, filterable HTML table. Export to Excel.</p>
 
-    <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">
       <button id="btn-render" class="btn-primary" type="button">Render Table</button>
+      <button id="btn-copy" class="btn-secondary" type="button">Copy Table</button>
       <button id="btn-export" class="btn-secondary" type="button">Export to Excel</button>
       <button id="btn-sample" class="btn-secondary" type="button">Sample</button>
       <button id="btn-clear" class="btn-secondary" type="button">Clear</button>
@@ -23,9 +24,18 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
       style="width:100%; box-sizing:border-box; resize:vertical; border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; line-height:1.65; margin-bottom:0.875rem;"
     ></textarea>
 
-    <div id="filter-row" style="display:none; margin-bottom:0.75rem;">
-      <input id="filter-input" type="text" class="input-themed" placeholder="Filter rows…"
-        style="max-width:20rem; font-size:0.82rem; padding:0.5rem 0.75rem;" />
+    <div id="filter-row" style="display:none; flex-direction:column; gap:0.5rem; margin-bottom:0.75rem;">
+      <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+        <input id="filter-input" type="text" class="input-themed" placeholder="Filter rows…"
+          style="max-width:20rem; font-size:0.82rem; padding:0.5rem 0.75rem;" />
+        <span style="font-size:0.72rem; color:var(--text-muted);">or use a JSONPath query ↓</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <input id="jsonpath-input" type="text" class="input-themed" placeholder='JSONPath: $[*]?(@.age>25) or $.data[*]'
+          style="flex:1; min-width:200px; font-family:'Fira Code',monospace; font-size:0.82rem; padding:0.5rem 0.75rem;" />
+        <button id="btn-jsonpath-clear" class="btn-secondary" type="button" style="padding:0.5rem 0.875rem; font-size:0.82rem;">Reset</button>
+      </div>
+      <div id="jsonpath-status" style="font-size:0.75rem; color:var(--text-muted); display:none;"></div>
     </div>
 
     <div id="table-wrap" style="display:none; overflow-x:auto; border:1.5px solid var(--border); border-radius:0.625rem;">
@@ -41,7 +51,8 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
   <div slot="how-to-use">
     <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Table Converter</h2>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste a JSON array of objects into the input field and click <strong>Render Table</strong>. Nested objects are flattened using dot notation (e.g. <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">address.city</code>) for column headers.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Click any column header to sort. Use the filter box to search across all columns. Click <strong>Export to Excel</strong> to download a real <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">.xlsx</code> spreadsheet file.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Click any column header to sort. Use the text filter to search across all columns. Click <strong>Copy Table</strong> to copy all visible rows as tab-separated data to your clipboard — ready to paste into Excel, Google Sheets, or any text editor.</p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;"><strong>JSONPath Query:</strong> Use the JSONPath input to filter your data with path expressions. Examples: <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">$[*]?(@.age>25)</code> returns all items where age exceeds 25. <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">$.data[*]</code> traverses a nested <code>data</code> array. <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">$[*]?(@.role=="Developer")</code> filters by exact match. Press Enter or click Apply to execute.</p>
   </div>
 
   <div slot="how-it-works">
@@ -59,8 +70,10 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'What JSON format does it expect?', a: 'An array of objects, e.g. [{"name":"Alice","age":30},{"name":"Bob","age":25}]. Each object becomes a row. Keys become column headers. Nested objects are flattened with dot notation.' },
+        { q: 'How does the Copy Table button work?', a: 'Click Copy Table to copy all currently visible rows (respecting any active filter or JSONPath query) to your clipboard as tab-separated values (TSV). You can then paste directly into Excel, Google Sheets, or any spreadsheet application. The format is plain text — no binary file required.' },
+        { q: 'What JSONPath expressions are supported?', a: 'The tool supports a subset of JSONPath: $ (root), $.key (dot access), $[0] (index), $[*] (all elements), $..key (recursive descent), and filter expressions like $[*]?(@.age>25). Filters support >, <, >=, <=, ==, and != operators. Strings can be quoted with single or double quotes.' },
         { q: 'How does the Excel export work?', a: 'The export generates a tab-separated values (TSV) file with a .xlsx extension. Excel, Google Sheets, and LibreOffice Calc all open it natively. For true binary .xlsx, a dedicated library would be needed.' },
-        { q: 'Is there a row limit?', a: 'No hard limit — the table renders entirely in the browser. For very large datasets (10k+ rows), rendering may be slow. Consider paginating your data on the server side.' },
+        { q: 'Is there a row limit?', a: 'No hard limit — the table renders entirely in the browser. For very large datasets (10k+ rows), rendering may be slow. Consider paginating your data on the server side or using a JSONPath query to narrow the result set.' },
         { q: 'Does it handle missing fields?', a: 'Yes. If some objects have keys others don\'t, the missing cells are left empty. The table adapts to the union of all keys found across all objects.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
@@ -85,10 +98,115 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
   ], null, 2);
 
   let allData: any[] = [];
+  let rawData: any[] = [];
   let columns: string[] = [];
   let sortCol = -1;
   let sortAsc = true;
 
+  // ── JSONPath evaluator (subset) ──────────────────────────────────────
+  // Supports: $, $.key, $[0], $[*], $..key (recursive), $[?(@.key op val)]
+  function jsonPathEval(obj: any, path: string): any[] {
+    if (!path || path === '$') return [obj];
+
+    const tokens = tokenizeJsonPath(path);
+    let current: any[] = [obj];
+
+    for (const token of tokens) {
+      const next: any[] = [];
+      for (const item of current) {
+        if (token.type === 'dot' || token.type === 'bracket') {
+          if (token.value === '*') {
+            if (Array.isArray(item)) next.push(...item);
+            else if (typeof item === 'object' && item !== null) next.push(...Object.values(item));
+          } else {
+            const val = item?.[token.value];
+            if (val !== undefined) next.push(val);
+          }
+        } else if (token.type === 'recursive') {
+          collectRecursive(item, token.value, next);
+        } else if (token.type === 'filter') {
+          if (Array.isArray(item)) {
+            item.forEach((el, idx) => {
+              if (evalFilter(el, token.expr, idx)) next.push(el);
+            });
+          }
+        } else if (token.type === 'index') {
+          if (Array.isArray(item)) {
+            const idx = token.value === '*' ? item : [item[parseInt(token.value)]];
+            if (token.value === '*') next.push(...item);
+            else if (item[parseInt(token.value)] !== undefined) next.push(item[parseInt(token.value)]);
+          }
+        }
+      }
+      current = next;
+    }
+    return current;
+  }
+
+  function tokenizeJsonPath(path: string): any[] {
+    const tokens: any[] = [];
+    let i = path.startsWith('$') ? 1 : 0;
+    while (i < path.length) {
+      if (path[i] === '.') {
+        if (path[i + 1] === '.') { tokens.push({ type: 'recursive', value: '' }); i += 2; continue; }
+        i++;
+        let key = '';
+        while (i < path.length && path[i] !== '.' && path[i] !== '[') { key += path[i]; i++; }
+        tokens.push({ type: 'dot', value: key });
+      } else if (path[i] === '[') {
+        i++;
+        let inner = '';
+        let depth = 1;
+        while (i < path.length && depth > 0) {
+          if (path[i] === '[') depth++;
+          if (path[i] === ']') depth--;
+          if (depth > 0) inner += path[i];
+          i++;
+        }
+        if (inner.startsWith('?(')) {
+          tokens.push({ type: 'filter', expr: inner.slice(2, -1) });
+        } else if (/^\d+$/.test(inner) || inner === '*') {
+          tokens.push({ type: 'index', value: inner });
+        } else {
+          tokens.push({ type: 'bracket', value: inner.replace(/^["']|["']$/g, '') });
+        }
+      } else {
+        let key = '';
+        while (i < path.length && path[i] !== '.' && path[i] !== '[') { key += path[i]; i++; }
+        tokens.push({ type: 'dot', value: key });
+      }
+    }
+    return tokens;
+  }
+
+  function collectRecursive(obj: any, key: string, result: any[]): void {
+    if (obj === null || typeof obj !== 'object') return;
+    if (key === '*') { result.push(...Object.values(obj)); }
+    else if (obj[key] !== undefined) result.push(obj[key]);
+    for (const v of Object.values(obj)) { if (typeof v === 'object' && v !== null) collectRecursive(v, key, result); }
+  }
+
+  function evalFilter(item: any, expr: string, _idx: number): boolean {
+    // Supports: @.key>val, @.key<val, @.key==val, @.key!=val, @.key>=val, @.key<=val
+    const m = expr.match(/@\.(\w+)\s*(>=|<=|!=|==|>|<)\s*(.+)/);
+    if (!m) return false;
+    const field = m[1], op = m[2];
+    let rawVal: any = item?.[field];
+    let cmpVal: any = m[3].trim().replace(/^["']|["']$/g, '');
+    if (rawVal === undefined) return false;
+    if (typeof rawVal === 'number') { cmpVal = Number(cmpVal); }
+    switch (op) {
+      case '>':  return rawVal > cmpVal;
+      case '<':  return rawVal < cmpVal;
+      case '>=': return rawVal >= cmpVal;
+      case '<=': return rawVal <= cmpVal;
+      case '==': return rawVal == cmpVal;
+      case '!=': return rawVal != cmpVal;
+    }
+    return false;
+  }
+
+  // ── Flatten / render ─────────────────────────────────────────────────
   function flattenObj(obj: any, prefix = ''): Record<string, any> {
     const result: Record<string, any> = {};
     for (const [k, v] of Object.entries(obj)) {
@@ -102,6 +220,36 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
       }
     }
     return result;
+  }
+
+  function buildTable(data: any[]) {
+    allData = data.map(obj => flattenObj(obj));
+    columns = [...new Set(allData.flatMap(obj => Object.keys(obj)))];
+
+    const thead = document.getElementById('table-head')!;
+    thead.innerHTML = '<tr>' + columns.map((c, i) =>
+      `<th data-col="${i}" style="padding:0.6rem 0.75rem; text-align:left; font-weight:600; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); background:var(--bg-surface-2); border-bottom:1.5px solid var(--border); cursor:pointer; user-select:none; white-space:nowrap; transition:color 0.15s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">${escHtml(c)}</th>`
+    ).join('') + '</tr>';
+
+    renderRows(allData);
+
+    // Sort headers
+    thead.querySelectorAll('th').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = parseInt(th.dataset.col!);
+        if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; }
+        allData.sort((a, b) => {
+          const va = a[columns[col]] ?? '';
+          const vb = b[columns[col]] ?? '';
+          const na = Number(va), nb = Number(vb);
+          if (va === '' && vb !== '') return 1;
+          if (vb === '' && va !== '') return -1;
+          if (!isNaN(na) && !isNaN(nb) && va !== '' && vb !== '') return sortAsc ? na - nb : nb - na;
+          return sortAsc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+        });
+        renderRows(allData);
+      });
+    });
   }
 
   function renderTable() {
@@ -127,36 +275,10 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
         return;
       }
 
-      allData = parsed.map(obj => flattenObj(obj));
-      columns = [...new Set(allData.flatMap(obj => Object.keys(obj)))];
-
-      const thead = document.getElementById('table-head')!;
-      const tbody = document.getElementById('table-body')!;
-      thead.innerHTML = '<tr>' + columns.map((c, i) =>
-        `<th data-col="${i}" style="padding:0.6rem 0.75rem; text-align:left; font-weight:600; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); background:var(--bg-surface-2); border-bottom:1.5px solid var(--border); cursor:pointer; user-select:none; white-space:nowrap; transition:color 0.15s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">${c}</th>`
-      ).join('') + '</tr>';
-
-      renderRows(allData);
+      rawData = parsed;
+      buildTable(rawData);
       tableWrap.style.display = 'block';
       filterRow.style.display = 'flex';
-
-      // Sort headers
-      thead.querySelectorAll('th').forEach(th => {
-        th.addEventListener('click', () => {
-          const col = parseInt(th.dataset.col!);
-          if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; }
-          allData.sort((a, b) => {
-            const va = a[columns[col]] ?? '';
-            const vb = b[columns[col]] ?? '';
-            const na = Number(va), nb = Number(vb);
-            if (va === '' && vb !== '') return 1;
-            if (vb === '' && va !== '') return -1;
-            if (!isNaN(na) && !isNaN(nb) && va !== '' && vb !== '') return sortAsc ? na - nb : nb - na;
-            return sortAsc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
-          });
-          renderRows(allData);
-        });
-      });
     } catch (e: any) {
       errBox.textContent = e.message;
       errBox.style.display = 'block';
@@ -165,6 +287,9 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
 
   function renderRows(data: any[]) {
     const tbody = document.getElementById('table-body')!;
+    const statusEl = document.getElementById('jsonpath-status')!;
+    statusEl.style.display = data.length !== allData.length || data.length !== rawData.length ? 'block' : 'none';
+    if (data.length !== rawData.length) statusEl.textContent = `Showing ${data.length} of ${rawData.length} rows`;
     tbody.innerHTML = data.map((row, i) =>
       '<tr style="border-bottom:1px solid var(--border); transition:background 0.1s;" onmouseover="this.style.background=\'var(--bg-surface-2)\'" onmouseout="this.style.background=\'transparent\'">' +
       columns.map(c =>
@@ -175,7 +300,33 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
 
   function escHtml(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
+  // ── Copy table to clipboard ──────────────────────────────────────────
+  async function copyTable() {
+    const btn = document.getElementById('btn-copy')!;
+    if (!allData.length) return;
+    const header = columns.join('\t');
+    const rows = allData.map(row => columns.map(c => String(row[c] ?? '').replace(/[\t\n\r]/g, ' ')).join('\t'));
+    const tsv = [header, ...rows].join('\n');
+    try {
+      await navigator.clipboard.writeText(tsv);
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy Table'; }, 2000);
+    } catch {
+      // Fallback for older browsers
+      const ta = document.createElement('textarea');
+      ta.value = tsv;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy Table'; }, 2000);
+    }
+  }
+
+  // ── Wire up event listeners ──────────────────────────────────────────
   document.getElementById('btn-render')!.addEventListener('click', renderTable);
+  document.getElementById('btn-copy')!.addEventListener('click', copyTable);
   document.getElementById('btn-sample')!.addEventListener('click', () => {
     (document.getElementById('json-input') as HTMLTextAreaElement).value = SAMPLE;
     renderTable();
@@ -185,18 +336,54 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
     document.getElementById('table-wrap')!.style.display = 'none';
     document.getElementById('filter-row')!.style.display = 'none';
     document.getElementById('error-box')!.style.display = 'none';
+    document.getElementById('jsonpath-status')!.style.display = 'none';
+    (document.getElementById('jsonpath-input') as HTMLInputElement).value = '';
+    rawData = [];
+    allData = [];
   });
   document.getElementById('filter-input')!.addEventListener('input', (e) => {
     const q = (e.target as HTMLInputElement).value.toLowerCase();
-    const filtered = allData.filter(row => columns.some(c => String(row[c] ?? '').toLowerCase().includes(q)));
-    renderRows(filtered);
+    // Clear JSONPath when text filter is used
+    if (q) (document.getElementById('jsonpath-input') as HTMLInputElement).value = '';
+    const source = rawData.length ? rawData : allData;
+    const filtered = q ? source.filter(row => {
+      const flat = flattenObj(row);
+      return Object.values(flat).some(v => String(v ?? '').toLowerCase().includes(q));
+    }) : source;
+    buildTable(filtered);
+  });
+  document.getElementById('jsonpath-input')!.addEventListener('input', (e) => {
+    const path = (e.target as HTMLInputElement).value.trim();
+    const errBox = document.getElementById('error-box')!;
+    errBox.style.display = 'none';
+    if (!path || !rawData.length) { buildTable(rawData); return; }
+    try {
+      const results = jsonPathEval(rawData, path);
+      if (results.length === 0) {
+        errBox.textContent = 'JSONPath returned no results. Check your query syntax.';
+        errBox.style.display = 'block';
+        return;
+      }
+      if (typeof results[0] === 'object' && results[0] !== null) {
+        buildTable(results);
+      } else {
+        buildTable(results.map((v, i) => ({ index: i, value: v })));
+      }
+    } catch {
+      errBox.style.display = 'none';
+    }
+  });
+  document.getElementById('btn-jsonpath-clear')!.addEventListener('click', () => {
+    (document.getElementById('jsonpath-input') as HTMLInputElement).value = '';
+    (document.getElementById('filter-input') as HTMLInputElement).value = '';
+    document.getElementById('jsonpath-status')!.style.display = 'none';
+    document.getElementById('error-box')!.style.display = 'none';
+    buildTable(rawData);
   });
   document.getElementById('btn-export')!.addEventListener('click', () => {
-    const filterVal = (document.getElementById('filter-input') as HTMLInputElement).value.toLowerCase();
-    const exportData = filterVal ? allData.filter(row => columns.some(c => String(row[c] ?? '').toLowerCase().includes(filterVal))) : allData;
-    if (!exportData.length) return;
+    if (!allData.length) return;
     const header = columns.join('\t');
-    const rows = exportData.map(row => columns.map(c => {
+    const rows = allData.map(row => columns.map(c => {
       const val = String(row[c] ?? '');
       return val.replace(/[\t\n\r]/g, ' ');
     }).join('\t'));

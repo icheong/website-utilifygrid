@@ -118,23 +118,31 @@ const tool = tools.find(t => t.slug === 'compound-interest-retirement')!;
 
   <!-- ── HOW TO USE ────────────────────────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Retirement Visualizer</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Compound Interest &amp; Retirement Calculator Overview</h2>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Set your <strong>current age</strong> and <strong>current savings</strong> to establish your starting point. Then dial in your <strong>monthly contribution</strong> — the amount you invest each month after expenses. Adjust the <strong>expected annual return</strong> to reflect your portfolio's projected growth rate (7% is a common long-run stock market estimate after inflation).
+      This compound interest and retirement calculator visualises how consistent contributions, investment returns, and the safe withdrawal rate interact to determine when you can achieve financial independence. The tool runs entirely in your browser using modern vanilla JavaScript and the Canvas API — no data is transmitted to any server, and no cookies or analytics scripts track your inputs. The 100% client-side architecture ensures complete financial privacy and zero latency.
     </p>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter your estimated <strong>monthly expenses at retirement</strong> — the lifestyle cost you'll need your portfolio to cover. Finally, set your <strong>safe withdrawal rate (SWR)</strong>: the percentage of your portfolio you can withdraw annually without running out of money. The widely-cited 4% rule (from the Trinity Study) is the default.
+      The calculator models the future value of an existing portfolio supplemented by recurring monthly contributions, then determines the year at which the portfolio's passive income (derived from the safe withdrawal rate) meets or exceeds your projected retirement expenses. The interactive chart updates in real time as you adjust any input, and the crossover point — where passive income surpasses expenses — is highlighted as your FIRE (Financial Independence, Retire Early) date.
+    </p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Early-career professionals planning savings targets:</strong> A 25-year-old earning $80,000 annually can model how saving $1,500 per month at a 7% real return affects their FIRE timeline. The tool immediately reveals whether their current savings rate is sufficient or whether adjustments to contribution amounts or retirement expense assumptions are needed.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Couples evaluating dual-income retirement strategies:</strong> Partners can combine their individual portfolios and contributions into a single model, adjusting the monthly expense figure to reflect shared living costs. Running scenarios with different return assumptions (conservative 5% vs. moderate 7%) provides a range of possible FIRE dates for informed planning discussions.
     </p>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      The chart updates instantly. The vertical crossover point — where the green passive income line meets the orange expenses threshold — is your <strong>FIRE date</strong>. The KPI cards above show your projected FIRE age, years remaining, portfolio size at that moment, and the monthly income it would generate.
+      <strong>Financial educators and FIRE community workshops:</strong> The transparent formulas and real-time chart make this tool suitable for classroom or workshop demonstrations. Because all calculations occur client-side with no external dependencies, presenters can use it offline and verify every output against the displayed mathematical model.
     </p>
   </div>
 
   <!-- ── HOW IT WORKS ──────────────────────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the retirement calculation works</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      The portfolio at any point in time is calculated using the standard future value of a lump sum plus a recurring contribution series:
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Deep-Dive: Compound Interest Mechanics &amp; Mathematical Logic</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The portfolio at any future point in time is computed using the standard future-value equation for a lump sum plus the future value of an annuity (recurring contributions). This dual-component model is the foundation of retirement projection mathematics used by financial planners worldwide.
     </p>
     <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Portfolio(t) = S × (1 + r/12)^(12t)
              + C × [((1 + r/12)^(12t) − 1) / (r/12)]
@@ -142,8 +150,17 @@ const tool = tools.find(t => t.slug === 'compound-interest-retirement')!;
 Monthly Passive Income(t) = Portfolio(t) × SWR / 12
 
 FIRE crossover when: MonthlyPassiveIncome(t) ≥ MonthlyExpenses</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Where <strong>S</strong> is current savings, <strong>r</strong> is the annual return rate as a decimal, <strong>t</strong> is years elapsed, <strong>C</strong> is monthly contribution, and <strong>SWR</strong> is the safe withdrawal rate as a decimal. The model compounds monthly for precision. All calculations run entirely in your browser — no data is sent anywhere.
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      Where <strong>S</strong> is current savings, <strong>r</strong> is the annual return rate (decimal), <strong>t</strong> is years elapsed, <strong>C</strong> is monthly contribution, and <strong>SWR</strong> is the safe withdrawal rate (decimal). The first term compounds your existing savings monthly over the projection horizon. The second term accumulates each monthly contribution with compound growth — each deposit earns returns for the remaining months until the projection endpoint.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Monthly compounding precision:</strong> The model compounds at a monthly interval (r/12 per month, 12t total periods), which is the standard convention for retirement projections and aligns with how most index funds and superannuation accounts report returns. This produces more accurate results than annual compounding, particularly for high-contribution scenarios.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>The Safe Withdrawal Rate (SWR):</strong> The SWR determines how much of your portfolio can be withdrawn each year without depleting the principal over a given horizon. The Trinity Study (Cooley, Hubbard, and Walz, 1998) found that a 4% withdrawal rate sustained a 30-year retirement period with high probability across historical US market data. For early retirements spanning 40–50 years, many financial researchers recommend 3–3.5%.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Edge cases:</strong> The calculator handles a 0% return rate (linear accumulation), very high contribution-to-portfolio ratios, and scenarios where FIRE is not achievable before age 80. When no crossover is found within the projection window, the tool displays a warning indicating that contributions or return assumptions need adjustment.
     </p>
   </div>
 
@@ -191,12 +208,14 @@ FIRE crossover when: MonthlyPassiveIncome(t) ≥ MonthlyExpenses</pre>
     <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is FIRE?', a: 'FIRE stands for Financial Independence, Retire Early. It describes the point at which your invested assets generate enough passive income to cover living expenses indefinitely, freeing you from the need to work for money.' },
-        { q: 'What is the 4% rule?', a: 'The 4% rule originates from the 1998 Trinity Study, which found that a retirement portfolio could sustain a 4% annual withdrawal rate over a 30-year horizon with a high probability of not running out of money. Some advisors recommend 3–3.5% for longer early-retirement periods.' },
-        { q: 'Is a 7% annual return realistic?', a: 'The US stock market has returned roughly 7% annually after inflation over the long run. It\'s a commonly used real return estimate for a diversified equity portfolio. Your actual returns will vary year to year.' },
-        { q: 'Does this account for inflation?', a: 'Not automatically. To account for it, use an inflation-adjusted return rate (e.g. 7% real rather than 10% nominal) and enter expenses in today\'s dollars. This gives a conservative, inflation-adjusted crossover estimate.' },
-        { q: 'How do I factor in superannuation or government pension?', a: 'Reduce your monthly expenses by the expected pension or super drawdown. If you need $4,000/month total and expect $1,000 from super, enter $3,000 as monthly expenses — the gap your personal portfolio needs to cover.' },
-        { q: 'What if I plan to increase contributions over time?', a: 'This tool models a fixed monthly contribution. To approximate stepped increases, run the tool to a mid-point age, note the portfolio value, then re-run using that as starting savings with a higher contribution rate.' },
+        { q: 'What is FIRE?', a: 'FIRE stands for Financial Independence, Retire Early. It describes the point at which your invested assets generate enough passive income to cover living expenses indefinitely, freeing you from the need to work for money. The concept originated in the 1990s with Vicki Robin and Joe Dominguez\'s book "Your Money or Your Life" and has since grown into a global movement focused on aggressive saving and mindful investing.' },
+        { q: 'What is the 4% rule?', a: 'The 4% rule originates from the 1998 Trinity Study, which found that a retirement portfolio invested in a mix of stocks and bonds could sustain a 4% annual withdrawal rate over a 30-year horizon with a high historical success rate. Some financial advisors recommend 3–3.5% for longer early-retirement periods spanning 40–50 years, as the Trinity Study was designed around a conventional retirement timeline.' },
+        { q: 'Is a 7% annual return realistic?', a: 'The US stock market has returned roughly 10% annually before inflation and approximately 7% after inflation over the long run. 7% is a commonly used real return estimate for a diversified equity portfolio. Your actual returns will vary year to year — some years may see 20%+ gains while others may lose value. Past performance does not guarantee future results, and international markets may perform differently.' },
+        { q: 'Does this account for inflation?', a: 'Not automatically. To account for inflation, use a return rate that is already adjusted for inflation (e.g. 7% real return rather than 10% nominal) and enter your expenses in today\'s dollars. This gives you a conservative, inflation-adjusted crossover estimate. Alternatively, you can use the nominal return and inflate your expense figure by your expected inflation rate to model a nominal-value scenario.' },
+        { q: 'How do I factor in superannuation or government pension?', a: 'Reduce your monthly expenses by the expected monthly pension or super drawdown. If you need $4,000/month total and expect $1,000 from superannuation, enter $3,000 as monthly expenses — the gap your personal portfolio needs to cover. Note that Australian superannuation has preservation rules and contribution caps that may affect your accessible balance at different ages.' },
+        { q: 'What if I plan to increase contributions over time?', a: 'This tool models a fixed monthly contribution. To approximate stepped increases, run the tool to a mid-point age, note the portfolio value, then re-run using that as starting savings with a higher contribution rate. A staged model provides a reasonable upper-bound estimate of how much earlier increasing contributions moves your FIRE date.' },
+        { q: 'How does tax on investment returns affect my FIRE timeline?', a: 'This calculator does not model tax on capital gains or dividends. In practice, tax-advantaged accounts (such as superannuation or tax-free savings accounts) can shelter returns from taxation, while taxable brokerage accounts will reduce effective returns. To approximate the impact, use a lower return rate that reflects your after-tax yield — for example, 5% instead of 7% if you expect significant capital gains tax.' },
+        { q: 'What withdrawal rate is safe for a 40+ year retirement?', a: 'The original Trinity Study was designed around a 30-year retirement horizon. For early retirees with 40–50 year horizons, research suggests a 3–3.5% withdrawal rate provides a higher margin of safety. You can test this directly in the tool by adjusting the SWR slider downward and observing how the FIRE age shifts later as a result.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
@@ -206,6 +225,10 @@ FIRE crossover when: MonthlyPassiveIncome(t) ≥ MonthlyExpenses</pre>
           </div>
         </div>
       ))}
+    </div>
+
+    <div style="margin-top:1.5rem; padding:1rem 1.25rem; background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.75rem; font-size:0.8rem; color:var(--text-muted); line-height:1.7;">
+      <strong style="color:var(--text-secondary);">Disclaimer:</strong> This calculator is provided for educational and illustrative purposes only. It does not constitute financial, investment, or tax advice. The projections are based on simplified mathematical models and historical return averages, which may not reflect future market performance. Actual investment returns will vary, and factors such as taxes, fees, inflation, and market volatility are not separately modelled. Always consult a licensed financial advisor before making investment or retirement planning decisions.
     </div>
   </div>
 

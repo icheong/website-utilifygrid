@@ -17,6 +17,7 @@ interface Props {
 
 const { tool } = Astro.props;
 const adsenseId = 'ca-pub-7704630721055432';
+const isProd = import.meta.env.PROD;
 
 const relatedTools = tools
   .filter(t => t.slug !== tool.slug)
@@ -142,10 +143,12 @@ const structuredData = {
             </nav>
           </div>
 
+          {isProd && (
           <div style="display:flex; justify-content:center;">
             <ins class="adsbygoogle" style="display:inline-block;width:160px;height:600px;"
               data-ad-client={adsenseId} data-ad-slot="2345678901" aria-label="Advertisement"></ins>
           </div>
+          )}
         </div>
       </aside>
 
@@ -185,11 +188,13 @@ const structuredData = {
           <slot name="tool" />
         </div>
 
+        {isProd && (
         <!-- Post-result ad -->
         <div style="display:flex; justify-content:center; margin-bottom:2rem;">
           <ins class="adsbygoogle" style="display:block;" data-ad-client={adsenseId} data-ad-slot="3456789012"
             data-ad-format="auto" data-full-width-responsive="true" aria-label="Advertisement"></ins>
         </div>
+        )}
 
         <div class="seo-section" style="margin-bottom:1.5rem;"><slot name="how-to-use" /></div>
         <div class="seo-section-alt" style="margin-bottom:1.5rem;"><slot name="how-it-works" /></div>
@@ -208,10 +213,12 @@ const structuredData = {
       <aside class="tl-sidebar-right">
         <div style="position:sticky; top:5.5rem; display:flex; flex-direction:column; gap:1.5rem;">
 
+          {isProd && (
           <div style="display:flex; justify-content:center;">
             <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px;"
               data-ad-client={adsenseId} data-ad-slot="4567890123" aria-label="Advertisement"></ins>
           </div>
+          )}
 
           <div style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1rem;">
             <h2 style="font-size:0.72rem; font-weight:700; color:var(--text-muted); margin-bottom:0.75rem; text-transform:uppercase; letter-spacing:0.07em;">Related Tools</h2>
@@ -242,10 +249,12 @@ const structuredData = {
             </div>
           </div>
 
+          {isProd && (
           <div style="display:flex; justify-content:center;">
             <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px;"
               data-ad-client={adsenseId} data-ad-slot="5678901234" aria-label="Advertisement"></ins>
           </div>
+          )}
 
         </div>
       </aside>
@@ -298,6 +307,7 @@ const structuredData = {
     border: 1.5px solid var(--border);
     box-shadow: var(--shadow-card);
   }
+  .tl-main { min-width: 0; }
   .seo-section {
     background: var(--bg-surface); border: 1.5px solid var(--border);
     border-radius: 0.875rem; padding: 1.5rem;
@@ -473,10 +483,12 @@ const structuredData = {
 </style>
 
 <script>
-  // AdSense
-  document.querySelectorAll('.adsbygoogle').forEach(() => {
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
-  });
+  // AdSense — guard against missing script (dev / not yet approved)
+  try {
+    document.querySelectorAll('.adsbygoogle').forEach(() => {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    });
+  } catch (_) { /* AdSense not loaded */ }
 
   // Sidebar expand/collapse
   document.querySelectorAll<HTMLButtonElement>('.sidebar-expand-btn').forEach(btn => {
