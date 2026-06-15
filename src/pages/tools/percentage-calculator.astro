@@ -88,21 +88,30 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
     <p id="error-msg" style="display:none; color:#EF4444; font-size:0.82rem; margin-top:0.75rem;"></p>
   </div>
 
-  <!-- HOW TO USE ───────────────────────────────── -->
+  <!-- ══════════════════════════════════════════════
+       SEO CONTENT — OVERVIEW & HOW TO USE
+  ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Percentage Calculator</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">Percentage Calculator — Instant Browser-Based Math</h2>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Choose a calculation mode using the tabs. <strong>What is X% of Y?</strong> finds a percentage of a value — for example, 20% of 500. <strong>X is what % of Y?</strong> calculates what percentage one number is of another. <strong>% Change</strong> calculates the percentage increase or decrease between two values.
+      Percentage calculations appear in everyday work — invoice discounts, tax estimates, grade conversions, and KPI dashboards. This tool computes three core percentage operations entirely in-browser using vanilla JavaScript. No data leaves your device; there is no server round-trip, no account required, and no tracking. The computation runs on the IEEE 754 double-precision floating-point pipeline that every modern browser provides, delivering sub-millisecond results.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>What is X% of Y?</strong> multiplies a percentage by a base value — useful for discounts, tips, or tax. <strong>X is what % of Y?</strong> divides a part by the whole and scales to 100 — useful for scoring, completion rates, and market share. <strong>% Change</strong> computes the relative difference between two values — useful for growth metrics, price changes, and performance deltas.
     </p>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Enter your values and click Calculate — or just tab between fields and the result updates automatically.
+      Select a mode tab, enter your numbers, and click <em>Calculate</em> — or press Tab to move between fields; the result updates on every keystroke. Use <em>Reset</em> to clear all fields and return to the initial state.
     </p>
   </div>
 
-  <!-- HOW IT WORKS ────────────────────────────── -->
+  <!-- ══════════════════════════════════════════════
+       SEO CONTENT — TECHNICAL MECHANICS & APPLICATIONS
+  ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">Formulas used</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">Formulas, Technical Mechanics &amp; Use Cases</h2>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Core Formulas</h3>
+    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
       <div class="info-row">
         <span class="info-label">X% of Y</span>
         <span class="info-value">Result = Y × (X ÷ 100)</span>
@@ -113,31 +122,63 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
       </div>
       <div class="info-row">
         <span class="info-label">% Change</span>
-        <span class="info-value">Result = ((New − Old) ÷ Old) × 100</span>
+        <span class="info-value">Result = ((New − Old) ÷ |Old|) × 100</span>
       </div>
     </div>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">How the Computation Works</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Each mode follows a single arithmetic expression. <strong>X% of Y</strong> divides the percentage by 100 to produce a decimal multiplier, then multiplies by the base value. <strong>X is what % of Y</strong> divides the part by the whole, then multiplies by 100 to express the ratio as a percentage. <strong>% Change</strong> subtracts the original from the new value, divides by the absolute value of the original (to handle both increases and decreases correctly), and multiplies by 100. The absolute-value step prevents a sign flip when the original value is negative — a common source of errors in manual calculations.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Results are rounded to at most six decimal places before formatting, then displayed with locale-aware thousand separators via <code>toLocaleString()</code>. This avoids floating-point display artefacts such as <code>0.30000000000000004</code> while preserving full precision during intermediate steps. Division-by-zero is caught before computation: if the denominator is zero, the tool returns a clear error instead of <code>Infinity</code> or <code>NaN</code>.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:1rem;">
+      Edge cases handled include negative inputs (valid — the % Change mode uses the absolute value of the original), zero denominators (blocked with an error), and empty fields (treated as <code>NaN</code>, which triggers validation). The auto-calculate listener fires on every <code>input</code> event, so partial entries do not produce stale results.
+    </p>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Real-World Applications</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Retail and invoicing.</strong> Apply a 15% discount to a line-item total, or calculate 8% sales tax on an invoice subtotal. The "What is X% of Y?" mode returns the exact amount to deduct or add, eliminating manual multiplication errors on receipts and purchase orders.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Academic grading.</strong> A student scored 42 out of 60 on an exam. The "X is what % of Y?" mode returns 70%, which maps directly to a letter grade. Teachers and students use this to convert raw scores to percentages without a spreadsheet.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Business metrics.</strong> Monthly active users grew from 8,200 to 11,500. The "% Change" mode returns +40.24%, giving product managers an instant growth figure for stakeholder reports. This avoids the common mistake of dividing by the new value instead of the original.
+    </p>
   </div>
 
-  <!-- FAQ ─────────────────────────────────────── -->
+  <!-- ══════════════════════════════════════════════
+       SEO CONTENT — FAQ
+  ══════════════════════════════════════════════ -->
   <div slot="faq">
     <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
           q: "How do I calculate a percentage increase?",
-          a: "Use the % Change mode. Enter the original value, then the new (higher) value. The calculator returns the percentage increase. For example, going from 80 to 100 is a 25% increase."
+          a: "Switch to the '% Change' mode. Enter the original (lower) value in the 'Original value' field and the new (higher) value in the 'New value' field. The calculator returns the percentage increase as a positive number. For example, going from 80 to 100 yields +25%. The same mode handles decreases — entering a higher original and lower new value produces a negative percentage."
         },
         {
-          q: "What is the formula for percentage discount?",
-          a: "To find the discounted price, use the 'What is X% of Y?' mode: enter the discount percentage and the original price. Subtract the result from the original price to get the sale price."
+          q: "What is the formula for a percentage discount?",
+          a: "Use the 'What is X% of Y?' mode: enter the discount percentage (e.g. 20) and the original price (e.g. 150). The result (30) is the discount amount. Subtract it from the original price to get the final sale price (120). This two-step approach works for any discount structure, including stacked or tiered promotions."
         },
         {
           q: "Can I calculate reverse percentages?",
-          a: "Yes — use the 'X is what % of Y?' mode. Enter the part value and the total, and the calculator returns what percentage the part represents."
+          a: "Yes — the 'X is what % of Y?' mode is designed for this. Enter the part value (X) and the total (Y). The calculator returns what percentage the part represents out of 100. This is useful for determining completion rates, market share, or what fraction of a budget has been spent."
         },
         {
           q: "How do I work out a tip?",
-          a: "Enter the tip percentage (e.g. 15) and the bill total in the 'What is X% of Y?' mode. The result is the tip amount. Add it to your bill total for the final amount."
+          a: "Enter the tip percentage (e.g. 15 or 20) and the bill total in the 'What is X% of Y?' mode. The result is the tip amount in dollars. Add it to the original bill to get the total you should pay. For split bills, divide the tip amount by the number of people before adding each person's share of the food cost."
+        },
+        {
+          q: "What happens if I enter zero as the denominator?",
+          a: "The calculator detects division by zero before performing the operation and displays a clear error message. In '% Change' mode, the original value cannot be zero because the formula divides by it. In 'X is what % of Y?' mode, Y cannot be zero. This prevents IEEE 754 Infinity or NaN results from appearing in the output."
+        },
+        {
+          q: "Why does the result update as I type instead of only after clicking Calculate?",
+          a: "The tool listens for the 'input' event on every field, triggering a recalculation on each keystroke. This gives immediate feedback and eliminates the need to press a button for quick checks. If any field is empty or contains non-numeric text, the result clears automatically until valid numbers are provided."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

@@ -29,6 +29,8 @@ Please rebuild and expand the content into the following strict structure:
 5. [ONLY IF FINANCIAL/HEALTH/YMYL TOOL] Mandatory Professional Disclaimer:
 - Include a legally sound, clear financial or informational disclaimer stating the tool is for educational/visualisation purposes only and does not constitute official professional advice.
 
+6. [OPTIONAL] Add reference hyperlinks to official sources or highly authentic documentation to support the information provided.
+
 Tone Constraints:
 - Analytical, direct, professional, and clear.
 - Avoid promotional fluff, exclamation marks, or overly enthusiastic language ("Revolutionize your workflow!").
