@@ -115,36 +115,59 @@ const tool = tools.find(t => t.slug === 'hex-to-rgb')!;
 
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the HEX to RGB Converter</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">HEX ↔ RGB Converter Overview &amp; Technical Context</h2>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      In <strong>HEX → RGB</strong> mode, type or paste a hex colour code into the input field (with or without the # prefix), or use the colour picker to select any colour visually. The converter updates instantly to show the RGB values, CSS rgb() function, and HSL equivalent. Click any Copy button to copy that format to your clipboard.
+      This bidirectional colour converter translates hexadecimal colour codes to RGB (Red, Green, Blue) decimal values and back again. Built with vanilla JavaScript and running entirely in-browser, the tool performs all computations locally using standard browser APIs — no colour data is transmitted to any server, and no cookies or tracking scripts execute. The 100% client-side architecture ensures zero server latency and complete privacy for your design workflow.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      In <strong>HEX → RGB</strong> mode, type or paste a hex colour code into the input field (with or without the <code>#</code> prefix), or use the colour picker to select any colour visually. The converter updates instantly to show the normalised HEX, RGB decimal tuple, CSS <code>rgb()</code> function, and HSL equivalent. Click any Copy button to copy that format to your clipboard. In <strong>RGB → HEX</strong> mode, enter individual Red, Green, and Blue channel values (0–255) and the tool produces a HEX code and CSS <code>rgb()</code> string in real time.
+    </p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Front-end development and CSS authoring:</strong> Developers frequently receive brand colours as HEX codes from designers but need the RGB equivalent for CSS functions like <code>rgba()</code>, gradients, or dynamic colour manipulation with JavaScript. This tool eliminates manual base-16 arithmetic by converting instantly and providing copy-ready strings for direct insertion into stylesheets.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Design system migration and auditing:</strong> Teams standardising a design system often inherit colour palettes in mixed formats — some assets use HEX, others use RGB, and component libraries may require HSL for CSS custom properties. This converter enables rapid format normalisation across an entire palette, ensuring consistency without spreadsheet overhead.
     </p>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Switch to <strong>RGB → HEX</strong> mode to enter individual Red, Green, and Blue channel values (0–255) and convert them to a HEX code and CSS rgb() string.
+      <strong>Accessibility contrast checking:</strong> When evaluating colour contrast ratios against WCAG 2.1 guidelines, designers need precise RGB channel values to feed into contrast calculators. Converting a HEX brand colour to its RGB components provides the exact numeric inputs required for luminance ratio calculations.
     </p>
   </div>
 
   <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How colour conversion works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row">
-        <span class="info-label">HEX format</span>
-        <span class="info-value">#RRGGBB — two hex digits per channel</span>
-      </div>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Deep-Dive: Colour Conversion Mechanics &amp; Mathematical Logic</h2>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Core Formulas</h3>
+    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
       <div class="info-row">
         <span class="info-label">HEX → RGB</span>
-        <span class="info-value">parseInt(hex, 16) per channel pair</span>
+        <span class="info-value">R = parseInt(hex[0..1], 16); G = parseInt(hex[2..3], 16); B = parseInt(hex[4..5], 16)</span>
       </div>
       <div class="info-row">
         <span class="info-label">RGB → HEX</span>
-        <span class="info-value">n.toString(16).padStart(2, '0')</span>
+        <span class="info-value">HEX = '#' + R.toString(16).padStart(2,'0') + G.toString(16).padStart(2,'0') + B.toString(16).padStart(2,'0')</span>
       </div>
       <div class="info-row">
         <span class="info-label">RGB → HSL</span>
-        <span class="info-value">Normalise to [0,1], find max/min channel</span>
+        <span class="info-value">Normalise channels to [0,1], find max/min, compute hue via sector formula</span>
       </div>
     </div>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">How the Computation Works</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      A hex colour code encodes three colour channels — red, green, and blue — as consecutive pairs of base-16 (hexadecimal) digits. The string <code>#1D4ED8</code> contains three pairs: <code>1D</code> (red = 29), <code>4E</code> (green = 78), and <code>D8</code> (blue = 216). The conversion uses JavaScript's <code>parseInt(string, 16)</code> to parse each two-character pair from base-16 into a decimal integer in the 0–255 range. The three resulting values define the exact colour in the sRGB colour space.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Three-character shorthand expansion:</strong> The CSS specification defines three-digit hex codes as shorthand where each single digit is doubled — <code>#F0A</code> becomes <code>#FF00AA</code>. This tool detects inputs of length 3 (after stripping the <code>#</code>) and expands them before parsing, ensuring compatibility with both shorthand and full-length formats.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>RGB to HSL conversion:</strong> The HSL (Hue, Saturation, Lightness) model is derived by first normalising each RGB channel to the [0, 1] range. The maximum and minimum channel values determine the lightness (their average) and saturation (their difference relative to the lightness). The hue is computed by identifying which channel is dominant and applying the appropriate sector formula from the 60° colour wheel. This produces a human-readable representation where hue indicates the colour angle (0–360°), saturation the intensity, and lightness the brightness.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Edge cases handled:</strong> The calculator validates that hex inputs contain only valid characters [0-9A-F] after stripping the <code>#</code> prefix. RGB channel values are clamped to the 0–255 range to prevent overflow. Empty or malformed hex strings produce a clear error message rather than <code>NaN</code>. The conversion uses IEEE 754 double-precision arithmetic internally, with final integer values rounded to the nearest whole number.
+    </p>
   </div>
 
   <!-- FAQ ─────────────────────────────────────── -->
@@ -154,19 +177,27 @@ const tool = tools.find(t => t.slug === 'hex-to-rgb')!;
       {[
         {
           q: "What is the difference between HEX and RGB colour codes?",
-          a: "Both represent the same colours. HEX uses a six-character base-16 string (e.g. #1D4ED8) while RGB separates the red, green, and blue channels into three decimal integers (e.g. 29, 78, 216). HEX is more compact for CSS; RGB is more readable when adjusting individual channels."
+          a: "Both represent the same colours using different numeral systems. HEX uses a six-character base-16 string (e.g. #1D4ED8) where each pair of digits encodes one channel as a value 00–FF. RGB separates the red, green, and blue channels into three decimal integers (e.g. 29, 78, 216) in the 0–255 range. HEX is more compact for CSS and design handoffs; RGB is more intuitive when adjusting individual channel values programmatically."
         },
         {
           q: "Does this converter support 3-character hex shorthand?",
-          a: "Yes. Three-character hex codes like #F0A are automatically expanded to their 6-character equivalents (#FF00AA) before conversion. This follows the CSS specification where each digit is doubled."
+          a: "Yes. Three-character hex codes like #F0A are automatically expanded to their 6-character equivalents (#FF00AA) before conversion, following the CSS specification where each single digit is doubled. This means #FFF expands to #FFFFFF (pure white) and #000 expands to #000000 (pure black). The tool accepts both prefixed (#RRGGBB) and unprefixed (RRGGBB) input."
         },
         {
           q: "What is HSL and why would I use it instead of RGB?",
-          a: "HSL (Hue, Saturation, Lightness) describes colour in a way that's more intuitive for humans. Hue is the colour angle (0–360°), saturation is the intensity (0–100%), and lightness controls brightness (0–100%). It's easier to create harmonious colour schemes by adjusting H while keeping S and L constant."
+          a: "HSL (Hue, Saturation, Lightness) describes colour in a way that is more intuitive for humans. Hue is the colour angle on the 360° colour wheel (0° = red, 120° = green, 240° = blue), saturation controls the intensity from 0% (grey) to 100% (vivid), and lightness ranges from 0% (black) to 100% (white). HSL makes it easier to create harmonious colour palettes by adjusting hue while keeping saturation and lightness constant, which is harder to achieve by manipulating raw RGB channel values."
         },
         {
           q: "Can I use this for colours with transparency (alpha)?",
-          a: "This converter handles opaque colours (no alpha channel). For CSS rgba() or 8-digit hex (#RRGGBBAA), you can manually append the alpha value after conversion — for example, rgba(29, 78, 216, 0.5) adds 50% transparency to the converted result."
+          a: "This converter handles opaque colours and does not process an alpha channel. For CSS rgba() or 8-digit hex (#RRGGBBAA), you can manually append the alpha value after conversion — for example, rgba(29, 78, 216, 0.5) adds 50% transparency to the converted result. The alpha channel is independent of the RGB-to-hex conversion and does not affect the computed colour values."
+        },
+        {
+          q: "Why does my hex code look different in another application?",
+          a: "Colour appearance can vary between applications due to colour profile differences. This converter uses the sRGB colour space, which is the default for web browsers and CSS. Applications that operate in Display P3, Adobe RGB, or other wide-gamut colour spaces may render the same numeric values differently. Additionally, screen calibration, gamma settings, and ambient lighting affect perceived colour. The tool's output is accurate for web-standard sRGB contexts."
+        },
+        {
+          q: "How do I convert a hex code to Tailwind CSS configuration values?",
+          a: "Convert the hex to RGB using this tool, then use the three channel values in Tailwind's configuration. For Tailwind v3+, you can also use the hex value directly in your <code>tailwind.config.js</code> theme extension. If you need to decompose the colour for opacity modifiers (e.g. <code>bg-blue-500/50</code>), you will need the RGB channel values to define the colour using Tailwind's CSS variable syntax."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

@@ -2,10 +2,10 @@
 mortgage-calculator
 compound-interest-retirement
 percentage-calculator
-
-## TODO
 bmi-calculator
 hex-to-rgb
+
+## TODO
 word-counter
 jwt-debugger
 css-flexbox-grid-sandbox
