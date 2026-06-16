@@ -129,45 +129,87 @@ const tool = tools.find(t => t.slug === 'css-flexbox-grid-sandbox')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the CSS Flexbox &amp; Grid Sandbox</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">CSS Flexbox &amp; Grid Sandbox — Overview &amp; Modern Technical Context</h2>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Switch between <strong>Flexbox</strong> and <strong>Grid</strong> modes using the toggle at the top. Adjust properties using the dropdowns and sliders in the left panel — the preview and generated CSS update live in the right panel.
+      Modern CSS layout is built on two specification-driven modules: Flexbox (CSS Flexible Box Layout Level 1) and CSS Grid Layout Level 2. Both are W3C standards with full browser support across Chrome, Firefox, Safari, and Edge. This interactive sandbox lets developers visually experiment with every property in both layout systems — adjusting values in real time and instantly copying production-ready CSS. The tool runs entirely in your browser using vanilla JavaScript and the CSSOM (CSS Object Model) — no server calls, no data transmission, no tracking.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Switch between <strong>Flexbox</strong> and <strong>Grid</strong> modes using the toggle at the top. In Flexbox mode, adjust <code>flex-direction</code>, <code>flex-wrap</code>, <code>justify-content</code>, <code>align-items</code>, <code>align-content</code>, and <code>gap</code>. In Grid mode, configure <code>grid-template-columns</code>, <code>grid-template-rows</code>, <code>justify-items</code>, <code>align-items</code>, <code>justify-content</code>, <code>align-content</code>, and <code>gap</code>. The left panel provides dropdown selectors and range sliders for each property; the right panel renders a live preview with numbered child elements and outputs the corresponding CSS block.
+    </p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Rapid prototyping and layout iteration:</strong> Front-end developers frequently need to test multiple layout configurations before committing to a design. Instead of manually writing CSS, toggling between browser devtools, and refreshing, this sandbox provides a single界面 for experimenting with property combinations. The live preview updates on every input change, eliminating the compile-refresh cycle and reducing the time to reach a working layout from minutes to seconds.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Teaching and learning CSS layout:</strong> CSS layout is notoriously difficult to learn from documentation alone because the interaction between properties (e.g., how <code>flex-wrap</code> affects <code>align-content</code>) is not intuitive. This sandbox renders numbered boxes inside a container, making it immediately visible how each property change affects item positioning, sizing, and alignment. Instructors can use it in classroom demos, and students can experiment independently without setting up a development environment.
     </p>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      When you're happy with the layout, click <strong>Copy CSS</strong> to copy the ready-to-paste CSS block. All logic runs in your browser — nothing is sent to a server.
+      <strong>Responsive design debugging:</strong> When building responsive layouts, developers need to understand how <code>fr</code> units, <code>minmax()</code>, and <code>auto-fill</code>/<code>auto-fit</code> interact with container dimensions. The Grid mode accepts any valid CSS value in the <code>grid-template-columns</code> and <code>grid-template-rows</code> fields, allowing developers to test complex track definitions (e.g., <code>repeat(auto-fill, minmax(200px, 1fr))</code>) and immediately see how items reflow — without writing a single line of code.
     </p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the sandbox works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Deep-Dive: Flexbox &amp; Grid Property Mechanics</h2>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Flexbox Properties</h3>
+    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
       {[
-        ['Flexbox mode', 'Controls map directly to the CSS Flexbox specification: flex-direction, flex-wrap, justify-content, align-items, align-content, and gap. Changes update both the live preview container and the generated CSS block simultaneously.'],
-        ['Grid mode', 'Exposes grid-template-columns, grid-template-rows, justify-items, align-items, justify-content, align-content, and gap. The columns/rows fields accept any valid CSS value (e.g. repeat(3,1fr), 200px auto 1fr).'],
-        ['Live preview', 'Numbered child boxes are rendered inside a container element with the generated CSS applied inline. Items are auto-labelled 1–N based on the items slider so layout behaviour is visible across different item counts.'],
+        ['flex-direction', 'Defines the main axis direction. <code>row</code> lays items left-to-right, <code>column</code> lays them top-to-bottom. Reversed variants reverse the visual order without changing DOM sequence.'],
+        ['flex-wrap', 'Controls whether items stay on one line (<code>nowrap</code>) or wrap to multiple lines (<code>wrap</code>). Wrapping interacts with <code>align-content</code> to distribute space between lines.'],
+        ['justify-content', 'Aligns items along the main axis. <code>space-between</code> distributes items with no gap at edges; <code>space-around</code> adds half-size gaps at edges; <code>space-evenly</code> equalises all gaps.'],
+        ['align-items', 'Aligns items along the cross axis within their line. <code>stretch</code> fills the available cross-axis space; <code>center</code> centres items; <code>baseline</code> aligns text baselines across items.'],
+        ['align-content', 'Positions lines when there is extra cross-axis space (multi-line flex containers). Single-line containers ignore this property entirely.'],
+        ['gap', 'Sets the spacing between items along both axes. Unlike <code>margin</code>, gap does not create overflow at container edges.'],
       ].map(([label, desc]) => (
         <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
           <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;" set:html={desc} />
         </div>
       ))}
     </div>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Grid Properties</h3>
+    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+      {[
+        ['grid-template-columns', 'Defines column track sizes. Accepts any valid CSS value: fixed (<code>200px</code>), flexible (<code>1fr</code>), intrinsic (<code>auto</code>), or repeating (<code>repeat(3, 1fr)</code>).'],
+        ['grid-template-rows', 'Defines row track sizes using the same syntax as columns. Defaults to <code>auto</code> if omitted, sizing rows to content.'],
+        ['justify-items / align-items', 'Position individual items within their grid area. <code>stretch</code> fills the area; <code>start</code>/<code>end</code>/<code>center</code> position the item within the area bounds.'],
+        ['justify-content / align-content', 'Positions the entire grid within its container when the grid is smaller than the container. Controls alignment of the grid tracks as a group.'],
+        ['gap', 'Sets spacing between grid rows and columns. Accepts two values for independent row/column gaps: <code>row-gap column-gap</code>.'],
+      ].map(([label, desc]) => (
+        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;" set:html={desc} />
+        </div>
+      ))}
+    </div>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">How the Sandbox Computes Output</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Each control binds to a <code>change</code>/<code>input</code> event listener. On every change, the <code>update()</code> function reads current values from all active controls, constructs an inline style string for the preview container, generates a formatted CSS block, and sets both the preview container's <code>style</code> attribute and the output <code>&lt;pre&gt;</code> element's text content. The CSS output uses standard property names without vendor prefixes — Flexbox and Grid have been unprefixed in all major browsers since 2015–2017. The <code>fr</code> unit, <code>gap</code>, and <code>minmax()</code> are all part of the CSS Grid Level 1 specification and require no polyfill.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Edge cases:</strong> The Grid mode accepts arbitrary CSS values in the columns/rows text inputs — malformed values will simply not render a valid grid, mirroring real browser behaviour. The preview container has a fixed height with overflow scroll, so layouts that exceed the viewport are scrollable. The item count slider ranges from 2 to 12, sufficient to demonstrate wrapping, overflow, and alignment behaviour across typical use cases.
+    </p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is the difference between Flexbox and Grid?', a: 'Flexbox is a one-dimensional layout model — it handles either a row or a column at a time. CSS Grid is two-dimensional and can control both rows and columns simultaneously. Flexbox is ideal for navigation bars, toolbars, and component-level layouts. Grid is ideal for full page layouts, card grids, and any layout where alignment in both axes matters.' },
-        { q: 'What does justify-content vs align-items do?', a: 'In Flexbox, justify-content controls alignment along the main axis (the direction of flex-direction), while align-items controls alignment along the cross axis. For a row-direction container, justify-content aligns horizontally and align-items aligns vertically. In Grid, justify-content and align-content position the entire grid within its container, while justify-items and align-items control how individual cells are positioned within their grid area.' },
-        { q: 'Can I use the generated CSS directly in production?', a: 'Yes. The generated CSS uses standard property names without vendor prefixes, as Flexbox and Grid have full browser support in all modern browsers. For IE11 support, you would need to add -ms- prefixed versions of Grid properties, but IE11 reached end-of-life in 2022 and is no longer a realistic target.' },
-        { q: 'What does fr mean in grid-template-columns?', a: 'fr is a fractional unit that represents a share of the available space in a grid container. For example, grid-template-columns: 1fr 2fr 1fr creates three columns where the middle column is twice as wide as the others. fr units are distributed after fixed-size and auto-size tracks are resolved, making them very useful for flexible layouts.' },
+        { q: 'What is the difference between Flexbox and Grid?', a: 'Flexbox is a one-dimensional layout model — it handles either a row or a column at a time. CSS Grid is two-dimensional and can control both rows and columns simultaneously. Flexbox is ideal for navigation bars, toolbars, and component-level layouts. Grid is ideal for full page layouts, card grids, and any layout where alignment in both axes matters. In practice, the two systems are complementary — many production layouts use Grid for the page skeleton and Flexbox for individual components within grid areas.' },
+        { q: 'What does justify-content vs align-items do?', a: 'In Flexbox, <code>justify-content</code> controls alignment along the main axis (the direction of <code>flex-direction</code>), while <code>align-items</code> controls alignment along the cross axis. For a row-direction container, <code>justify-content</code> aligns horizontally and <code>align-items</code> aligns vertically. In Grid, <code>justify-content</code> and <code>align-content</code> position the entire grid within its container, while <code>justify-items</code> and <code>align-items</code> control how individual cells are positioned within their grid area.' },
+        { q: 'Can I use the generated CSS directly in production?', a: 'Yes. The generated CSS uses standard property names without vendor prefixes, as Flexbox and Grid have full browser support in all modern browsers (Chrome 29+, Firefox 28+, Safari 9+, Edge 12+). The output is valid CSS3 that can be pasted directly into a stylesheet, CSS module, or inline style block. No post-processing or autoprefixing is required for current browser targets.' },
+        { q: 'What does fr mean in grid-template-columns?', a: '<code>fr</code> is a fractional unit defined in the CSS Grid Level 1 specification that represents a share of the available space in a grid container. For example, <code>grid-template-columns: 1fr 2fr 1fr</code> creates three columns where the middle column is twice as wide as the others. <code>fr</code> units are distributed after fixed-size (<code>px</code>) and <code>auto</code>-sized tracks are resolved, making them ideal for flexible, responsive layouts.' },
+        { q: 'When should I use gap instead of margins?', a: 'The <code>gap</code> property (available in both Flexbox and Grid) sets spacing between items without creating space at the container edges. This avoids the common "first/last item margin collapse" problem that occurs with <code>margin</code>. Use <code>gap</code> for consistent, predictable spacing between siblings. Use <code>margin</code> for external spacing — the distance between a container and its neighbours, or for asymmetric spacing on individual items.' },
+        { q: 'How does this tool handle responsive breakpoints?', a: 'This sandbox focuses on property experimentation rather than media query generation. To create responsive layouts, use the sandbox to determine your ideal property values, then wrap the generated CSS in appropriate <code>@media</code> queries in your stylesheet. For example, experiment with <code>grid-template-columns: repeat(auto-fill, minmax(250px, 1fr))</code> in Grid mode to see how items reflow at different widths, then apply that declaration inside a breakpoint-specific media query.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
           <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;" set:html={item.a} />
           </div>
         </div>
       ))}

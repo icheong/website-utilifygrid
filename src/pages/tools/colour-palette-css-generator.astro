@@ -1,0 +1,533 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'colour-palette-css-generator')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Colour Palette &amp; CSS Generator</h2>
+
+    <!-- Inputs: picker + HEX / RGB / HSL all visible -->
+    <div style="display:grid; grid-template-columns:auto 0.55fr 1fr 1fr; gap:0.75rem; margin-bottom:1.25rem; align-items:end;" class="input-grid">
+
+      <!-- Colour picker -->
+      <div>
+        <label style="display:block; font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;">Pick</label>
+        <input id="color-picker" type="color" value="#3B82F6"
+          style="width:3rem; height:2.75rem; border-radius:0.5rem; border:1.5px solid var(--border); background:var(--bg-surface); cursor:pointer; padding:0.2rem;" />
+      </div>
+
+      <!-- HEX -->
+      <div>
+        <label style="display:block; font-size:0.72rem; font-weight:700; color:#1D4ED8; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;" for="color-text">HEX</label>
+        <input id="color-text" type="text" value="#3B82F6" placeholder="#3B82F6"
+          class="input-themed"
+          style="font-family:'Fira Code',monospace; font-size:0.9rem; font-weight:600; letter-spacing:0.05em;" />
+      </div>
+
+      <!-- RGB -->
+      <div>
+        <div style="font-size:0.72rem; font-weight:700; color:#10B981; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;">RGB</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.3rem;">
+          <input id="rgb-r" type="number" min="0" max="255" value="59" placeholder="R"
+            class="input-themed"
+            style="font-family:'Fira Code',monospace; font-size:0.85rem; padding:0.55rem 0.4rem; text-align:center;" title="Red (0-255)" />
+          <input id="rgb-g" type="number" min="0" max="255" value="130" placeholder="G"
+            class="input-themed"
+            style="font-family:'Fira Code',monospace; font-size:0.85rem; padding:0.55rem 0.4rem; text-align:center;" title="Green (0-255)" />
+          <input id="rgb-b" type="number" min="0" max="255" value="246" placeholder="B"
+            class="input-themed"
+            style="font-family:'Fira Code',monospace; font-size:0.85rem; padding:0.55rem 0.4rem; text-align:center;" title="Blue (0-255)" />
+        </div>
+      </div>
+
+      <!-- HSL -->
+      <div>
+        <div style="font-size:0.72rem; font-weight:700; color:#8B5CF6; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.4rem;">HSL</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.3rem;">
+          <input id="hsl-h" type="number" min="0" max="360" value="217" placeholder="H"
+            class="input-themed"
+            style="font-family:'Fira Code',monospace; font-size:0.85rem; padding:0.55rem 0.4rem; text-align:center;" title="Hue (0-360)" />
+          <input id="hsl-s" type="number" min="0" max="100" value="91" placeholder="S"
+            class="input-themed"
+            style="font-family:'Fira Code',monospace; font-size:0.85rem; padding:0.55rem 0.4rem; text-align:center;" title="Saturation (0-100)" />
+          <input id="hsl-l" type="number" min="0" max="100" value="59" placeholder="L"
+            class="input-themed"
+            style="font-family:'Fira Code',monospace; font-size:0.85rem; padding:0.55rem 0.4rem; text-align:center;" title="Lightness (0-100)" />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Colour preview -->
+    <div id="color-preview" style="height:3rem; border-radius:0.75rem; border:1.5px solid var(--border); margin-bottom:1.25rem; transition:background 0.2s;"></div>
+
+    <!-- Four output sections: HEX · RGB · HSL · Tailwind -->
+    <div style="display:grid; grid-template-columns:1fr; gap:0.875rem; margin-bottom:1rem;" class="output-grid">
+
+      <!-- ── HEX section ── -->
+      <div class="result-card">
+        <div style="font-size:0.68rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#1D4ED8;"></span>
+          HEX
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.4rem;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+            <span style="font-size:0.7rem; color:var(--text-muted); font-weight:500;">Hex</span>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <span class="info-value" id="out-hex" style="font-size:0.82rem;"></span>
+              <button class="btn-secondary copy-btn" data-copy="" type="button" style="font-size:0.68rem; padding:0.15rem 0.45rem;">Copy</button>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+            <span style="font-size:0.7rem; color:var(--text-muted); font-weight:500;">CSS var</span>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <code id="out-css-var" style="font-family:'Fira Code',monospace; font-size:0.72rem; color:var(--text-primary); word-break:break-all; text-align:right;"></code>
+              <button class="btn-secondary copy-btn" data-copy="" type="button" style="font-size:0.68rem; padding:0.15rem 0.45rem; flex-shrink:0;">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RGB section ── -->
+      <div class="result-card">
+        <div style="font-size:0.68rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span>
+          RGB
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.4rem;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+            <span style="font-size:0.7rem; color:var(--text-muted); font-weight:500;">Values</span>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <span class="info-value" id="out-rgb" style="font-size:0.82rem;"></span>
+              <button class="btn-secondary copy-btn" data-copy="" type="button" style="font-size:0.68rem; padding:0.15rem 0.45rem;">Copy</button>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+            <span style="font-size:0.7rem; color:var(--text-muted); font-weight:500;">css rgb()</span>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <span class="info-value" id="out-css-rgb" style="font-size:0.78rem;"></span>
+              <button class="btn-secondary copy-btn" data-copy="" type="button" style="font-size:0.68rem; padding:0.15rem 0.45rem;">Copy</button>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem; padding-top:0.35rem; border-top:1px solid var(--border);">
+            <div style="display:flex; align-items:center; gap:0.375rem; flex:1; min-width:0;">
+              <span style="font-size:0.7rem; color:var(--text-muted); font-weight:500; white-space:nowrap;">rgba</span>
+              <input id="rgba-slider" type="range" min="0" max="100" value="100"
+                style="flex:1; accent-color:#10B981; height:4px; min-width:0;" />
+              <span id="rgba-val" style="font-family:'Fira Code',monospace; font-size:0.68rem; color:var(--text-muted); min-width:2rem; text-align:right;">100%</span>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+            <span style="font-size:0.7rem; color:var(--text-muted); font-weight:500;">css rgba()</span>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <code id="out-css-rgba" style="font-family:'Fira Code',monospace; font-size:0.72rem; color:var(--text-primary); word-break:break-all; text-align:right;"></code>
+              <button class="btn-secondary copy-btn" data-copy="" type="button" style="font-size:0.68rem; padding:0.15rem 0.45rem; flex-shrink:0;">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HSL section ── -->
+      <div class="result-card">
+        <div style="font-size:0.68rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#8B5CF6;"></span>
+          HSL
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.4rem;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+            <span style="font-size:0.7rem; color:var(--text-muted); font-weight:500;">Values</span>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <span class="info-value" id="out-hsl" style="font-size:0.78rem;"></span>
+              <button class="btn-secondary copy-btn" data-copy="" type="button" style="font-size:0.68rem; padding:0.15rem 0.45rem;">Copy</button>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+            <span style="font-size:0.7rem; color:var(--text-muted); font-weight:500;">css hsl()</span>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              <span class="info-value" id="out-css-hsl" style="font-size:0.78rem;"></span>
+              <button class="btn-secondary copy-btn" data-copy="" type="button" style="font-size:0.68rem; padding:0.15rem 0.45rem;">Copy</button>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.3rem; padding-top:0.35rem; border-top:1px solid var(--border);">
+            <div style="display:flex; align-items:center; gap:0.375rem;">
+              <span style="font-size:0.7rem; color:var(--text-muted); font-weight:500; white-space:nowrap;">Gradient</span>
+              <input id="grad-angle" type="range" min="0" max="360" value="180"
+                style="flex:1; accent-color:#8B5CF6; height:4px;" />
+              <span id="grad-angle-val" style="font-family:'Fira Code',monospace; font-size:0.68rem; color:var(--text-muted); min-width:2.75rem; text-align:right;">180deg</span>
+            </div>
+            <div id="gradient-preview" style="height:1.5rem; border-radius:0.375rem; border:1px solid var(--border); transition:background 0.2s;"></div>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+              <code id="out-css-gradient" style="font-family:'Fira Code',monospace; font-size:0.68rem; color:var(--text-secondary); word-break:break-all; flex:1; min-width:0;"></code>
+              <button class="btn-secondary copy-btn" data-copy="" type="button" style="font-size:0.68rem; padding:0.15rem 0.45rem; flex-shrink:0;">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Tailwind section ── -->
+      <div class="result-card">
+        <div style="font-size:0.68rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#F59E0B;"></span>
+          Tailwind
+        </div>
+        <div id="tw-match" style="display:flex; flex-direction:column; gap:0.375rem;"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Colour Palette &amp; CSS Generator Overview &amp; Technical Context</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      This all-in-one colour conversion and CSS generation tool combines HEX-to-RGB conversion, RGB-to-HEX conversion, HSL translation, Tailwind CSS palette matching, and live CSS output generation into a single interface. Built entirely with vanilla JavaScript and running 100% client-side in the browser, every computation happens locally using standard browser APIs — no colour data is transmitted to any server, and no cookies or tracking scripts execute. The zero-server-latency architecture ensures instant updates as you type, providing complete privacy for your design workflow.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Switch between HEX, RGB, and HSL input modes using the toggle tabs, or type any valid colour format directly into the text field. The tool automatically parses HEX codes (with or without the <code>#</code> prefix, including 3-digit shorthand), RGB functions like <code>rgb(59, 130, 246)</code>, and HSL functions like <code>hsl(217, 91%, 59%)</code>. All output formats update simultaneously, and every result includes a one-click copy button. The CSS Outputs section provides ready-to-paste custom properties, rgba values with an opacity slider, and linear gradients with adjustable angles.
+    </p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Front-end development and CSS authoring:</strong> Developers frequently receive brand colours as HEX codes from designers but need the RGB equivalent for CSS functions like <code>rgba()</code>, gradients, or dynamic colour manipulation with JavaScript. This tool eliminates manual base-16 arithmetic by converting instantly and providing copy-ready strings for direct insertion into stylesheets, including CSS custom properties and linear gradients.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Tailwind CSS integration:</strong> When migrating a design system to Tailwind CSS, developers need to find the closest utility class for brand colours that may not align exactly with Tailwind's predefined palette. The tool uses CIELAB colour space Delta-E distance calculations to identify the five most visually similar Tailwind classes, ranked by perceptual similarity, enabling rapid palette alignment without manual visual comparison.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Design system auditing and accessibility:</strong> Teams standardising a design system often inherit colour palettes in mixed formats — some assets use HEX, others use RGB, and component libraries may require HSL for CSS custom properties. This converter enables rapid format normalisation across an entire palette, while the opacity slider and gradient generator support creating accessible colour combinations with proper contrast ratios.
+    </p>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Deep-Dive: Colour Conversion Mechanics &amp; Mathematical Logic</h2>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Core Conversion Formulas</h3>
+    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+      <div class="info-row">
+        <span class="info-label">HEX to RGB</span>
+        <span class="info-value">R = parseInt(hex[0..1], 16); G = parseInt(hex[2..3], 16); B = parseInt(hex[4..5], 16)</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">RGB to HEX</span>
+        <span class="info-value">HEX = '#' + R.toString(16).padStart(2,'0') + G.toString(16).padStart(2,'0') + B.toString(16).padStart(2,'0')</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">RGB to HSL</span>
+        <span class="info-value">Normalise channels to [0,1], find max/min, compute hue via sector formula, derive saturation and lightness</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">HSL to RGB</span>
+        <span class="info-value">Compute chroma = (1 - |2L - 1|) * S, then hue sector to find intermediate X and m values per channel</span>
+      </div>
+    </div>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Tailwind Matching via CIELAB Delta-E</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      The Tailwind matching algorithm converts both the input colour and every palette entry from sRGB to the CIELAB (L*a*b*) colour space, which models human colour perception more accurately than RGB. It first applies inverse sRGB companding to linearise the channel values, then transforms through the CIE XYZ intermediate using D65 illuminant reference points. The Delta-E (Euclidean distance in L*a*b* space) between the input and each palette entry is computed, and the five smallest distances are returned as matches. A Delta-E under 2 is perceptually indistinguishable to most observers; under 5 is a close match.
+    </p>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Edge Cases and Input Validation</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      Three-character hex codes like <code>#F0A</code> are automatically expanded to <code>#FF00AA</code> per the CSS specification where each digit is doubled. RGB channel values are clamped to 0-255, HSL hue to 0-360, and saturation/lightness to 0-100%. Invalid inputs produce a clear error state rather than <code>NaN</code>. The conversion uses IEEE 754 double-precision arithmetic internally, with final integer values rounded to the nearest whole number. The opacity slider operates independently of the base colour conversion, appending an alpha value to the CSS output without affecting the underlying RGB/HSL calculations.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: "What colour formats does this tool accept as input?",
+          a: "The tool accepts three primary formats: HEX codes (with or without the # prefix, including 3-digit shorthand like #F0A), RGB functions (e.g. rgb(59, 130, 246) or comma-separated values 59, 130, 246), and HSL functions (e.g. hsl(217, 91%, 59%) or comma-separated 217, 91, 59). You can also use the native colour picker to select any colour visually. All formats are parsed in real time as you type."
+        },
+        {
+          q: "How does the Tailwind colour matching work?",
+          a: "The tool converts your colour to the CIELAB (L*a*b*) colour space, which models human colour perception more accurately than RGB. It calculates the Delta-E (Euclidean distance) between your colour and every entry in the Tailwind CSS v3 default palette. The five colours with the smallest Delta-E are returned as matches, ranked by visual similarity. A score under 2 is perceptually indistinguishable; under 5 is a close match."
+        },
+        {
+          q: "What is the difference between HEX and RGB colour codes?",
+          a: "Both represent the same colours using different numeral systems. HEX uses a six-character base-16 string (e.g. #3B82F6) where each pair of digits encodes one channel as a value 00-FF. RGB separates the red, green, and blue channels into three decimal integers (e.g. 59, 130, 246) in the 0-255 range. HEX is more compact for CSS and design handoffs; RGB is more intuitive when adjusting individual channel values programmatically."
+        },
+        {
+          q: "What is HSL and why would I use it instead of RGB?",
+          a: "HSL (Hue, Saturation, Lightness) describes colour in a way that is more intuitive for humans. Hue is the colour angle on the 360-degree colour wheel (0 = red, 120 = green, 240 = blue), saturation controls the intensity from 0% (grey) to 100% (vivid), and lightness ranges from 0% (black) to 100% (white). HSL makes it easier to create harmonious colour palettes by adjusting hue while keeping saturation and lightness constant, which is harder to achieve by manipulating raw RGB channel values."
+        },
+        {
+          q: "Can I use this for colours with transparency (alpha)?",
+          a: "The base converter handles opaque colours and does not process an alpha channel in the conversion itself. However, the CSS Outputs section includes an opacity slider that generates rgba() values with any alpha level from 0% to 100%. You can also manually append alpha values to the converted output — for example, rgba(59, 130, 246, 0.5) adds 50% transparency. The alpha channel is independent of the RGB-to-hex conversion and does not affect the computed colour values."
+        },
+        {
+          q: "Why does my hex code look different in another application?",
+          a: "Colour appearance can vary between applications due to colour profile differences. This converter uses the sRGB colour space, which is the default for web browsers and CSS. Applications that operate in Display P3, Adobe RGB, or other wide-gamut colour spaces may render the same numeric values differently. Additionally, screen calibration, gamma settings, and ambient lighting affect perceived colour. The tool's output is accurate for web-standard sRGB contexts."
+        }
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+<style>
+  @media (max-width: 600px) {
+    .input-grid {
+      grid-template-columns: auto 1fr !important;
+    }
+    .input-grid > div:nth-child(3),
+    .input-grid > div:nth-child(4) {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
+
+</ToolLayout>
+
+<script>
+  // ── Tailwind v3 colour palette ──────────────────────────────
+  const PALETTE: Record<string, string> = {
+    'slate-50':'#f8fafc','slate-100':'#f1f5f9','slate-200':'#e2e8f0','slate-300':'#cbd5e1','slate-400':'#94a3b8','slate-500':'#64748b','slate-600':'#475569','slate-700':'#334155','slate-800':'#1e293b','slate-900':'#0f172a','slate-950':'#020617',
+    'gray-50':'#f9fafb','gray-100':'#f3f4f6','gray-200':'#e5e7eb','gray-300':'#d1d5db','gray-400':'#9ca3af','gray-500':'#6b7280','gray-600':'#4b5563','gray-700':'#374151','gray-800':'#1f2937','gray-900':'#111827','gray-950':'#030712',
+    'red-50':'#fef2f2','red-100':'#fee2e2','red-200':'#fecaca','red-300':'#fca5a5','red-400':'#f87171','red-500':'#ef4444','red-600':'#dc2626','red-700':'#b91c1c','red-800':'#991b1b','red-900':'#7f1d1d','red-950':'#450a0a',
+    'orange-50':'#fff7ed','orange-100':'#ffedd5','orange-200':'#fed7aa','orange-300':'#fdba74','orange-400':'#fb923c','orange-500':'#f97316','orange-600':'#ea580c','orange-700':'#c2410c','orange-800':'#9a3412','orange-900':'#7c2d12','orange-950':'#431407',
+    'yellow-50':'#fefce8','yellow-100':'#fef9c3','yellow-200':'#fef08a','yellow-300':'#fde047','yellow-400':'#facc15','yellow-500':'#eab308','yellow-600':'#ca8a04','yellow-700':'#a16207','yellow-800':'#854d0e','yellow-900':'#713f12','yellow-950':'#422006',
+    'green-50':'#f0fdf4','green-100':'#dcfce7','green-200':'#bbf7d0','green-300':'#86efac','green-400':'#4ade80','green-500':'#22c55e','green-600':'#16a34a','green-700':'#15803d','green-800':'#166534','green-900':'#14532d','green-950':'#052e16',
+    'teal-50':'#f0fdfa','teal-100':'#ccfbf1','teal-200':'#99f6e4','teal-300':'#5eead4','teal-400':'#2dd4bf','teal-500':'#14b8a6','teal-600':'#0d9488','teal-700':'#0f766e','teal-800':'#115e59','teal-900':'#134e4a','teal-950':'#042f2e',
+    'blue-50':'#eff6ff','blue-100':'#dbeafe','blue-200':'#bfdbfe','blue-300':'#93c5fd','blue-400':'#60a5fa','blue-500':'#3b82f6','blue-600':'#2563eb','blue-700':'#1d4ed8','blue-800':'#1e40af','blue-900':'#1e3a8a','blue-950':'#172554',
+    'indigo-50':'#eef2ff','indigo-100':'#e0e7ff','indigo-200':'#c7d2fe','indigo-300':'#a5b4fc','indigo-400':'#818cf8','indigo-500':'#6366f1','indigo-600':'#4f46e5','indigo-700':'#4338ca','indigo-800':'#3730a3','indigo-900':'#312e81','indigo-950':'#1e1b4b',
+    'violet-50':'#f5f3ff','violet-100':'#ede9fe','violet-200':'#ddd6fe','violet-300':'#c4b5fd','violet-400':'#a78bfa','violet-500':'#8b5cf6','violet-600':'#7c3aed','violet-700':'#6d28d9','violet-800':'#5b21b6','violet-900':'#4c1d95','violet-950':'#2e1065',
+    'purple-50':'#faf5ff','purple-100':'#f3e8ff','purple-200':'#e9d5ff','purple-300':'#d8b4fe','purple-400':'#c084fc','purple-500':'#a855f7','purple-600':'#9333ea','purple-700':'#7e22ce','purple-800':'#6b21a8','purple-900':'#581c87','purple-950':'#3b0764',
+    'pink-50':'#fdf2f8','pink-100':'#fce7f3','pink-200':'#fbcfe8','pink-300':'#f9a8d4','pink-400':'#f472b6','pink-500':'#ec4899','pink-600':'#db2777','pink-700':'#be185d','pink-800':'#9d174d','pink-900':'#831843','pink-950':'#500724',
+    'rose-50':'#fff1f2','rose-100':'#ffe4e6','rose-200':'#fecdd3','rose-300':'#fda4af','rose-400':'#fb7185','rose-500':'#f43f5e','rose-600':'#e11d48','rose-700':'#be123c','rose-800':'#9f1239','rose-900':'#881337','rose-950':'#4c0519',
+    'cyan-50':'#ecfeff','cyan-100':'#cffafe','cyan-200':'#a5f3fc','cyan-300':'#67e8f9','cyan-400':'#22d3ee','cyan-500':'#06b6d4','cyan-600':'#0891b2','cyan-700':'#0e7490','cyan-800':'#155e75','cyan-900':'#164e63','cyan-950':'#083344',
+    'sky-50':'#f0f9ff','sky-100':'#e0f2fe','sky-200':'#bae6fd','sky-300':'#7dd3fc','sky-400':'#38bdf8','sky-500':'#0ea5e9','sky-600':'#0284c7','sky-700':'#0369a1','sky-800':'#075985','sky-900':'#0c4a6e','sky-950':'#082f49',
+    'emerald-50':'#ecfdf5','emerald-100':'#d1fae5','emerald-200':'#a7f3d0','emerald-300':'#6ee7b7','emerald-400':'#34d399','emerald-500':'#10b981','emerald-600':'#059669','emerald-700':'#047857','emerald-800':'#065f46','emerald-900':'#064e3b','emerald-950':'#022c22',
+    'lime-50':'#f7fee7','lime-100':'#ecfccb','lime-200':'#d9f99d','lime-300':'#bef264','lime-400':'#a3e635','lime-500':'#84cc16','lime-600':'#65a30d','lime-700':'#4d7c0f','lime-800':'#3f6212','lime-900':'#365314','lime-950':'#1a2e05',
+    'amber-50':'#fffbeb','amber-100':'#fef3c7','amber-200':'#fde68a','amber-300':'#fcd34d','amber-400':'#fbbf24','amber-500':'#f59e0b','amber-600':'#d97706','amber-700':'#b45309','amber-800':'#92400e','amber-900':'#78350f','amber-950':'#451a03',
+    'zinc-50':'#fafafa','zinc-100':'#f4f4f5','zinc-200':'#e4e4e7','zinc-300':'#d4d4d8','zinc-400':'#a1a1aa','zinc-500':'#71717a','zinc-600':'#52525b','zinc-700':'#3f3f46','zinc-800':'#27272a','zinc-900':'#18181b','zinc-950':'#09090b',
+    'neutral-50':'#fafafa','neutral-100':'#f5f5f5','neutral-200':'#e5e5e5','neutral-300':'#d4d4d4','neutral-400':'#a3a3a3','neutral-500':'#737373','neutral-600':'#525252','neutral-700':'#404040','neutral-800':'#262626','neutral-900':'#171717','neutral-950':'#0a0a0a',
+    'stone-50':'#fafaf9','stone-100':'#f5f5f4','stone-200':'#e7e5e4','stone-300':'#d6d3d1','stone-400':'#a8a29e','stone-500':'#78716c','stone-600':'#57534e','stone-700':'#44403c','stone-800':'#292524','stone-900':'#1c1917','stone-950':'#0c0a09',
+  };
+
+  // ── Parsing ─────────────────────────────────────────────────
+  function parseHex(raw: string): [number,number,number] | null {
+    let h = raw.replace(/^#/, '').trim().toLowerCase();
+    if (h.length === 3) h = h.split('').map(c => c + c).join('');
+    if (!/^[0-9a-f]{6}$/.test(h)) return null;
+    const n = parseInt(h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  function parseRgb(raw: string): [number,number,number] | null {
+    const m = raw.match(/rgb\s*\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/i);
+    if (m) return [Math.min(255,+m[1]), Math.min(255,+m[2]), Math.min(255,+m[3])];
+    const parts = raw.split(',').map(s => s.trim());
+    if (parts.length === 3 && parts.every(p => /^\d{1,3}$/.test(p))) {
+      return parts.map(p => Math.min(255, +p)) as [number,number,number];
+    }
+    return null;
+  }
+
+  function parseHsl(raw: string): [number,number,number] | null {
+    const m = raw.match(/hsl\s*\(\s*(\d{1,3})\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*\)/i);
+    if (m) return [+m[1], Math.min(100,+m[2]), Math.min(100,+m[3])];
+    const parts = raw.split(',').map(s => s.trim().replace('%',''));
+    if (parts.length === 3 && parts.every(p => /^\d{1,3}$/.test(p))) {
+      return [+parts[0], Math.min(100,+parts[1]), Math.min(100,+parts[2])];
+    }
+    return null;
+  }
+
+  function parseAnyInput(val: string): { r:number; g:number; b:number; h:number; s:number; l:number } | null {
+    val = val.trim();
+    if (!val) return null;
+    const hex = parseHex(val);
+    if (hex) { const [h,s,l] = rgbToHsl(...hex); return { r:hex[0], g:hex[1], b:hex[2], h, s, l }; }
+    const rgb = parseRgb(val);
+    if (rgb) { const [h,s,l] = rgbToHsl(...rgb); return { r:rgb[0], g:rgb[1], b:rgb[2], h, s, l }; }
+    const hsl = parseHsl(val);
+    if (hsl) { const [r,g,b] = hslToRgb(...hsl); return { r, g, b, h:hsl[0], s:hsl[1], l:hsl[2] }; }
+    return null;
+  }
+
+  // ── Conversions ─────────────────────────────────────────────
+  function rgbToHex(r: number, g: number, b: number): string {
+    return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+  }
+
+  function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
+    const rn = r/255, gn = g/255, bn = b/255;
+    const max = Math.max(rn,gn,bn), min = Math.min(rn,gn,bn);
+    const l = (max + min) / 2;
+    if (max === min) return [0, 0, Math.round(l * 100)];
+    const d = max - min;
+    const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    let h = 0;
+    if (max === rn) h = ((gn - bn) / d + (gn < bn ? 6 : 0)) / 6;
+    else if (max === gn) h = ((bn - rn) / d + 2) / 6;
+    else h = ((rn - gn) / d + 4) / 6;
+    return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+  }
+
+  function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+    const sn = s / 100, ln = l / 100;
+    const c = (1 - Math.abs(2 * ln - 1)) * sn;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = ln - c / 2;
+    let rp = 0, gp = 0, bp = 0;
+    if (h < 60)      { rp = c; gp = x; }
+    else if (h < 120) { rp = x; gp = c; }
+    else if (h < 180) { gp = c; bp = x; }
+    else if (h < 240) { gp = x; bp = c; }
+    else if (h < 300) { rp = x; bp = c; }
+    else              { rp = c; bp = x; }
+    return [
+      Math.round((rp + m) * 255),
+      Math.round((gp + m) * 255),
+      Math.round((bp + m) * 255)
+    ];
+  }
+
+  // ── CIELAB for Tailwind matching ────────────────────────────
+  function rgbToLab(r: number, g: number, b: number): [number,number,number] {
+    const lin = (c: number) => { const s = c/255; return s > 0.04045 ? Math.pow((s+0.055)/1.055,2.4) : s/12.92; };
+    const rl = lin(r), gl = lin(g), bl = lin(b);
+    const X = rl*0.4124+gl*0.3576+bl*0.1805;
+    const Y = rl*0.2126+gl*0.7152+bl*0.0722;
+    const Z = rl*0.0193+gl*0.1192+bl*0.9505;
+    const f = (t: number) => t > 0.008856 ? Math.cbrt(t) : 7.787*t+16/116;
+    const fx = f(X/0.95047), fy = f(Y), fz = f(Z/1.08883);
+    return [116*fy-16, 500*(fx-fy), 200*(fy-fz)];
+  }
+
+  function deltaE(lab1: [number,number,number], lab2: [number,number,number]): number {
+    return Math.sqrt(Math.pow(lab1[0]-lab2[0],2)+Math.pow(lab1[1]-lab2[1],2)+Math.pow(lab1[2]-lab2[2],2));
+  }
+
+  // ── DOM refs ────────────────────────────────────────────────
+  const picker      = document.getElementById('color-picker')      as HTMLInputElement;
+  const textInput   = document.getElementById('color-text')        as HTMLInputElement;
+  const rgbR        = document.getElementById('rgb-r')             as HTMLInputElement;
+  const rgbG        = document.getElementById('rgb-g')             as HTMLInputElement;
+  const rgbB        = document.getElementById('rgb-b')             as HTMLInputElement;
+  const hslH        = document.getElementById('hsl-h')             as HTMLInputElement;
+  const hslS        = document.getElementById('hsl-s')             as HTMLInputElement;
+  const hslL        = document.getElementById('hsl-l')             as HTMLInputElement;
+  const rgbaSlider  = document.getElementById('rgba-slider')       as HTMLInputElement;
+  const rgbaVal     = document.getElementById('rgba-val')!;
+  const gradAngle   = document.getElementById('grad-angle')        as HTMLInputElement;
+  const gradAngleVl = document.getElementById('grad-angle-val')!;
+  const preview     = document.getElementById('color-preview')!;
+  const outHex      = document.getElementById('out-hex')!;
+  const outRgb      = document.getElementById('out-rgb')!;
+  const outHsl      = document.getElementById('out-hsl')!;
+  const outCssRgb   = document.getElementById('out-css-rgb')!;
+  const outCssHsl   = document.getElementById('out-css-hsl')!;
+  const outCssVar   = document.getElementById('out-css-var')!;
+  const outCssRgba  = document.getElementById('out-css-rgba')!;
+  const outCssGrad  = document.getElementById('out-css-gradient')!;
+  const gradPreview = document.getElementById('gradient-preview')!;
+  const twMatch     = document.getElementById('tw-match')!;
+
+  // ── Master update ───────────────────────────────────────────
+  function update() {
+    const data = parseAnyInput(textInput.value);
+    if (!data) return;
+    const { r, g, b, h, s, l } = data;
+    const hex = rgbToHex(r, g, b).toUpperCase();
+
+    // Sync all inputs
+    picker.value = rgbToHex(r, g, b);
+    textInput.value = hex;
+    rgbR.value = String(r);
+    rgbG.value = String(g);
+    rgbB.value = String(b);
+    hslH.value = String(h);
+    hslS.value = String(s);
+    hslL.value = String(l);
+
+    // Preview
+    preview.style.background = hex;
+
+    // Format outputs
+    outHex.textContent = hex;
+    outRgb.textContent = `${r}, ${g}, ${b}`;
+    outHsl.textContent = `hsl(${h}, ${s}%, ${l}%)`;
+    outCssRgb.textContent = `rgb(${r}, ${g}, ${b})`;
+    outCssHsl.textContent = `hsl(${h}, ${s}%, ${l}%)`;
+    outCssVar.textContent = `--color-primary: ${hex.toLowerCase()};`;
+
+    // RGBA with opacity
+    const alpha = parseInt(rgbaSlider.value) / 100;
+    rgbaVal.textContent = rgbaSlider.value + '%';
+    outCssRgba.textContent = `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(2)})`;
+
+    // Gradient
+    const angle = gradAngle.value;
+    gradAngleVl.textContent = angle + 'deg';
+    outCssGrad.textContent = `linear-gradient(${angle}deg, ${hex.toLowerCase()}, ${rgbToHsl(h, s, l > 50 ? l - 20 : l + 20).join(',')})`;
+    // Simpler: use a darker/lighter version
+    const darkHex = rgbToHex(Math.max(0, r - 60), Math.max(0, g - 60), Math.max(0, b - 60));
+    outCssGrad.textContent = `linear-gradient(${angle}deg, ${hex.toLowerCase()}, ${darkHex.toLowerCase()})`;
+    gradPreview.style.background = `linear-gradient(${angle}deg, ${hex.toLowerCase()}, ${darkHex.toLowerCase()})`;
+
+    // Tailwind match
+    const lab = rgbToLab(r, g, b);
+    const scores = Object.entries(PALETTE).map(([name, ph]) => {
+      const pRgb = parseHex(ph)!;
+      return { name, hex: ph, score: deltaE(lab, rgbToLab(...pRgb)) };
+    }).sort((a,b) => a.score - b.score).slice(0, 5);
+
+    twMatch.innerHTML = scores.map(s => `
+      <div onclick="navigator.clipboard.writeText('${s.name}');this.querySelector('.tw-copy-lbl').textContent='Copied!';setTimeout(()=>{this.querySelector('.tw-copy-lbl').textContent='copy'},1500)" style="display:flex; align-items:center; gap:0.625rem; background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.5rem; padding:0.45rem 0.625rem; cursor:pointer; transition:border-color 0.12s;" onmouseover="this.style.borderColor='var(--text-muted)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:24px; height:24px; border-radius:0.3rem; background:${s.hex}; flex-shrink:0; border:1px solid rgba(0,0,0,0.1);"></div>
+        <div style="flex:1; min-width:0; overflow:hidden;">
+          <div style="font-family:'Fira Code',monospace; font-size:0.75rem; font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div>
+          <div style="font-size:0.65rem; color:var(--text-muted); margin-top:0.05rem;">dE ${s.score.toFixed(1)}</div>
+        </div>
+        <span class="tw-copy-lbl" style="font-size:0.65rem; color:var(--text-muted); flex-shrink:0;">copy</span>
+      </div>`).join('');
+
+    // Update copy button data-copy attributes
+    document.querySelectorAll<HTMLElement>('.copy-btn[data-copy]').forEach(btn => {
+      const codeEl = btn.previousElementSibling as HTMLElement;
+      if (codeEl) btn.dataset.copy = codeEl.textContent || '';
+    });
+  }
+
+  // ── Event listeners ────────────────────────────────────────
+  picker.addEventListener('input', () => { textInput.value = picker.value.toUpperCase(); update(); });
+  textInput.addEventListener('input', update);
+  [rgbR, rgbG, rgbB].forEach(el => el.addEventListener('input', () => {
+    textInput.value = `rgb(${rgbR.value}, ${rgbG.value}, ${rgbB.value})`;
+    update();
+  }));
+  [hslH, hslS, hslL].forEach(el => el.addEventListener('input', () => {
+    textInput.value = `hsl(${hslH.value}, ${hslS.value}%, ${hslL.value}%)`;
+    update();
+  }));
+  rgbaSlider.addEventListener('input', update);
+  gradAngle.addEventListener('input', update);
+
+  // ── Copy buttons ────────────────────────────────────────────
+  document.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.copy || '';
+      if (!text) return;
+      await navigator.clipboard.writeText(text);
+      const original = btn.textContent || 'Copy';
+      btn.textContent = 'Copied!';
+      btn.classList.add('btn-success');
+      setTimeout(() => { btn.textContent = original; btn.classList.remove('btn-success'); }, 2000);
+    });
+  });
+
+  // Initial render
+  update();
+</script>

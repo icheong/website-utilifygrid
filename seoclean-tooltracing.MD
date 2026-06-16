@@ -4,11 +4,12 @@ compound-interest-retirement
 percentage-calculator
 bmi-calculator
 hex-to-rgb
-
-## TODO
 word-counter
+colour-palette-css-generator
 jwt-debugger
 css-flexbox-grid-sandbox
+
+## TODO
 json-to-typescript
 ev-novated-lease-calculator
 phev-novated-lease-calculator
@@ -24,7 +25,6 @@ car-loan-amortization-calculator
 freelance-invoice-tax-calculator
 csv-to-json-xml-converter
 unix-timestamp-converter
-hex-rgb-tailwind-generator
 sql-schema-syntax-translator
 epub-to-pdf-formatter
 length-converter

@@ -61,30 +61,63 @@ const tool = tools.find(t => t.slug === 'jwt-debugger')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the JWT Debugger</h2>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">Paste any JSON Web Token into the input field. The debugger instantly splits it into its three Base64url-encoded parts and decodes each section. Click <strong>Load sample</strong> to see an example token. Use the Copy buttons to copy individual sections.</p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">Everything runs entirely in your browser — your tokens are never sent to any server.</p>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">JWT Debugger Overview &amp; Modern Technical Context</h2>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+      JSON Web Tokens (JWTs) are the dominant stateless authentication mechanism used across modern web APIs, single-sign-on (SSO) implementations, and microservice architectures. This JWT Debugger provides instant, client-side decoding of any standard-compliant token, allowing developers to inspect headers, payloads, and signature segments without transmitting sensitive data to external servers. The tool is built with modern vanilla JavaScript and the Web Crypto API-compatible Base64url decoding routines — every operation executes entirely within your browser with zero network requests, zero cookies, and zero data retention.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+      Paste any JWT into the input field or click <strong>Load sample</strong> to see a demonstration token. The debugger instantly splits the token at its two dot delimiters, decodes each Base64url-encoded segment, and renders the header and payload as formatted JSON. Standard claims — such as <code>iat</code> (issued at), <code>exp</code> (expiration), <code>sub</code> (subject), <code>iss</code> (issuer), and <code>aud</code> (audience) — are automatically extracted and displayed as labelled info rows. A colour-coded token preview highlights the three segments in amber, blue, and green for immediate visual identification. Copy buttons allow you to export individual sections to your clipboard for integration into logs, documentation, or debugging workflows.
+    </p>
+
+    <h3 style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.5rem;">
+      <strong>API authentication debugging:</strong> When integrating with third-party APIs that use Bearer token authentication (OAuth 2.0, OpenID Connect), developers frequently encounter 401 Unauthorized errors caused by malformed tokens, expired <code>exp</code> claims, or mismatched <code>iss</code> fields. Pasting the token into this debugger instantly reveals the payload contents, allowing you to verify claims without contacting the identity provider's introspection endpoint.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.5rem;">
+      <strong>Security auditing and penetration testing:</strong> Security engineers reviewing JWT implementations need to verify that tokens do not contain sensitive data in the payload (JWTs are Base64url-encoded, not encrypted). This tool enables rapid inspection of token contents to confirm whether PII, session identifiers, or privilege escalation claims are exposed in the clear — a critical step in OWASP Top 10 assessments.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">
+      <strong>Educational and training contexts:</strong> Students learning about modern authentication protocols benefit from visualising the internal structure of JWTs. This debugger demystifies the three-segment format, demonstrates how Base64url encoding preserves URL safety, and illustrates the relationship between header algorithm declarations (<code>alg</code>) and the corresponding signature verification requirements.
+    </p>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.875rem;">How JWT decoding works</h2>
-    <div style="display:flex;flex-direction:column;gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Structure</span><span class="info-value">header.payload.signature (3 parts, dot-separated)</span></div>
-      <div class="info-row"><span class="info-label">Encoding</span><span class="info-value">Base64url — URL-safe variant of Base64</span></div>
-      <div class="info-row"><span class="info-label">Header</span><span class="info-value">Algorithm (alg) and token type (typ)</span></div>
-      <div class="info-row"><span class="info-label">Payload</span><span class="info-value">Claims: sub, iat, exp, iss, aud, custom</span></div>
-      <div class="info-row"><span class="info-label">Signature</span><span class="info-value">HMAC/RSA of header+payload — server-verified only</span></div>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">Deep-Dive: JWT Structure, Base64url Encoding &amp; Signature Mechanics</h2>
+
+    <h3 style="font-size:0.95rem;font-weight:600;color:var(--text-primary);margin:1rem 0 0.5rem;">Core Structure</h3>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;">
+      <div class="info-row"><span class="info-label">Format</span><span class="info-value">header.payload.signature — three Base64url-encoded segments separated by dots</span></div>
+      <div class="info-row"><span class="info-label">Encoding</span><span class="info-value">Base64url (RFC 4648 §5) — replaces + with -, / with _, and strips trailing =</span></div>
+      <div class="info-row"><span class="info-label">Header</span><span class="info-value">JSON object: <code>alg</code> (signing algorithm) and <code>typ</code> (token type, typically "JWT")</span></div>
+      <div class="info-row"><span class="info-label">Payload</span><span class="info-value">JSON object containing registered claims (sub, iat, exp, iss, aud) and custom claims</span></div>
+      <div class="info-row"><span class="info-label">Signature</span><span class="info-value">Cryptographic hash of header+payload using the algorithm declared in <code>alg</code></span></div>
     </div>
+
+    <h3 style="font-size:0.95rem;font-weight:600;color:var(--text-primary);margin:1rem 0 0.5rem;">How the Decoding Process Works</h3>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+      The JWT specification (RFC 7519) defines a compact, URL-safe means of representing claims between two parties. The decoder first splits the raw token string at each <code>.</code> delimiter. A valid JWT must produce exactly three segments; any other count triggers an immediate error. Each segment is then Base64url-decoded — a process that reverses the URL-safe encoding by substituting standard Base64 characters back (+ becomes -, / becomes _) and re-appending any stripped <code>=</code> padding characters before invoking <code>atob()</code>. The decoded bytes are then parsed as UTF-8 and deserialised from JSON into a JavaScript object.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+      The <strong>header</strong> typically contains two fields: <code>alg</code> (e.g., HS256, RS256, ES256) specifying the signing algorithm, and <code>typ</code> declaring the media type. The <strong>payload</strong> carries the claims — standardised fields defined by the JWT specification plus any application-specific key-value pairs. The <strong>signature</strong> segment is the raw output of the signing algorithm applied to the ASCII bytes of <code>base64url(header) + "." + base64url(payload)</code> using a secret key (HMAC) or private key (RSA/ECDSA). This debugger decodes the first two segments and displays the third as-is, since signature verification requires the original signing secret.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+      <strong>Edge cases handled:</strong> The tool rejects tokens that do not contain exactly three dot-separated segments. Malformed Base64url sequences that produce invalid JSON trigger a descriptive error rather than an unhandled exception. The <code>exp</code> claim is automatically cross-referenced against the current system time — expired tokens are flagged with a warning indicator in the decoded output. Tokens with missing or unexpected claim structures are decoded gracefully; the tool displays whatever fields are present without requiring a rigid schema.
+    </p>
+    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">
+      <strong>Important limitation:</strong> This tool performs <em>decoding only</em> — it does not verify the cryptographic signature. Signature verification requires the original secret key (for HMAC algorithms) or the public key (for RSA/ECDSA), which only the token issuer possesses. A decoded payload is trustworthy only if you trust the issuer; the presence of a valid-looking <code>exp</code> or <code>iss</code> claim does not guarantee authenticity. Always verify tokens server-side against your application's signing key.
+    </p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently Asked Questions</h2>
     <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        {q:'Can this tool verify the JWT signature?',a:'No. Signature verification requires the secret key or RSA public key, which is a server-side operation. This tool decodes and displays the header and payload, but cannot confirm the signature is valid — only your server can do that.'},
-        {q:'Is it safe to paste my JWT here?',a:'This tool is entirely client-side — no data leaves your browser. However, as a best practice, avoid pasting production JWTs containing sensitive claims into any online tool. Use test tokens where possible.'},
-        {q:'What does the exp claim mean?',a:'The exp (expiration time) claim is a Unix timestamp indicating when the token expires. This debugger automatically converts it to a human-readable date and flags tokens that have already expired.'},
-        {q:'What is the difference between HS256 and RS256?',a:'HS256 uses a shared HMAC secret (symmetric), meaning both parties use the same key. RS256 uses RSA public/private key pairs (asymmetric) — the server signs with the private key and any party can verify with the public key. RS256 is preferred for distributed systems.'},
+        {q:'Can this tool verify the JWT signature?',a:'No. Signature verification requires the secret key or RSA public key, which is a server-side operation. This tool decodes and displays the header and payload, but cannot confirm the signature is valid — only your server can do that. A decoded JWT is readable, but authenticity can only be confirmed by cryptographic verification against the original signing key.'},
+        {q:'Is it safe to paste my JWT here?',a:'Yes. This tool runs entirely in your browser using client-side JavaScript — no data is transmitted to any server, no cookies are set, and no network requests are made. However, as a best practice, avoid pasting production JWTs containing sensitive claims into any online tool. Use test tokens where possible, and never expose tokens with PII or elevated privileges in shared environments.'},
+        {q:'What does the exp claim mean?',a:'The <code>exp</code> (expiration time) claim is a Unix timestamp (seconds since 1970-01-01T00:00:00Z) indicating when the token expires. This debugger automatically converts it to a human-readable UTC date and flags tokens that have already expired by comparing the timestamp against your local system clock. Expired tokens should be rejected by consuming services, though some implementations may allow a grace period.'},
+        {q:'What is the difference between HS256 and RS256?',a:'HS256 uses a shared HMAC secret (symmetric cryptography), meaning both the issuer and verifier use the same key. RS256 uses RSA public/private key pairs (asymmetric cryptography) — the server signs with the private key and any party can verify with the corresponding public key. RS256 is preferred for distributed systems where multiple services need to verify tokens without sharing a secret.'},
+        {q:'Why is the payload not encrypted?',a:'JWTs are Base64url-encoded, not encrypted. The payload is readable by anyone who intercepts the token — this is by design. The signature ensures integrity (the payload hasn\'t been tampered with) and authenticity (it was signed by the expected issuer), but does not provide confidentiality. If the payload contains sensitive data, use JWE (JSON Web Encryption) or transmit the JWT over an encrypted channel (TLS).'},
+        {q:'What happens if I paste a JWE or non-JWT token?',a:'The tool expects standard JWS (JSON Web Signature) tokens following the RFC 7519 three-segment format. JWE (JSON Web Encryption) tokens have five segments and will trigger a validation error. Non-JWT tokens (such as opaque session identifiers or SAML assertions) do not follow the dot-separated structure and will also be rejected with a descriptive error message.'},
       ].map(item=>(
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
           <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>

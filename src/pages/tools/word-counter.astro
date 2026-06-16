@@ -91,36 +91,77 @@ const tool = tools.find(t => t.slug === 'word-counter')!;
 
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Word Counter</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Word Counter Overview &amp; Modern Technical Context</h2>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Paste or type any text into the box. Word count, character count, sentence count, paragraph count, and estimated reading time update instantly as you type. No button to press — results are always live.
+      This word counter computes six distinct text metrics — word count, character count, characters without spaces, sentence count, paragraph count, and estimated reading time — entirely within your browser using vanilla JavaScript. No text data is transmitted to any server, no cookies are set, and no tracking scripts execute during the counting process. The 100% client-side architecture means sensitive drafts, legal documents, academic papers, and confidential copy remain completely private, with zero server latency and zero data retention. The tool is built on standard DOM APIs (<code>String.prototype.split</code>, <code>RegExp</code>) and requires no external dependencies, making it fast enough to recalculate on every keystroke without perceptible delay.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      Paste or type any text into the input area. All six statistics update instantly as you type — there is no submit button and no page reload. The platform limits section below the stats grid displays real-time progress bars against common character limits used by Twitter/X (280), LinkedIn (3,000), SMS (160), and HTML meta titles (60). Each bar is colour-coded: green when within budget, amber when approaching the limit (≥85%), and red when exceeded.
+    </p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>SEO and content marketing:</strong> Digital marketers and SEO professionals must write page titles, meta descriptions, and social media posts within strict character limits. Google typically displays the first 50–60 characters of a title tag in search results, and truncation beyond that reduces click-through rates. This tool provides instant feedback against those thresholds, allowing writers to craft concise, search-optimised copy without guessing whether their text will be truncated.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
+      <strong>Academic and professional writing:</strong> Students, researchers, and professionals frequently work within word count constraints — essays, journal abstracts, grant proposals, and RFP responses all impose limits. The reading time estimate (based on a 200 wpm baseline) helps authors gauge whether their document is appropriately scoped for the intended audience. The sentence and paragraph counts provide structural insight that is useful for editing and readability analysis.
     </p>
     <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      The platform limits bar shows how close your character count is to common social media and SEO character limits. Green means within budget; amber means close; red means over.
+      <strong>Social media management and UX copywriting:</strong> Social media managers juggling multiple platforms need to ensure each post fits within the target platform's limits. SMS marketers must stay within the 160-character GSM limit to avoid splitting messages into multiple segments. UX writers crafting microcopy, error messages, and button labels benefit from the no-spaces character count, which reflects how most UI character counters display remaining length.
     </p>
   </div>
 
   <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How counts are calculated</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">Deep-Dive: Technical Mechanics &amp; Mathematical Logic</h2>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Core Counting Algorithms</h3>
+    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
       <div class="info-row">
         <span class="info-label">Words</span>
         <span class="info-value">Split on whitespace, filter empty tokens</span>
       </div>
       <div class="info-row">
         <span class="info-label">Characters</span>
-        <span class="info-value">Total Unicode code points (includes spaces)</span>
+        <span class="info-value"><code>String.length</code> — all chars including spaces</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Chars (no spaces)</span>
+        <span class="info-value"><code>text.replace(/\s/g, '').length</code></span>
       </div>
       <div class="info-row">
         <span class="info-label">Sentences</span>
-        <span class="info-value">Split on . ! ? terminators</span>
+        <span class="info-value">Split on <code>. ! ?</code> terminators, filter empties</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Paragraphs</span>
+        <span class="info-value">Split on 2+ consecutive newlines, filter empties</span>
       </div>
       <div class="info-row">
         <span class="info-label">Reading time</span>
-        <span class="info-value">Word count ÷ 200 wpm, rounded up</span>
+        <span class="info-value"><code>Math.ceil(words / 200)</code> minutes</span>
       </div>
     </div>
+
+    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">How the Computation Works Step-by-Step</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Word counting:</strong> The algorithm first trims leading and trailing whitespace from the input, then splits the string on one or more whitespace characters using the regular expression <code>\s+</code>. This handles spaces, tabs, newlines, and multiple consecutive whitespace characters uniformly. Each resulting token is passed through <code>filter(Boolean)</code> to discard empty strings that can arise from edge cases such as multiple consecutive spaces. The length of the filtered array is the word count. This approach correctly handles mixed whitespace, leading/trailing spaces, and single-word inputs.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Character counting:</strong> The total character count uses JavaScript's native <code>String.prototype.length</code>, which returns the number of UTF-16 code units. For standard English text this is equivalent to the number of visible characters plus whitespace. The "no spaces" variant strips all whitespace characters (spaces, tabs, newlines) using a global regex replacement before measuring length, providing the count that most platform character limits reference.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Sentence counting:</strong> Sentences are identified by splitting on terminal punctuation — periods, exclamation marks, and question marks — using the regex <code>[.!?]+</code>. The <code>+</code> quantifier handles sequences like <code>...</code> or <code>!?</code> as a single delimiter. Empty tokens are filtered out, which correctly handles inputs with no sentence terminators (producing a count of 1 for a single sentence, or 0 for empty input). Note that abbreviations containing periods (e.g. "Dr.", "U.S.A.") may cause over-splitting; this is a known limitation of regex-based sentence detection without NLP parsing.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Paragraph counting:</strong> Paragraphs are detected by splitting on two or more consecutive newline characters. The regex uses a quantifier to match two or more newlines as a single delimiter. This means a single blank line separates paragraphs, which aligns with standard Markdown and plain-text conventions. A single line break without a blank line between them does not create a new paragraph. Empty entries are filtered out, so leading or trailing blank lines do not inflate the count.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+      <strong>Reading time:</strong> The estimate divides total word count by 200 words per minute — a widely accepted average for silent reading of general-purpose English text. The result is rounded up using <code>Math.ceil()</code> so that any partial minute is reported as a full minute. For reference, average silent reading speeds range from 150 wpm (careful technical reading) to 300+ wpm (skimming). The 200 wpm baseline is deliberately conservative to avoid underestimating reading time for dense content.
+    </p>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+      <strong>Edge cases handled:</strong> The tool correctly handles empty input (all counters display 0), input consisting solely of whitespace (0 words, 0 paragraphs), very long single-line text (1 paragraph), text with only punctuation, and text containing a mix of line endings (<code>\n</code>, <code>\r\n</code>). All computations execute synchronously on the main thread, which is safe for inputs up to approximately 500,000 characters without blocking the UI.
+    </p>
   </div>
 
   <!-- FAQ ─────────────────────────────────────── -->
@@ -130,19 +171,27 @@ const tool = tools.find(t => t.slug === 'word-counter')!;
       {[
         {
           q: "Does this word counter count hyphenated words as one or two?",
-          a: "Hyphenated words (e.g. well-known) are counted as a single word because they are separated by a hyphen, not whitespace. If you want to count each part separately, replace hyphens with spaces before pasting."
+          a: "Hyphenated words (e.g. well-known, state-of-the-art) are counted as a single word because the splitting regex splits on whitespace, not hyphens. A hyphen is treated as part of the word token. If you need to count each component separately, replace hyphens with spaces before pasting your text. This behaviour is consistent with most professional word processors including Microsoft Word and Google Docs."
         },
         {
           q: "How is reading time calculated?",
-          a: "Reading time is estimated at 200 words per minute, which is a conservative average for general text comprehension. Academic or technical text is typically read at 100–150 wpm; quick skimming can reach 300 wpm or more."
+          a: "Reading time is estimated at 200 words per minute, which is a conservative average for general English text comprehension based on meta-analyses of adult reading speed research. Academic or technical content is typically read at 100–150 wpm, while quick skimming can reach 300 wpm or more. The result is always rounded up to the nearest whole minute using Math.ceil(), so even a brief paragraph will show at least 1 minute of reading time. This ensures the estimate never underestimates the time commitment."
         },
         {
           q: "Does the character count include spaces?",
-          a: "The main character count includes all characters including spaces. A separate 'Characters (no spaces)' count is provided, which is what most social media platforms use when displaying remaining character counts."
+          a: "Yes — the main 'Characters' count includes all characters including spaces, tabs, and newline characters. A separate 'Chars (no spaces)' count is provided, which strips all whitespace before measuring. Most social media platforms (Twitter/X, LinkedIn, Facebook) and SMS character limits reference the no-spaces count, so use that metric when checking against platform constraints. The meta title bar also uses the no-spaces count, matching how Google measures title length."
         },
         {
           q: "How do I check my text against SEO title length limits?",
-          a: "Use the Meta title bar in the platform limits section. Google typically displays the first 50–60 characters of a page title in search results — the bar turns red when you exceed 60 characters."
+          a: "Use the 'Meta title' progress bar in the platform limits section. Google typically displays the first 50–60 characters of a page title in search results, and truncates beyond that with an ellipsis. The bar turns amber at 85% of the 60-character limit (51 characters) and red when you exceed 60 characters. For optimal click-through rates, aim to keep your title under 60 characters while including the primary keyword near the beginning."
+        },
+        {
+          q: "Why does the sentence count sometimes seem wrong?",
+          a: "The sentence counter uses a regex-based approach, splitting on periods, exclamation marks, and question marks. This means abbreviations containing periods (e.g. 'Dr.', 'U.S.A.', 'e.g.') can cause the counter to over-split, reporting more sentences than a human reader would identify. Similarly, sentences ending with multiple punctuation marks (e.g. 'Wow!!!') are still counted as a single sentence because the regex treats consecutive terminators as one delimiter. For precise sentence-level analysis, manual review remains necessary — this is a known limitation of all non-NLP sentence counters."
+        },
+        {
+          q: "Is my text stored or sent anywhere?",
+          a: "No. All counting happens entirely in your browser using client-side JavaScript. Your text never leaves your device — there are no server requests, no analytics tracking the content of your input, and no cookies or local storage used to persist your text. When you close the tab or click Clear, the text is permanently gone. This makes the tool suitable for counting words in confidential documents, legal contracts, medical records, or any sensitive material."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
