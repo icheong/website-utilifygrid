@@ -266,25 +266,24 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
 
   <!-- ═══ HOW TO USE ═══ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Crontab Visualizer</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Use the five field sections — <strong style="color:var(--text-primary);">Minutes, Hours, Day of Month, Month,</strong> and <strong style="color:var(--text-primary);">Day of Week</strong> — to build your schedule. Each field has four modes: run on every unit, pick specific values, define a range, or set an "every N" step.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The cron expression at the top updates in real time, and the blue banner below it translates your settings into plain English. Click <strong style="color:var(--text-primary);">Copy</strong> to copy the expression to your clipboard, or pick one of the <strong style="color:var(--text-primary);">Common schedules</strong> buttons to jump straight to a standard setup like "Every weekday at 9am".
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      The <strong style="color:var(--text-primary);">Next 5 scheduled runs</strong> panel shows the actual upcoming dates and times your expression would trigger, so you can verify the schedule looks right before deploying it.
-    </p>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Crontab Expression Visualizer — Build, Preview & Copy Cron Schedules</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The <strong style="color:var(--text-primary);">Crontab Expression Visualizer</strong> is a free, browser-based scheduler builder that lets you construct, preview, and copy cron expressions without memorising syntax. Use the five field sections — <strong style="color:var(--text-primary);">Minutes, Hours, Day of Month, Month,</strong> and <strong style="color:var(--text-primary);">Day of Week</strong> — to build your schedule. Each field offers four modes: <em>every</em> (wildcard), <em>specific</em> (single value slider), <em>range</em> (from–to), or <em>every N</em> (step). The live cron expression at the top updates instantly, and a plain-English banner translates your settings so you can verify the intent before copying. Click <strong style="color:var(--text-primary);">Copy</strong> to grab the expression, pick one of the <strong style="color:var(--text-primary);">Common schedules</strong> buttons (Every weekday at 9am, Daily midnight, etc.), or check the <strong style="color:var(--text-primary);">Next 5 scheduled runs</strong> panel to see the real upcoming trigger dates. Everything runs locally — no server, no data sent.</p>
   </div>
 
   <!-- ═══ HOW IT WORKS ═══ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Cron expression format</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:1rem;">
-      A standard cron expression has five space-separated fields, each controlling a time unit. The scheduler runs a job when the current time matches all five fields simultaneously.
-    </p>
-    <div style="overflow-x:auto; margin-bottom:1rem;">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Deep-Dive: Cron Expression Format & Scheduling Logic</h2>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;">The Five-Field Standard</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">A standard cron expression consists of five space-separated fields — Minute (0–59), Hour (0–23), Day of Month (1–31), Month (1–12), and Day of Week (0–6, Sun=0) — evaluated left-to-right by the cron daemon. The scheduler fires a job only when the current time satisfies all five fields simultaneously. Each field supports four operators: <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*</code> (any value), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">,</code> (list: 1,3,5), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">-</code> (range: 9-17), and <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">/</code> (step: */5 or 0/15). When both day-of-month and day-of-week are non-wildcard, most implementations use OR logic — the job runs if either condition matches.</p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;">Step-by-Step Expression Builder</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">This tool provides a visual mode selector for each field. Choosing "Every" emits <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*</code>; "Specific" outputs a single numeric token; "Range" produces <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">from-to</code>; and "Every N" emits <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*/N</code>. The five tokens are concatenated with spaces to form a valid expression. The human-readable description is built by mapping each field's mode to a natural-language phrase ("at 9:00am", "every 15 minutes", "on weekdays"). The copy button writes the expression to the system clipboard via the <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">navigator.clipboard</code> API.</p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;">Next-Runs Preview Algorithm</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The preview engine starts at the current time plus one minute and iterates forward minute-by-minute (up to 200,000 iterations), testing each candidate against the five tokens. Each token is parsed independently: <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*</code> always matches; <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*/N</code> checks <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">value % N === 0</code>; ranges check <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">value >= a &amp;&amp; value <= b</code>; lists split on comma and test inclusion. The day-of-month / day-of-week OR logic is applied in the match function. The first five matching timestamps are returned and formatted with <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">toLocaleString()</code> for locale-aware display. All computation runs in the browser with zero network requests.</p>
+
+    <div style="overflow-x:auto; margin:1rem 0;">
       <table style="width:100%; border-collapse:collapse; font-size:0.84rem;">
         <thead>
           <tr style="background:var(--bg-surface-2);">
@@ -312,6 +311,7 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
         </tbody>
       </table>
     </div>
+
     <div style="display:flex; flex-direction:column; gap:0.625rem;">
       {[
         ['*',   'Any / every value in this field'],
@@ -329,6 +329,55 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
 
   <!-- ═══ FAQ ═══ -->
   <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is a cron job?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A cron job is a scheduled task on Unix-like systems, managed by the cron daemon. It runs a command or script automatically at a defined time interval — for example, every night at midnight, every Monday morning, or every five minutes. Cron is used for backups, report generation, data syncing, cache clearing, and many other recurring automation tasks." }
+        },
+        {
+          "@type": "Question",
+          "name": "What does * * * * * mean?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Five asterisks mean 'match every value in every field' — so the job runs every minute of every hour of every day. It is the most permissive schedule possible and is rarely used in production. It is the default starting point in this tool." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I run a job every 5 minutes?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Use */5 in the minute field: */5 * * * *. The / character is a step operator — */5 means 'starting at 0, every 5 units'. This produces runs at :00, :05, :10, :15, and so on throughout the day." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I run a job at 9am on weekdays only?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Use 0 9 * * 1-5. The 0 9 sets the time to exactly 9:00am. The * * leaves day-of-month and month unrestricted. The 1-5 restricts day-of-week to Monday (1) through Friday (5)." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between day-of-month and day-of-week?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Day-of-month (3rd field) matches calendar dates — e.g. the 1st, 15th, or last day of each month. Day-of-week (5th field) matches named days — Monday through Sunday. When both are set to non-wildcard values, most cron implementations run the job if EITHER condition matches (OR logic), not only when both match. Use * in one field to avoid ambiguity." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can cron run more frequently than once a minute?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Standard cron has a one-minute resolution — it cannot schedule sub-minute intervals. For sub-minute scheduling, you need a different tool: a loop inside a script, a systemd timer with a finer interval, or a task queue like Celery or Bull. Some cloud schedulers (AWS EventBridge, GitHub Actions) also support 1-minute minimum." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this tool support extended cron syntax like @reboot?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No — this visualizer generates standard five-field expressions only. Extended syntax (@reboot, @yearly, @monthly, @weekly, @daily, @hourly) is a convenience shorthand supported by some cron implementations (Vixie cron, systemd) but not universally. You can type those shorthands directly into crontab, but this tool outputs the expanded numeric form." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do some months have fewer than 31 days?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Cron does not validate day-of-month values against the actual month length. If you schedule a job for day 31, it will simply never run in months with fewer than 31 days (Feb, Apr, Jun, Sep, Nov). The tool's next-runs preview correctly skips non-matching dates, so you can see this behavior before deploying." }
+        }
+      ]
+    }
+    </script>
+
     <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
@@ -355,6 +404,14 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
         {
           q: 'Can cron run more frequently than once a minute?',
           a: 'Standard cron has a one-minute resolution — it cannot schedule sub-minute intervals. For sub-minute scheduling, you need a different tool: a loop inside a script, a systemd timer with a finer interval, or a task queue like Celery or Bull. Some cloud schedulers (AWS EventBridge, GitHub Actions) also support 1-minute minimum.',
+        },
+        {
+          q: 'Does this tool support extended cron syntax like @reboot?',
+          a: 'No — this visualizer generates standard five-field expressions only. Extended syntax (@reboot, @yearly, @monthly, @weekly, @daily, @hourly) is a convenience shorthand supported by some cron implementations (Vixie cron, systemd) but not universally. You can type those shorthands directly into crontab, but this tool outputs the expanded numeric form.',
+        },
+        {
+          q: 'Why do some months have fewer than 31 days?',
+          a: 'Cron does not validate day-of-month values against the actual month length. If you schedule a job for day 31, it will simply never run in months with fewer than 31 days (Feb, Apr, Jun, Sep, Nov). The tool\'s next-runs preview correctly skips non-matching dates, so you can see this behavior before deploying.',
         },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

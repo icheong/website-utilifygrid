@@ -1,0 +1,969 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+const tool = tools.find(t => t.slug === 'regex-toolkit')!;
+---
+
+<ToolLayout tool={tool}>
+
+  <!-- ═══ INTERACTIVE TOOL ═══ -->
+  <div slot="tool">
+
+    <!-- Tab bar -->
+    <div style="display:flex; gap:0; margin-bottom:1.25rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.3rem; width:fit-content;">
+      <button class="rtab active" data-tab="visualize">Visualize</button>
+      <button class="rtab" data-tab="extract">Extract</button>
+      <button class="rtab" data-tab="replace">Find &amp; Replace</button>
+    </div>
+
+    <!-- ═══ SHARED ZONE (Visualize & Extract) ═══ -->
+    <div id="zone-shared">
+      <!-- Pattern input -->
+      <div style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem;">
+        <label for="rt-pattern" style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;">Regular Expression</label>
+        <div style="display:flex;align-items:center;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.6rem;overflow:hidden;">
+          <span style="padding:.6rem .75rem;font-family:'Fira Code',monospace;font-size:1rem;color:var(--text-muted);border-right:1px solid var(--border);user-select:none;">/</span>
+          <input id="rt-pattern" type="text" class="input-themed" value="^(\\w+)\\s+(foo|bar)\\s*$"
+            style="flex:1;border:none;border-radius:0;background:transparent;font-family:'Fira Code',monospace;font-size:.95rem;padding:.6rem .5rem;"
+            placeholder="e.g. \\b\\d{4}\\b" autocomplete="off" spellcheck="false" aria-label="Regular expression pattern">
+          <span style="padding:.6rem .75rem;font-family:'Fira Code',monospace;font-size:1rem;color:var(--text-muted);border-left:1px solid var(--border);user-select:none;">/</span>
+          <div style="display:flex;gap:2px;padding:.4rem .6rem;border-left:1px solid var(--border);">
+            <button id="rt-flag-g" class="flag-btn active" title="Global" aria-pressed="true">g</button>
+            <button id="rt-flag-i" class="flag-btn" title="Case insensitive" aria-pressed="false">i</button>
+            <button id="rt-flag-m" class="flag-btn" title="Multiline" aria-pressed="false">m</button>
+            <button id="rt-flag-s" class="flag-btn" title="Dot-all" aria-pressed="false">s</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error banner -->
+      <div id="rt-error" style="display:none;padding:.6rem 1rem;border-radius:.5rem;background:color-mix(in srgb,#ef4444 12%,transparent);border:1px solid color-mix(in srgb,#ef4444 30%,transparent);color:#f87171;font-family:'Fira Code',monospace;font-size:.85rem;margin-bottom:.75rem;"></div>
+
+      <!-- Test string -->
+      <div style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem;">
+        <label for="rt-test" style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;">Test String</label>
+        <textarea id="rt-test" class="input-themed ctrl-select"
+          style="font-family:'Fira Code',monospace;font-size:.9rem;resize:vertical;min-height:80px;padding:.65rem .85rem;line-height:1.6;"
+          placeholder="Paste a string to test against the regex..."
+          spellcheck="false">hello foo
+world bar
+test baz</textarea>
+      </div>
+
+      <!-- Match summary -->
+      <div id="rt-summary" style="font-size:.85rem;color:var(--text-muted);min-height:1.4em;margin-bottom:.75rem;"></div>
+
+      <!-- Highlighted output -->
+      <div>
+        <div style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem;">Match Highlights</div>
+        <div id="rt-highlight"
+          style="font-family:'Fira Code',monospace;font-size:.9rem;line-height:1.8;padding:.85rem 1rem;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.6rem;min-height:60px;white-space:pre-wrap;word-break:break-all;color:var(--text-primary);">
+          Enter a pattern to see matches highlighted here.
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ VISUALIZE OUTPUT ═══ -->
+    <div id="zone-visualize" style="margin-top:1rem;">
+      <!-- Token Breakdown -->
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.75rem;">Token Breakdown</div>
+        <div id="rt-token-flow" style="display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;min-height:48px;">
+          <span style="color:var(--text-muted);font-size:.875rem;">Parse a regex above to see the token breakdown.</span>
+        </div>
+      </div>
+
+      <!-- Capture Groups -->
+      <div id="rt-groups-section" style="display:none;">
+        <div style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem;">Capture Groups</div>
+        <div style="overflow-x:auto;">
+          <table id="rt-groups-table" style="width:100%;border-collapse:collapse;font-size:.85rem;">
+            <thead>
+              <tr style="background:var(--bg-surface-2);">
+                <th style="padding:.5rem .85rem;text-align:left;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);">Group</th>
+                <th style="padding:.5rem .85rem;text-align:left;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);">Pattern</th>
+                <th style="padding:.5rem .85rem;text-align:left;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);">Match #1</th>
+                <th style="padding:.5rem .85rem;text-align:left;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);">Match #2</th>
+                <th style="padding:.5rem .85rem;text-align:left;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);">Match #3</th>
+              </tr>
+            </thead>
+            <tbody id="rt-groups-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ EXTRACT OUTPUT ═══ -->
+    <div id="zone-extract" style="display:none;margin-top:1rem;">
+      <div style="display:flex;gap:0.75rem;margin-bottom:.875rem;">
+        <div style="padding:.75rem 1.25rem;background:var(--bg-surface-2);border:1.5px solid var(--border);border-radius:0.625rem;">
+          <span id="rt-ext-count" style="font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:700;color:var(--text-primary);">0</span>
+          <span style="font-size:.75rem;font-weight:600;color:var(--text-secondary);margin-left:.35rem;text-transform:uppercase;letter-spacing:.04em;">Matches</span>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;">
+          <div style="font-size:.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;">Extracted Matches</div>
+          <button id="rt-btn-copy-matches" style="font-size:.68rem;color:var(--text-primary);background:none;border:none;cursor:pointer;font-weight:700;padding:0;font-family:'Fira Code',monospace;transition:opacity .15s;" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">copy</button>
+        </div>
+        <div id="rt-matches-list" style="display:flex;flex-wrap:wrap;gap:.375rem;"></div>
+      </div>
+    </div>
+
+    <!-- ═══ REPLACE ZONE ═══ -->
+    <div id="zone-replace" style="display:none;">
+      <div style="display:grid;grid-template-columns:300px 1fr;gap:.875rem;margin-bottom:1rem;" class="rt-rbr-grid">
+
+        <!-- LEFT: Rules panel -->
+        <div style="display:flex;flex-direction:column;gap:0;min-width:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;">
+            <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);">Rules</span>
+            <button id="rt-btn-add-rule"
+              style="display:flex;align-items:center;gap:.3rem;padding:.25rem .6rem;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.375rem;font-size:.72rem;font-weight:700;color:var(--text-primary);cursor:pointer;font-family:'Fira Code',monospace;transition:all .15s;">
+              + Add rule
+            </button>
+          </div>
+          <div id="rt-rules-list" style="display:flex;flex-direction:column;gap:.5rem;max-height:380px;overflow-y:auto;padding-right:.125rem;"></div>
+          <div style="margin-top:.875rem;">
+            <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text-muted);margin-bottom:.4rem;">Quick presets</div>
+            <div style="display:flex;flex-direction:column;gap:.3rem;" id="rt-presets-list"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Editor panel -->
+        <div style="display:flex;flex-direction:column;min-width:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;flex-wrap:wrap;gap:.5rem;">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+              <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);">Editor</span>
+              <div style="display:flex;gap:0;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.375rem;overflow:hidden;">
+                <button id="rt-mode-source" class="rt-editor-mode active">source</button>
+                <button id="rt-mode-result" class="rt-editor-mode">result</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <span id="rt-rbr-match-count" style="font-size:.68rem;font-family:'Fira Code',monospace;color:var(--text-primary);font-weight:700;"></span>
+              <button id="rt-btn-load-sample" style="font-size:.68rem;color:var(--text-primary);background:none;border:none;cursor:pointer;font-weight:700;padding:0;font-family:'Fira Code',monospace;">sample</button>
+              <button id="rt-btn-clear-editor" style="font-size:.68rem;color:var(--text-muted);background:none;border:none;cursor:pointer;font-weight:700;padding:0;font-family:'Fira Code',monospace;">clear</button>
+            </div>
+          </div>
+          <div style="position:relative;flex:1;">
+            <textarea id="rt-source-editor"
+              placeholder="Paste your text here. Add regex rules on the left — matches light up as you type."
+              style="width:100%;height:360px;box-sizing:border-box;resize:vertical;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.625rem;padding:.875rem;font-family:'Fira Code',monospace;font-size:.78rem;color:var(--text-primary);line-height:1.7;outline:none;transition:border-color .15s;display:block;"></textarea>
+            <div id="rt-highlight-overlay" aria-hidden="true"
+              style="position:absolute;inset:0;pointer-events:none;padding:.875rem;font-family:'Fira Code',monospace;font-size:.78rem;line-height:1.7;white-space:pre-wrap;word-break:break-all;overflow:hidden;border-radius:.625rem;color:transparent;display:none;"></div>
+          </div>
+          <div id="rt-result-panel" style="display:none;flex-direction:column;gap:.4rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text-muted);">Output</span>
+              <button id="rt-btn-copy-result" style="font-size:.68rem;color:var(--text-primary);background:none;border:none;cursor:pointer;font-weight:700;padding:0;font-family:'Fira Code',monospace;">copy</button>
+            </div>
+            <textarea id="rt-result-output" readonly
+              style="width:100%;height:360px;box-sizing:border-box;resize:vertical;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.625rem;padding:.875rem;font-family:'Fira Code',monospace;font-size:.78rem;color:var(--text-primary);line-height:1.7;outline:none;cursor:default;display:block;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats footer -->
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <div id="rt-stats-box" style="display:flex;gap:.875rem;padding:.5rem .875rem;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.5rem;font-family:'Fira Code',monospace;font-size:.7rem;flex-wrap:wrap;">
+          <span>chars: <span id="rt-s-chars" style="color:var(--text-primary);">0</span></span>
+          <span>lines: <span id="rt-s-lines" style="color:var(--text-primary);">0</span></span>
+          <span>rules: <span id="rt-s-rules" style="color:var(--text-primary);">0</span></span>
+          <span>matches: <span id="rt-s-matches" style="color:var(--text-primary);">0</span></span>
+          <span>replacements: <span id="rt-s-replacements" style="color:var(--text-primary);">0</span></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ HOW TO USE ═══ -->
+  <div slot="how-to-use">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">RegEx Toolkit — Visualize, Extract &amp; Find-and-Replace in One Tool</h2>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The <strong style="color:var(--text-primary);">RegEx Toolkit</strong> is a browser-based developer tool that combines three essential regex workflows into a single interface. Type any JavaScript-compatible regular expression into the shared pattern field, toggle flags (<code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">g</code> global, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">i</code> case-insensitive, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">m</code> multiline, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">s</code> dot-all), and switch between three tabs: <strong style="color:var(--text-primary);">Visualize</strong> shows a token-by-token breakdown of your regex structure plus a capture groups table; <strong style="color:var(--text-primary);">Extract</strong> highlights matches and renders them as a chip list for quick scanning; <strong style="color:var(--text-primary);">Find &amp; Replace</strong> lets you stack multiple regex rules into an ordered pipeline with colour-coded highlights, back-reference substitution, and a source/result toggle. All processing runs entirely in your browser — zero server requests, complete privacy.</p>
+  </div>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div slot="how-it-works">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Deep-Dive: How the RegEx Toolkit Engine Works</h2>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;">Hand-Written Finite-State Tokenizer (Visualize Mode)</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The Visualize tab uses a hand-written finite-state machine (no external regex library) that walks the input pattern character-by-character, tracking bracket depth, escape sequences, and lookahead context to classify every component into one of eleven token types: anchor, literal, class, quantifier, group, namedgroup, ncgroup, alternation, lookahead, escape, and dot. The tokenizer correctly handles nested groups by maintaining a depth counter, identifies quantifiers (<code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*</code>, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">+</code>, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">?</code>, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">&#123;n,m&#125;</code>) including lazy modifiers, and distinguishes capturing groups, non-capturing groups, named groups, and lookaheads/lookbehinds.</p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;">Real-Time Match Highlighting &amp; Extraction</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">All three modes use the browser's native <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">RegExp</code> engine (ECMAScript standard). The text is scanned via <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">matchAll()</code> when the global flag is active, or <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">exec()</code> otherwise; result indices are spliced into <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">&lt;mark&gt;</code> elements for instant visual feedback. Capture group extraction iterates each MatchResult, pulling numbered sub-groups (and named groups via <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">m.groups</code>) for the first three matches. Extract mode renders each match as a styled chip for quick scanning.</p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;">Multi-Rule Pipeline (Find &amp; Replace Mode)</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The Replace tab supports stacking multiple regex rules, each with its own pattern, replacement, and flags. Rules execute in order — the output of rule N becomes the input of rule N+1. Each rule is assigned a unique highlight colour for the overlay. Replacements support back-references: <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">$1</code>, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">$2</code> for numbered groups, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">$&lt;name&gt;</code> for named groups, and special tokens <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">$&amp;</code> (whole match), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">$`</code> (pre-match), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">$'</code> (post-match). Quick presets load common transformations (strip HTML, collapse whitespace, etc.) as ready-to-use rules.</p>
+
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;">Token Rendering &amp; Scroll-Synced Overlay</h3>
+    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Each token from the Visualize tokenizer carries <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">&#123; text, type, description &#125;</code>. The renderer maps the type to a CSS class that applies a distinct colour scheme, appends a small uppercase label, and joins chips with arrow connectors. In Replace mode, a positioned overlay div sits on top of the textarea, syncing scroll position to display colour-coded highlights without modifying the editable text. All processing happens client-side with zero network requests.</p>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <div slot="faq">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What regex flavour does this tool use?",
+          "acceptedAnswer": { "@type": "Answer", "text": "JavaScript's built-in ECMAScript regex engine — the same one in Chrome, Firefox, and Safari. Supports lookaheads, lookbehinds, named capture groups, and Unicode property escapes. PCRE-specific syntax like (?P<name>) or possessive quantifiers is not supported." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between the three tabs?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Visualize parses your regex into a colour-coded token breakdown and shows a capture groups table. Extract highlights matches in the text and lists them as chips. Find & Replace lets you stack multiple regex rules with ordered pipeline execution, colour-coded highlights, and back-reference substitution." }
+        },
+        {
+          "@type": "Question",
+          "name": "What does the s (dot-all) flag do?",
+          "acceptedAnswer": { "@type": "Answer", "text": "By default, the dot metacharacter matches any character except newline. With the s flag enabled, dot matches every character including newlines, which is essential for matching patterns that span multiple lines." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a capture group?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A capture group is a section of a regex wrapped in parentheses. It groups the enclosed pattern so quantifiers apply to it as a unit, and captures the matched text so you can extract it programmatically. The Capture Groups table in Visualize mode shows what each group matched across the first three matches." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I use back-references in Find & Replace?",
+          "acceptedAnswer": { "@type": "Answer", "text": "In the replacement field, use $1, $2, etc. to refer to text captured by numbered parentheses in your pattern. Use $<name> for named groups. Special tokens: $&amp; is the whole match, $` is text before the match, $' is text after. These follow the standard String.prototype.replace() substitution patterns." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can rules conflict with each other in Find & Replace?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, and that is often intentional. Rules run in order, so the output of one feeds the next. If two rules match the same text, the first rule wins on the source text; the second sees the already-replaced output. Use the rule order to control execution priority." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does my regex show 'Invalid regular expression'?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Common causes: unmatched parentheses or brackets, an unescaped special character used as a literal, an invalid escape sequence, or a variable-length lookbehind in older engines. The error banner displays the exact engine error message to help you debug." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do greedy and lazy quantifiers differ?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A greedy quantifier (*, +, &#123;2,5&#125;) matches as much text as possible before backtracking. A lazy quantifier (*?, +?, &#123;2,5&#125;?) matches as little as possible. The Visualize tab labels each quantifier as (greedy) or (lazy) in the token breakdown so you can see the matching strategy at a glance." }
+        }
+      ]
+    }
+    </script>
+
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        {
+          q: 'What regex flavour does this tool use?',
+          a: "JavaScript's ECMAScript regex engine — the same one in Chrome, Firefox, and Safari. Supports lookaheads, lookbehinds, named capture groups, and Unicode property escapes. PCRE-specific syntax like (?P<name>) or possessive quantifiers is not supported.",
+        },
+        {
+          q: 'What is the difference between the three tabs?',
+          a: 'Visualize parses your regex into a colour-coded token breakdown and shows a capture groups table. Extract highlights matches in the text and lists them as chips. Find & Replace lets you stack multiple regex rules with ordered pipeline execution, colour-coded highlights, and back-reference substitution.',
+        },
+        {
+          q: "What does the s (dot-all) flag do?",
+          a: "By default, the dot metacharacter matches any character except newline. With the s flag enabled, dot matches every character including newlines — essential for patterns that span multiple lines.",
+        },
+        {
+          q: 'What is a capture group?',
+          a: 'A capture group is a section of a regex wrapped in parentheses. It groups the enclosed pattern so quantifiers apply to it as a unit, and captures the matched text so you can extract it programmatically. The Capture Groups table in Visualize mode shows what each group matched across the first three matches.',
+        },
+        {
+          q: 'How do I use back-references in Find & Replace?',
+          a: 'In the replacement field, use $1, $2, etc. to refer to text captured by numbered parentheses. Use $<name> for named groups. Special tokens: $& is the whole match, $` is text before, $\' is text after. These follow the standard String.prototype.replace() patterns.',
+        },
+        {
+          q: 'Can rules conflict with each other in Find & Replace?',
+          a: 'Yes, and that is often intentional. Rules run in order, so the output of one feeds the next. If two rules match the same text, the first rule wins on the source text; the second sees the already-replaced output. Use the rule order to control execution priority.',
+        },
+        {
+          q: 'Why does my regex show "Invalid regular expression"?',
+          a: 'Common causes: unmatched parentheses or brackets, an unescaped special character used as a literal, an invalid escape sequence, or a variable-length lookbehind in older engines. The error banner displays the exact engine error message to help you debug.',
+        },
+        {
+          q: 'How do greedy and lazy quantifiers differ?',
+          a: 'A greedy quantifier (*, +, &#123;2,5&#125;) matches as much text as possible before backtracking. A lazy quantifier (*?, +?, &#123;2,5&#125;?) matches as little as possible. The Visualize tab labels each quantifier as (greedy) or (lazy) in the token breakdown.',
+        },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
+          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  /* Tab buttons */
+  .rtab {
+    font-family: 'Inter', sans-serif;
+    font-size: .82rem;
+    font-weight: 600;
+    padding: .5rem 1.1rem;
+    border-radius: .55rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .rtab.active {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .rtab:hover:not(.active) { color: var(--text-secondary); }
+
+  /* Flag toggle buttons */
+  .flag-btn {
+    font-family: 'Fira Code', monospace;
+    font-size: .8rem;
+    font-weight: 700;
+    width: 24px;
+    height: 24px;
+    border-radius: .3rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flag-btn.active {
+    background: color-mix(in srgb, #6366f1 20%, transparent);
+    border-color: #6366f1;
+    color: #a5b4fc;
+  }
+
+  /* Token chip colours */
+  .token-chip {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: .35rem .6rem;
+    border-radius: .45rem;
+    font-family: 'Fira Code', monospace;
+    font-size: .85rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    position: relative;
+  }
+  .token-chip .chip-label {
+    font-family: 'Inter', sans-serif;
+    font-size: .6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    opacity: .75;
+  }
+  .token-arrow {
+    color: var(--text-muted);
+    font-size: .75rem;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .chip-anchor    { background:color-mix(in srgb,#f59e0b 15%,transparent); border-color:color-mix(in srgb,#f59e0b 40%,transparent); color:#fcd34d; }
+  .chip-literal   { background:color-mix(in srgb,#94a3b8 12%,transparent); border-color:color-mix(in srgb,#94a3b8 30%,transparent); color:#cbd5e1; }
+  .chip-class     { background:color-mix(in srgb,#10b981 15%,transparent); border-color:color-mix(in srgb,#10b981 35%,transparent); color:#6ee7b7; }
+  .chip-quantifier{ background:color-mix(in srgb,#8b5cf6 15%,transparent); border-color:color-mix(in srgb,#8b5cf6 35%,transparent); color:#c4b5fd; }
+  .chip-group     { background:color-mix(in srgb,#3b82f6 15%,transparent); border-color:color-mix(in srgb,#3b82f6 35%,transparent); color:#93c5fd; }
+  .chip-namedgroup{ background:color-mix(in srgb,#06b6d4 15%,transparent); border-color:color-mix(in srgb,#06b6d4 35%,transparent); color:#67e8f9; }
+  .chip-ncgroup   { background:color-mix(in srgb,#64748b 15%,transparent); border-color:color-mix(in srgb,#64748b 30%,transparent); color:#94a3b8; }
+  .chip-alternation{background:color-mix(in srgb,#f43f5e 15%,transparent); border-color:color-mix(in srgb,#f43f5e 35%,transparent); color:#fca5a5; }
+  .chip-lookahead { background:color-mix(in srgb,#f97316 15%,transparent); border-color:color-mix(in srgb,#f97316 35%,transparent); color:#fdba74; }
+  .chip-escape    { background:color-mix(in srgb,#84cc16 15%,transparent); border-color:color-mix(in srgb,#84cc16 30%,transparent); color:#bef264; }
+  .chip-dot       { background:color-mix(in srgb,#e879f9 15%,transparent); border-color:color-mix(in srgb,#e879f9 35%,transparent); color:#f0abfc; }
+
+  /* Match highlight */
+  mark.rt-match {
+    background: color-mix(in srgb, #6366f1 35%, transparent);
+    color: inherit;
+    border-radius: 2px;
+    outline: 1px solid #6366f1;
+  }
+
+  /* Groups table */
+  #rt-groups-table td {
+    padding: .45rem .85rem;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-size: .82rem;
+    vertical-align: top;
+  }
+  #rt-groups-table tr:nth-child(even) td { background: var(--bg-surface-2); }
+
+  /* Editor mode toggle */
+  .rt-editor-mode {
+    padding: .2rem .6rem;
+    border: none;
+    font-size: .68rem;
+    font-weight: 700;
+    font-family: 'Fira Code', monospace;
+    cursor: pointer;
+    transition: all .15s;
+    background: transparent;
+    color: var(--text-muted);
+  }
+  .rt-editor-mode.active {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  /* Replace grid responsive */
+  @media (max-width: 780px) {
+    .rt-rbr-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+<script>
+(function () {
+  // ══════════════════════════════════════════════════════════
+  // SHARED STATE
+  // ══════════════════════════════════════════════════════════
+  let activeTab: 'visualize' | 'extract' | 'replace' = 'visualize';
+  const flagState = { g: true, i: false, m: false, s: false };
+
+  // DOM refs — shared
+  const inpPattern = document.getElementById('rt-pattern') as HTMLInputElement;
+  const inpTest    = document.getElementById('rt-test') as HTMLTextAreaElement;
+  const errorEl    = document.getElementById('rt-error')!;
+  const summaryEl  = document.getElementById('rt-summary')!;
+  const hlOutput   = document.getElementById('rt-highlight')!;
+  const flagBtns   = document.querySelectorAll('.flag-btn');
+
+  // Tab zones
+  const zoneShared   = document.getElementById('zone-shared')!;
+  const zoneVisualize = document.getElementById('zone-visualize')!;
+  const zoneExtract   = document.getElementById('zone-extract')!;
+  const zoneReplace   = document.getElementById('zone-replace')!;
+
+  // Visualize refs
+  const tokenFlow  = document.getElementById('rt-token-flow')!;
+  const groupsSec  = document.getElementById('rt-groups-section')!;
+  const groupsBody = document.getElementById('rt-groups-body')!;
+
+  // Extract refs
+  const extCount    = document.getElementById('rt-ext-count')!;
+  const matchesList = document.getElementById('rt-matches-list')!;
+
+  // Copy matches button
+  document.getElementById('rt-btn-copy-matches')!.addEventListener('click', () => {
+    const chips = matchesList.querySelectorAll('code');
+    if (!chips.length) return;
+    const text = Array.from(chips).map(c => c.textContent).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('rt-btn-copy-matches')!;
+      btn.textContent = '✓ copied';
+      setTimeout(() => { btn.textContent = 'copy'; }, 2000);
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // TAB SWITCHING
+  // ══════════════════════════════════════════════════════════
+  document.querySelectorAll('.rtab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTab = (btn as HTMLElement).dataset.tab as any;
+      document.querySelectorAll('.rtab').forEach(b => b.classList.toggle('active', b === btn));
+      zoneShared.style.display   = activeTab === 'replace' ? 'none' : 'block';
+      zoneVisualize.style.display = activeTab === 'visualize' ? 'block' : 'none';
+      zoneExtract.style.display   = activeTab === 'extract' ? 'block' : 'none';
+      zoneReplace.style.display   = activeTab === 'replace' ? 'block' : 'none';
+      update();
+    });
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // SHARED: FLAGS
+  // ══════════════════════════════════════════════════════════
+  flagBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const f = (btn as HTMLElement).id.replace('rt-flag-', '');
+      (flagState as any)[f] = !(flagState as any)[f];
+      btn.classList.toggle('active', (flagState as any)[f]);
+      btn.setAttribute('aria-pressed', String((flagState as any)[f]));
+      update();
+    });
+  });
+
+  function buildFlags(): string {
+    return Object.entries(flagState).filter(([,v]) => v).map(([k]) => k).join('');
+  }
+
+  function buildRegex(pattern: string): RegExp | null {
+    const flags = buildFlags();
+    try {
+      const re = new RegExp(pattern, flags);
+      errorEl.style.display = 'none';
+      return re;
+    } catch (e: any) {
+      errorEl.textContent = '⚠ ' + e.message;
+      errorEl.style.display = 'block';
+      return null;
+    }
+  }
+
+  function escHtml(s: string): string {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function escAttr(s: string): string {
+    return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // SHARED: HIGHLIGHT MATCHES
+  // ══════════════════════════════════════════════════════════
+  function getMatches(re: RegExp | null, text: string): RegExpMatchArray[] {
+    if (!re) return [];
+    const flags = re.flags.includes('g') ? re.flags : re.flags + 'g';
+    let globalRe: RegExp;
+    try { globalRe = new RegExp(re.source, flags); } catch { return []; }
+    return [...text.matchAll(globalRe)];
+  }
+
+  function highlightMatches(re: RegExp | null, text: string): number {
+    if (!re) {
+      hlOutput.textContent = text || 'Enter a pattern to see matches highlighted here.';
+      summaryEl.textContent = '';
+      return 0;
+    }
+    const matches = getMatches(re, text);
+    if (!matches.length) {
+      hlOutput.textContent = text || '';
+      summaryEl.textContent = text ? '0 matches' : '';
+      summaryEl.style.color = 'var(--text-muted)';
+      return 0;
+    }
+    summaryEl.textContent = `${matches.length} match${matches.length !== 1 ? 'es' : ''} found`;
+    summaryEl.style.color = '#10b981';
+    let html = '', cursor = 0;
+    for (const m of matches) {
+      const start = m.index!;
+      const end = start + m[0].length;
+      html += escHtml(text.slice(cursor, start));
+      html += `<mark class="rt-match">${escHtml(m[0])}</mark>`;
+      cursor = end;
+      if (m[0].length === 0) cursor++;
+    }
+    html += escHtml(text.slice(cursor));
+    hlOutput.innerHTML = html || ' ';
+    return matches.length;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // VISUALIZE: TOKENIZER
+  // ══════════════════════════════════════════════════════════
+  function tokenise(pattern: string): Array<{text:string; type:string; description:string}> {
+    const tokens: any[] = [];
+    let i = 0;
+    function peek(offset = 0) { return pattern[i + offset]; }
+    function consume() { return pattern[i++]; }
+
+    function readQuantifier(): string | null {
+      const c = peek();
+      if (!c) return null;
+      if (c === '?' || c === '*' || c === '+') {
+        i++;
+        const lazy = peek() === '?' ? (i++, '?') : '';
+        return c + lazy;
+      }
+      if (c === '{') {
+        let j = i + 1, num = '';
+        while (j < pattern.length && pattern[j] !== '}' && pattern[j] !== ',') num += pattern[j++];
+        if (pattern[j] === ',') {
+          j++; let num2 = '';
+          while (j < pattern.length && pattern[j] !== '}') num2 += pattern[j++];
+          if (pattern[j] === '}') { const lazy = pattern[j+1] === '?' ? (j++,'?') : ''; i = j+1; return `{${num},${num2}}`+lazy; }
+        } else if (pattern[j] === '}') {
+          const lazy = pattern[j+1] === '?' ? (j++,'?') : ''; i = j+1; return `{${num}}`+lazy;
+        }
+      }
+      return null;
+    }
+
+    while (i < pattern.length) {
+      const ch = consume();
+      if (ch === '^' || ch === '$') { tokens.push({text:ch,type:'anchor',description:ch==='^'?'Start anchor':'End anchor'}); continue; }
+      if (ch === '.') { const q=readQuantifier(); tokens.push({text:'.'+(q||''),type:'dot',description:'Any character'+(q?' '+describeQuantifier(q):'')}); continue; }
+      if (ch === '|') { tokens.push({text:'|',type:'alternation',description:'Or'}); continue; }
+      if (ch === '\\') { const next=consume()||''; const escaped='\\'+next; const q=readQuantifier(); tokens.push({text:escaped+(q||''),type:'escape',description:escapeDesc(next)+(q?' '+describeQuantifier(q):'')}); continue; }
+      if (ch === '[') { let cls='['; while(i<pattern.length&&peek()!==']'){if(peek()==='\\'){cls+=consume();}cls+=consume();} cls+=consume()||''; const q=readQuantifier(); tokens.push({text:cls+(q||''),type:'class',description:'Character class'+(q?' '+describeQuantifier(q):'')}); continue; }
+      if (ch === '(') {
+        let type='group',label='Capture group',prefix='';
+        if(peek()==='?'){const p2=peek(1);if(p2===':'){i+=2;type='ncgroup';label='Non-capturing group';prefix='(?:';}else if(p2==='='){i+=2;type='lookahead';label='Positive lookahead';prefix='(?=';}else if(p2==='!'){i+=2;type='lookahead';label='Negative lookahead';prefix='(?!';}else if(p2==='<'){const p3=peek(2);if(p3==='='||p3==='!'){i+=3;type='lookahead';label=p3==='='?'Positive lookbehind':'Negative lookbehind';prefix=`(?<${p3}`;}else{i+=2;let name='';while(i<pattern.length&&peek()!=='>')name+=consume();consume();type='namedgroup';label=`Named group: ${name}`;prefix=`(?<${name}>`;}}else if(p2==="'"){i+=2;let name='';while(i<pattern.length&&peek()!=='\'')name+=consume();consume();type='namedgroup';label=`Named group: ${name}`;prefix=`(?'${name}'`;}}
+        let body='',depth=1; while(i<pattern.length&&depth>0){const c2=consume();if(c2==='\\'){body+=c2+(consume()||'');continue;}if(c2==='(')depth++;if(c2===')'){depth--;if(depth===0)break;}body+=c2;}
+        const q=readQuantifier(); tokens.push({text:ch+prefix+body+')'+(q||''),type,description:label+(q?' '+describeQuantifier(q):'')}); continue;
+      }
+      if (ch === ')') { tokens.push({text:ch,type:'literal',description:'Literal )'}); continue; }
+      const q=readQuantifier(); tokens.push({text:ch+(q||''),type:'literal',description:`Literal "${ch}"`+(q?' '+describeQuantifier(q):'')});
+    }
+    return tokens;
+  }
+
+  function escapeDesc(c: string): string {
+    const map: Record<string,string> = {d:'Digit [0-9]',D:'Non-digit',w:'Word char [a-zA-Z0-9_]',W:'Non-word char',s:'Whitespace',S:'Non-whitespace',b:'Word boundary',B:'Non-word boundary',n:'Newline',r:'Carriage return',t:'Tab','0':'Null char'};
+    return map[c] ? `\\${c} — ${map[c]}` : `Escaped "${c}"`;
+  }
+  function describeQuantifier(q: string): string {
+    const lazy = q.endsWith('?'); const base = lazy ? q.slice(0,-1) : q; const suffix = lazy ? ' (lazy)' : ' (greedy)';
+    if (base === '*') return '× zero or more' + suffix;
+    if (base === '+') return '× one or more' + suffix;
+    if (base === '?') return '× zero or one' + suffix;
+    const m = base.match(/^\{(\d+)\}$/); if (m) return `× exactly ${m[1]}` + suffix;
+    const m2 = base.match(/^\{(\d*),(\d*)\}$/); if (m2) { if(m2[1]===''&&m2[2]==='')return '× any times'+suffix; if(m2[2]==='')return `× ${m2[1]} or more`+suffix; return `× ${m2[1]}–${m2[2]}`+suffix; }
+    return '';
+  }
+  function labelForType(type: string): string {
+    return ({anchor:'Anchor',literal:'Literal',class:'Char class',quantifier:'Quantifier',group:'Group',namedgroup:'Named group',ncgroup:'Non-cap',alternation:'Or',lookahead:'Lookahead',escape:'Escape',dot:'Any char'} as any)[type] || type;
+  }
+
+  function renderTokens(tokens: any[]) {
+    tokenFlow.innerHTML = '';
+    if (!tokens.length) { tokenFlow.innerHTML = '<span style="color:var(--text-muted);font-size:.875rem;">Empty pattern.</span>'; return; }
+    tokens.forEach((tok: any, idx: number) => {
+      const chip = document.createElement('div');
+      chip.className = `token-chip chip-${tok.type}`;
+      chip.title = tok.description;
+      const code = document.createElement('span');
+      code.textContent = tok.text.length > 18 ? tok.text.slice(0,16)+'…' : tok.text;
+      chip.appendChild(code);
+      const lbl = document.createElement('span');
+      lbl.className = 'chip-label';
+      lbl.textContent = labelForType(tok.type);
+      chip.appendChild(lbl);
+      tokenFlow.appendChild(chip);
+      if (idx < tokens.length - 1) { const arrow = document.createElement('span'); arrow.className='token-arrow'; arrow.textContent='→'; tokenFlow.appendChild(arrow); }
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // VISUALIZE: CAPTURE GROUPS TABLE
+  // ══════════════════════════════════════════════════════════
+  function renderGroups(re: RegExp | null, text: string) {
+    if (!re) { groupsSec.style.display = 'none'; return; }
+    const matches = getMatches(re, text);
+    if (!matches.length) { groupsSec.style.display = 'none'; return; }
+    const groupCount = (re.source.match(/(?<!\\)\(/g) || []).length;
+    const ncCount = (re.source.match(/\(\?[:=!<]/g) || []).length;
+    const capCount = groupCount - ncCount;
+    if (capCount === 0) { groupsSec.style.display = 'none'; return; }
+    groupsSec.style.display = 'block';
+    groupsBody.innerHTML = '';
+    const namedGroupRe = /\(\?<([^>]+)>/g;
+    const names: string[] = [];
+    let nm;
+    while ((nm = namedGroupRe.exec(re.source)) !== null) names.push(nm[1]);
+    for (let g = 1; g <= capCount; g++) {
+      const tr = document.createElement('tr');
+      const name = names[g-1] || null;
+      const vals = matches.slice(0,3).map(m => { const v = name ? (m as any).groups?.[name] : m[g]; return v != null ? v : '—'; });
+      while (vals.length < 3) vals.push('—');
+      tr.innerHTML = `<td>${name?`<strong>${name}</strong>`:`Group ${g}`}</td><td style="color:var(--text-muted);">${escHtml(extractGroupPattern(re.source,g))}</td>${vals.map(v=>`<td>${escHtml(v)}</td>`).join('')}`;
+      groupsBody.appendChild(tr);
+    }
+  }
+
+  function extractGroupPattern(source: string, n: number): string {
+    let count=0, i=0;
+    while(i<source.length){
+      if(source[i]==='\\'){i+=2;continue;}
+      if(source[i]==='['){while(i<source.length&&source[i]!==']')i++;i++;continue;}
+      if(source[i]==='('){const nonCap=source[i+1]==='?'&&(source[i+2]===':'||source[i+2]==='='||source[i+2]==='!');if(!nonCap){count++;if(count===n){let body='',d=1;i++;while(i<source.length&&d>0){if(source[i]==='\\'){body+=source[i]+source[i+1];i+=2;continue;}if(source[i]==='(')d++;if(source[i]===')'){d--;if(d===0)break;}body+=source[i++];}return body.length>20?body.slice(0,18)+'…':body;}}}
+      i++;
+    }
+    return '…';
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // EXTRACT: MATCH CHIPS
+  // ══════════════════════════════════════════════════════════
+  function renderExtract(re: RegExp | null, text: string) {
+    const matches = getMatches(re, text);
+    extCount.textContent = String(matches.length);
+    matchesList.innerHTML = matches.map(m =>
+      `<code style="background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.375rem;padding:.2rem .5rem;font-size:.78rem;color:var(--text-primary);">${escHtml(m[0])}</code>`
+    ).join('');
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // REPLACE: RULES ENGINE
+  // ══════════════════════════════════════════════════════════
+  const RULE_COLORS = [
+    {bg:'rgba(34,197,94,0.28)',border:'#22C55E',label:'#22C55E'},
+    {bg:'rgba(245,158,11,0.28)',border:'#F59E0B',label:'#F59E0B'},
+    {bg:'rgba(6,182,212,0.28)',border:'#06B6D4',label:'#06B6D4'},
+    {bg:'rgba(167,139,250,0.28)',border:'#A78BFA',label:'#A78BFA'},
+    {bg:'rgba(249,115,22,0.28)',border:'#F97316',label:'#F97316'},
+    {bg:'rgba(244,63,94,0.28)',border:'#F43F5E',label:'#F43F5E'},
+    {bg:'rgba(234,179,8,0.28)',border:'#EAB308',label:'#EAB308'},
+    {bg:'rgba(14,165,233,0.28)',border:'#0EA5E9',label:'#0EA5E9'},
+  ];
+  const PRESETS = [
+    {name:'Strip HTML tags',pattern:'<[^>]+>',replacement:'',flags:'g'},
+    {name:'Collapse whitespace',pattern:'\\s{2,}',replacement:' ',flags:'g'},
+    {name:'Remove punctuation',pattern:'[^\\w\\s]',replacement:'',flags:'g'},
+    {name:'Trim line ends',pattern:'[ \\t]+$',replacement:'',flags:'gm'},
+    {name:'URL → [link]',pattern:'https?://\\S+',replacement:'[link]',flags:'g'},
+    {name:'Double → single quotes',pattern:'"([^"]*)"',replacement:"'$1'",flags:'g'},
+  ];
+
+  type Rule = {id:number; pattern:string; replacement:string; flags:string; enabled:boolean; colorIdx:number};
+  let rules: Rule[] = [];
+  let nextId = 1;
+  let editorMode: 'source'|'result' = 'source';
+
+  const rulesList      = document.getElementById('rt-rules-list')!;
+  const presetsList    = document.getElementById('rt-presets-list')!;
+  const sourceEditor   = document.getElementById('rt-source-editor') as HTMLTextAreaElement;
+  const highlightOvl   = document.getElementById('rt-highlight-overlay')!;
+  const resultPanel    = document.getElementById('rt-result-panel')!;
+  const resultOutput   = document.getElementById('rt-result-output') as HTMLTextAreaElement;
+  const rbrMatchCount  = document.getElementById('rt-rbr-match-count')!;
+  const sChars         = document.getElementById('rt-s-chars')!;
+  const sLines         = document.getElementById('rt-s-lines')!;
+  const sRules         = document.getElementById('rt-s-rules')!;
+  const sMatches       = document.getElementById('rt-s-matches')!;
+  const sReplacements  = document.getElementById('rt-s-replacements')!;
+
+  function addRule(pattern = '', replacement = '', flags = 'g') {
+    const colorIdx = rules.length % RULE_COLORS.length;
+    const rule: Rule = { id: nextId++, pattern, replacement, flags, enabled: true, colorIdx };
+    rules.push(rule);
+    renderRuleCard(rule);
+    updateReplace();
+  }
+
+  function removeRule(id: number) {
+    rules = rules.filter(r => r.id !== id);
+    document.getElementById(`rt-rule-card-${id}`)?.remove();
+    updateReplace();
+  }
+
+  function renderRuleCard(rule: Rule) {
+    const col = RULE_COLORS[rule.colorIdx];
+    const card = document.createElement('div');
+    card.id = `rt-rule-card-${rule.id}`;
+    card.style.cssText = `background:var(--bg-surface);border:1.5px solid ${col.border}44;border-left:3px solid ${col.border};border-radius:.5rem;padding:.625rem .75rem;display:flex;flex-direction:column;gap:.4rem;`;
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.1rem;">
+        <span style="width:8px;height:8px;border-radius:50%;background:${col.label};flex-shrink:0;"></span>
+        <span style="font-family:'Fira Code',monospace;font-size:.65rem;font-weight:700;color:${col.label};text-transform:uppercase;letter-spacing:.06em;flex:1;">Rule ${rule.id}</span>
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;">
+          <input type="checkbox" ${rule.enabled?'checked':''} data-id="${rule.id}" class="rt-rule-toggle" style="width:.75rem;height:.75rem;accent-color:${col.label};cursor:pointer;"/>
+          <span style="font-size:.62rem;color:var(--text-muted);font-family:'Fira Code',monospace;">on</span>
+        </label>
+        <button data-id="${rule.id}" class="rt-rule-delete" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.75rem;padding:0;line-height:1;">✕</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:.3rem;">
+        <span style="font-family:'Fira Code',monospace;font-size:.72rem;color:var(--text-muted);flex-shrink:0;">/</span>
+        <input type="text" placeholder="pattern" value="${escAttr(rule.pattern)}" data-id="${rule.id}" class="rt-rule-pattern" style="flex:1;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.3rem;padding:.3rem .5rem;font-family:'Fira Code',monospace;font-size:.75rem;color:var(--text-primary);outline:none;min-width:0;"/>
+        <span style="font-family:'Fira Code',monospace;font-size:.72rem;color:var(--text-muted);flex-shrink:0;">/</span>
+        <input type="text" placeholder="flags" value="${rule.flags}" data-id="${rule.id}" class="rt-rule-flags" maxlength="6" style="width:3.5rem;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.3rem;padding:.3rem .4rem;font-family:'Fira Code',monospace;font-size:.75rem;color:var(--text-muted);outline:none;"/>
+      </div>
+      <div style="display:flex;align-items:center;gap:.3rem;">
+        <span style="font-family:'Fira Code',monospace;font-size:.72rem;color:var(--text-muted);flex-shrink:0;min-width:.75rem;">→</span>
+        <input type="text" placeholder="replacement ($1, $2, $&lt;name&gt;)" value="${escAttr(rule.replacement)}" data-id="${rule.id}" class="rt-rule-replacement" style="flex:1;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.3rem;padding:.3rem .5rem;font-family:'Fira Code',monospace;font-size:.75rem;color:var(--text-primary);outline:none;min-width:0;"/>
+      </div>
+      <div id="rt-rule-error-${rule.id}" style="display:none;font-size:.65rem;color:#EF4444;font-family:'Fira Code',monospace;margin-top:.1rem;"></div>
+    `;
+    rulesList.appendChild(card);
+    card.querySelector('.rt-rule-pattern')!.addEventListener('input', e => { const r=rules.find(r=>r.id===rule.id); if(r)r.pattern=(e.target as HTMLInputElement).value; updateReplace(); });
+    card.querySelector('.rt-rule-replacement')!.addEventListener('input', e => { const r=rules.find(r=>r.id===rule.id); if(r)r.replacement=(e.target as HTMLInputElement).value; updateReplace(); });
+    card.querySelector('.rt-rule-flags')!.addEventListener('input', e => { const r=rules.find(r=>r.id===rule.id); if(r)r.flags=(e.target as HTMLInputElement).value; updateReplace(); });
+    card.querySelector('.rt-rule-toggle')!.addEventListener('change', e => { const r=rules.find(r=>r.id===rule.id); if(r)r.enabled=(e.target as HTMLInputElement).checked; updateReplace(); });
+    card.querySelector('.rt-rule-delete')!.addEventListener('click', () => removeRule(rule.id));
+  }
+
+  // Presets
+  PRESETS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.style.cssText = 'text-align:left;padding:.3rem .6rem;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:.35rem;cursor:pointer;font-family:"Fira Code",monospace;font-size:.68rem;color:var(--text-secondary);transition:all .15s;display:flex;align-items:center;gap:.4rem;';
+    btn.innerHTML = `<span style="color:var(--text-primary);opacity:.7;">+</span> ${p.name}`;
+    btn.addEventListener('click', () => addRule(p.pattern, p.replacement, p.flags));
+    presetsList.appendChild(btn);
+  });
+
+  function updateReplace() {
+    const text = sourceEditor.value;
+    sChars.textContent = String(text.length);
+    sLines.textContent = String(text ? text.split('\n').length : 0);
+    const activeRules = rules.filter(r => r.enabled && r.pattern.trim());
+    sRules.textContent = String(activeRules.length);
+
+    let totalMatches = 0;
+    type Span = {start:number; end:number; bg:string};
+    const spans: Span[] = [];
+
+    activeRules.forEach(rule => {
+      const errEl = document.getElementById(`rt-rule-error-${rule.id}`)!;
+      try {
+        const flags = rule.flags.includes('g') ? rule.flags : rule.flags + 'g';
+        const rx = new RegExp(rule.pattern, flags);
+        const col = RULE_COLORS[rule.colorIdx];
+        let m: RegExpExecArray | null;
+        let count = 0;
+        while ((m = rx.exec(text)) !== null) {
+          spans.push({start:m.index, end:m.index+m[0].length, bg:col.bg});
+          count++;
+          if (m[0].length === 0) rx.lastIndex++;
+        }
+        totalMatches += count;
+        errEl.style.display = 'none';
+        const card = document.getElementById(`rt-rule-card-${rule.id}`)!;
+        if (card) card.style.opacity = '1';
+      } catch (err: any) {
+        errEl.textContent = `⚠ ${err.message}`;
+        errEl.style.display = 'block';
+        const card = document.getElementById(`rt-rule-card-${rule.id}`)!;
+        if (card) card.style.opacity = '0.5';
+      }
+    });
+
+    sMatches.textContent = String(totalMatches);
+    rbrMatchCount.textContent = totalMatches > 0 ? `${totalMatches} match${totalMatches!==1?'es':''}` : '';
+
+    if (spans.length > 0) {
+      spans.sort((a,b) => a.start - b.start);
+      let html = '', cursor = 0;
+      for (const span of spans) {
+        if (span.start < cursor) continue;
+        html += escHtml(text.slice(cursor, span.start));
+        html += `<mark style="background:${span.bg};color:inherit;border-radius:2px;">${escHtml(text.slice(span.start, span.end))}</mark>`;
+        cursor = span.end;
+      }
+      html += escHtml(text.slice(cursor));
+      highlightOvl.innerHTML = html;
+      highlightOvl.style.display = 'block';
+    } else {
+      highlightOvl.style.display = 'none';
+    }
+
+    if (editorMode === 'result') {
+      let result = text;
+      let totalReplacements = 0;
+      activeRules.forEach(rule => {
+        try {
+          const flags = rule.flags.includes('g') ? rule.flags : rule.flags + 'g';
+          const rx = new RegExp(rule.pattern, flags);
+          const before = result;
+          result = result.replace(rx, rule.replacement);
+          if (result !== before) totalReplacements++;
+        } catch {}
+      });
+      resultOutput.value = result;
+      sReplacements.textContent = String(totalReplacements);
+    } else {
+      sReplacements.textContent = '—';
+    }
+  }
+
+  // Editor mode toggle
+  function setEditorMode(m: typeof editorMode) {
+    editorMode = m;
+    document.querySelectorAll('.rt-editor-mode').forEach(btn => {
+      const isActive = (btn as HTMLElement).id === `rt-mode-${m}`;
+      btn.classList.toggle('active', isActive);
+    });
+    const editorWrap = sourceEditor.parentElement!;
+    if (m === 'source') { editorWrap.style.display = 'block'; resultPanel.style.display = 'none'; }
+    else { editorWrap.style.display = 'none'; resultPanel.style.display = 'flex'; }
+    updateReplace();
+  }
+
+  document.getElementById('rt-mode-source')!.addEventListener('click', () => setEditorMode('source'));
+  document.getElementById('rt-mode-result')!.addEventListener('click', () => setEditorMode('result'));
+  document.getElementById('rt-btn-add-rule')!.addEventListener('click', () => addRule());
+
+  document.getElementById('rt-btn-load-sample')!.addEventListener('click', () => {
+    sourceEditor.value = `Hello World! This is a <b>sample</b> text file.\nIt contains  double   spaces and <em>HTML tags</em>.\nVisit https://example.com for more info.\n"Quoted text" appears multiple times here.\nAnother line with  extra   whitespace.`;
+    addRule('<[^>]+>', '', 'g');
+    addRule('\\s{2,}', ' ', 'g');
+    updateReplace();
+  });
+
+  document.getElementById('rt-btn-clear-editor')!.addEventListener('click', () => {
+    sourceEditor.value = '';
+    highlightOvl.style.display = 'none';
+    updateReplace();
+  });
+
+  document.getElementById('rt-btn-copy-result')!.addEventListener('click', () => {
+    if (!resultOutput.value) return;
+    navigator.clipboard.writeText(resultOutput.value).then(() => {
+      const btn = document.getElementById('rt-btn-copy-result')!;
+      btn.textContent = '✓ copied';
+      setTimeout(() => { btn.textContent = 'copy'; }, 2000);
+    });
+  });
+
+  sourceEditor.addEventListener('scroll', () => {
+    highlightOvl.scrollTop = sourceEditor.scrollTop;
+    highlightOvl.scrollLeft = sourceEditor.scrollLeft;
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // MAIN UPDATE
+  // ══════════════════════════════════════════════════════════
+  function update() {
+    if (activeTab === 'replace') { updateReplace(); return; }
+
+    const pattern = inpPattern.value;
+    const testStr = inpTest.value;
+
+    if (!pattern) {
+      errorEl.style.display = 'none';
+      hlOutput.textContent = testStr || 'Enter a pattern to see matches highlighted here.';
+      summaryEl.textContent = '';
+      if (activeTab === 'visualize') {
+        tokenFlow.innerHTML = '<span style="color:var(--text-muted);font-size:.875rem;">Enter a regex above.</span>';
+        groupsSec.style.display = 'none';
+      }
+      if (activeTab === 'extract') { extCount.textContent = '0'; matchesList.innerHTML = ''; }
+      return;
+    }
+
+    const re = buildRegex(pattern);
+    if (!re) {
+      hlOutput.textContent = testStr;
+      summaryEl.textContent = '';
+      if (activeTab === 'visualize') { tokenFlow.innerHTML = '<span style="color:#f87171;font-size:.875rem;">Fix the regex error above.</span>'; groupsSec.style.display = 'none'; }
+      if (activeTab === 'extract') { extCount.textContent = '0'; matchesList.innerHTML = ''; }
+      return;
+    }
+
+    highlightMatches(re, testStr);
+
+    if (activeTab === 'visualize') {
+      try { renderTokens(tokenise(pattern)); } catch { tokenFlow.innerHTML = '<span style="color:var(--text-muted);font-size:.875rem;">Could not parse tokens.</span>'; }
+      renderGroups(re, testStr);
+    }
+
+    if (activeTab === 'extract') {
+      renderExtract(re, testStr);
+    }
+  }
+
+  // Wire shared inputs
+  inpPattern.addEventListener('input', update);
+  inpTest.addEventListener('input', update);
+  sourceEditor.addEventListener('input', updateReplace);
+
+  // Init
+  addRule();
+  update();
+})();
+</script>

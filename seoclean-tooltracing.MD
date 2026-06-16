@@ -8,13 +8,13 @@ word-counter
 colour-palette-css-generator
 jwt-debugger
 css-flexbox-grid-sandbox
-
-## TODO
 json-to-typescript
 ev-novated-lease-calculator
 phev-novated-lease-calculator
-regex-visual-explainer
+regex-toolkit
 crontab-expression-visualizer
+
+## TODO
 sql-to-nosql
 git-command-flow-builder
 cpm-ad-spend-calculator
@@ -76,7 +76,6 @@ solar-panel-roi-estimator
 freelance-project-scope-estimator
 strata-sinking-fund-estimator
 code-diff-checker
-regex-pattern-filter
 markdown-to-html-converter
 json-schema-validator
 variable-case-converter
@@ -98,7 +97,6 @@ list-randomizer
 markdown-sanitizer
 html-to-markdown
 whitespace-trimmer
-regex-bulk-replace
 slug-generator
 bulk-case-mutator
 duplicate-line-remover
