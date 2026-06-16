@@ -91,32 +91,35 @@ const tool = tools.find(t => t.slug === 'word-counter')!;
 
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Word Counter Overview &amp; Modern Technical Context</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <h2 class="font-display seo-h2" >Word Counter Overview &amp; Modern Technical Context</h2>
+    <p class="text-secondary seo-p" >
       This word counter computes six distinct text metrics — word count, character count, characters without spaces, sentence count, paragraph count, and estimated reading time — entirely within your browser using vanilla JavaScript. No text data is transmitted to any server, no cookies are set, and no tracking scripts execute during the counting process. The 100% client-side architecture means sensitive drafts, legal documents, academic papers, and confidential copy remain completely private, with zero server latency and zero data retention. The tool is built on standard DOM APIs (<code>String.prototype.split</code>, <code>RegExp</code>) and requires no external dependencies, making it fast enough to recalculate on every keystroke without perceptible delay.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <p class="text-secondary seo-p" >
       Paste or type any text into the input area. All six statistics update instantly as you type — there is no submit button and no page reload. The platform limits section below the stats grid displays real-time progress bars against common character limits used by Twitter/X (280), LinkedIn (3,000), SMS (160), and HTML meta titles (60). Each bar is colour-coded: green when within budget, amber when approaching the limit (≥85%), and red when exceeded.
     </p>
 
-    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
-      <strong>SEO and content marketing:</strong> Digital marketers and SEO professionals must write page titles, meta descriptions, and social media posts within strict character limits. Google typically displays the first 50–60 characters of a title tag in search results, and truncation beyond that reduces click-through rates. This tool provides instant feedback against those thresholds, allowing writers to craft concise, search-optimised copy without guessing whether their text will be truncated.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
-      <strong>Academic and professional writing:</strong> Students, researchers, and professionals frequently work within word count constraints — essays, journal abstracts, grant proposals, and RFP responses all impose limits. The reading time estimate (based on a 200 wpm baseline) helps authors gauge whether their document is appropriately scoped for the intended audience. The sentence and paragraph counts provide structural insight that is useful for editing and readability analysis.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Social media management and UX copywriting:</strong> Social media managers juggling multiple platforms need to ensure each post fits within the target platform's limits. SMS marketers must stay within the 160-character GSM limit to avoid splitting messages into multiple segments. UX writers crafting microcopy, error messages, and button labels benefit from the no-spaces character count, which reflects how most UI character counters display remaining length.
-    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['SEO and content marketing', 'Digital marketers and SEO professionals must write page titles, meta descriptions, and social media posts within strict character limits. Google typically displays the first 50–60 characters of a title tag in search results, and truncation beyond that reduces click-through rates. This tool provides instant feedback against those thresholds, allowing writers to craft concise, search-optimised copy without guessing whether their text will be truncated.'],
+        ['Academic and professional writing', 'Students, researchers, and professionals frequently work within word count constraints — essays, journal abstracts, grant proposals, and RFP responses all impose limits. The reading time estimate (based on a 200 wpm baseline) helps authors gauge whether their document is appropriately scoped for the intended audience. The sentence and paragraph counts provide structural insight that is useful for editing and readability analysis.'],
+        ['Social media management and UX copywriting', 'Social media managers juggling multiple platforms need to ensure each post fits within the target platform's limits. SMS marketers must stay within the 160-character GSM limit to avoid splitting messages into multiple segments. UX writers crafting microcopy, error messages, and button labels benefit from the no-spaces character count, which reflects how most UI character counters display remaining length.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">Deep-Dive: Technical Mechanics &amp; Mathematical Logic</h2>
+    <h2 class="font-display seo-h2" >Deep-Dive: Technical Mechanics &amp; Mathematical Logic</h2>
 
-    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Core Counting Algorithms</h3>
-    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+    <h3 class="font-display seo-h3-sm" >Core Counting Algorithms</h3>
+    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem">
       <div class="info-row">
         <span class="info-label">Words</span>
         <span class="info-value">Split on whitespace, filter empty tokens</span>
@@ -143,31 +146,31 @@ const tool = tools.find(t => t.slug === 'word-counter')!;
       </div>
     </div>
 
-    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">How the Computation Works Step-by-Step</h3>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <h3 class="font-display seo-h3-sm" >How the Computation Works Step-by-Step</h3>
+    <p class="text-secondary seo-p" >
       <strong>Word counting:</strong> The algorithm first trims leading and trailing whitespace from the input, then splits the string on one or more whitespace characters using the regular expression <code>\s+</code>. This handles spaces, tabs, newlines, and multiple consecutive whitespace characters uniformly. Each resulting token is passed through <code>filter(Boolean)</code> to discard empty strings that can arise from edge cases such as multiple consecutive spaces. The length of the filtered array is the word count. This approach correctly handles mixed whitespace, leading/trailing spaces, and single-word inputs.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <p class="text-secondary seo-p" >
       <strong>Character counting:</strong> The total character count uses JavaScript's native <code>String.prototype.length</code>, which returns the number of UTF-16 code units. For standard English text this is equivalent to the number of visible characters plus whitespace. The "no spaces" variant strips all whitespace characters (spaces, tabs, newlines) using a global regex replacement before measuring length, providing the count that most platform character limits reference.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <p class="text-secondary seo-p" >
       <strong>Sentence counting:</strong> Sentences are identified by splitting on terminal punctuation — periods, exclamation marks, and question marks — using the regex <code>[.!?]+</code>. The <code>+</code> quantifier handles sequences like <code>...</code> or <code>!?</code> as a single delimiter. Empty tokens are filtered out, which correctly handles inputs with no sentence terminators (producing a count of 1 for a single sentence, or 0 for empty input). Note that abbreviations containing periods (e.g. "Dr.", "U.S.A.") may cause over-splitting; this is a known limitation of regex-based sentence detection without NLP parsing.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <p class="text-secondary seo-p" >
       <strong>Paragraph counting:</strong> Paragraphs are detected by splitting on two or more consecutive newline characters. The regex uses a quantifier to match two or more newlines as a single delimiter. This means a single blank line separates paragraphs, which aligns with standard Markdown and plain-text conventions. A single line break without a blank line between them does not create a new paragraph. Empty entries are filtered out, so leading or trailing blank lines do not inflate the count.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <p class="text-secondary seo-p" >
       <strong>Reading time:</strong> The estimate divides total word count by 200 words per minute — a widely accepted average for silent reading of general-purpose English text. The result is rounded up using <code>Math.ceil()</code> so that any partial minute is reported as a full minute. For reference, average silent reading speeds range from 150 wpm (careful technical reading) to 300+ wpm (skimming). The 200 wpm baseline is deliberately conservative to avoid underestimating reading time for dense content.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+    <p class="text-secondary seo-p-none" >
       <strong>Edge cases handled:</strong> The tool correctly handles empty input (all counters display 0), input consisting solely of whitespace (0 words, 0 paragraphs), very long single-line text (1 paragraph), text with only punctuation, and text containing a mix of line endings (<code>\n</code>, <code>\r\n</code>). All computations execute synchronously on the main thread, which is safe for inputs up to approximately 500,000 characters without blocking the UI.
     </p>
   </div>
 
   <!-- FAQ ─────────────────────────────────────── -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
           q: "Does this word counter count hyphenated words as one or two?",
@@ -195,10 +198,10 @@ const tool = tools.find(t => t.slug === 'word-counter')!;
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

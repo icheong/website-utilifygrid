@@ -8,32 +8,24 @@ const tool = tools.find(t => t.slug === 'car-loan-amortization-calculator')!;
 <ToolLayout tool={tool}>
 
   <img src="/icons/car.png" alt="Car icon" class="tool-icon" style="width:36px;height:36px;margin-right:1rem;vertical-align:middle;"/>\n<div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700;  margin-bottom:1.25rem;">Car Loan Calculator</h2>
+    <h2 class="font-display" style="font-size:1.1rem; font-weight:700; margin-bottom:1.25rem;">Car Loan Calculator</h2>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Vehicle Price ($)</label>
-        <input id="price" type="number" value="35000" min="0" step="500"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem;  box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#0369A1'" onblur="this.style.borderColor='#E2E8F0'"/>
+        <label class="text-secondary" style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Vehicle Price ($)</label>
+        <input id="price" type="number" value="35000" min="0" step="500" class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Down Payment ($)</label>
-        <input id="down" type="number" value="5000" min="0" step="500"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem;  box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#0369A1'" onblur="this.style.borderColor='#E2E8F0'"/>
+        <label class="text-secondary" style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Down Payment ($)</label>
+        <input id="down" type="number" value="5000" min="0" step="500" class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Annual Interest Rate (%)</label>
-        <input id="rate" type="number" value="6.9" min="0.1" max="40" step="0.1"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem;  box-sizing:border-box; outline:none;"
-          onfocus="this.style.borderColor='#0369A1'" onblur="this.style.borderColor='#E2E8F0'"/>
+        <label class="text-secondary" style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Annual Interest Rate (%)</label>
+        <input id="rate" type="number" value="6.9" min="0.1" max="40" step="0.1" class="input-themed"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Loan Term (months)</label>
-        <select id="term"
-          style="width:100%; padding:0.625rem 0.875rem; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.95rem;  box-sizing:border-box; outline:none; background:#fff;"
-          onfocus="this.style.borderColor='#0369A1'" onblur="this.style.borderColor='#E2E8F0'">
+        <label class="text-secondary" style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Loan Term (months)</label>
+        <select id="term" class="select-themed">
           <option value="24">24 months (2 yrs)</option>
           <option value="36">36 months (3 yrs)</option>
           <option value="48">48 months (4 yrs)</option>
@@ -45,31 +37,31 @@ const tool = tools.find(t => t.slug === 'car-loan-amortization-calculator')!;
     </div>
 
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1.25rem;">
-      <div style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:0.75rem; padding:1rem; text-align:center;">
-        <div id="out-monthly" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#0369A1;">$0</div>
-        <div style="font-size:0.72rem; font-weight:600; color:#60A5FA; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Monthly Payment</div>
+      <div style="background:var(--card-blue-bg); border:1.5px solid var(--card-blue-border); border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-monthly" class="font-display" style="font-size:1.5rem; font-weight:700; color:var(--card-blue-text);">$0</div>
+        <div style="font-size:0.72rem; font-weight:600; color:var(--card-blue-label); margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Monthly Payment</div>
       </div>
-      <div style="background:#FFF7ED; border:1.5px solid #FED7AA; border-radius:0.75rem; padding:1rem; text-align:center;">
-        <div id="out-interest" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#EA580C;">$0</div>
-        <div style="font-size:0.72rem; font-weight:600; color:#FB923C; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Total Interest</div>
+      <div style="background:var(--card-orange-bg); border:1.5px solid var(--card-orange-border); border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-interest" class="font-display" style="font-size:1.5rem; font-weight:700; color:var(--card-orange-text);">$0</div>
+        <div style="font-size:0.72rem; font-weight:600; color:var(--card-orange-label); margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Total Interest</div>
       </div>
-      <div style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:0.75rem; padding:1rem; text-align:center;">
-        <div id="out-total" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:700; color:#16A34A;">$0</div>
-        <div style="font-size:0.72rem; font-weight:600; color:#4ADE80; margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Total Cost</div>
+      <div style="background:var(--card-green-bg); border:1.5px solid var(--card-green-border); border-radius:0.75rem; padding:1rem; text-align:center;">
+        <div id="out-total" class="font-display" style="font-size:1.5rem; font-weight:700; color:var(--card-green-text);">$0</div>
+        <div style="font-size:0.72rem; font-weight:600; color:var(--card-green-label); margin-top:0.25rem; text-transform:uppercase; letter-spacing:0.05em;">Total Cost</div>
       </div>
     </div>
 
-    <div style="border:1px solid #E2E8F0; border-radius:0.75rem; overflow:hidden;">
-      <div style="background:#F8FAFC; padding:0.75rem 1rem; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:0.78rem; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.05em;">Amortization Schedule</span>
-        <button id="toggle-table" style="font-size:0.75rem; color:#0369A1; background:none; border:none; cursor:pointer; font-weight:600;">Show all</button>
+    <div style="border:1px solid var(--border); border-radius:0.75rem; overflow:hidden;">
+      <div style="background:var(--bg-surface-2); padding:0.75rem 1rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+        <span class="text-secondary" style="font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Amortization Schedule</span>
+        <button id="toggle-table" class="text-primary" style="font-size:0.75rem; background:none; border:none; cursor:pointer; font-weight:600;">Show all</button>
       </div>
       <div style="overflow-x:auto; max-height:280px; overflow-y:auto;">
         <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
-          <thead style="position:sticky; top:0; background:#F8FAFC;">
+          <thead style="position:sticky; top:0; background:var(--bg-surface-2);">
             <tr>
               {['Mo','Payment','Principal','Interest','Balance'].map(h => (
-                <th style="padding:0.5rem 0.75rem; text-align:right; color:#475569; font-weight:600; white-space:nowrap; border-bottom:1px solid #E2E8F0;">{h}</th>
+                <th class="text-secondary" style="padding:0.5rem 0.75rem; text-align:right; font-weight:600; white-space:nowrap; border-bottom:1px solid var(--border);">{h}</th>
               ))}
             </tr>
           </thead>
@@ -80,34 +72,55 @@ const tool = tools.find(t => t.slug === 'car-loan-amortization-calculator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700;  margin-bottom:0.75rem;">How to use the Car Loan Calculator</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter the full vehicle purchase price, your down payment amount, the annual interest rate from your lender, and select the loan term. The calculator instantly shows your monthly payment, total interest paid, and complete amortization schedule.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Try adjusting the loan term to see how shorter or longer terms affect both monthly payments and total interest paid. A shorter term means higher payments but significantly less interest over the life of the loan.</p>
+    <h2 class="font-display seo-h2" >How to use the Car Loan Calculator</h2>
+    <p class="text-secondary seo-p" >Enter the full vehicle purchase price, your down payment amount, the annual interest rate from your lender, and select the loan term. The calculator instantly shows your monthly payment, total interest paid, and complete amortization schedule. All computations run locally in your browser using the standard loan amortization formula — no data is sent to any server.</p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Negotiating with a dealership', 'Dealerships often frame monthly payment as the primary metric. Use this calculator to independently verify whether a quoted payment matches the agreed price, rate, and term — catching hidden fees or inflated rates before signing.'],
+        ['Refinancing analysis', 'If rates drop or your credit score improves, input your remaining balance, new rate, and remaining term to compare current vs refinanced costs. The total interest figure reveals whether refinancing fees are worth the savings.'],
+        ['Multi-vehicle comparison shopping', 'When choosing between two vehicles at different price points, run both through the calculator at their respective rates. A $5,000 cheaper car at a higher rate can cost more total interest than a more expensive car with a lower promotional rate.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700;  margin-bottom:0.75rem;">How the calculation works</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The monthly payment uses the standard loan amortization formula: <strong>P × r(1+r)^n / ((1+r)^n − 1)</strong>, where P is the principal (price minus down payment), r is the monthly interest rate (annual ÷ 12), and n is the number of months.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Each row in the amortization table shows how much of that month's payment goes to interest versus reducing the principal. Early payments are interest-heavy; as the balance falls, more goes to principal.</p>
+    <h2 class="font-display seo-h2" >How the calculation works</h2>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">The loan amortization formula</h3>
+    <p class="text-secondary seo-p" >The monthly payment is calculated using the standard annuity formula: <strong class="text-primary">M = P × r(1+r)&#119895; / ((1+r)&#119895; − 1)</strong>, where P is the principal (vehicle price minus down payment), r is the monthly interest rate (annual rate ÷ 12), and n is the total number of months. This formula is codified in international accounting standards and produces a fixed monthly payment that fully amortizes the loan to zero over the term.</p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">How each payment is split between principal and interest</h3>
+    <p class="text-secondary seo-p" >Each monthly payment covers accrued interest first, with the remainder reducing the principal. In month one, interest is calculated on the full principal balance, so a large portion of the payment goes to interest. As the balance decreases each month, less interest accrues and more of the fixed payment is applied to principal. By the final months, nearly the entire payment reduces the remaining balance. The amortization table shows this shift row by row.</p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">Edge cases and constraints</h3>
+    <p class="text-secondary seo-p-none" >When the interest rate is zero, the formula degenerates to a simple equal-division: principal divided by months. If the down payment equals or exceeds the vehicle price, the principal is zero and no loan is needed. The calculator clamps negative principal values to zero, preventing invalid states. All arithmetic uses IEEE 754 double-precision floating point, which provides sufficient accuracy for financial calculations at the cent level.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700;  margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is a good car loan interest rate?', a: 'Interest rates vary by credit score, lender, and whether the vehicle is new or used. In 2024–2025, rates for borrowers with excellent credit typically range from 5–8% for new cars and 7–12% for used cars. Rates above 15% are generally considered high and warrant negotiation or credit improvement before purchasing.' },
-        { q: 'Should I make a larger down payment?', a: 'A larger down payment reduces your loan principal, lowering both monthly payments and total interest paid. It also reduces the risk of being "upside down" on the loan (owing more than the car is worth). A 20% down payment is a common recommendation, though any amount helps.' },
-        { q: 'Is a longer loan term better?', a: 'A longer term lowers monthly payments but significantly increases total interest paid. A 72-month loan on a $30,000 vehicle at 7% costs roughly $3,500 more in interest than a 48-month loan. Longer terms also risk negative equity as cars depreciate faster than the loan is paid down.' },
-        { q: 'Can I pay off my car loan early?', a: 'Most car loans allow early repayment without penalty, but check your loan agreement first. Making extra principal payments reduces the outstanding balance faster, saving significant interest. Even one extra payment per year can shorten a 5-year loan by several months.' },
+        { q: 'What is a good car loan interest rate?', a: 'Interest rates vary by credit score, lender, and whether the vehicle is new or used. In 2024–2025, rates for borrowers with excellent credit typically range from 5–8% for new cars and 7–12% for used cars. Rates above 15% are generally considered high and warrant negotiation or credit improvement before purchasing. Checking pre-approval rates from your bank or credit union before visiting a dealership gives you a baseline to compare against.' },
+        { q: 'Should I make a larger down payment?', a: 'A larger down payment reduces your loan principal, lowering both monthly payments and total interest paid. It also reduces the risk of being "upside down" on the loan (owing more than the car is worth). A 20% down payment is a common recommendation, though any amount helps. If you have high-interest debt (credit cards, personal loans), prioritizing that payoff over a larger car down payment may be mathematically better.' },
+        { q: 'Is a longer loan term better?', a: 'A longer term lowers monthly payments but significantly increases total interest paid. A 72-month loan on a $30,000 vehicle at 7% costs roughly $3,500 more in interest than a 48-month loan. Longer terms also risk negative equity as cars depreciate faster than the loan is paid down. Financial advisors generally recommend keeping car payments under 10% of take-home pay and the loan term at 60 months or fewer.' },
+        { q: 'Can I pay off my car loan early?', a: 'Most car loans allow early repayment without penalty, but check your loan agreement first. Making extra principal payments reduces the outstanding balance faster, saving significant interest. Even one extra payment per year can shorten a 5-year loan by several months. Some lenders apply extra payments to future installments rather than reducing principal — always specify that extra amounts should go toward principal reduction.' },
+        { q: 'How does a trade-in affect my loan?', a: 'A trade-in acts like an additional down payment, reducing the principal you need to finance. Enter your vehicle\'s trade-in value in the down payment field along with any cash down payment to see the combined effect. Be aware that dealerships may offer less than private-sale value, so comparing trade-in vs selling independently is worthwhile. The negative equity on a trade-in (if you owe more than it\'s worth) gets added to the new loan principal.' },
+        { q: 'What is the difference between APR and interest rate?', a: 'The interest rate is the cost of borrowing the principal. APR (Annual Percentage Rate) includes the interest rate plus additional lender fees, origination charges, and other costs rolled into the loan, expressed as a yearly percentage. APR is always equal to or higher than the interest rate. Use the APR figure in this calculator for the most accurate total-cost comparison between different loan offers.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600;  margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="text-primary seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="text-secondary seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
+      <div class="surface-2 border-theme seo-disclaimer" >
+        <p class="text-muted seo-card-body" style="margin:0"><strong class="text-secondary">Disclaimer:</strong> This calculator is for educational and planning purposes only. It does not constitute financial advice. Actual loan terms, fees, and rates vary by lender, credit profile, and jurisdiction. Consult a licensed financial advisor or your lender before making borrowing decisions.</p>
+      </div>
     </div>
   </div>
 
@@ -153,12 +166,12 @@ const tool = tools.find(t => t.slug === 'car-loan-amortization-calculator')!;
     const body    = document.getElementById('table-body')!;
     const display = showAll ? schedule : schedule.slice(0, 12);
     body.innerHTML = display.map((r, i) => `
-      <tr style="border-bottom:1px solid #F1F5F9; background:${i % 2 === 0 ? '#fff' : '#F8FAFC'};">
-        <td style="padding:0.4rem 0.75rem; text-align:right; color:#64748B;">${r.mo}</td>
-        <td style="padding:0.4rem 0.75rem; text-align:right; ">${fmt(r.payment)}</td>
-        <td style="padding:0.4rem 0.75rem; text-align:right; color:#0369A1;">${fmt(r.principal)}</td>
-        <td style="padding:0.4rem 0.75rem; text-align:right; color:#EA580C;">${fmt(r.interest)}</td>
-        <td style="padding:0.4rem 0.75rem; text-align:right; color:#64748B;">${fmt(r.balance)}</td>
+      <tr style="border-bottom:1px solid var(--border); background:${i % 2 === 0 ? 'var(--bg-surface)' : 'var(--bg-surface-2)'};">
+        <td style="padding:0.4rem 0.75rem; text-align:right; color:var(--text-muted);">${r.mo}</td>
+        <td style="padding:0.4rem 0.75rem; text-align:right;">${fmt(r.payment)}</td>
+        <td style="padding:0.4rem 0.75rem; text-align:right; color:var(--card-blue-text);">${fmt(r.principal)}</td>
+        <td style="padding:0.4rem 0.75rem; text-align:right; color:var(--card-orange-text);">${fmt(r.interest)}</td>
+        <td style="padding:0.4rem 0.75rem; text-align:right; color:var(--text-muted);">${fmt(r.balance)}</td>
       </tr>`).join('');
     const btn = document.getElementById('toggle-table')!;
     btn.textContent   = showAll ? 'Show less' : `Show all ${schedule.length} months`;

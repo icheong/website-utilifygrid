@@ -9,21 +9,20 @@ const tool = tools.find(t => t.slug === 'sql-to-nosql')!;
 
   <!-- ═══ THE TOOL ═══ -->
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">
       Paste your SQL query
     </h2>
 
     <!-- Output format toggle -->
-    <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+    <div class="toggle-group" style="margin-bottom:1.25rem;">
       {[
-        ['shell',    '🐚 MongoDB Shell'],
-        ['nodejs',   '🟢 Node.js Driver'],
-        ['mongoose', '🍃 Mongoose'],
+        ['shell',    'MongoDB Shell'],
+        ['nodejs',   'Node.js Driver'],
+        ['mongoose', 'Mongoose'],
       ].map(([mode, label], i) => (
         <button
-          class="format-btn"
+          class={`toggle-btn${i === 0 ? ' active' : ''}`}
           data-format={mode}
-          style={`padding:0.45rem 1rem; border-radius:0.5rem; font-size:0.85rem; font-weight:500; border:1.5px solid ${i === 0 ? '#1D4ED8' : '#E2E8F0'}; background:${i === 0 ? '#EFF6FF' : '#fff'}; color:${i === 0 ? '#1D4ED8' : '#475569'}; cursor:pointer; transition:all 0.15s;`}
         >
           {label}
         </button>
@@ -36,19 +35,17 @@ const tool = tools.find(t => t.slug === 'sql-to-nosql')!;
       <!-- Input -->
       <div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-          <span style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em;">SQL Input</span>
-          <button id="load-sample-btn"
-            style="font-size:0.75rem; color:#1D4ED8; background:none; border:none; cursor:pointer; font-weight:500; padding:0; text-decoration:underline;">
+          <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">SQL Input</span>
+          <button id="load-sample-btn" class="btn-secondary" style="padding:0.25rem 0.65rem; font-size:0.75rem;">
             Load sample
           </button>
         </div>
         <textarea
           id="sql-input"
+          class="input-themed"
           spellcheck="false"
           placeholder={`Paste your SQL query here…\n\nSELECT name, email\nFROM users\nWHERE age > 25\nORDER BY name ASC\nLIMIT 10`}
-          style="width:100%; height:280px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; line-height:1.6; resize:vertical; outline:none; box-sizing:border-box; transition:border-color 0.15s;"
-          onfocus="this.style.borderColor='#1D4ED8';"
-          onblur="this.style.borderColor='#E2E8F0';"
+          style="height:280px; font-family:'Fira Code',monospace; font-size:0.82rem; line-height:1.6; resize:vertical;"
         ></textarea>
         <div id="sql-error" style="display:none; margin-top:0.5rem; color:#DC2626; font-size:0.8rem; background:#FEF2F2; border:1px solid #FECACA; border-radius:0.5rem; padding:0.5rem 0.75rem;"></div>
       </div>
@@ -56,49 +53,36 @@ const tool = tools.find(t => t.slug === 'sql-to-nosql')!;
       <!-- Output -->
       <div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-          <span style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em;" id="output-label">MongoDB Shell Output</span>
-          <button id="copy-output-btn"
-            style="font-size:0.75rem; color:#475569; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.4rem; cursor:pointer; font-weight:500; padding:0.2rem 0.65rem; transition:all 0.15s;"
-            onmouseover="this.style.background='#EFF6FF'; this.style.color='#1D4ED8'; this.style.borderColor='#BFDBFE';"
-            onmouseout="this.style.background='#F8FAFC'; this.style.color='#475569'; this.style.borderColor='#E2E8F0';"
-          >
+          <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;" id="output-label">MongoDB Shell Output</span>
+          <button id="copy-output-btn" class="btn-secondary" style="padding:0.25rem 0.65rem; font-size:0.75rem;">
             Copy
           </button>
         </div>
         <textarea
           id="nosql-output"
+          class="input-themed"
           readonly
           placeholder="Converted NoSQL query will appear here…"
-          style="width:100%; height:280px; padding:0.875rem; border:1.5px solid #E2E8F0; border-radius:0.75rem; font-size:0.82rem; font-family:'Fira Code',monospace; color:#0F172A; line-height:1.6; resize:vertical; outline:none; box-sizing:border-box; background:#F8FAFC;"
+          style="height:280px; font-family:'Fira Code',monospace; font-size:0.82rem; line-height:1.6; resize:vertical; background:var(--bg-surface-2);"
         ></textarea>
       </div>
 
     </div>
 
     <!-- Pipeline stage breakdown -->
-    <div id="pipeline-breakdown" style="display:none; margin-top:1rem; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:0.75rem; padding:1rem 1.25rem;">
+    <div id="pipeline-breakdown" style="display:none; margin-top:1rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:1rem 1.25rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-        <span style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em;">Pipeline Stages</span>
+        <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">Pipeline Stages</span>
       </div>
       <div id="stages-list" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
     </div>
 
     <!-- Buttons -->
     <div style="margin-top:1rem; display:flex; gap:0.75rem; align-items:center;">
-      <button
-        id="convert-btn"
-        style="padding:0.7rem 1.75rem; background:#1D4ED8; color:#fff; border:none; border-radius:0.625rem; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s;"
-        onmouseover="this.style.background='#1E3A8A';"
-        onmouseout="this.style.background='#1D4ED8';"
-      >
+      <button id="convert-btn" class="btn-primary">
         Convert
       </button>
-      <button
-        id="clear-btn"
-        style="padding:0.7rem 1.25rem; background:#fff; color:#475569; border:1.5px solid #E2E8F0; border-radius:0.625rem; font-size:0.9rem; font-weight:500; cursor:pointer; transition:all 0.15s;"
-        onmouseover="this.style.background='#F8FAFC';"
-        onmouseout="this.style.background='#fff';"
-      >
+      <button id="clear-btn" class="btn-secondary">
         Clear
       </button>
       <span id="success-msg" style="display:none; font-size:0.82rem; color:#16A34A; font-weight:500;">✓ Converted successfully</span>
@@ -108,29 +92,45 @@ const tool = tools.find(t => t.slug === 'sql-to-nosql')!;
 
   <!-- ═══ HOW TO USE ═══ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
-      How to use the SQL to NoSQL Converter
+    <h2 class="seo-h2" >
+      Overview and Technical Context
     </h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Paste a SQL <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">SELECT</code> query into the left panel. The converter supports standard clauses including <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">WHERE</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">ORDER BY</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">LIMIT</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">JOIN</code>, and <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">GROUP BY</code> with aggregate functions.
+    <p class="seo-p" >
+      The SQL to NoSQL Converter is a client-side migration utility that transforms relational <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">SELECT</code> queries into MongoDB aggregation pipelines. Built entirely with modern vanilla JavaScript and the browser's built-in parsing APIs, the tool runs with zero server calls — your SQL never leaves your device. It supports <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">WHERE</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">ORDER BY</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">LIMIT</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">JOIN</code>, <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">GROUP BY</code>, and aggregate functions — covering the most common read patterns encountered during SQL-to-MongoDB migrations. Three output formats are available: MongoDB Shell, Node.js Driver, and Mongoose.
     </p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Choose your preferred <strong style="color:#0F172A;">output format</strong> — MongoDB Shell syntax (for the <code style="background:#F1F5F9; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">mongosh</code> console), Node.js driver code, or Mongoose model queries — using the toggle buttons at the top. Click <strong style="color:#0F172A;">Convert</strong> or simply start typing and the output updates live.
-    </p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">
-      The <strong style="color:#0F172A;">Pipeline Stages</strong> panel below the output breaks down each aggregation stage with a colour-coded label, making it easy to understand the transformation step by step. Click <strong style="color:#0F172A;">Load sample</strong> to try a pre-built query with a JOIN.
-    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Migrating a legacy relational database to MongoDB', 'A backend developer moving a MySQL or PostgreSQL schema to MongoDB can paste each critical read query into the converter to understand exactly how the equivalent aggregation pipeline should be structured, reducing trial-and-error in a production migration.'],
+        ['Learning MongoDB aggregation pipeline syntax', 'A junior developer or student familiar with SQL but new to MongoDB can use the tool to bridge the conceptual gap. Seeing how <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">JOIN</code> maps to <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$lookup</code> or how <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">GROUP BY</code> maps to <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$group</code> accelerates the learning curve significantly.'],
+        ['Generating boilerplate code for a new MongoDB-backed API', 'When building a REST or GraphQL endpoint that queries MongoDB, the converter produces copy-paste-ready code in the chosen format. This eliminates the need to manually construct aggregation arrays and reduces syntax errors in the initial scaffold.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:#0F172A; font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <!-- ═══ HOW IT WORKS ═══ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">
-      How the converter works
+    <h2 class="seo-h2" >
+      Deep-Dive Technical Mechanics
     </h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:1rem;">
-      The converter parses your SQL query into an abstract syntax tree and maps each clause to the equivalent MongoDB aggregation pipeline stage.
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">SQL Parsing Pipeline</h3>
+    <p class="seo-p" >
+      The converter begins by tokenising the input SQL using a regular expression that preserves quoted strings, numeric literals, and operator sequences. The token stream is then split into clause blocks — <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">SELECT</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">FROM</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">WHERE</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">JOIN</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">GROUP BY</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">ORDER BY</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">LIMIT</code> — by scanning for keyword positions. Each block body is then parsed by a dedicated sub-parser. For example, the SELECT sub-parser handles aggregate functions (<code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">COUNT</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">SUM</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">AVG</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">MIN</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">MAX</code>), column aliases, and table-qualified field names, producing a structured AST that the pipeline builder consumes.
     </p>
-    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:1rem;">
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Aggregation Stage Mapping</h3>
+    <p class="seo-p" >
+      The pipeline builder walks the AST and emits MongoDB stages in the correct order. JOINs become <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$lookup</code> followed by <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$unwind</code>; WHERE conditions map operators (<code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">=</code> → <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$eq</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">&gt;</code> → <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$gt</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">LIKE</code> → <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$regex</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">BETWEEN</code> → combined <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$gte/$lte</code>), and AND/OR logic becomes <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$and</code>/<code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$or</code> arrays. GROUP BY triggers a <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$group</code> stage with accumulator expressions (<code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$sum</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$avg</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$min</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$max</code>). ORDER BY and LIMIT emit <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$sort</code> and <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$limit</code> respectively. SELECT fields (when not <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">*</code>) produce a <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">$project</code> stage that shapes the output documents.
+    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Output Format Wrapping</h3>
+    <p class="seo-p" >
+      Once the pipeline array is built, the output formatter wraps it in the syntax required by the selected target. MongoDB Shell wraps the stages in <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">db.collection.aggregate([...])</code>. Node.js Driver wraps them in an async function using the official <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">mongodb</code> package with proper connection handling. Mongoose wraps them in a <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">Model.aggregate()</code> call. All three produce identical aggregation logic — only the surrounding boilerplate differs. The colour-coded Pipeline Stages panel renders each stage with its name, configuration, and a brief description so you can audit the conversion before copying.
+    </p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:1rem">
       {[
         ['SELECT col1, col2',    '$project',  'Projects only the specified fields'],
         ['SELECT *',             '(no $project)', 'Returns all fields by default'],
@@ -141,66 +141,93 @@ const tool = tools.find(t => t.slug === 'sql-to-nosql')!;
         ['GROUP BY col',         '$group',    'Groups documents and applies aggregates'],
         ['COUNT / SUM / AVG',    '$group accumulators', 'Maps to $sum, $avg, etc.'],
       ].map(([sql, mongo, desc]) => (
-        <div style="display:grid; grid-template-columns:1fr 1fr 1.5fr; gap:0.5rem; background:#fff; border:1px solid #E2E8F0; border-radius:0.5rem; padding:0.6rem 0.875rem; font-size:0.8rem; align-items:center;">
-          <code style="color:#1D4ED8; background:#EFF6FF; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.78rem;">{sql}</code>
-          <code style="color:#16A34A; background:#F0FDF4; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.78rem;">{mongo}</code>
-          <span style="color:#475569;">{desc}</span>
+        <div class="border-theme" style="display:grid; grid-template-columns:1fr 1fr 1.5fr; gap:0.5rem; background:#fff; border-radius:0.5rem; padding:0.6rem 0.875rem; font-size:0.8rem; align-items:center">
+          <code style="color:#1D4ED8; background:#EFF6FF; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.78rem">{sql}</code>
+          <code style="color:#16A34A; background:#F0FDF4; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.78rem">{mongo}</code>
+          <span style="color:#475569">{desc}</span>
         </div>
       ))}
     </div>
-    <div style="background:#fff; border:1px solid #E2E8F0; border-radius:0.5rem; padding:0.5rem 0.875rem; margin-bottom:0.75rem;">
-      <div style="display:grid; grid-template-columns:1fr 1fr 1.5fr; font-size:0.72rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.05em; padding:0.25rem 0.4rem;">
-        <span>SQL Clause</span><span>MongoDB Stage</span><span>Description</span>
-      </div>
-    </div>
-    <p style="color:#64748B; font-size:0.82rem; line-height:1.6;">
-      WHERE conditions map SQL operators (<code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">=</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">&gt;</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">&lt;</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">LIKE</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">IN</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">BETWEEN</code>) to their MongoDB equivalents (<code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$eq</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$gt</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$lt</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$regex</code>, <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$in</code>, and combined <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem;">$gte/$lte</code>). All conversion runs entirely in your browser — no SQL is ever sent to a server.
-    </p>
   </div>
 
   <!-- ═══ FAQ ═══ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">
+    <h2 class="seo-h2-faq" >
       Frequently asked questions
     </h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
 
       {[
         {
           q: 'What SQL statements does this tool support?',
-          a: 'The converter handles SELECT queries including WHERE conditions (with AND/OR), ORDER BY, LIMIT, GROUP BY with aggregate functions (COUNT, SUM, AVG, MIN, MAX), and JOIN / LEFT JOIN clauses. INSERT, UPDATE, DELETE, and DDL statements are not currently supported — the focus is on read queries, which are the most common use case when migrating from SQL to MongoDB.',
+          a: 'The converter handles SELECT queries including WHERE conditions (with AND/OR), ORDER BY, LIMIT, GROUP BY with aggregate functions (COUNT, SUM, AVG, MIN, MAX), and JOIN / LEFT JOIN clauses. INSERT, UPDATE, DELETE, and DDL statements are not supported — the focus is on read queries, which are the most common use case when migrating from SQL to MongoDB.',
         },
         {
           q: 'What is a MongoDB aggregation pipeline?',
-          a: 'An aggregation pipeline is MongoDB\'s framework for data processing. It works like a Unix pipe: documents enter the pipeline and pass through a sequence of stages — such as $match (filter), $project (reshape), $sort, $group, and $lookup (join) — with each stage transforming the data before passing it to the next. Pipelines are more powerful than simple find() queries and are the closest equivalent to complex SQL SELECT statements.',
+          a: 'An aggregation pipeline is MongoDB\'s framework for data processing. Documents enter the pipeline and pass through a sequence of stages — such as $match, $project, $sort, $group, and $lookup — with each stage transforming the data before passing it to the next. Pipelines are more powerful than simple find() queries and are the closest equivalent to complex SQL SELECT statements.',
         },
         {
           q: 'How are SQL JOINs translated?',
-          a: 'SQL JOINs are converted to the $lookup aggregation stage, which performs a left outer join between two collections. The converter maps the JOIN\'s ON clause to the $lookup fields: "from" (the foreign collection), "localField", "foreignField", and "as" (the output array field name). Note that MongoDB\'s $lookup always produces a left outer join — results from the joined collection appear as an array, even for INNER JOIN syntax.',
+          a: 'SQL JOINs are converted to the $lookup aggregation stage, which performs a left outer join between two collections. The converter maps the JOIN\'s ON clause to the $lookup fields: "from" (the foreign collection), "localField", "foreignField", and "as" (the output array field name). For regular JOINs (not LEFT JOINs), an additional $unwind stage is added to flatten the joined array into individual documents.',
         },
         {
           q: 'Does the converter handle subqueries or nested SELECTs?',
-          a: 'Not currently. The parser handles single-level SELECT queries. Subqueries and correlated subqueries would require a much more complex AST and are beyond the scope of a quick-conversion utility. For complex queries, the tool gives you a solid starting point that you can extend manually in your MongoDB code.',
+          a: 'Not currently. The parser handles single-level SELECT queries with standard clauses. Subqueries and correlated subqueries require a more complex AST traversal and are beyond the scope of a quick-conversion utility. For complex queries, the tool provides a solid starting point that you can extend manually in your MongoDB code.',
         },
         {
           q: 'What is the difference between the three output formats?',
-          a: 'MongoDB Shell produces the mongosh syntax (db.collection.aggregate([…])) you\'d paste directly into a terminal. Node.js Driver outputs JavaScript code using the official mongodb package with proper async/await patterns. Mongoose generates code using the Mongoose ODM\'s Model.aggregate() method. All three produce the same pipeline — only the wrapper syntax differs.',
+          a: 'MongoDB Shell produces the mongosh syntax (db.collection.aggregate([...])) you can paste directly into a terminal. Node.js Driver outputs JavaScript code using the official mongodb package with async/await patterns and proper connection handling. Mongoose generates code using the Mongoose ODM\'s Model.aggregate() method with schema-aware model references. All three produce the same pipeline — only the wrapper syntax differs.',
         },
         {
           q: 'Is my SQL query sent to any server?',
-          a: 'No. The entire parsing and conversion runs locally in your browser using JavaScript. Your SQL queries never leave your device — there is no backend, no API call, and no data stored anywhere.',
+          a: 'No. The entire parsing and conversion runs locally in your browser using JavaScript. Your SQL queries never leave your device — there is no backend, no API call, and no data stored anywhere. This makes the tool suitable for converting queries that reference sensitive or proprietary database schemas.',
+        },
+        {
+          q: 'Why does the pipeline include $unwind after $lookup?',
+          a: 'MongoDB\'s $lookup always returns matched documents as an array, even when a single document matches. For standard (non-LEFT) JOINs, the converter adds an $unwind stage to flatten this array into individual documents, matching the behaviour of SQL INNER JOIN where each match produces one row. For LEFT JOINs, $unwind includes preserveNullAndEmptyArrays: true so unmatched documents are retained with a null array.',
+        },
+        {
+          q: 'Can I convert queries with nested aggregate functions like COUNT(DISTINCT col)?',
+          a: 'The current parser handles standard aggregate functions (COUNT, SUM, AVG, MIN, MAX) with a single field argument. COUNT(DISTINCT col) and other advanced expressions are not yet supported. For these cases, the converted pipeline gives you a working foundation — you can manually add $group accumulators with $addToSet and $size to approximate DISTINCT behaviour in MongoDB.',
         },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          class="seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
 
     </div>
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What SQL statements does this tool support?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The converter handles SELECT queries including WHERE conditions (with AND/OR), ORDER BY, LIMIT, GROUP BY with aggregate functions (COUNT, SUM, AVG, MIN, MAX), and JOIN / LEFT JOIN clauses. INSERT, UPDATE, DELETE, and DDL statements are not supported." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a MongoDB aggregation pipeline?",
+          "acceptedAnswer": { "@type": "Answer", "text": "An aggregation pipeline is MongoDB's framework for data processing. Documents pass through a sequence of stages — $match, $project, $sort, $group, $lookup — each transforming the data before passing it to the next." }
+        },
+        {
+          "@type": "Question",
+          "name": "How are SQL JOINs translated?",
+          "acceptedAnswer": { "@type": "Answer", "text": "SQL JOINs are converted to the $lookup aggregation stage, which performs a left outer join. For regular JOINs, an additional $unwind stage flattens the joined array. LEFT JOINs use preserveNullAndEmptyArrays: true." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my SQL query sent to any server?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The entire parsing and conversion runs locally in your browser. Your SQL queries never leave your device — there is no backend, no API call, and no data stored anywhere." }
+        }
+      ]
+    })} />
   </div>
 
 </ToolLayout>
@@ -224,7 +251,7 @@ const tool = tools.find(t => t.slug === 'sql-to-nosql')!;
   const loadSampleBtn = document.getElementById('load-sample-btn') as HTMLButtonElement;
   const successMsg    = document.getElementById('success-msg')!;
   const outputLabel   = document.getElementById('output-label')!;
-  const formatBtns    = document.querySelectorAll<HTMLButtonElement>('.format-btn');
+  const formatBtns    = document.querySelectorAll<HTMLButtonElement>('.toggle-btn');
   const pipelineBreakdown = document.getElementById('pipeline-breakdown')!;
   const stagesList    = document.getElementById('stages-list')!;
 
@@ -969,14 +996,8 @@ runQuery();`;
   formatBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       activeFormat = btn.dataset.format as typeof activeFormat;
-      formatBtns.forEach(b => {
-        b.style.background  = '#fff';
-        b.style.color       = '#475569';
-        b.style.borderColor = '#E2E8F0';
-      });
-      btn.style.background  = '#EFF6FF';
-      btn.style.color       = '#1D4ED8';
-      btn.style.borderColor = '#1D4ED8';
+      formatBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
       outputLabel.textContent = formatLabels[activeFormat];
       if (sqlInput.value.trim()) convert();
     });
@@ -997,14 +1018,10 @@ runQuery();`;
     if (!nosqlOutput.value) return;
     navigator.clipboard.writeText(nosqlOutput.value).then(() => {
       copyBtn.textContent = '✓ Copied!';
-      copyBtn.style.background   = '#F0FDF4';
-      copyBtn.style.color        = '#16A34A';
-      copyBtn.style.borderColor  = '#BBF7D0';
+      copyBtn.classList.add('btn-success');
       setTimeout(() => {
         copyBtn.textContent = 'Copy';
-        copyBtn.style.background  = '#F8FAFC';
-        copyBtn.style.color       = '#475569';
-        copyBtn.style.borderColor = '#E2E8F0';
+        copyBtn.classList.remove('btn-success');
       }, 2000);
     });
   });

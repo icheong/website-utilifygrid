@@ -181,31 +181,34 @@ const tool = tools.find(t => t.slug === 'colour-palette-css-generator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Colour Palette &amp; CSS Generator Overview &amp; Technical Context</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <h2 class="font-display seo-h2" >Colour Palette &amp; CSS Generator Overview &amp; Technical Context</h2>
+    <p class="text-secondary seo-p" >
       This all-in-one colour conversion and CSS generation tool combines HEX-to-RGB conversion, RGB-to-HEX conversion, HSL translation, Tailwind CSS palette matching, and live CSS output generation into a single interface. Built entirely with vanilla JavaScript and running 100% client-side in the browser, every computation happens locally using standard browser APIs — no colour data is transmitted to any server, and no cookies or tracking scripts execute. The zero-server-latency architecture ensures instant updates as you type, providing complete privacy for your design workflow.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <p class="text-secondary seo-p" >
       Switch between HEX, RGB, and HSL input modes using the toggle tabs, or type any valid colour format directly into the text field. The tool automatically parses HEX codes (with or without the <code>#</code> prefix, including 3-digit shorthand), RGB functions like <code>rgb(59, 130, 246)</code>, and HSL functions like <code>hsl(217, 91%, 59%)</code>. All output formats update simultaneously, and every result includes a one-click copy button. The CSS Outputs section provides ready-to-paste custom properties, rgba values with an opacity slider, and linear gradients with adjustable angles.
     </p>
 
-    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
-      <strong>Front-end development and CSS authoring:</strong> Developers frequently receive brand colours as HEX codes from designers but need the RGB equivalent for CSS functions like <code>rgba()</code>, gradients, or dynamic colour manipulation with JavaScript. This tool eliminates manual base-16 arithmetic by converting instantly and providing copy-ready strings for direct insertion into stylesheets, including CSS custom properties and linear gradients.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
-      <strong>Tailwind CSS integration:</strong> When migrating a design system to Tailwind CSS, developers need to find the closest utility class for brand colours that may not align exactly with Tailwind's predefined palette. The tool uses CIELAB colour space Delta-E distance calculations to identify the five most visually similar Tailwind classes, ranked by perceptual similarity, enabling rapid palette alignment without manual visual comparison.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Design system auditing and accessibility:</strong> Teams standardising a design system often inherit colour palettes in mixed formats — some assets use HEX, others use RGB, and component libraries may require HSL for CSS custom properties. This converter enables rapid format normalisation across an entire palette, while the opacity slider and gradient generator support creating accessible colour combinations with proper contrast ratios.
-    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Front-end development and CSS authoring', 'Developers frequently receive brand colours as HEX codes from designers but need the RGB equivalent for CSS functions like rgba(), gradients, or dynamic colour manipulation with JavaScript. This tool eliminates manual base-16 arithmetic by converting instantly and providing copy-ready strings for direct insertion into stylesheets, including CSS custom properties and linear gradients.'],
+        ['Tailwind CSS integration', 'When migrating a design system to Tailwind CSS, developers need to find the closest utility class for brand colours that may not align exactly with Tailwind's predefined palette. The tool uses CIELAB colour space Delta-E distance calculations to identify the five most visually similar Tailwind classes, ranked by perceptual similarity, enabling rapid palette alignment without manual visual comparison.'],
+        ['Design system auditing and accessibility', 'Teams standardising a design system often inherit colour palettes in mixed formats — some assets use HEX, others use RGB, and component libraries may require HSL for CSS custom properties. This converter enables rapid format normalisation across an entire palette, while the opacity slider and gradient generator support creating accessible colour combinations with proper contrast ratios.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Deep-Dive: Colour Conversion Mechanics &amp; Mathematical Logic</h2>
+    <h2 class="font-display seo-h2" >Deep-Dive: Colour Conversion Mechanics &amp; Mathematical Logic</h2>
 
-    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Core Conversion Formulas</h3>
-    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+    <h3 class="font-display seo-h3-sm" >Core Conversion Formulas</h3>
+    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem">
       <div class="info-row">
         <span class="info-label">HEX to RGB</span>
         <span class="info-value">R = parseInt(hex[0..1], 16); G = parseInt(hex[2..3], 16); B = parseInt(hex[4..5], 16)</span>
@@ -224,20 +227,20 @@ const tool = tools.find(t => t.slug === 'colour-palette-css-generator')!;
       </div>
     </div>
 
-    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Tailwind Matching via CIELAB Delta-E</h3>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <h3 class="font-display seo-h3-sm" >Tailwind Matching via CIELAB Delta-E</h3>
+    <p class="text-secondary seo-p" >
       The Tailwind matching algorithm converts both the input colour and every palette entry from sRGB to the CIELAB (L*a*b*) colour space, which models human colour perception more accurately than RGB. It first applies inverse sRGB companding to linearise the channel values, then transforms through the CIE XYZ intermediate using D65 illuminant reference points. The Delta-E (Euclidean distance in L*a*b* space) between the input and each palette entry is computed, and the five smallest distances are returned as matches. A Delta-E under 2 is perceptually indistinguishable to most observers; under 5 is a close match.
     </p>
 
-    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Edge Cases and Input Validation</h3>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+    <h3 class="font-display seo-h3-sm" >Edge Cases and Input Validation</h3>
+    <p class="text-secondary seo-p-none" >
       Three-character hex codes like <code>#F0A</code> are automatically expanded to <code>#FF00AA</code> per the CSS specification where each digit is doubled. RGB channel values are clamped to 0-255, HSL hue to 0-360, and saturation/lightness to 0-100%. Invalid inputs produce a clear error state rather than <code>NaN</code>. The conversion uses IEEE 754 double-precision arithmetic internally, with final integer values rounded to the nearest whole number. The opacity slider operates independently of the base colour conversion, appending an alpha value to the CSS output without affecting the underlying RGB/HSL calculations.
     </p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
           q: "What colour formats does this tool accept as input?",
@@ -265,10 +268,10 @@ const tool = tools.find(t => t.slug === 'colour-palette-css-generator')!;
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

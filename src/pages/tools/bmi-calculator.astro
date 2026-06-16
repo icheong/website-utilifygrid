@@ -100,32 +100,35 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
 
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">BMI Calculator Overview &amp; Technical Context</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <h2 class="font-display seo-h2" >BMI Calculator Overview &amp; Technical Context</h2>
+    <p class="text-secondary seo-p" >
       This Body Mass Index (BMI) calculator computes your BMI using the standardised formula published by the World Health Organisation (WHO) and the National Institutes of Health (NIH). The tool runs entirely in your browser using vanilla JavaScript — no data is transmitted to any server, no cookies are set, and no tracking scripts execute. The 100% client-side architecture means your health metrics remain completely private, with zero server latency and zero data retention.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <p class="text-secondary seo-p" >
       Select your preferred unit system — metric (kilograms and centimetres) or imperial (pounds and inches). Enter your weight and height, then click <strong>Calculate BMI</strong>. The result appears instantly with a colour-coded category label indicating whether the value falls into the underweight, normal weight, overweight, or obese range. The calculator handles both unit systems natively: the metric path divides weight in kilograms by height in metres squared, while the imperial path applies the standard 703 conversion factor to produce an equivalent result.
     </p>
 
-    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
-      <strong>Clinical triage and health screenings:</strong> General practitioners and practice nurses routinely calculate BMI as a first-step screening metric during routine health assessments. This tool replicates the exact computation used in clinical settings, enabling patients to understand their own readings before or after a consultation. The instant result and clear category labelling remove ambiguity when interpreting a BMI figure against WHO thresholds.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.5rem;">
-      <strong>Fitness tracking and goal-setting:</strong> Personal trainers and individuals following a structured fitness programme use BMI as a baseline reference point. When paired with body composition measurements (such as waist circumference or body fat percentage), BMI provides a quick longitudinal indicator of weight management progress. This calculator's instant feedback loop makes it suitable for repeated use during training cycles.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Insurance and occupational health assessments:</strong> Many life insurance providers and occupational health programmes reference BMI categories when assessing risk profiles. Understanding your BMI category before completing a health declaration form helps you provide accurate information. The metric and imperial toggle ensures compatibility with measurement systems used across different countries and industries.
-    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Clinical triage and health screenings', 'General practitioners and practice nurses routinely calculate BMI as a first-step screening metric during routine health assessments. This tool replicates the exact computation used in clinical settings, enabling patients to understand their own readings before or after a consultation. The instant result and clear category labelling remove ambiguity when interpreting a BMI figure against WHO thresholds.'],
+        ['Fitness tracking and goal-setting', 'Personal trainers and individuals following a structured fitness programme use BMI as a baseline reference point. When paired with body composition measurements (such as waist circumference or body fat percentage), BMI provides a quick longitudinal indicator of weight management progress. This calculator's instant feedback loop makes it suitable for repeated use during training cycles.'],
+        ['Insurance and occupational health assessments', 'Many life insurance providers and occupational health programmes reference BMI categories when assessing risk profiles. Understanding your BMI category before completing a health declaration form helps you provide accurate information. The metric and imperial toggle ensures compatibility with measurement systems used across different countries and industries.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Deep-Dive: BMI Formulas, Technical Mechanics &amp; Use Cases</h2>
+    <h2 class="font-display seo-h2" >Deep-Dive: BMI Formulas, Technical Mechanics &amp; Use Cases</h2>
 
-    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">Core Formulas</h3>
-    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+    <h3 class="font-display seo-h3-sm" >Core Formulas</h3>
+    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem">
       <div class="info-row">
         <span class="info-label">Metric</span>
         <span class="info-value">BMI = weight (kg) ÷ height² (m²)</span>
@@ -136,25 +139,25 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
       </div>
     </div>
 
-    <h3 style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin:1rem 0 0.5rem;">How the Computation Works</h3>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <h3 class="font-display seo-h3-sm" >How the Computation Works</h3>
+    <p class="text-secondary seo-p" >
       The BMI formula was devised by Adolphe Quetelet in the 1830s and remains the internationally standardised method for classifying adult body weight relative to height. The metric path converts the user's height from centimetres to metres (dividing by 100), squares the result, then divides weight by that squared value. The imperial path applies the constant factor of 703 — derived from the ratio of pounds-per-square-inch to kilograms-per-square-metre — to produce a dimensionless number comparable to the metric result.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <p class="text-secondary seo-p" >
       Both paths compute BMI to full IEEE 754 double-precision floating-point accuracy before rounding to one decimal place for display. The result is then classified against the WHO's widely adopted thresholds: Underweight (&lt;18.5), Normal weight (18.5–24.9), Overweight (25–29.9), and Obese (≥30). Each category is assigned a distinct colour — blue for underweight, green for normal, amber for overweight, and red for obese — to provide immediate visual context.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
+    <p class="text-secondary seo-p" >
       <strong>Edge cases handled:</strong> The calculator validates that both weight and height are positive, non-zero numbers before computing. Entering zero or leaving fields blank triggers a clear error message rather than producing <code>Infinity</code> or <code>NaN</code>. Very extreme inputs (e.g. 500 kg or 300 cm) are accepted without capping, allowing the tool to handle legitimately large values while remaining transparent about its output.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
+    <p class="text-secondary seo-p-none" >
       <strong>Note on BMI limitations:</strong> BMI does not distinguish between muscle mass, bone density, and fat mass. An athletic individual with significant muscle may register as overweight or obese despite having low body fat. For a complete health picture, BMI should be interpreted alongside additional metrics such as waist circumference, waist-to-hip ratio, body fat percentage, and blood markers. The WHO explicitly states that BMI is a screening tool, not a diagnostic instrument.
     </p>
   </div>
 
   <!-- FAQ ─────────────────────────────────────── -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
           q: "What is a healthy BMI?",
@@ -182,17 +185,17 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
     </div>
 
-    <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border); font-size:0.78rem; color:var(--text-muted); line-height:1.8;">
-      <strong style="color:var(--text-secondary);">Disclaimer:</strong> This calculator is provided for educational and informational purposes only. It does not constitute medical, nutritional, or health advice. BMI is a screening tool with known limitations — it does not account for muscle mass, bone density, age, sex, or fat distribution. Always consult a qualified healthcare professional for personalised health assessments and treatment decisions.
+    <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border); font-size:0.78rem; color:var(--text-muted); line-height:1.8">
+      <strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This calculator is provided for educational and informational purposes only. It does not constitute medical, nutritional, or health advice. BMI is a screening tool with known limitations — it does not account for muscle mass, bone density, age, sex, or fat distribution. Always consult a qualified healthcare professional for personalised health assessments and treatment decisions.
     </div>
   </div>
 

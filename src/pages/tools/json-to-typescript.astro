@@ -46,31 +46,34 @@ const tool = tools.find(t => t.slug === 'json-to-typescript')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">JSON to TypeScript Generator — Overview &amp; Modern Technical Context</h2>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+    <h2 class="font-display seo-h2" >JSON to TypeScript Generator — Overview &amp; Modern Technical Context</h2>
+    <p class="text-secondary seo-p" >
       TypeScript has become the dominant typed superset of JavaScript, with over 80% of new JavaScript projects adopting it for compile-time type safety. A frequent workflow bottleneck is manually translating JSON payloads — from API responses, configuration files, or test fixtures — into TypeScript type definitions. This generator automates that process entirely in the browser using vanilla JavaScript. Paste any JSON object, and the tool recursively infers TypeScript interfaces or Zod validation schemas in real time. No data leaves your browser; no server calls are made; no cookies or tracking scripts execute.
     </p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+    <p class="text-secondary seo-p" >
       The tool supports two output modes: <strong>TypeScript Interface</strong> (generates exported interface declarations with proper nesting) and <strong>Zod Schema</strong> (generates runtime validation schemas using the Zod library). Both modes handle nested objects, arrays of any depth, optional fields detected from <code>null</code> values, and union types derived from mixed-type arrays. Paste JSON into the left panel and the output updates automatically — no manual "Generate" click required, though one is available. Click <strong>Copy</strong> to export the result directly into your codebase.
     </p>
 
-    <h3 style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;color:var(--text-primary);margin:1.5rem 0 0.75rem;">Real-World Applications &amp; Use Cases</h3>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.5rem;">
-      <strong>API response typing:</strong> When consuming REST or GraphQL APIs, developers receive JSON payloads that must be typed in the application. Instead of manually writing interfaces for each endpoint — which is error-prone and tedious — paste a sample response into this generator to produce a complete, ready-to-use TypeScript interface. This is particularly valuable when working with large API surfaces (e.g., Stripe, Twilio, or internal microservices) where dozens of response types need definitions.
-    </p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.5rem;">
-      <strong>Configuration file validation:</strong> Projects that load configuration from JSON or YAML files benefit from both TypeScript types and Zod schemas. The interface mode provides compile-time safety when accessing config properties, while the Zod mode adds runtime validation that catches malformed config at application startup. This dual approach is standard practice in production Node.js applications.
-    </p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">
-      <strong>Test fixture generation:</strong> When writing integration tests, developers often need typed mock data that matches API contracts. Generating a TypeScript interface from a real API response ensures test fixtures are type-safe and will compile against the actual data shape. The Zod mode is equally useful for creating test schemas that validate mock data matches expected structures.
-    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['API response typing', 'When consuming REST or GraphQL APIs, developers receive JSON payloads that must be typed in the application. Instead of manually writing interfaces for each endpoint — which is error-prone and tedious — paste a sample response into this generator to produce a complete, ready-to-use TypeScript interface. This is particularly valuable when working with large API surfaces (e.g., Stripe, Twilio, or internal microservices) where dozens of response types need definitions.'],
+        ['Configuration file validation', 'Projects that load configuration from JSON or YAML files benefit from both TypeScript types and Zod schemas. The interface mode provides compile-time safety when accessing config properties, while the Zod mode adds runtime validation that catches malformed config at application startup. This dual approach is standard practice in production Node.js applications.'],
+        ['Test fixture generation', 'When writing integration tests, developers often need typed mock data that matches API contracts. Generating a TypeScript interface from a real API response ensures test fixtures are type-safe and will compile against the actual data shape. The Zod mode is equally useful for creating test schemas that validate mock data matches expected structures.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">Deep-Dive: Type Inference Rules &amp; Schema Generation Mechanics</h2>
+    <h2 class="font-display seo-h2" >Deep-Dive: Type Inference Rules &amp; Schema Generation Mechanics</h2>
 
-    <h3 style="font-size:0.95rem;font-weight:600;color:var(--text-primary);margin:1rem 0 0.5rem;">TypeScript Interface Inference</h3>
-    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;">
+    <h3 class="font-display seo-h3-sm" >TypeScript Interface Inference</h3>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem">
       <div class="info-row"><span class="info-label">string</span><span class="info-value">JSON string → <code>string</code></span></div>
       <div class="info-row"><span class="info-label">number</span><span class="info-value">JSON number → <code>number</code> (IEEE 754 double-precision)</span></div>
       <div class="info-row"><span class="info-label">boolean</span><span class="info-value">JSON boolean → <code>boolean</code></span></div>
@@ -79,26 +82,26 @@ const tool = tools.find(t => t.slug === 'json-to-typescript')!;
       <div class="info-row"><span class="info-label">object</span><span class="info-value">Recursively generates nested interface with PascalCase naming derived from property key</span></div>
     </div>
 
-    <h3 style="font-size:0.95rem;font-weight:600;color:var(--text-primary);margin:1rem 0 0.5rem;">Zod Schema Generation</h3>
-    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;">
+    <h3 class="font-display seo-h3-sm" >Zod Schema Generation</h3>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem">
       <div class="info-row"><span class="info-label">Primitives</span><span class="info-value"><code>z.string()</code>, <code>z.number()</code>, <code>z.boolean()</code> map directly from JSON types</span></div>
       <div class="info-row"><span class="info-label">Nullable</span><span class="info-value">Fields with <code>null</code> values produce <code>.nullable().optional()</code> chain</span></div>
       <div class="info-row"><span class="info-label">Arrays</span><span class="info-value"><code>z.array()</code> wrapping inferred element type or <code>z.union()</code> for mixed arrays</span></div>
       <div class="info-row"><span class="info-label">Objects</span><span class="info-value"><code>z.object()</code> with recursive field schemas; nested objects generate separate exported schemas</span></div>
     </div>
 
-    <h3 style="font-size:0.95rem;font-weight:600;color:var(--text-primary);margin:1rem 0 0.5rem;">How the Generator Processes Input</h3>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
+    <h3 class="font-display seo-h3-sm" >How the Generator Processes Input</h3>
+    <p class="text-secondary seo-p" >
       The generator listens to <code>input</code> events on the JSON textarea. On each keystroke, it attempts <code>JSON.parse()</code> on the trimmed content. If parsing succeeds, the resulting JavaScript object is passed to either <code>inferInterface()</code> or <code>inferZod()</code> depending on the selected output mode. Both functions perform a single-pass recursive traversal of the object tree. For interface mode, each object key generates a property line with its inferred type, and nested objects trigger a new <code>export interface</code> block appended to the output. For Zod mode, the same traversal produces <code>z.object()</code> calls with nested schemas exported as standalone constants.
     </p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">
+    <p class="text-secondary seo-p-none" >
       <strong>Edge cases handled:</strong> Empty arrays produce <code>unknown[]</code> (interface) or <code>z.array(z.unknown())</code> (Zod) since no element type can be inferred. Mixed-type arrays produce union types by collecting unique inferred types via a <code>Set</code>. Top-level arrays are wrapped in a root type alias (<code>type Root = Item[]</code>) rather than an interface, since TypeScript does not allow interfaces to extend arrays. Nested object names are derived from the property key using PascalCase conversion, ensuring valid TypeScript identifiers.
     </p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {q:'Does it handle deeply nested JSON?',a:'Yes. The generator recurses through nested objects and creates sub-interfaces (or nested Zod objects) for each level. Interface names are derived from the property name using PascalCase. There is no practical depth limit — the recursion terminates naturally when it reaches primitive values (string, number, boolean, null) or empty arrays.'},
         {q:'What happens with arrays of mixed types?',a:'If an array contains elements of different types, the generator collects the unique inferred types and produces a union type (e.g., <code>(string | number)[]</code>). For Zod mode, it uses <code>z.union()</code> with the detected member schemas. The type deduction is based on the actual runtime types present in the first few elements of the array.'},
@@ -107,10 +110,10 @@ const tool = tools.find(t => t.slug === 'json-to-typescript')!;
         {q:'How does the tool handle null values in JSON?',a:'JSON <code>null</code> is not a TypeScript primitive. When the generator encounters a <code>null</code> value, it marks the field as optional using the <code>?</code> syntax and types it as <code>string | null</code> (the most common intent). In Zod mode, null values produce <code>.nullable().optional()</code>, allowing both <code>null</code> and <code>undefined</code> at runtime.'},
         {q:'Is the generated code production-ready?',a:'The output follows TypeScript and Zod best practices: exported interfaces, proper nesting, correct union types, and valid Zod schema composition. For production use, review the generated types against your actual data contracts — the tool infers from the shape of the sample JSON you provide, so ensure your sample is representative of all possible response shapes.'},
       ].map(item=>(
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin:0;" set:html={item.a} />
+            <p itemprop="text" class="seo-faq-a" set:html={item.a} />
           </div>
         </div>
       ))}

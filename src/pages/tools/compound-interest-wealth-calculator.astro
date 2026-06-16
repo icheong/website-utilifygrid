@@ -75,35 +75,119 @@ const tool = tools.find(t => t.slug === 'compound-interest-wealth-calculator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use this calculator</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your starting amount, the amount you plan to add each month, your expected annual return, and how many years you want to invest for. The table updates instantly to show you the year-by-year balance.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Use the 7% default rate as a conservative estimate for a diversified index fund over a long period. Adjust upward for higher-risk assets or downward for bonds and savings accounts.</p>
+    <h2 class="seo-h2" >Overview and Technical Context</h2>
+    <p class="seo-p" >
+      The Compound Interest Wealth Calculator is a client-side financial projection tool that models how an initial investment grows over time with regular monthly contributions and compound interest. Built with vanilla JavaScript and running entirely in the browser, it computes a year-by-year breakdown table showing balance, total contributed, and interest earned at each stage. No data is sent to any server — your financial inputs remain entirely private.
+    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Planning a long-term retirement savings strategy', 'A 30-year-old employee wants to know how much their $10,000 emergency fund plus $500 monthly contributions will grow by age 60 at a 7% average annual return. The calculator shows the year-by-year trajectory, making the abstract concept of compound growth tangible and actionable for retirement planning conversations.'],
+        ['Comparing investment timing scenarios', 'A recent graduate is deciding whether to start investing $300/month now or wait five years and invest $500/month later. The calculator demonstrates that starting earlier — even with smaller contributions — often produces a larger final balance due to the exponential nature of compounding over a longer period.'],
+        ['Evaluating the impact of increasing monthly contributions', 'A financial planner is advising a client on whether increasing monthly contributions from $400 to $600 is worth the lifestyle trade-off. Running both scenarios through the calculator quantifies the exact difference in final balance and interest earned, providing concrete numbers for the decision.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:#0F172A; font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">The compound interest formula</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Each month, the current balance grows by <strong>(annual rate ÷ 12)</strong>, then the monthly contribution is added. This is repeated for every month across the investment period. This models monthly compounding, which is more accurate than simple annual compounding for regular contribution scenarios.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The calculation does not account for taxes, inflation, or variable returns. Real-world results will differ, but the tool illustrates the exponential growth principle: the longer money compounds, the greater the proportion that comes from interest rather than contributions.</p>
+    <h2 class="seo-h2" >Deep-Dive Technical Mechanics</h2>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Monthly Compounding Formula</h3>
+    <p class="seo-p" >
+      The calculator applies monthly compounding, which is more accurate than simple annual compounding for regular contribution scenarios. Each month, the current balance is multiplied by <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">(1 + annual rate ÷ 12)</code>, then the monthly contribution is added. This process repeats for every month across the investment period. Monthly compounding captures the effect of interest earning interest more frequently, which is how most savings accounts, ETFs, and retirement funds actually compound.
+    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Exponential Growth Dynamics</h3>
+    <p class="seo-p" >
+      The year-by-year breakdown table reveals the fundamental principle of compound interest: in the early years, most of the balance growth comes from your contributions. In later years, interest on interest begins to dominate. This crossover point — where accumulated interest exceeds total contributions — is the visual demonstration of why time in the market matters more than timing the market. The 7% default rate is based on the historical average real return of the S&P 500 after adjusting for inflation over the past century.
+    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Important Limitations</h3>
+    <p class="seo-p" >
+      The calculation does not account for taxes, inflation, management fees, or variable returns. Real-world investment returns fluctuate year to year — the 7% used here is an average, not a guarantee. The tool is designed to illustrate the mathematical principle of compound growth and to help with initial scenario planning. For personalised financial advice, consult a qualified financial advisor.
+    </p>
+    <div class="border-theme surface-2 seo-disclaimer" style="margin-top:0.75rem">
+      <div style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem">Core Formula</div>
+      <p class="seo-card-body" style="font-family:'Fira Code',monospace; color:#0F172A; margin:0">
+        Balance<sub>n+1</sub> = Balance<sub>n</sub> × (1 + r ÷ 12) + Monthly Contribution
+      </p>
+      <p style="font-size:0.82rem; line-height:1.6; margin:0.5rem 0 0">
+        Where r = annual interest rate (e.g., 0.07 for 7%). Applied monthly for each month of the investment period.
+      </p>
+    </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="seo-h2-faq" >Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is compound interest?', a: 'Compound interest is interest calculated on the initial principal plus all previously accumulated interest. Unlike simple interest which only applies to the principal, compounding means you earn interest on your interest, leading to exponential growth over time.' },
-        { q: 'What annual return rate should I use?', a: 'For long-term stock market investments, 7% is a commonly used real return (after inflation) based on historical S&P 500 averages. For high-yield savings accounts, use 4–5%. For bonds, 2–4%. These are estimates only — past performance does not guarantee future results.' },
-        { q: 'How much should I invest per month?', a: 'A common guideline is to save 15–20% of your gross income for retirement. Even small amounts benefit enormously from time due to compounding. Starting 10 years earlier can roughly double the final balance even with the same total contributions.' },
-        { q: 'Does this account for inflation?', a: 'No. The calculator shows nominal returns. To see inflation-adjusted (real) returns, subtract your expected inflation rate from your interest rate input. A 7% nominal return with 3% inflation equates to roughly 4% real growth.' },
+        {
+          q: 'What is compound interest?',
+          a: 'Compound interest is interest calculated on the initial principal plus all previously accumulated interest. Unlike simple interest, which only applies to the original principal, compounding means you earn interest on your interest, leading to exponential growth over time. This is the fundamental mechanism behind wealth accumulation through long-term investing.',
+        },
+        {
+          q: 'What annual return rate should I use?',
+          a: 'For long-term stock market investments, 7% is a commonly used real return (after inflation) based on historical S&P 500 averages spanning over a century. For high-yield savings accounts, use 4% to 5%. For bonds, 2% to 4%. These are estimates only — past performance does not guarantee future results, and actual returns will vary year to year.',
+        },
+        {
+          q: 'How much should I invest per month?',
+          a: 'A common guideline is to save 15% to 20% of your gross income for retirement. Even small amounts benefit enormously from time due to compounding. Starting 10 years earlier can roughly double the final balance even with the same total contributions, which is why starting early matters more than investing a large amount later.',
+        },
+        {
+          q: 'Does this account for inflation?',
+          a: 'No. The calculator shows nominal returns. To estimate inflation-adjusted (real) returns, subtract your expected inflation rate from your interest rate input. A 7% nominal return with 3% inflation equates to roughly 4% real growth, which still compounds significantly over long periods.',
+        },
+        {
+          q: 'Why does the year-by-year table show interest growing faster in later years?',
+          a: 'This is the core effect of compounding. In early years, your monthly contributions make up most of the balance growth. As interest accumulates, you begin earning interest on increasingly larger amounts, creating a snowball effect. In later years, interest earned can exceed your annual contributions — this is the crossover point where compound growth truly accelerates.',
+        },
+        {
+          q: 'Should I prioritise increasing contributions or finding a higher return rate?',
+          a: 'For most investors, increasing contributions has a larger impact than chasing higher returns. A 1% increase in annual return is meaningful, but doubling your monthly contribution has a far greater effect on the final balance. Additionally, higher returns typically come with higher risk, while increasing contributions is a guaranteed improvement to your outcome.',
+        },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
+          class="seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
     </div>
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is compound interest?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Compound interest is interest calculated on the initial principal plus all previously accumulated interest, leading to exponential growth over time." }
+        },
+        {
+          "@type": "Question",
+          "name": "What annual return rate should I use?",
+          "acceptedAnswer": { "@type": "Answer", "text": "For long-term stock market investments, 7% is a commonly used real return based on historical S&P 500 averages. For savings accounts, use 4-5%. For bonds, 2-4%. These are estimates only." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this account for inflation?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The calculator shows nominal returns. Subtract your expected inflation rate from the interest rate input to estimate real returns." }
+        },
+        {
+          "@type": "Question",
+          "name": "How much should I invest per month?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A common guideline is 15-20% of gross income for retirement. Starting 10 years earlier can roughly double the final balance even with the same total contributions." }
+        }
+      ]
+    })} />
+
+    <p class="seo-card-body" style="margin-top:1.25rem">
+      <strong style="color:var(--text-secondary)">Disclaimer:</strong> This calculator is provided for educational and illustrative purposes only. It does not constitute financial, investment, or tax advice. The projections are based on simplified mathematical models and fixed assumptions that do not reflect real market conditions. Actual investment returns will vary and may be negative in any given year. Factors such as taxes, fees, inflation, and market volatility are not separately modelled. Always consult a qualified financial advisor before making investment decisions.
+    </p>
   </div>
 
 </ToolLayout>

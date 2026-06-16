@@ -118,35 +118,56 @@ const tool = tools.find(t => t.slug === 'kids-savings-compound-interest-visualiz
 
   <!-- ── HOW TO USE ────────────────────────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Kids Savings Visualizer</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Set your <strong>age</strong> and any <strong>starting savings</strong> you already have — maybe from a birthday or holiday gift. Choose how much <strong>pocket money</strong> you get each month to put into your savings account.
+    <h2 class="font-display seo-h2" >How to use the Kids Savings Visualizer</h2>
+    <p class="text-secondary seo-p" >
+      This interactive tool helps children and parents visualise how compound interest turns regular pocket money into meaningful savings over time. Set your child's <strong>current age</strong>, any <strong>starting savings</strong> already in the bank, and how much <strong>pocket money</strong> goes in each month. Choose an <strong>annual interest rate</strong> (high-yield savings accounts typically offer 4–5%), set a <strong>target goal</strong>, and pick a <strong>time horizon</strong>. The chart and KPI cards update instantly to show whether the savings goal is on track, how much interest has been earned, and at what age the target will be reached.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Pick an <strong>interest rate</strong> — this is like your bank paying you extra money for keeping your savings there. A savings account might give you 4–5% per year. Set a <strong>target goal</strong> — maybe it's for a new bike, a gaming console, or something really special.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      The chart shows your savings growing over time. When the savings line crosses your goal line, you've hit your target! 🎉
-    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Teaching delayed gratification', 'Kids who can see a savings goal being reached month by month learn patience and discipline. Set a goal for a gaming console or bicycle and watch the progress bar fill up — far more motivating than a piggy bank.'],
+        ['Planning for education expenses', 'Starting small contributions early can build a meaningful fund by the time a child reaches secondary school or university age. Even $20 per month from birth grows substantially over 18 years.'],
+        ['Comparing savings strategies', 'Run side-by-side scenarios to show how doubling pocket money or adding birthday bonuses accelerates the timeline. The visual difference between contributing $10 versus $30 per month makes the impact tangible.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <!-- ── HOW IT WORKS ──────────────────────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How compound interest works</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      Your savings grow using compound interest. Each month, you add your pocket money, and the bank adds interest on top. Over time, you earn interest on your interest — that's the magic of compounding!
+    <h2 class="font-display seo-h2" >How compound interest works for kids</h2>
+    <p class="text-secondary" style="font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem">
+      Compound interest is the snowball effect of money earning interest, and then that interest earning interest in turn. Unlike a piggy bank that stays the same, a savings account with compound interest grows a little faster every year. The two most powerful factors are how much you add each month and how long the money sits earning interest.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Savings(t) = S × (1 + r/12)^(12t)
-           + C × [((1 + r/12)^(12t) − 1) / (r/12)]
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:700; margin:1.25rem 0 0.5rem">Monthly compounding formula</h3>
+    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap">Savings(t) = S &#215; (1 + r/12)^(12t)
+           + C &#215; [((1 + r/12)^(12t) &#8722; 1) / (r/12)]
 
 Where:
   S = Starting Savings
   r = Annual interest rate (as a decimal)
   t = Number of years
   C = Monthly pocket money contribution</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      The formula compounds monthly for precision. All calculations run entirely in your browser — no data is sent anywhere.
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:700; margin:1.25rem 0 0.5rem">The power of starting early</h3>
+    <p class="text-secondary seo-p" >
+      Time is the single biggest lever a young saver has. A child who starts saving $20 per month at age 8 will have far more at age 25 than someone who starts with $50 per month at age 20 — even though the second person contributes more per month. This is because the first savers money has had 12 extra years of compounding. The chart on this page makes this difference visually obvious.
     </p>
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:700; margin:1.25rem 0 0.5rem">Interest on interest</h3>
+    <p class="text-secondary seo-p" >
+      In the first year, interest is earned only on the starting balance and monthly contributions. By year five, interest is being earned on four years of previous interest as well. This accelerating growth is why the savings curve bends upward over time. The longer the horizon, the more dramatic the curvature becomes.       All calculations run locally in your browser — no data leaves your device.
+    </p>
+
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7">
+      <strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This calculator is provided for educational and illustrative purposes only. It does not constitute financial, savings, or investment advice. The projections are based on simplified mathematical models with fixed interest rates that may not reflect real market conditions. Actual returns will vary, and factors such as taxes, fees, inflation, and changing interest rates are not separately modelled. Always consult a qualified financial advisor for decisions relating to savings or investments.
+    </div>
   </div>
 
   <!-- ── FAQ ──────────────────────────────────────────────────────── -->
@@ -159,46 +180,58 @@ Where:
         {
           "@type": "Question",
           "name": "What is compound interest?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Compound interest is when your savings earn interest, and then that interest also earns interest. It's like a snowball that gets bigger and bigger as it rolls downhill. The longer you save, the faster your money grows!" }
+          "acceptedAnswer": { "@type": "Answer", "text": "Compound interest is when your savings earn interest, and then that interest also earns interest. It is like a snowball rolling downhill — it gets bigger and faster over time. The longer you leave your money in a savings account, the more the compounding effect accelerates your growth." }
         },
         {
           "@type": "Question",
           "name": "Why does starting to save early matter?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The earlier you start saving, the more time your money has to grow. Even small amounts can become really big over many years thanks to compound interest. A kid who saves $20/month from age 8 can have more than an adult who saves $50/month starting at age 30!" }
+          "acceptedAnswer": { "@type": "Answer", "text": "The earlier you start saving, the more time your money has to grow. Even small amounts can become really big over many years thanks to compound interest. A kid who saves $20 per month from age 8 can have more than an adult who saves $50 per month starting at age 30, because the younger saver's money has had 22 extra years to compound." }
         },
         {
           "@type": "Question",
           "name": "What interest rate will I get?",
-          "acceptedAnswer": { "@type": "Answer", "text": "It depends on where you keep your money. A regular savings account might give you 3–5% per year. A term deposit (where you lock your money away for a while) might give a bit more. Investment returns can be higher but also go up and down." }
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on where you keep your money. A regular savings account might give you 3 to 5 percent per year. A term deposit where you lock your money away for a fixed period might offer a slightly higher rate. Investment returns can be higher but also fluctuate up and down, so savings accounts are safer for money you will need at a specific time." }
         },
         {
           "@type": "Question",
           "name": "What if I want to add extra money sometimes?",
-          "acceptedAnswer": { "@type": "Answer", "text": "This tool shows what happens with a fixed monthly amount. If you get extra money from birthdays or holidays, you could run the tool again with your new starting savings to see how it changes your goal date!" }
+          "acceptedAnswer": { "@type": "Answer", "text": "This tool shows what happens with a fixed monthly amount. If you receive extra money from birthdays or holidays, run the tool again with an updated starting balance to see how it changes your goal date. The more you add, the sooner you reach your target." }
         },
         {
           "@type": "Question",
-          "name": "What if I don't reach my goal in time?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Try adding more pocket money each month, saving for a longer time, or picking a smaller goal. You can play with the sliders to see what combination works for you!" }
+          "name": "What if I do not reach my goal in time?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Try increasing your monthly pocket money, extending the time horizon, or choosing a smaller goal. You can adjust all six sliders to find the combination that works for your situation. Even small changes make a noticeable difference over many years." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the tool account for inflation?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No, this calculator uses a fixed interest rate and does not model inflation separately. In real life, prices tend to rise over time, so the purchasing power of your savings may be slightly lower than the raw number suggests. For a simple kids savings plan this is usually fine, but for long-term goals it is worth factoring inflation in separately." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use this for multiple savings goals?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. Run the tool once for each goal with different target amounts and time horizons. Compare the results to decide how to split your monthly pocket money between goals, or whether to focus on one goal at a time for faster results." }
         }
       ]
     }
     </script>
 
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is compound interest?', a: 'Compound interest is when your savings earn interest, and then that interest also earns interest. It\'s like a snowball that gets bigger and bigger as it rolls downhill. The longer you save, the faster your money grows!' },
-        { q: 'Why does starting to save early matter?', a: 'The earlier you start saving, the more time your money has to grow. Even small amounts can become really big over many years thanks to compound interest. A kid who saves $20/month from age 8 can have more than an adult who saves $50/month starting at age 30!' },
-        { q: 'What interest rate will I get?', a: 'It depends on where you keep your money. A regular savings account might give you 3–5% per year. A term deposit (where you lock your money away for a while) might give a bit more. Investment returns can be higher but also go up and down.' },
-        { q: 'What if I want to add extra money sometimes?', a: 'This tool shows what happens with a fixed monthly amount. If you get extra money from birthdays or holidays, you could run the tool again with your new starting savings to see how it changes your goal date!' },
-        { q: 'What if I don\'t reach my goal in time?', a: 'Try adding more pocket money each month, saving for a longer time, or picking a smaller goal. You can play with the sliders to see what combination works for you!' },
+        { q: 'What is compound interest?', a: 'Compound interest is when your savings earn interest, and then that interest also earns interest. It is like a snowball rolling downhill — it gets bigger and faster over time. The longer you leave your money in a savings account, the more the compounding effect accelerates your growth.' },
+        { q: 'Why does starting to save early matter?', a: 'The earlier you start saving, the more time your money has to grow. Even small amounts can become really big over many years thanks to compound interest. A kid who saves $20 per month from age 8 can have more than an adult who saves $50 per month starting at age 30, because the younger saver\'s money has had 22 extra years to compound.' },
+        { q: 'What interest rate will I get?', a: 'It depends on where you keep your money. A regular savings account might give you 3 to 5 percent per year. A term deposit where you lock your money away for a fixed period might offer a slightly higher rate. Investment returns can be higher but also fluctuate up and down, so savings accounts are safer for money you will need at a specific time.' },
+        { q: 'What if I want to add extra money sometimes?', a: 'This tool shows what happens with a fixed monthly amount. If you receive extra money from birthdays or holidays, run the tool again with an updated starting balance to see how it changes your goal date. The more you add, the sooner you reach your target.' },
+        { q: 'What if I do not reach my goal in time?', a: 'Try increasing your monthly pocket money, extending the time horizon, or choosing a smaller goal. You can adjust all six sliders to find the combination that works for your situation. Even small changes make a noticeable difference over many years.' },
+        { q: 'Does the tool account for inflation?', a: 'No, this calculator uses a fixed interest rate and does not model inflation separately. In real life, prices tend to rise over time, so the purchasing power of your savings may be slightly lower than the raw number suggests. For a simple kids savings plan this is usually fine, but for long-term goals it is worth factoring inflation in separately.' },
+        { q: 'Can I use this for multiple savings goals?', a: 'Absolutely. Run the tool once for each goal with different target amounts and time horizons. Compare the results to decide how to split your monthly pocket money between goals, or whether to focus on one goal at a time for faster results.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

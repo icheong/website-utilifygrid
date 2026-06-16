@@ -266,31 +266,31 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
 
   <!-- ═══ HOW TO USE ═══ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Crontab Expression Visualizer — Build, Preview & Copy Cron Schedules</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The <strong style="color:var(--text-primary);">Crontab Expression Visualizer</strong> is a free, browser-based scheduler builder that lets you construct, preview, and copy cron expressions without memorising syntax. Use the five field sections — <strong style="color:var(--text-primary);">Minutes, Hours, Day of Month, Month,</strong> and <strong style="color:var(--text-primary);">Day of Week</strong> — to build your schedule. Each field offers four modes: <em>every</em> (wildcard), <em>specific</em> (single value slider), <em>range</em> (from–to), or <em>every N</em> (step). The live cron expression at the top updates instantly, and a plain-English banner translates your settings so you can verify the intent before copying. Click <strong style="color:var(--text-primary);">Copy</strong> to grab the expression, pick one of the <strong style="color:var(--text-primary);">Common schedules</strong> buttons (Every weekday at 9am, Daily midnight, etc.), or check the <strong style="color:var(--text-primary);">Next 5 scheduled runs</strong> panel to see the real upcoming trigger dates. Everything runs locally — no server, no data sent.</p>
+    <h2 class="font-display seo-h2" >Crontab Expression Visualizer — Build, Preview & Copy Cron Schedules</h2>
+    <p class="text-secondary seo-p" >The <strong style="color:var(--text-primary)">Crontab Expression Visualizer</strong> is a free, browser-based scheduler builder that lets you construct, preview, and copy cron expressions without memorising syntax. Use the five field sections — <strong style="color:var(--text-primary)">Minutes, Hours, Day of Month, Month,</strong> and <strong style="color:var(--text-primary)">Day of Week</strong> — to build your schedule. Each field offers four modes: <em>every</em> (wildcard), <em>specific</em> (single value slider), <em>range</em> (from–to), or <em>every N</em> (step). The live cron expression at the top updates instantly, and a plain-English banner translates your settings so you can verify the intent before copying. Click <strong style="color:var(--text-primary)">Copy</strong> to grab the expression, pick one of the <strong style="color:var(--text-primary)">Common schedules</strong> buttons (Every weekday at 9am, Daily midnight, etc.), or check the <strong style="color:var(--text-primary)">Next 5 scheduled runs</strong> panel to see the real upcoming trigger dates. Everything runs locally — no server, no data sent.</p>
   </div>
 
   <!-- ═══ HOW IT WORKS ═══ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Deep-Dive: Cron Expression Format & Scheduling Logic</h2>
+    <h2 class="font-display seo-h2" >Deep-Dive: Cron Expression Format & Scheduling Logic</h2>
 
-    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;">The Five-Field Standard</h3>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">A standard cron expression consists of five space-separated fields — Minute (0–59), Hour (0–23), Day of Month (1–31), Month (1–12), and Day of Week (0–6, Sun=0) — evaluated left-to-right by the cron daemon. The scheduler fires a job only when the current time satisfies all five fields simultaneously. Each field supports four operators: <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*</code> (any value), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">,</code> (list: 1,3,5), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">-</code> (range: 9-17), and <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">/</code> (step: */5 or 0/15). When both day-of-month and day-of-week are non-wildcard, most implementations use OR logic — the job runs if either condition matches.</p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">The Five-Field Standard</h3>
+    <p class="text-secondary seo-p" >A standard cron expression consists of five space-separated fields — Minute (0–59), Hour (0–23), Day of Month (1–31), Month (1–12), and Day of Week (0–6, Sun=0) — evaluated left-to-right by the cron daemon. The scheduler fires a job only when the current time satisfies all five fields simultaneously. Each field supports four operators: <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">*</code> (any value), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">,</code> (list: 1,3,5), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">-</code> (range: 9-17), and <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">/</code> (step: */5 or 0/15). When both day-of-month and day-of-week are non-wildcard, most implementations use OR logic — the job runs if either condition matches.</p>
 
-    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;">Step-by-Step Expression Builder</h3>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">This tool provides a visual mode selector for each field. Choosing "Every" emits <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*</code>; "Specific" outputs a single numeric token; "Range" produces <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">from-to</code>; and "Every N" emits <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*/N</code>. The five tokens are concatenated with spaces to form a valid expression. The human-readable description is built by mapping each field's mode to a natural-language phrase ("at 9:00am", "every 15 minutes", "on weekdays"). The copy button writes the expression to the system clipboard via the <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">navigator.clipboard</code> API.</p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">Step-by-Step Expression Builder</h3>
+    <p class="text-secondary seo-p" >This tool provides a visual mode selector for each field. Choosing "Every" emits <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">*</code>"Specific" outputs a single numeric token"Range" produces <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">from-to</code>; and "Every N" emits <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">*/N</code>. The five tokens are concatenated with spaces to form a valid expression. The human-readable description is built by mapping each field's mode to a natural-language phrase ("at 9:00am", "every 15 minutes", "on weekdays"). The copy button writes the expression to the system clipboard via the <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">navigator.clipboard</code> API.</p>
 
-    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.5rem;">Next-Runs Preview Algorithm</h3>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The preview engine starts at the current time plus one minute and iterates forward minute-by-minute (up to 200,000 iterations), testing each candidate against the five tokens. Each token is parsed independently: <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*</code> always matches; <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">*/N</code> checks <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">value % N === 0</code>; ranges check <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">value >= a &amp;&amp; value <= b</code>; lists split on comma and test inclusion. The day-of-month / day-of-week OR logic is applied in the match function. The first five matching timestamps are returned and formatted with <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem;">toLocaleString()</code> for locale-aware display. All computation runs in the browser with zero network requests.</p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">Next-Runs Preview Algorithm</h3>
+    <p class="text-secondary seo-p-none" >The preview engine starts at the current time plus one minute and iterates forward minute-by-minute (up to 200,000 iterations), testing each candidate against the five tokens. Each token is parsed independently: <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">*</code> always matches; <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">*/N</code> checks <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">value % N === 0</code>; ranges check <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">value >= a &amp;&amp; value <= b</code>; lists split on comma and test inclusion. The day-of-month / day-of-week OR logic is applied in the match function. The first five matching timestamps are returned and formatted with <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">toLocaleString()</code> for locale-aware display. All computation runs in the browser with zero network requests.</p>
 
-    <div style="overflow-x:auto; margin:1rem 0;">
-      <table style="width:100%; border-collapse:collapse; font-size:0.84rem;">
+    <div style="overflow-x:auto; margin:1rem 0">
+      <table style="width:100%; border-collapse:collapse; font-size:0.84rem">
         <thead>
-          <tr style="background:var(--bg-surface-2);">
-            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border);">Field</th>
-            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border);">Position</th>
-            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border);">Range</th>
-            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border);">Special values</th>
+          <tr style="background:var(--bg-surface-2)">
+            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border)">Field</th>
+            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border)">Position</th>
+            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border)">Range</th>
+            <th style="padding:0.5rem 0.875rem; text-align:left; font-weight:700; color:var(--text-secondary); border:1px solid var(--border)">Special values</th>
           </tr>
         </thead>
         <tbody>
@@ -302,26 +302,26 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
             ['Day of week',  '5th', '0–6 (Sun–Sat)', '* , - /'],
           ].map(([f, pos, range, sp]) => (
             <tr>
-              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-primary); font-weight:600;">{f}</td>
-              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-muted); font-family:'Fira Code',monospace;">{pos}</td>
-              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-secondary);">{range}</td>
-              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-secondary); font-family:'Fira Code',monospace;">{sp}</td>
+              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-primary); font-weight:600">{f}</td>
+              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-muted); font-family:'Fira Code',monospace">{pos}</td>
+              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-secondary)">{range}</td>
+              <td style="padding:0.45rem 0.875rem; border:1px solid var(--border); color:var(--text-secondary); font-family:'Fira Code',monospace">{sp}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
 
-    <div style="display:flex; flex-direction:column; gap:0.625rem;">
+    <div style="display:flex; flex-direction:column; gap:0.625rem">
       {[
         ['*',   'Any / every value in this field'],
         [',',   'List separator — e.g. 1,3,5 means 1st, 3rd, and 5th'],
         ['-',   'Range — e.g. 9-17 means hours 9 through 17 inclusive'],
         ['/',   'Step — e.g. */5 means every 5 units; 0/15 means 0, 15, 30, 45'],
       ].map(([sym, desc]) => (
-        <div style="display:flex; gap:0.75rem; align-items:baseline; background:var(--bg-surface); border:1px solid var(--border); border-radius:0.5rem; padding:0.5rem 0.875rem;">
-          <code style="font-family:'Fira Code',monospace; font-size:0.9rem; font-weight:700; color:#1D4ED8; min-width:24px;">{sym}</code>
-          <span style="font-size:0.82rem; color:var(--text-secondary);">{desc}</span>
+        <div class="surface-2" style="display:flex; gap:0.75rem; align-items:baseline; background:var(--bg-surface); border:1px solid var(--border); border-radius:0.5rem; padding:0.5rem 0.875rem">
+          <code style="font-family:'Fira Code',monospace; font-size:0.9rem; font-weight:700; color:#1D4ED8; min-width:24px">{sym}</code>
+          <span style="font-size:0.82rem; color:var(--text-secondary)">{desc}</span>
         </div>
       ))}
     </div>
@@ -378,8 +378,8 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
     }
     </script>
 
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
           q: 'What is a cron job?',
@@ -415,10 +415,10 @@ const tool = tools.find(t => t.slug === 'crontab-expression-visualizer')!;
         },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

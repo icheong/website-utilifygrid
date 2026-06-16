@@ -198,22 +198,41 @@ const tool = tools.find(t => t.slug === 'git-command-flow-builder')!;
 
   <!-- ═══ HOW TO USE ═══ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Git Command Flow Builder</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Click the card that describes your current situation — "Undo my last commit", "Squash commits", "Delete a branch", and so on. For scenarios with multiple approaches, a refinement row appears so you can pick the exact variant (for example, keeping changes staged vs. discarding them entirely after an undo).
+    <h2 class="font-display seo-h2" >Overview and Technical Context</h2>
+    <p class="text-secondary seo-p" >
+      The Git Command Flow Builder is a scenario-driven CLI reference that maps common Git situations to the exact commands needed to resolve them. Built with vanilla JavaScript and running entirely in the browser, it requires no server calls, no installed Git binary, and stores no data. Each scenario includes inline variable inputs, refinement options for multi-path workflows, and clearly flagged danger commands — so you get the right command without memorising flags or searching documentation.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Some scenarios show inline text inputs for variable values like branch names, commit counts, or tag names. Fill those in and the commands update in real time with your exact values substituted in.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Each command line has its own <strong style="color:var(--text-primary);">Copy</strong> button, or use <strong style="color:var(--text-primary);">Copy all</strong> to grab the entire sequence at once. Danger commands are clearly flagged in red with a warning note before you run them.
-    </p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Recovering from a mistaken commit on a shared branch', 'A developer accidentally pushes a commit with sensitive data or a broken build to a shared feature branch. The tool walks them through the exact sequence: reset locally, amend or remove the offending commit, then force-push with --force-with-lease — without needing to remember the flag differences between --soft, --mixed, and --hard.'],
+        ['Cleaning up feature branch history before code review', 'Before opening a pull request, a developer needs to squash six WIP commits into a clean two-commit sequence. The Squash Commits scenario generates the interactive rebase command with the correct HEAD~n reference, and the inline instructions explain how to mark commits for squashing in the editor.'],
+        ['Migrating a team workflow from merge commits to rebase', 'A team lead wants to adopt a linear history strategy. The tool provides the pull --rebase configuration, the rebase-onto-main workflow, and the safe force-push command — all in one place — so the team can transition without hunting through multiple Git documentation pages.'],
+      ].map(([title, desc]) => (
+        <div class="surface-2 seo-card-sm" style="background:var(--bg-surface); border:1px solid var(--border)">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p class="text-secondary" style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <!-- ═══ HOW IT WORKS ═══ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Git fundamentals behind each scenario</h2>
-    <div style="display:flex; flex-direction:column; gap:0.625rem;">
+    <h2 class="font-display seo-h2" >Deep-Dive Technical Mechanics</h2>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Scenario Decision Engine</h3>
+    <p class="text-secondary seo-p" >
+      Each scenario card maps to a configuration object that defines sub-options (when multiple approaches exist), variable input fields (for branch names, SHAs, or counts), command templates with <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">&#123;varName&#125;</code> tokens, and optional warning text. When you click a card, the engine initialises the scenario state, renders sub-option pills or variable inputs as needed, and immediately generates the command sequence using default values. This means you can see the commands before filling in any custom values — useful for understanding the workflow before committing to specific parameters.
+    </p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Command Template Interpolation</h3>
+    <p class="text-secondary seo-p" >
+      Command templates use a simple <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">&#123;variable&#125;</code> interpolation syntax. When you type into a variable input field, a listener updates the internal state object and triggers a re-render of all command blocks. The interpolation function replaces every <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">&#123;key&#125;</code> token with the current value, falling back to a placeholder if the field is empty. Comment-only lines (starting with <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">#</code>) are rendered in italic muted text without a copy button, keeping the focus on actionable commands.
+    </p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Safety-First UX Design</h3>
+    <p class="text-secondary seo-p" >
+      Destructive commands — such as <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">git reset --hard</code>, <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">git clean -fd</code>, and <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">git push --force-with-lease</code> — are flagged with a red border and a warning block that appears automatically. Scenarios that rewrite history carry a "Rewrites history" badge. The "Copy all" button excludes comment lines, so you only paste executable commands into your terminal. Every design decision prioritises preventing accidental data loss over speed of interaction.
+    </p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-top:1rem">
       {[
         ['git reset',     'Moves the HEAD pointer and optionally the index/working tree. --soft keeps changes staged; --mixed unstages them; --hard discards them entirely.'],
         ['git commit --amend', 'Replaces the last commit with a new one incorporating staged changes or a new message. Rewrites history — avoid on shared branches.'],
@@ -222,9 +241,9 @@ const tool = tools.find(t => t.slug === 'git-command-flow-builder')!;
         ['git reflog',    'Records every position HEAD has been. Even after a hard reset or branch deletion, reflog lets you find the lost SHA and recover it.'],
         ['git cherry-pick', 'Applies the diff introduced by a specific commit onto the current branch, creating a new commit with a new SHA.'],
       ].map(([cmd, desc]) => (
-        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
-          <code style="font-family:'Fira Code',monospace; font-size:0.82rem; color:#1D4ED8; background:#EFF6FF; padding:0.15rem 0.5rem; border-radius:0.25rem; display:inline-block; margin-bottom:0.35rem;">{cmd}</code>
-          <p style="font-size:0.82rem; color:var(--text-secondary); margin:0; line-height:1.6;">{desc}</p>
+        <div class="surface-2" style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem">
+          <code style="font-family:'Fira Code',monospace; font-size:0.82rem; color:#1D4ED8; background:#EFF6FF; padding:0.15rem 0.5rem; border-radius:0.25rem; display:inline-block; margin-bottom:0.35rem">{cmd}</code>
+          <p class="text-secondary" style="font-size:0.82rem; margin:0; line-height:1.6">{desc}</p>
         </div>
       ))}
     </div>
@@ -232,43 +251,78 @@ const tool = tools.find(t => t.slug === 'git-command-flow-builder')!;
 
   <!-- ═══ FAQ ═══ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently asked questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
           q: 'What is the difference between git reset --soft and --hard?',
-          a: '--soft moves HEAD back to the previous commit but keeps all your changes staged in the index, ready to be re-committed. --hard moves HEAD back AND discards all changes in the index and working tree permanently. --mixed (the default) moves HEAD back and unstages changes but leaves the files modified on disk.',
+          a: '--soft moves HEAD back to the previous commit but keeps all your changes staged in the index, ready to be re-committed. --hard moves HEAD back AND discards all changes in the index and working tree permanently — this is irreversible. --mixed (the default) moves HEAD back and unstages changes but leaves the files modified on disk so you can review them before deciding what to keep.',
         },
         {
           q: 'Is it safe to force push to a shared branch?',
-          a: 'No — force pushing rewrites the remote history, which causes problems for anyone else who has based work on those commits. The safer alternative is git push --force-with-lease, which only force pushes if nobody else has pushed to the branch since you last fetched. Never force push to main or master unless you own the repository and know no one else is working off it.',
+          a: 'No — force pushing rewrites the remote history, which causes problems for anyone else who has based work on those commits. The safer alternative is git push --force-with-lease, which only force pushes if nobody else has pushed to the branch since you last fetched. Never force push to main or master unless you own the repository and have confirmed no other contributors are working off those commits.',
         },
         {
           q: 'What is git rebase and when should I use it?',
-          a: 'Rebase replays your branch\'s commits on top of another commit (usually the tip of main). This keeps a linear history without merge commits. Use it before merging a feature branch to incorporate recent changes from main, or interactively with -i to clean up commit history before code review. Avoid rebasing commits that have already been pushed to a shared branch.',
+          a: 'Rebase replays your branch\'s commits on top of another commit (usually the tip of main), producing a linear history without merge commits. Use it before merging a feature branch to incorporate recent changes from main, or interactively with -i to clean up commit history before code review. Avoid rebasing commits that have already been pushed to a shared branch, as it forces collaborators to reconcile diverged histories.',
         },
         {
           q: 'How do I recover a commit I accidentally reset away?',
-          a: 'Use git reflog to find the commit SHA from before the reset. Reflog records every position HEAD has been, even when commits are no longer reachable from any branch. Once you find the SHA, run git checkout -b recovery-branch <sha> to create a new branch pointing to it.',
+          a: 'Use git reflog to find the commit SHA from before the reset. Reflog records every position HEAD has been, even when commits are no longer reachable from any branch. Once you find the SHA, run git checkout -b recovery-branch <sha> to create a new branch pointing to it. The reflog entries expire after 90 days by default, so act promptly.',
         },
         {
           q: 'What is the difference between git merge and git rebase?',
-          a: 'Both integrate changes from one branch into another. Merge creates a new "merge commit" that joins the histories, preserving the full branching context. Rebase rewrites the feature branch commits as if they were created on top of the latest main, producing a linear history. Teams often use rebase for cleaner PR history and merge for long-lived branch integrations.',
+          a: 'Both integrate changes from one branch into another. Merge creates a new "merge commit" that joins the histories, preserving the full branching context and audit trail. Rebase rewrites the feature branch commits as if they were created on top of the latest main, producing a clean linear history. Teams often use rebase for cleaner PR history and merge for long-lived branch integrations or when preserving the complete branching record is important.',
         },
         {
           q: 'What does git stash actually save?',
-          a: 'By default, git stash saves modifications to tracked files and staged changes, then reverts the working tree to match HEAD. Untracked files (new files not yet added) are NOT stashed unless you use git stash -u or --include-untracked. Ignored files require git stash -a or --all.',
+          a: 'By default, git stash saves modifications to tracked files and staged changes, then reverts the working tree to match HEAD. Untracked files (new files not yet added with git add) are NOT stashed unless you use git stash -u or --include-untracked. Ignored files require git stash -a or --all. Stash entries are stored in a stack-like structure, and you can list them with git stash list to reference specific entries by index.',
+        },
+        {
+          q: 'When should I use cherry-pick instead of merge or rebase?',
+          a: 'Cherry-pick is designed for applying a single specific commit from one branch to another — it is not a full branch integration strategy. Use it when you need to backport a bugfix from main to a release branch, or when a single commit was made on the wrong branch and needs to be moved. For integrating entire branches, merge or rebase is almost always the better choice.',
+        },
+        {
+          q: 'Why does the tool show a "Rewrites history" badge on some scenarios?',
+          a: 'Commands like reset --amend, rebase, and squash change the commit SHA of existing commits. If those commits have already been pushed to a shared remote, collaborators will have a diverged history that requires force pushing or manual reconciliation. The badge is a visual reminder to review whether the branch is shared before executing the command, preventing unexpected conflicts for your team.',
         },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
     </div>
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the difference between git reset --soft and --hard?",
+          "acceptedAnswer": { "@type": "Answer", "text": "--soft moves HEAD back but keeps changes staged. --hard moves HEAD back AND discards all changes permanently. --mixed (default) moves HEAD back and unstages changes but leaves files on disk." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it safe to force push to a shared branch?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No — force pushing rewrites remote history. Use --force-with-lease instead, which only force pushes if nobody else has pushed since your last fetch. Never force push to shared branches without team agreement." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is git rebase and when should I use it?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Rebase replays your commits on top of another commit, producing a linear history. Use it before merging to incorporate recent main changes, or interactively to clean up history before code review." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I recover a commit I accidentally reset away?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Use git reflog to find the SHA from before the reset, then git checkout -b recovery-branch <sha> to create a new branch pointing to it. Reflog entries expire after 90 days." }
+        }
+      ]
+    })} />
   </div>
 
 </ToolLayout>

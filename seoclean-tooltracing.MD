@@ -13,8 +13,6 @@ ev-novated-lease-calculator
 phev-novated-lease-calculator
 regex-toolkit
 crontab-expression-visualizer
-
-## TODO
 sql-to-nosql
 git-command-flow-builder
 cpm-ad-spend-calculator
@@ -23,6 +21,8 @@ kids-savings-compound-interest-visualizer
 saas-churn-ltv-cac-calculator
 car-loan-amortization-calculator
 freelance-invoice-tax-calculator
+
+## TODO
 csv-to-json-xml-converter
 unix-timestamp-converter
 sql-schema-syntax-translator
