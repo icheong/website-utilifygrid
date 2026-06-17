@@ -21,27 +21,35 @@ const useCases = [
 const faqs = [
   {
     q: 'How do I know if my timestamp is in seconds or milliseconds?',
-    a: 'Timestamps in seconds are typically 10 digits long (e.g. 1735689600 represents a date in 2025). Millisecond timestamps are 13 digits long (e.g. 1735689600000). This tool automatically detects the unit by checking whether the input value exceeds 10¹² — values at or above that threshold are treated as milliseconds, all others as seconds. If you are unsure, compare the resulting UTC date to your expected date to confirm the detection was correct.'
+    a: 'Timestamps in seconds are typically 10 digits long (e.g. 1735689600 represents a date in 2025). Millisecond timestamps are 13 digits long (e.g. 1735689600000). This tool automatically detects the unit by checking whether the input value exceeds 10¹² — values at or above that threshold are treated as milliseconds, all others as seconds. If you are unsure, compare the resulting UTC date to your expected date to confirm the detection was correct. Most databases, APIs, and logging systems store seconds; JavaScript\'s <code class="inline-code">Date.now()</code> and many frontend frameworks return milliseconds.'
   },
   {
     q: 'What is the Unix epoch and why does it start in 1970?',
-    a: 'The Unix epoch is the reference point for all Unix timestamps: midnight UTC on 1 January 1970 (1970-01-01T00:00:00Z). It was chosen by the developers of Unix at Bell Labs because it was a convenient recent date when the system was being designed in the early 1970s. Every Unix timestamp expresses the number of seconds (or milliseconds) elapsed since that moment, making timestamps a simple, timezone-independent integer that is trivially sortable and comparable across systems.'
+    a: 'The Unix epoch is the reference point for all Unix timestamps: midnight UTC on 1 January 1970 (1970-01-01T00:00:00Z). It was chosen by the developers of Unix at Bell Labs because it was a convenient recent date when the system was being designed in the early 1970s. Every Unix timestamp expresses the number of seconds (or milliseconds) elapsed since that moment, making timestamps a simple, timezone-independent integer that is trivially sortable and comparable across systems. The epoch date also conveniently avoids ambiguous pre-1970 calendar edge cases in most practical applications.'
   },
   {
     q: 'Why does my timestamp show a different local time to UTC?',
-    a: 'Local time is rendered using your browser\'s configured IANA timezone via the JavaScript Intl API. If you are in UTC+10 (Sydney), a timestamp representing 12:00 UTC will display as 22:00 local time. The UTC and ISO 8601 output fields are always timezone-independent and represent the same absolute moment regardless of where in the world the tool is used. If you need to display a specific timezone other than your local one, the ISO 8601 field is the most reliable value to pass to a server-side formatter.'
+    a: 'Local time is rendered using your browser\'s configured IANA timezone via the JavaScript Intl API. If you are in UTC+10 (Sydney), a timestamp representing 12:00 UTC will display as 22:00 local time. The UTC and ISO 8601 output fields are always timezone-independent and represent the same absolute moment regardless of where in the world the tool is used. If you need to display a specific timezone other than your local one, the ISO 8601 field is the most reliable value to pass to a server-side formatter. You can also override the browser timezone in your operating system settings to preview how the local time output changes.'
   },
   {
     q: 'What is the maximum date this converter supports?',
-    a: 'JavaScript\'s Date object supports values between -8,640,000,000,000,000 ms and +8,640,000,000,000,000 ms, corresponding to approximately 271,821 BCE and 275,760 CE respectively. In practice, any timestamp representing a date in the foreseeable future is well within range. Values outside these bounds cause Date to return NaN, which this tool catches and reports as an out-of-range error.'
+    a: 'JavaScript\'s Date object supports values between -8,640,000,000,000,000 ms and +8,640,000,000,000,000 ms, corresponding to approximately 271,821 BCE and 275,760 CE respectively. In practice, any timestamp representing a date in the foreseeable future is well within range. Values outside these bounds cause Date to return NaN, which this tool catches and reports as an out-of-range error. The practical lower bound for most use cases is 0 (1 January 1970), though negative values for pre-1970 dates are valid and convert correctly.'
   },
   {
     q: 'What is ISO 8601 and how does it differ from UTC?',
-    a: 'ISO 8601 is an international standard for representing dates and times as strings, produced by the International Organization for Standardization. The format output here — YYYY-MM-DDTHH:mm:ss.sssZ — is the most common machine-readable variant, where the trailing "Z" designates the UTC timezone. UTC (Coordinated Universal Time) is the timekeeping standard itself, not a string format. The ISO 8601 string is the recommended format for storing or transmitting timestamps in JSON APIs because it is unambiguous, sortable as a plain string, and human-readable.'
+    a: 'ISO 8601 is an international standard for representing dates and times as strings, produced by the International Organization for Standardization. The format output here — YYYY-MM-DDTHH:mm:ss.sssZ — is the most common machine-readable variant, where the trailing "Z" designates the UTC timezone. UTC (Coordinated Universal Time) is the timekeeping standard itself, not a string format. The ISO 8601 string is the recommended format for storing or transmitting timestamps in JSON APIs because it is unambiguous, sortable as a plain string, and human-readable. Many databases (PostgreSQL, MySQL) and cloud services (AWS, GCP) natively parse ISO 8601 strings into internal timestamp types.'
   },
   {
     q: 'Can I convert a date back to a Unix timestamp?',
-    a: 'This tool currently converts from Unix timestamp to human-readable formats only. To go the other direction — from a date string to a Unix timestamp — you can use JavaScript\'s Date.parse("2025-01-01T00:00:00Z") / 1000 in the browser console, or use a dedicated date-to-epoch converter. The division by 1000 converts the millisecond result returned by Date.parse to seconds.'
+    a: 'This tool currently converts from Unix timestamp to human-readable formats only. To go the other direction — from a date string to a Unix timestamp — you can use JavaScript\'s <code class="inline-code">Date.parse("2025-01-01T00:00:00Z") / 1000</code> in the browser console, or use a dedicated date-to-epoch converter. The division by 1000 converts the millisecond result returned by Date.parse to seconds. Be aware that <code class="inline-code">Date.parse</code> without a timezone suffix interprets the string as local time, so always include "Z" or "+00:00" for UTC-parsed results.'
+  },
+  {
+    q: 'Can I use this tool for timestamps with sub-second precision?',
+    a: 'Yes. If you paste a high-precision value such as <code class="inline-code">1735689600.123</code>, the tool passes it through <code class="inline-code">parseFloat</code> and preserves the fractional seconds in the ISO 8601 output (e.g. <code class="inline-code">2025-01-01T00:00:00.123Z</code>). The milliseconds output field will show the truncated millisecond component. Note that the UTC and local time string outputs use second-level precision only, so sub-second detail is only visible in the ISO 8601 and milliseconds fields.'
+  },
+  {
+    q: 'Why do some timestamps appear as "Invalid Date"?',
+    a: '"Invalid Date" occurs when the <code class="inline-code">Date</code> constructor receives a value outside its supported range or a non-numeric input. Common causes include: pasting text instead of a number, entering a value with more than 13 digits (which exceeds the millisecond range), or accidentally including comma separators (e.g. "1,735,689,600"). Remove any non-numeric characters before pasting. If your value is extremely large (e.g. a nanosecond timestamp), divide by 1,000,000,000 to convert to seconds first.'
   }
 ];
 ---
@@ -53,7 +61,7 @@ const faqs = [
 
     <div class="ts-input-row">
       <div class="ts-input-field">
-        <label class="ts-label" for="ts-input">Unix Timestamp</label>
+        <label class="tool-label" for="ts-input">Unix Timestamp</label>
         <input id="ts-input" type="text" placeholder="e.g. 1735689600 or 1735689600000"
           class="input-themed ts-input-mono" />
       </div>
@@ -129,6 +137,9 @@ const faqs = [
     <p class="seo-p">
       The converter applies a single threshold rule: if the numeric input is greater than or equal to <code class="inline-code">1e12</code> (one trillion), it is treated as milliseconds; otherwise it is treated as seconds and multiplied by 1,000 before being passed to <code class="inline-code">new Date(ms)</code>. This boundary was chosen because <code class="inline-code">1e12</code> milliseconds corresponds to 9 September 2001 — a date far enough in the past that any real-world timestamp representing a future or recent date in seconds will always be below the threshold, while any millisecond timestamp for a date after 2001 will always be above it. The resulting <code class="inline-code">Date</code> object is validated with <code class="inline-code">isNaN(d.getTime())</code> before rendering.
     </p>
+    <p class="seo-p">
+      Edge cases are handled explicitly: non-numeric input (including empty strings, whitespace, or text) triggers a validation error before any conversion occurs. Floating-point values such as <code class="inline-code">1735689600.5</code> are accepted — the <code class="inline-code">parseFloat</code> call preserves sub-second precision, and the resulting ISO 8601 string will include fractional seconds. Negative timestamps (representing dates before 1 January 1970) are valid and convert correctly, since the <code class="inline-code">Date</code> constructor handles negative millisecond values natively. Values outside JavaScript's safe integer range (<code class="inline-code">Number.MAX_SAFE_INTEGER</code>) may produce inaccurate results due to floating-point precision limits, but such values are far beyond any practical timestamp.
+    </p>
 
     <h3 class="font-display seo-h3-sm">Output Format Reference</h3>
     <div class="ts-format-table">
@@ -143,6 +154,14 @@ const faqs = [
     <h3 class="font-display seo-h3-sm">Relative Time Calculation</h3>
     <p class="seo-p">
       The relative time output computes the difference between the input timestamp and <code class="inline-code">Date.now()</code> in milliseconds, then buckets the result into human-readable labels: under 60,000 ms displays as "just now"; under 3,600,000 ms (one hour) shows rounded minutes; under 86,400,000 ms (one day) shows rounded hours; beyond that shows rounded days. The sign of the difference determines whether the suffix is "from now" or "ago", correctly handling future timestamps such as scheduled event times or token expiry values.
+    </p>
+    <p class="seo-p">
+      Rounding uses <code class="inline-code">Math.round()</code> rather than truncation, so "3 hr 45 min ago" is displayed instead of "3 hr ago" when the actual difference is 3 hours and 45 minutes. The "just now" threshold of 60 seconds avoids noisy single-second updates when monitoring live timestamps. Because the relative calculation runs on every input event, the output updates in real time as you type — no submit button is required.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Timezone Handling &amp; the JavaScript Date API</h3>
+    <p class="seo-p">
+      All internal computation uses UTC. The <code class="inline-code">Date</code> object stores time as a single UTC millisecond value; the UTC and ISO 8601 output fields call <code class="inline-code">toUTCString()</code> and <code class="inline-code">toISOString()</code> respectively, both of which are timezone-independent. The local time output uses <code class="inline-code">toLocaleString()</code> with no explicit timezone argument, which delegates to the browser's IANA timezone setting (typically configured by the operating system). This means the same timestamp will produce different local time strings on machines in different timezones — an intentional design choice that lets you verify how a timestamp appears in your own locale without manual offset arithmetic.
     </p>
   </div>
 
@@ -188,15 +207,6 @@ const faqs = [
   .ts-input-field {
     display: flex;
     flex-direction: column;
-  }
-  .ts-label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 0.4rem;
   }
   .ts-input-mono {
     width: 100%;

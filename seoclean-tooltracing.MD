@@ -22,9 +22,9 @@ car-loan-amortization-calculator
 freelance-invoice-tax-calculator
 csv-to-json-xml-converter
 sql-schema-syntax-translator
+unix-timestamp-converter
 
 ## TODO
-unix-timestamp-converter
 epub-to-pdf-formatter
 length-converter
 weight-mass-converter
