@@ -27,7 +27,38 @@ All slots must be present even if empty (except `disclaimer` which is only neede
 ### Heading Classes
 - `seo-h2` – H2 section headings (Overview, Deep-Dive, FAQ).
 - `seo-h3-sm` – H3 sub-headings (Real-World Applications, Technical Mechanics, etc.).
-- Body text: `seo-p` (for SEO description paragraphs) or `text-secondary` / `text-primary` as appropriate.
+- Body text: Use `seo-p` (or `seo-p-sm`, `seo-p-none`) for all SEO content paragraphs. Do **not** add `text-secondary` to these classes — the default text color (`var(--text-primary)`) is correct for content paragraphs.
+
+### Form Element Classes
+All tool pages must use these standardised classes for form elements. Do not override their properties with inline styles unless absolutely necessary.
+
+- **`tool-label`** – Form field labels (applies `font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.375rem`).
+  ```html
+  <label class="tool-label">Loan Amount ($)</label>
+  ```
+- **`input-themed`** – Number and text inputs (applies `padding:0.625rem 0.875rem; border-radius:0.5rem; font-size:0.95rem; background:var(--bg-surface); border:1.5px solid var(--border)`).
+  ```html
+  <input id="loan-amount" type="number" class="input-themed" />
+  ```
+- **`select-themed`** – Dropdown selects (applies same padding, border-radius, and font-size as `input-themed`, plus a chevron background image).
+  ```html
+  <select id="loan-term" class="select-themed">...</select>
+  ```
+- **`tool-textarea`** – Monospace code/textareas (applies `font-family:var(--font-mono); font-size:0.82rem; height:240px; resize:none; line-height:1.7`). Use alongside `input-themed`:
+  ```html
+  <textarea id="sql-input" class="input-themed tool-textarea"></textarea>
+  ```
+
+### Font Standards
+- **Headings (H1, H2, H3)**: `'Sora', system-ui, sans-serif` — applied automatically via the `h1, h2, h3, .font-display` rule.
+- **Body / UI text**: Inherited from the root stylesheet (system font stack).
+- **Monospace / code areas**: `'Fira Code', 'JetBrains Mono', monospace` via `var(--font-mono)` — used by `tool-textarea`, `inline-code`, and result value displays.
+- **Do not** hardcode `font-family`, `font-size`, `font-weight`, or `color` on form elements; use the standardised classes above.
+
+### `text-secondary` Usage Rules
+- **Do not** add `text-secondary` to SEO content paragraphs (`seo-p`, `seo-p-sm`, `seo-p-none`, `seo-card-body`, `seo-faq-a`). These classes inherit the default text color, which is correct for readable content.
+- **Do** use `text-secondary` on: form labels (`tool-label` already applies it), UI helper text, use-case card descriptions (`<p class="text-secondary" style="...">` inside `seo-card-sm`), disclaimer labels, and breadcrumb/navigation elements.
+- **Do not** add `text-secondary` to FAQ answer paragraphs — the dark-mode override in `ToolLayout.astro` already handles FAQ answer coloring.
 
 ## 3. Description Text (Overview Slot)
 
@@ -107,6 +138,7 @@ The following **must not** appear in any `.astro` file (unless explicitly exempt
 - `style="margin:..."`, `style="padding:..."`, `style="border:..."`
 - `style="width:..."`, `style="height:..."` (use utility classes or CSS variables)
 - `style="display:..."`, `style="flex-..."`, `style="grid-..."` (use predefined classes)
+- **Form elements**: Do not add inline styles to `<input>`, `<select>`, `<textarea>`, or `<label>` elements. Use `tool-label`, `input-themed`, `select-themed`, and `tool-textarea` classes instead.
 
 Allowed inline attributes (only when necessary):
 - SVG `viewBox`, `width`, `height` (if they cannot be expressed via CSS)
@@ -145,6 +177,7 @@ Allowed inline attributes (only when necessary):
 - [ ] Uses `ToolLayout.astro` with all required slots.
 - [ ] No inline `style=` for visual properties (colors, fonts, spacing, borders).
 - [ ] Description text uses `<p class="seo-p">` with only `<code class="inline-code">` for snippets.
+- [ ] No `text-secondary` on SEO content paragraphs (`seo-p`, `seo-p-sm`, `seo-p-none`, `seo-card-body`, `seo-faq-a`).
 - [ ] Real‑world applications rendered as `seo-card-sm` flex‑column cards.
 - [ ] Deep‑dive headings use `seo-h3-sm`; code snippets use `<code class="inline-code">`.
 - [ ] FAQ follows FAQPage schema with `surface-2 border-theme seo-faq-card` on each item; FAQ H2 uses `seo-h2-faq`; disclaimer outside FAQ items.

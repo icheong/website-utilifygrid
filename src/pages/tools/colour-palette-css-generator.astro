@@ -182,10 +182,10 @@ const tool = tools.find(t => t.slug === 'colour-palette-css-generator')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2" >Colour Palette &amp; CSS Generator Overview &amp; Technical Context</h2>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       This all-in-one colour conversion and CSS generation tool combines HEX-to-RGB conversion, RGB-to-HEX conversion, HSL translation, Tailwind CSS palette matching, and live CSS output generation into a single interface. Built entirely with vanilla JavaScript and running 100% client-side in the browser, every computation happens locally using standard browser APIs — no colour data is transmitted to any server, and no cookies or tracking scripts execute. The zero-server-latency architecture ensures instant updates as you type, providing complete privacy for your design workflow.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       Switch between HEX, RGB, and HSL input modes using the toggle tabs, or type any valid colour format directly into the text field. The tool automatically parses HEX codes (with or without the <code>#</code> prefix, including 3-digit shorthand), RGB functions like <code>rgb(59, 130, 246)</code>, and HSL functions like <code>hsl(217, 91%, 59%)</code>. All output formats update simultaneously, and every result includes a one-click copy button. The CSS Outputs section provides ready-to-paste custom properties, rgba values with an opacity slider, and linear gradients with adjustable angles.
     </p>
 
@@ -228,12 +228,12 @@ const tool = tools.find(t => t.slug === 'colour-palette-css-generator')!;
     </div>
 
     <h3 class="font-display seo-h3-sm" >Tailwind Matching via CIELAB Delta-E</h3>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       The Tailwind matching algorithm converts both the input colour and every palette entry from sRGB to the CIELAB (L*a*b*) colour space, which models human colour perception more accurately than RGB. It first applies inverse sRGB companding to linearise the channel values, then transforms through the CIE XYZ intermediate using D65 illuminant reference points. The Delta-E (Euclidean distance in L*a*b* space) between the input and each palette entry is computed, and the five smallest distances are returned as matches. A Delta-E under 2 is perceptually indistinguishable to most observers; under 5 is a close match.
     </p>
 
     <h3 class="font-display seo-h3-sm" >Edge Cases and Input Validation</h3>
-    <p class="text-secondary seo-p-none" >
+    <p class="seo-p-none" >
       Three-character hex codes like <code>#F0A</code> are automatically expanded to <code>#FF00AA</code> per the CSS specification where each digit is doubled. RGB channel values are clamped to 0-255, HSL hue to 0-360, and saturation/lightness to 0-100%. Invalid inputs produce a clear error state rather than <code>NaN</code>. The conversion uses IEEE 754 double-precision arithmetic internally, with final integer values rounded to the nearest whole number. The opacity slider operates independently of the base colour conversion, appending an alpha value to the CSS output without affecting the underlying RGB/HSL calculations.
     </p>
   </div>

@@ -47,10 +47,10 @@ const tool = tools.find(t => t.slug === 'json-to-typescript')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2" >JSON to TypeScript Generator — Overview &amp; Modern Technical Context</h2>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       TypeScript has become the dominant typed superset of JavaScript, with over 80% of new JavaScript projects adopting it for compile-time type safety. A frequent workflow bottleneck is manually translating JSON payloads — from API responses, configuration files, or test fixtures — into TypeScript type definitions. This generator automates that process entirely in the browser using vanilla JavaScript. Paste any JSON object, and the tool recursively infers TypeScript interfaces or Zod validation schemas in real time. No data leaves your browser; no server calls are made; no cookies or tracking scripts execute.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       The tool supports two output modes: <strong>TypeScript Interface</strong> (generates exported interface declarations with proper nesting) and <strong>Zod Schema</strong> (generates runtime validation schemas using the Zod library). Both modes handle nested objects, arrays of any depth, optional fields detected from <code>null</code> values, and union types derived from mixed-type arrays. Paste JSON into the left panel and the output updates automatically — no manual "Generate" click required, though one is available. Click <strong>Copy</strong> to export the result directly into your codebase.
     </p>
 
@@ -91,10 +91,10 @@ const tool = tools.find(t => t.slug === 'json-to-typescript')!;
     </div>
 
     <h3 class="font-display seo-h3-sm" >How the Generator Processes Input</h3>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       The generator listens to <code>input</code> events on the JSON textarea. On each keystroke, it attempts <code>JSON.parse()</code> on the trimmed content. If parsing succeeds, the resulting JavaScript object is passed to either <code>inferInterface()</code> or <code>inferZod()</code> depending on the selected output mode. Both functions perform a single-pass recursive traversal of the object tree. For interface mode, each object key generates a property line with its inferred type, and nested objects trigger a new <code>export interface</code> block appended to the output. For Zod mode, the same traversal produces <code>z.object()</code> calls with nested schemas exported as standalone constants.
     </p>
-    <p class="text-secondary seo-p-none" >
+    <p class="seo-p-none" >
       <strong>Edge cases handled:</strong> Empty arrays produce <code>unknown[]</code> (interface) or <code>z.array(z.unknown())</code> (Zod) since no element type can be inferred. Mixed-type arrays produce union types by collecting unique inferred types via a <code>Set</code>. Top-level arrays are wrapped in a root type alias (<code>type Root = Item[]</code>) rather than an interface, since TypeScript does not allow interfaces to extend arrays. Nested object names are derived from the property key using PascalCase conversion, ensuring valid TypeScript identifiers.
     </p>
   </div>

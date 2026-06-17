@@ -21,10 +21,10 @@ saas-churn-ltv-cac-calculator
 car-loan-amortization-calculator
 freelance-invoice-tax-calculator
 csv-to-json-xml-converter
-unix-timestamp-converter
+sql-schema-syntax-translator
 
 ## TODO
-sql-schema-syntax-translator
+unix-timestamp-converter
 epub-to-pdf-formatter
 length-converter
 weight-mass-converter

@@ -119,10 +119,10 @@ const tool = tools.find(t => t.slug === 'compound-interest-retirement')!;
   <!-- ── HOW TO USE ────────────────────────────────────────────────── -->
   <div slot="how-to-use">
     <h2 class="font-display seo-h2" >Compound Interest &amp; Retirement Calculator Overview</h2>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       This compound interest and retirement calculator visualises how consistent contributions, investment returns, and the safe withdrawal rate interact to determine when you can achieve financial independence. The tool runs entirely in your browser using modern vanilla JavaScript and the Canvas API — no data is transmitted to any server, and no cookies or analytics scripts track your inputs. The 100% client-side architecture ensures complete financial privacy and zero latency.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       The calculator models the future value of an existing portfolio supplemented by recurring monthly contributions, then determines the year at which the portfolio's passive income (derived from the safe withdrawal rate) meets or exceeds your projected retirement expenses. The interactive chart updates in real time as you adjust any input, and the crossover point — where passive income surpasses expenses — is highlighted as your FIRE (Financial Independence, Retire Early) date.
     </p>
 
@@ -144,7 +144,7 @@ const tool = tools.find(t => t.slug === 'compound-interest-retirement')!;
   <!-- ── HOW IT WORKS ──────────────────────────────────────────────── -->
   <div slot="how-it-works">
     <h2 class="font-display seo-h2" >Deep-Dive: Compound Interest Mechanics &amp; Mathematical Logic</h2>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       The portfolio at any future point in time is computed using the standard future-value equation for a lump sum plus the future value of an annuity (recurring contributions). This dual-component model is the foundation of retirement projection mathematics used by financial planners worldwide.
     </p>
     <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap">Portfolio(t) = S × (1 + r/12)^(12t)
@@ -153,16 +153,16 @@ const tool = tools.find(t => t.slug === 'compound-interest-retirement')!;
 Monthly Passive Income(t) = Portfolio(t) × SWR / 12
 
 FIRE crossover when: MonthlyPassiveIncome(t) ≥ MonthlyExpenses</pre>
-    <p class="text-secondary seo-p-sm" >
+    <p class="seo-p-sm" >
       Where <strong>S</strong> is current savings, <strong>r</strong> is the annual return rate (decimal), <strong>t</strong> is years elapsed, <strong>C</strong> is monthly contribution, and <strong>SWR</strong> is the safe withdrawal rate (decimal). The first term compounds your existing savings monthly over the projection horizon. The second term accumulates each monthly contribution with compound growth — each deposit earns returns for the remaining months until the projection endpoint.
     </p>
-    <p class="text-secondary seo-p-sm" >
+    <p class="seo-p-sm" >
       <strong>Monthly compounding precision:</strong> The model compounds at a monthly interval (r/12 per month, 12t total periods), which is the standard convention for retirement projections and aligns with how most index funds and superannuation accounts report returns. This produces more accurate results than annual compounding, particularly for high-contribution scenarios.
     </p>
-    <p class="text-secondary seo-p-sm" >
+    <p class="seo-p-sm" >
       <strong>The Safe Withdrawal Rate (SWR):</strong> The SWR determines how much of your portfolio can be withdrawn each year without depleting the principal over a given horizon. The Trinity Study (Cooley, Hubbard, and Walz, 1998) found that a 4% withdrawal rate sustained a 30-year retirement period with high probability across historical US market data. For early retirements spanning 40–50 years, many financial researchers recommend 3–3.5%.
     </p>
-    <p class="text-secondary seo-p-none" >
+    <p class="seo-p-none" >
       <strong>Edge cases:</strong> The calculator handles a 0% return rate (linear accumulation), very high contribution-to-portfolio ratios, and scenarios where FIRE is not achievable before age 80. When no crossover is found within the projection window, the tool displays a warning indicating that contributions or return assumptions need adjustment.
     </p>
   </div>

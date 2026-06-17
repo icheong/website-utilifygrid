@@ -8,12 +8,12 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">SQL Schema Translator</h2>
+    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">SQL Schema Translator</h2>
 
     <div style="display:flex; gap:1rem; margin-bottom:1rem; align-items:flex-end;">
       <div style="flex:1;">
-        <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">From</label>
-        <select id="from-db" class="select-themed" style="width:100%;">
+        <label class="tool-label">From</label>
+        <select id="from-db" class="select-themed">
           <option value="mysql">MySQL</option>
           <option value="postgres">PostgreSQL</option>
           <option value="sqlite">SQLite</option>
@@ -21,8 +21,8 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
       </div>
       <div style="font-size:1.25rem; color:var(--text-muted); padding-bottom:0.6rem;">→</div>
       <div style="flex:1;">
-        <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">To</label>
-        <select id="to-db" class="select-themed" style="width:100%;">
+        <label class="tool-label">To</label>
+        <select id="to-db" class="select-themed">
           <option value="mysql">MySQL</option>
           <option value="postgres" selected>PostgreSQL</option>
           <option value="sqlite">SQLite</option>
@@ -30,19 +30,18 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
       </div>
     </div>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.875rem;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
       <div>
-        <div style="font-size:0.75rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Input SQL</div>
+        <div class="tool-label">Input SQL</div>
         <textarea id="sql-input"
           placeholder="CREATE TABLE users (&#10;  id INT AUTO_INCREMENT PRIMARY KEY,&#10;  name VARCHAR(255) NOT NULL,&#10;  created_at DATETIME DEFAULT CURRENT_TIMESTAMP&#10;);"
-          class="input-themed"
-          style="width:100%; height:240px; font-family:'Fira Code',monospace; font-size:0.8rem; resize:none; line-height:1.7;"></textarea>
+          class="input-themed tool-textarea"></textarea>
       </div>
       <div>
-        <div style="font-size:0.75rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.4rem;">Translated SQL</div>
+        <div class="tool-label">Translated SQL</div>
         <textarea id="sql-output" readonly
-          class="input-themed"
-          style="width:100%; height:240px; font-family:'Fira Code',monospace; font-size:0.8rem; resize:none; line-height:1.7; background:var(--bg-surface-2);"></textarea>
+          class="input-themed tool-textarea"
+          style="background:var(--bg-surface-2);"></textarea>
       </div>
     </div>
 
@@ -53,44 +52,103 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
     <div id="notes" style="margin-top:0.75rem; display:none;"></div>
   </div>
 
+  <!-- ═══ HOW TO USE ═══ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the SQL Translator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste your CREATE TABLE SQL statement into the left panel, select the source database dialect and target dialect, and the translated schema appears instantly in the right panel. Supports MySQL, PostgreSQL, and SQLite.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Translation notes appear below the editor when a conversion requires a compatibility decision (for example, AUTO_INCREMENT to SERIAL in PostgreSQL).</p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What gets translated</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+    <h2 class="seo-h2" >
+      Overview and Technical Context
+    </h2>
+    <p class="seo-p" >
+      The SQL Schema Translator is a client-side utility that converts <code class="inline-code">CREATE TABLE</code> definitions between MySQL, PostgreSQL, and SQLite dialects. Built entirely with modern vanilla JavaScript and regular-expression-based parsing, the tool runs with zero server calls — your schema definitions never leave your device. Whether you are migrating a legacy MySQL database to PostgreSQL, porting an SQLite prototype to a production MySQL server, or standardising schema files across a polyglot team, this converter produces dialect-correct output instantly without requiring a running database instance.
+    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       {[
-        ['Auto Increment', 'MySQL AUTO_INCREMENT → PostgreSQL SERIAL or BIGSERIAL; SQLite INTEGER PRIMARY KEY (implicit autoincrement).'],
-        ['Data Types', 'VARCHAR → TEXT/VARCHAR; INT → INTEGER; DATETIME → TIMESTAMP; TINYINT(1) → BOOLEAN. Type synonyms are normalised per dialect.'],
-        ['String Quoting', 'Identifier quoting is adjusted: MySQL uses backticks (`), PostgreSQL uses double quotes (""), SQLite accepts both.'],
-        ['NULL Handling', 'DEFAULT NULL and NOT NULL constraints are preserved across all dialects.'],
-        ['Current Timestamp', 'NOW(), CURRENT_TIMESTAMP, and GETDATE() are normalised to the appropriate default expression for the target dialect.'],
-      ].map(([label, desc]) => (
-        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0;">{desc}</p>
+        ['Migrating a MySQL application to PostgreSQL', 'A backend developer moving a web application from MySQL to PostgreSQL can paste each CREATE TABLE statement into the translator to receive a production-ready PostgreSQL equivalent. The tool handles AUTO_INCREMENT to SERIAL conversion, TINYINT(1) to BOOLEAN mapping, DATETIME to TIMESTAMP normalisation, and identifier quoting adjustments — eliminating hours of manual dialect research and reducing migration errors.'],
+        ['Standardising schemas across a polyglot development team', 'Organisations running microservices with mixed database backends (for example, MySQL for the user service, PostgreSQL for analytics, and SQLite for embedded edge devices) can use this tool to maintain a single canonical schema definition and generate dialect-specific versions as needed, keeping schema documentation consistent across repositories.'],
+        ['Teaching relational database differences in a classroom setting', 'Database instructors and students can paste the same CREATE TABLE statement into all three target dialects side by side to observe concrete differences in data types, auto-increment mechanisms, identifier quoting, and constraint syntax — making abstract dialect distinctions tangible and easier to internalise.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:#0F172A; font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
         </div>
       ))}
     </div>
   </div>
 
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div slot="how-it-works">
+    <h2 class="seo-h2" >
+      Deep-Dive Technical Mechanics
+    </h2>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Parsing and Normalisation Pipeline</h3>
+    <p class="seo-p" >
+      The translator begins by normalising the input SQL to a dialect-neutral intermediate form. If the source is MySQL, backtick-quoted identifiers (e.g. <code class="inline-code">`column_name`</code>) are stripped to plain names. If the source is PostgreSQL, double-quoted identifiers (e.g. <code class="inline-code">"column_name"</code>) are similarly unquoted. This normalisation step ensures that the subsequent transformation rules operate on a consistent baseline, regardless of the source dialect's quoting conventions.
+    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Type Mapping Engine</h3>
+    <p class="seo-p" >
+      After normalisation, the converter applies a priority-ordered table of regular-expression rules. Each rule matches a specific SQL construct and emits the target-dialect equivalent. For example, <code class="inline-code">INT AUTO_INCREMENT</code> becomes <code class="inline-code">SERIAL</code> in PostgreSQL, stays as <code class="inline-code">INT AUTO_INCREMENT</code> in MySQL, and maps to <code class="inline-code">INTEGER</code> in SQLite (where auto-increment is implicit for <code class="inline-code">INTEGER PRIMARY KEY</code>). The type map covers ten common patterns including <code class="inline-code">TINYINT(1)</code> to <code class="inline-code">BOOLEAN</code>, <code class="inline-code">DATETIME</code> to <code class="inline-code">TIMESTAMP</code>, <code class="inline-code">MEDIUMINT</code> to <code class="inline-code">INTEGER</code>, and timestamp functions like <code class="inline-code">NOW()</code> to dialect-appropriate defaults.
+    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Identifier Re-Quoting</h3>
+    <p class="seo-p" >
+      Once type transformations are applied, the converter re-quotes identifiers for the target dialect. For MySQL output, column names that match data-type keywords are wrapped in backticks (<code class="inline-code">`name`</code>). PostgreSQL uses double quotes (<code class="inline-code">"name"</code>). SQLite accepts both quoting styles and passes identifiers through unquoted. Reserved words like <code class="inline-code">CREATE</code>, <code class="inline-code">TABLE</code>, <code class="inline-code">NOT</code>, <code class="inline-code">NULL</code>, <code class="inline-code">PRIMARY</code>, and <code class="inline-code">KEY</code> are excluded from quoting to avoid syntax errors.
+    </p>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Translation Notes</h3>
+    <p class="seo-p" >
+      When a conversion involves a compatibility decision — such as implicit versus explicit auto-increment behaviour, or the absence of native ENUM types in certain dialects — the tool surfaces a warning note below the editor. These notes alert the developer to review the output carefully and test against the target database before deploying, particularly for schemas that use dialect-specific features like MySQL ENUMs, PostgreSQL array types, JSON columns, or composite constraints.
+    </p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:1rem">
+      {[
+        ['AUTO_INCREMENT', 'MySQL: AUTO_INCREMENT — PostgreSQL: SERIAL / BIGSERIAL — SQLite: INTEGER PRIMARY KEY (implicit)'],
+        ['Data Types', 'VARCHAR → TEXT — INT → INTEGER — DATETIME → TIMESTAMP — TINYINT(1) → BOOLEAN — FLOAT → REAL (SQLite)'],
+        ['Identifier Quoting', 'MySQL: backticks (`) — PostgreSQL: double quotes ("") — SQLite: unquoted or either style'],
+        ['Timestamp Defaults', 'NOW() / CURRENT_TIMESTAMP → normalised to target dialect default expression'],
+        ['NULL Constraints', 'DEFAULT NULL and NOT NULL are preserved identically across all three dialects'],
+      ].map(([label, desc]) => (
+        <div class="border-theme" style="display:grid; grid-template-columns:1fr 2fr; gap:0.5rem; background:#fff; border-radius:0.5rem; padding:0.6rem 0.875rem; font-size:0.8rem; align-items:center">
+          <code style="color:#1D4ED8; background:#EFF6FF; padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.78rem">{label}</code>
+          <span style="color:#475569">{desc}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
+    <h2 class="seo-h2-faq" >
+      Frequently asked questions
+    </h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Does this translate stored procedures and views?', a: 'No. This tool focuses on CREATE TABLE schema definitions. Stored procedures, views, triggers, and query DML (SELECT, INSERT, UPDATE, DELETE) have significantly more dialect-specific syntax and are not currently supported.' },
-        { q: 'Will the output run without modification?', a: 'For simple tables with standard column types, the output should be production-ready. For complex schemas using dialect-specific features (e.g., MySQL ENUMs, PostgreSQL arrays, JSON columns), review the output carefully and test before deploying.' },
-        { q: 'What are the key differences between MySQL and PostgreSQL syntax?', a: 'Key differences: MySQL uses backtick identifiers; PostgreSQL uses double quotes. MySQL uses AUTO_INCREMENT; PostgreSQL uses SERIAL or GENERATED ALWAYS AS IDENTITY. MySQL TINYINT(1) is often used as boolean; PostgreSQL has a native BOOLEAN type. String functions differ significantly in queries.' },
-        { q: 'How does SQLite differ from MySQL and PostgreSQL?', a: 'SQLite uses dynamic typing — column type declarations are advisory only. There is no native auto-increment; instead, a column declared as INTEGER PRIMARY KEY is implicitly a rowid alias. SQLite has limited ALTER TABLE support and no stored procedures.' },
+        {
+          q: 'Does this translate stored procedures, views, or triggers?',
+          a: 'No. This tool focuses exclusively on CREATE TABLE schema definitions. Stored procedures, views, triggers, functions, and query DML (SELECT, INSERT, UPDATE, DELETE) have significantly more dialect-specific syntax and are not currently supported. The converter is designed for schema migration, not full database porting.',
+        },
+        {
+          q: 'Will the translated output run without modification on the target database?',
+          a: 'For simple tables with standard column types — integers, varchars, timestamps, and basic constraints — the output should be production-ready. For complex schemas using dialect-specific features such as MySQL ENUMs, PostgreSQL array types, JSON columns, composite primary keys, orCHECK constraints with complex expressions, review the output carefully and test against the target database before deploying.',
+        },
+        {
+          q: 'What are the key differences between MySQL and PostgreSQL syntax?',
+          a: 'MySQL uses backtick-quoted identifiers; PostgreSQL uses double quotes. MySQL relies on AUTO_INCREMENT for surrogate keys; PostgreSQL uses SERIAL, BIGSERIAL, or GENERATED ALWAYS AS IDENTITY. MySQL\'s TINYINT(1) is commonly used as a boolean proxy; PostgreSQL has a native BOOLEAN type. Additionally, MySQL and PostgreSQL differ significantly in string functions, date arithmetic, and window function syntax.',
+        },
+        {
+          q: 'How does SQLite differ from MySQL and PostgreSQL?',
+          a: 'SQLite uses dynamic typing — column type declarations are advisory only and do not enforce storage class. There is no native AUTO_INCREMENT keyword; instead, a column declared as INTEGER PRIMARY KEY is implicitly an alias for the internal rowid and auto-increments. SQLite has limited ALTER TABLE support (no DROP COLUMN before version 3.35.0), no stored procedures, no user-defined functions in pure SQL, and no network-level access.',
+        },
+        {
+          q: 'Is my schema data sent to any external server?',
+          a: 'No. The entire translation process runs locally in your browser using JavaScript regular expressions and string manipulation. Your CREATE TABLE definitions never leave your device — there is no backend, no API call, and no data stored anywhere. This makes the tool safe for converting schemas that reference sensitive column names, proprietary data models, or confidential database structures.',
+        },
+        {
+          q: 'Can I translate schemas that use MySQL-specific features like ENUM or SET?',
+          a: 'The current parser handles standard data types and constraints. MySQL ENUM and SET types have no direct equivalent in PostgreSQL or SQLite — PostgreSQL supports ENUM via CREATE TYPE but with different syntax, and SQLite has no ENUM at all. For these cases, the converter will pass the type through unchanged; you will need to manually rewrite ENUM columns using CHECK constraints or reference tables on the target dialect.',
+        },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

@@ -92,10 +92,10 @@ const tool = tools.find(t => t.slug === 'word-counter')!;
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
     <h2 class="font-display seo-h2" >Word Counter Overview &amp; Modern Technical Context</h2>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       This word counter computes six distinct text metrics — word count, character count, characters without spaces, sentence count, paragraph count, and estimated reading time — entirely within your browser using vanilla JavaScript. No text data is transmitted to any server, no cookies are set, and no tracking scripts execute during the counting process. The 100% client-side architecture means sensitive drafts, legal documents, academic papers, and confidential copy remain completely private, with zero server latency and zero data retention. The tool is built on standard DOM APIs (<code>String.prototype.split</code>, <code>RegExp</code>) and requires no external dependencies, making it fast enough to recalculate on every keystroke without perceptible delay.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       Paste or type any text into the input area. All six statistics update instantly as you type — there is no submit button and no page reload. The platform limits section below the stats grid displays real-time progress bars against common character limits used by Twitter/X (280), LinkedIn (3,000), SMS (160), and HTML meta titles (60). Each bar is colour-coded: green when within budget, amber when approaching the limit (≥85%), and red when exceeded.
     </p>
 
@@ -147,22 +147,22 @@ const tool = tools.find(t => t.slug === 'word-counter')!;
     </div>
 
     <h3 class="font-display seo-h3-sm" >How the Computation Works Step-by-Step</h3>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       <strong>Word counting:</strong> The algorithm first trims leading and trailing whitespace from the input, then splits the string on one or more whitespace characters using the regular expression <code>\s+</code>. This handles spaces, tabs, newlines, and multiple consecutive whitespace characters uniformly. Each resulting token is passed through <code>filter(Boolean)</code> to discard empty strings that can arise from edge cases such as multiple consecutive spaces. The length of the filtered array is the word count. This approach correctly handles mixed whitespace, leading/trailing spaces, and single-word inputs.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       <strong>Character counting:</strong> The total character count uses JavaScript's native <code>String.prototype.length</code>, which returns the number of UTF-16 code units. For standard English text this is equivalent to the number of visible characters plus whitespace. The "no spaces" variant strips all whitespace characters (spaces, tabs, newlines) using a global regex replacement before measuring length, providing the count that most platform character limits reference.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       <strong>Sentence counting:</strong> Sentences are identified by splitting on terminal punctuation — periods, exclamation marks, and question marks — using the regex <code>[.!?]+</code>. The <code>+</code> quantifier handles sequences like <code>...</code> or <code>!?</code> as a single delimiter. Empty tokens are filtered out, which correctly handles inputs with no sentence terminators (producing a count of 1 for a single sentence, or 0 for empty input). Note that abbreviations containing periods (e.g. "Dr.", "U.S.A.") may cause over-splitting; this is a known limitation of regex-based sentence detection without NLP parsing.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       <strong>Paragraph counting:</strong> Paragraphs are detected by splitting on two or more consecutive newline characters. The regex uses a quantifier to match two or more newlines as a single delimiter. This means a single blank line separates paragraphs, which aligns with standard Markdown and plain-text conventions. A single line break without a blank line between them does not create a new paragraph. Empty entries are filtered out, so leading or trailing blank lines do not inflate the count.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       <strong>Reading time:</strong> The estimate divides total word count by 200 words per minute — a widely accepted average for silent reading of general-purpose English text. The result is rounded up using <code>Math.ceil()</code> so that any partial minute is reported as a full minute. For reference, average silent reading speeds range from 150 wpm (careful technical reading) to 300+ wpm (skimming). The 200 wpm baseline is deliberately conservative to avoid underestimating reading time for dense content.
     </p>
-    <p class="text-secondary seo-p-none" >
+    <p class="seo-p-none" >
       <strong>Edge cases handled:</strong> The tool correctly handles empty input (all counters display 0), input consisting solely of whitespace (0 words, 0 paragraphs), very long single-line text (1 paragraph), text with only punctuation, and text containing a mix of line endings (<code>\n</code>, <code>\r\n</code>). All computations execute synchronously on the main thread, which is safe for inputs up to approximately 500,000 characters without blocking the UI.
     </p>
   </div>

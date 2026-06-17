@@ -62,10 +62,10 @@ const tool = tools.find(t => t.slug === 'jwt-debugger')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2" >JWT Debugger Overview &amp; Modern Technical Context</h2>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       JSON Web Tokens (JWTs) are the dominant stateless authentication mechanism used across modern web APIs, single-sign-on (SSO) implementations, and microservice architectures. This JWT Debugger provides instant, client-side decoding of any standard-compliant token, allowing developers to inspect headers, payloads, and signature segments without transmitting sensitive data to external servers. The tool is built with modern vanilla JavaScript and the Web Crypto API-compatible Base64url decoding routines — every operation executes entirely within your browser with zero network requests, zero cookies, and zero data retention.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       Paste any JWT into the input field or click <strong>Load sample</strong> to see a demonstration token. The debugger instantly splits the token at its two dot delimiters, decodes each Base64url-encoded segment, and renders the header and payload as formatted JSON. Standard claims — such as <code>iat</code> (issued at), <code>exp</code> (expiration), <code>sub</code> (subject), <code>iss</code> (issuer), and <code>aud</code> (audience) — are automatically extracted and displayed as labelled info rows. A colour-coded token preview highlights the three segments in amber, blue, and green for immediate visual identification. Copy buttons allow you to export individual sections to your clipboard for integration into logs, documentation, or debugging workflows.
     </p>
 
@@ -97,16 +97,16 @@ const tool = tools.find(t => t.slug === 'jwt-debugger')!;
     </div>
 
     <h3 class="font-display seo-h3-sm" >How the Decoding Process Works</h3>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       The JWT specification (RFC 7519) defines a compact, URL-safe means of representing claims between two parties. The decoder first splits the raw token string at each <code>.</code> delimiter. A valid JWT must produce exactly three segments; any other count triggers an immediate error. Each segment is then Base64url-decoded — a process that reverses the URL-safe encoding by substituting standard Base64 characters back (+ becomes -, / becomes _) and re-appending any stripped <code>=</code> padding characters before invoking <code>atob()</code>. The decoded bytes are then parsed as UTF-8 and deserialised from JSON into a JavaScript object.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       The <strong>header</strong> typically contains two fields: <code>alg</code> (e.g., HS256, RS256, ES256) specifying the signing algorithm, and <code>typ</code> declaring the media type. The <strong>payload</strong> carries the claims — standardised fields defined by the JWT specification plus any application-specific key-value pairs. The <strong>signature</strong> segment is the raw output of the signing algorithm applied to the ASCII bytes of <code>base64url(header) + "." + base64url(payload)</code> using a secret key (HMAC) or private key (RSA/ECDSA). This debugger decodes the first two segments and displays the third as-is, since signature verification requires the original signing secret.
     </p>
-    <p class="text-secondary seo-p" >
+    <p class="seo-p" >
       <strong>Edge cases handled:</strong> The tool rejects tokens that do not contain exactly three dot-separated segments. Malformed Base64url sequences that produce invalid JSON trigger a descriptive error rather than an unhandled exception. The <code>exp</code> claim is automatically cross-referenced against the current system time — expired tokens are flagged with a warning indicator in the decoded output. Tokens with missing or unexpected claim structures are decoded gracefully; the tool displays whatever fields are present without requiring a rigid schema.
     </p>
-    <p class="text-secondary seo-p-none" >
+    <p class="seo-p-none" >
       <strong>Important limitation:</strong> This tool performs <em>decoding only</em> — it does not verify the cryptographic signature. Signature verification requires the original secret key (for HMAC algorithms) or the public key (for RSA/ECDSA), which only the token issuer possesses. A decoded payload is trustworthy only if you trust the issuer; the presence of a valid-looking <code>exp</code> or <code>iss</code> claim does not guarantee authenticity. Always verify tokens server-side against your application's signing key.
     </p>
   </div>
