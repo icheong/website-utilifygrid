@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'area-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Area Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter an area value and select its unit — all other units update instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Area Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter an area value and select its unit — all other units update instantly.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="area-input">Area</label>
+        <label class="tool-label" for="area-input">Area</label>
         <input id="area-input" type="number" value="1000" step="any" placeholder="Enter value"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="area-unit">Unit</label>
+        <label class="tool-label" for="area-unit">Unit</label>
         <select id="area-unit" class="select-themed" style="min-width:10rem;">
           <option value="m2" selected>square meter (m²)</option>
           <option value="cm2">square centimeter (cm²)</option>
@@ -40,92 +40,97 @@ const tool = tools.find(t => t.slug === 'area-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Area Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric area value</strong> and select its <strong>unit</strong> from the dropdown. All other area units update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Area Converter Overview</h2>
+    <p class="seo-p">
+      This area converter computes precise conversions between 10 metric and imperial area units entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your measurements, whether you are working in real estate, construction, agriculture, or land surveying.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports 10 standard area units from both metric and imperial systems: <strong>mm²</strong>, <strong>cm²</strong>, <strong>m²</strong>, <strong>km²</strong>, <strong>hectares</strong>, <strong>in²</strong>, <strong>ft²</strong>, <strong>yd²</strong>, <strong>acres</strong>, and <strong>mi²</strong>.
+    <p class="seo-p">
+      The converter supports the most commonly used area units across metric and imperial systems: square millimeters, square centimeters, square meters, square kilometers, and hectares for metric; square inches, square feet, square yards, acres, and square miles for imperial/US customary. Results are dynamically formatted based on magnitude, switching between fixed notation, locale-formatted numbers, and scientific notation as appropriate.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common reference objects are shown below the results for quick visual comparison.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        ['Real estate and property measurement', 'When buying or selling property, area measurements are essential for comparing value. A 200 m² house floor plan must be converted to 2,152.78 ft² for US buyers, or 0.0494 acres for land comparison. Real estate agents frequently convert between square meters and square feet when listing properties internationally. The quick-reference section helps visualise everyday areas like a parking space (12 m²), a typical bedroom (14 m²), or a city block (10,000 m²) for intuitive scale comparison.'],
+        ['Construction and building planning', 'Builders and architects calculate floor areas, roof areas, and material coverage in different units depending on local standards. A concrete pour requiring 50 m² of coverage must be quoted in square feet (538.20 ft²) for US contractors. Flooring suppliers often specify coverage per unit — for example, a box of tiles covering 1.5 m² — requiring precise area conversion to determine how many boxes are needed for a 45 ft² room.'],
+        ['Agriculture and land management', 'Farmers and land managers measure fields in hectares (metric) or acres (imperial). A 5-hectare vineyard equals approximately 12.355 acres. When comparing land parcels internationally, converting between hectares and acres is essential. A city council rezoning 2 hectares of agricultural land for residential development needs to communicate the area in acres (4.94 ac) for community consultation in imperial-using regions.']
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How area conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions use <strong>square meters (m²)</strong> as the base unit. Each unit defines its factor relative to m²:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <p class="seo-p">
+      The converter employs a hub-and-spoke conversion model using square meters as the universal base unit. Every supported area unit is defined by a fixed conversion factor relative to one square meter. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain square meters, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 cm²      = 0.0001 m²
-1 mm²      = 0.000001 m²
-1 km²      = 1,000,000 m²
-1 ha       = 10,000 m²
-1 in²      = 0.00064516 m²
-1 ft²      = 0.09290304 m²
-1 yd²      = 0.83612736 m²
-1 acre     = 4,046.8564224 m²
-1 mi²      = 2,589,988.110336 m²</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      To convert from one unit to another, the input is first multiplied by its base factor to get m², then divided by the target unit's factor. All calculations run in your browser with full double-precision floating-point accuracy.
+
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">m2</code>, <code class="inline-code">ac</code>, <code class="inline-code">ha</code>) to its exact factor in square meters. Metric units use powers of 10 (e.g. <code class="inline-code">1 km² = 1,000,000 m²</code>, <code class="inline-code">1 ha = 10,000 m²</code>), while imperial/US customary units use internationally defined values.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to square meters. For example, converting 2 acres to square meters: <code class="inline-code">2 × 4046.8564 = 8093.7128 m²</code>. This intermediate result is an IEEE 754 double-precision floating-point number, which provides approximately 15 to 17 significant decimal digits of precision.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Target conversion:</strong> The square meter value is divided by the target unit's factor. Converting 8093.7128 m² to hectares: <code class="inline-code">8093.7128 / 10000 = 0.8094 ha</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Large values (1 billion or greater) use scientific notation. Values between 1,000 and 1 billion use locale-formatted numbers with 2 to 4 decimal places. Values between 0.001 and 1,000 use 6 to 8 decimal places. Values below 0.001 use scientific notation. This ensures readability across the full range from square millimeters to square miles.
+    </p>
+    <p class="seo-p-none">
+      <strong>Exact vs. approximate factors:</strong> The metric factors are exact by definition: <code class="inline-code">1 km² = 1,000,000 m²</code>, <code class="inline-code">1 ha = 10,000 m²</code>. The hectare is defined as exactly 10,000 m², making it exact. Imperial/US customary units are derived from the international inch (2.54 cm exactly), so <code class="inline-code">1 acre = 43,560 ft² = 4046.8564224 m²</code> is also exact. Smaller units like square inches are derived by exact factors of 2 within the imperial system, though their square meter equivalents are rounded to 8 decimal places for display.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "How many square feet are in a square meter?",
-          "acceptedAnswer": { "@type": "Answer", "text": "One square meter equals approximately 10.7639 square feet. This is the most common conversion when comparing metric and imperial room measurements." }
-        },
-        {
-          "@type": "Question",
-          "name": "How many acres are in a hectare?",
-          "acceptedAnswer": { "@type": "Answer", "text": "One hectare equals approximately 2.47105 acres. Conversely, one acre equals about 0.4047 hectares. This conversion is widely used in agriculture and land measurement." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a hectare?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A hectare is a metric unit of area equal to 10,000 square meters (100m × 100m). It is commonly used for measuring agricultural land and is about the size of a standard rugby field." }
-        },
-        {
-          "@type": "Question",
-          "name": "How do you convert square meters to square feet?",
-          "acceptedAnswer": { "@type": "Answer", "text": "To convert square meters to square feet, multiply the area by 10.7639. For example, 100 m² equals 1,076.39 ft²." }
-        },
-        {
-          "@type": "Question",
-          "name": "What unit is best for measuring a house?",
-          "acceptedAnswer": { "@type": "Answer", "text": "In most countries, house floor area is measured in square meters (m²). In the US and UK, square feet (ft²) is more common for residential property. For land plots, acres or hectares are typically used." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'How many square feet are in a square meter?', a: 'One square meter equals approximately 10.7639 square feet. This is the most common conversion when comparing metric and imperial room measurements.' },
-        { q: 'How many acres are in a hectare?', a: 'One hectare equals approximately 2.47105 acres. Conversely, one acre equals about 0.4047 hectares. This conversion is widely used in agriculture and land measurement.' },
-        { q: 'What is a hectare?', a: 'A hectare is a metric unit of area equal to 10,000 square meters (100m × 100m). It is commonly used for measuring agricultural land and is about the size of a standard rugby field.' },
-        { q: 'How do you convert square meters to square feet?', a: 'To convert square meters to square feet, multiply the area by 10.7639. For example, 100 m² equals 1,076.39 ft².' },
-        { q: 'What unit is best for measuring a house?', a: 'In most countries, house floor area is measured in square meters (m²). In the US and UK, square feet (ft²) is more common for residential property. For land plots, acres or hectares are typically used.' },
+        {
+          q: "How many square feet are in a square meter?",
+          a: "One square meter equals approximately 10.7639 square feet. This is the most common conversion when comparing metric and imperial room measurements. For example, a 100 m² apartment equals approximately 1,076.39 ft². When reading property listings from countries using the metric system, multiply the square meter value by 10.7639 to get the equivalent in square feet."
+        },
+        {
+          q: "How many acres are in a hectare?",
+          a: "One hectare equals approximately 2.47105 acres. Conversely, one acre equals about 0.4047 hectares. This conversion is widely used in agriculture and land measurement. A standard rugby field is approximately 1 hectare, while a US football field (including end zones) is about 1.32 acres. When comparing land parcels internationally, always verify which unit is being used."
+        },
+        {
+          q: "What is a hectare?",
+          a: "A hectare is a metric unit of area equal to 10,000 square meters (100m × 100m). It is commonly used for measuring agricultural land, forest areas, and city parks. A hectare is about the size of a standard rugby field or approximately 2.47 acres. The term 'hectare' combines the metric prefix 'hecto' (100) with 'are' (100 m²), literally meaning 100 ares."
+        },
+        {
+          q: "How do you convert square meters to square feet?",
+          a: "To convert square meters to square feet, multiply the area by 10.7639. For example, 100 m² equals 1,076.39 ft². To convert from square feet to square meters, divide by 10.7639. For quick mental estimates, multiply square meters by about 10.76 — a 50 m² room is roughly 538 ft². For precise calculations, use the full 10.7639 factor."
+        },
+        {
+          q: "What unit is best for measuring a house?",
+          a: "In most countries, house floor area is measured in square meters (m²). In the US and UK, square feet (ft²) is more common for residential property. For land plots, acres or hectares are typically used. A typical family home ranges from 150 to 300 m² (1,615 to 3,229 ft²). When comparing property sizes across different countries, always check which unit is being used."
+        },
+        {
+          q: "How many square meters are in an acre?",
+          a: "One acre equals exactly 4,046.8564224 square meters. This is a precise conversion factor derived from the definition of an acre as 43,560 square feet (with 1 foot = 0.3048 meters exactly). For quick estimates, one acre is roughly 4,047 m². An acre is about 76% of a hectare, or about 16 tennis courts."
+        },
+        {
+          q: "What is the difference between an acre and a hectare?",
+          a: "Both acres and hectares are used to measure land area, but they belong to different measurement systems. A hectare is a metric unit equal to exactly 10,000 m², while an acre is an imperial unit equal to exactly 4,046.856 m². One hectare is about 2.47 acres, making it roughly 2.5 times larger. Hectares are used in most countries worldwide, while acres remain common in the US, UK, and some Commonwealth nations."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

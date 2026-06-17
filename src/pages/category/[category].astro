@@ -11,7 +11,7 @@ export async function getStaticPaths() {
 }
 
 const { category } = Astro.props;
-const categoryTools = tools.filter(t => t.category === category.slug);
+const categoryTools = tools.filter(t => t.category === category.slug).sort((a, b) => a.name.localeCompare(b.name));
 
 const structuredData = {
   "@context": "https://schema.org",

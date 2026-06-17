@@ -3,14 +3,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import tools from '../data/tools.json';
 import categories from '../data/categories.json';
 
-const featuredTools = tools.filter(t => t.featured);
+const sortedTools = [...tools].sort((a, b) => a.name.localeCompare(b.name));
+const featuredTools = sortedTools.filter(t => t.featured);
 
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   "name": "UtilifyGrid – Online Tools Collection",
   "description": "A curated collection of browser-based calculators, converters, and utility tools.",
-  "itemListElement": tools.map((tool, i) => ({
+  "itemListElement": sortedTools.map((tool, i) => ({
     "@type": "ListItem",
     "position": i + 1,
     "url": `https://utilifygrid.com/tools/${tool.slug}`,
@@ -141,7 +142,7 @@ const structuredData = {
       </div>
 
       <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:0.875rem;" id="all-tools-grid">
-        {tools.map(tool => (
+        {sortedTools.map(tool => (
           <a
             href={`/tools/${tool.slug}`}
             class="tool-card tool-card-themed"

@@ -7,19 +7,18 @@ const tool = tools.find(t => t.slug === 'length-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Length Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Length Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly. All calculations run in your browser.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="length-input">Value</label>
+        <label class="tool-label" for="length-input">Value</label>
         <input id="length-input" type="number" value="1" min="0" step="any" placeholder="Enter value"
-          class="input-themed"
-          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+          class="input-themed" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="length-unit">Unit</label>
+        <label class="tool-label" for="length-unit">Unit</label>
         <select id="length-unit" class="select-themed" style="min-width:10rem;">
           <option value="mm">Millimeters (mm)</option>
           <option value="cm">Centimeters (cm)</option>
@@ -41,95 +40,97 @@ const tool = tools.find(t => t.slug === 'length-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Length Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other length units update instantly — no buttons to click.
+    <h2 class="font-display seo-h2" >Length Converter Overview</h2>
+    <p class="seo-p" >
+      This length converter computes precise conversions between 11 metric and imperial length units entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your measurements, whether you are working on engineering blueprints, academic assignments, or everyday projects.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter covers the most common <strong>metric</strong> units (nanometers through kilometers) and <strong>imperial</strong> units (inches through miles), plus nautical miles. Results use high-precision floating-point math so small values stay accurate.
+    <p class="seo-p" >
+      The converter supports the full spectrum of length scales — from nanometers (used in semiconductor manufacturing and molecular biology) through micrometers, millimeters, centimeters, meters, and kilometers in the metric system, and from inches through feet, yards, miles, and nautical miles in the imperial system. All conversion factors between imperial and metric units are exact international definitions (not approximations), which means conversions between any two units inherit that exactness. Results are formatted dynamically based on magnitude, switching between fixed notation, locale-formatted numbers, and scientific notation as appropriate.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
-    </p>
+
+    <h3 class="font-display seo-h3-sm" >Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        ['Engineering and manufacturing', 'Engineers working with CNC machines, 3D printers, or precision instruments frequently convert between millimeters and inches when sourcing parts from international suppliers. A single misinterpreted unit can produce defective parts costing thousands of dollars. This tool provides instant, exact conversions with copy-to-clipboard functionality, eliminating manual lookup errors when transferring measurements between CAD software and procurement documents.'],
+        ['Academic and scientific research', 'Students and researchers regularly convert between nanometers (wavelengths of light, DNA dimensions), micrometers (cell biology, microfluidics), and millimeters (lab equipment specifications). The tool supports 11 orders of magnitude, making it suitable for physics, chemistry, biology, and materials science coursework. The quick-reference section provides intuitive scale comparisons (credit card, smartphone, football pitch) that help students develop physical intuition for abstract measurements.'],
+        ['Travel and navigation', 'International travellers and pilots frequently need to convert between miles and kilometers for route planning, fuel calculations, and distance estimation. Maritime and aviation professionals specifically require nautical mile conversions, as speed at sea is measured in knots (1 knot = 1 nautical mile per hour). The tool handles these conversions with exact factors, ensuring navigational calculations remain precise across long distances.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How length conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions go through <strong>meters</strong> as the base unit. Each unit has a fixed factor relative to one meter:
+    <h2 class="font-display seo-h2" >Deep-Dive: Conversion Factors &amp; Mathematical Logic</h2>
+    <p class="seo-p" >
+      The converter employs a hub-and-spoke conversion model using meters as the universal base unit. Every supported length unit is defined by a fixed conversion factor relative to one meter. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain meters, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 inch  = 0.0254 m        (exact)
-1 foot  = 0.3048 m        (exact)
-1 yard  = 0.9144 m        (exact)
-1 mile  = 1609.344 m      (exact)
-1 nmi   = 1852 m          (exact)
-1 cm    = 0.01 m
-1 mm    = 0.001 m
-1 km    = 1000 m
-1 μm    = 0.000001 m
-1 nm    = 0.000000001 m
 
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Because the imperial-to-metric factors above are <strong>exact definitions</strong> (not approximations), conversions between imperial units (e.g. inches to feet) are also exact. All calculations run in your browser — no data is sent anywhere.
+    <h3 class="font-display seo-h3-sm" >Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm" >
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">mm</code>, <code class="inline-code">in</code>, <code class="inline-code">mi</code>) to its exact factor in meters. Metric units use powers of 10 (e.g. <code class="inline-code">1 mm = 0.001 m</code>, <code class="inline-code">1 km = 1000 m</code>), while imperial units use internationally defined exact values.
+    </p>
+    <p class="seo-p-sm" >
+      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to meters. For example, converting 5 inches to meters: <code class="inline-code">5 × 0.0254 = 0.127 m</code>. This intermediate result is a IEEE 754 double-precision floating-point number, which provides approximately 15–17 significant decimal digits of precision.
+    </p>
+    <p class="seo-p-sm" >
+      <strong>3. Target conversion:</strong> The meter value is divided by the target unit's factor. Converting 0.127 m to centimeters: <code class="inline-code">0.127 ÷ 0.01 = 12.7 cm</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor ÷ ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm" >
+      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Values of 10 to the power 9 or greater use scientific notation. Values between 1,000 and 10 to the power 9 use locale-formatted numbers with 2–4 decimal places. Values between 0.001 and 1,000 use 6–8 decimal places. Values below 0.001 use scientific notation. This ensures readability across the full 18-order-of-magnitude range (nanometers to kilometers).
+    </p>
+    <p class="seo-p-none" >
+      <strong>Exact vs. approximate factors:</strong> The imperial-to-metric conversion factors are exact by international definition (since 1959): <code class="inline-code">1 inch = 0.0254 m</code>, <code class="inline-code">1 foot = 0.3048 m</code>, <code class="inline-code">1 yard = 0.9144 m</code>, <code class="inline-code">1 mile = 1609.344 m</code>, <code class="inline-code">1 nautical mile = 1852 m</code>. Because these are exact rational numbers, conversions between any two imperial units (e.g. inches to feet) are also exact. The only source of imprecision is IEEE 754 floating-point representation, which introduces rounding only at the 15th–17th significant digit.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is the difference between a meter and a foot?",
-          "acceptedAnswer": { "@type": "Answer", "text": "One meter equals approximately 3.28084 feet. The meter is the base unit of length in the metric system (SI), while the foot is an imperial unit commonly used in the United States, United Kingdom, and other countries for everyday measurements." }
-        },
-        {
-          "@type": "Question",
-          "name": "How many centimeters are in an inch?",
-          "acceptedAnswer": { "@type": "Answer", "text": "One inch is exactly 2.54 centimeters. This is an exact conversion factor defined by international agreement, not an approximation." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a nautical mile used for?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A nautical mile (1,852 meters) is used in maritime and aviation navigation. It is based on the circumference of the Earth — one nautical mile equals one minute of latitude. Speed at sea is measured in knots, where 1 knot = 1 nautical mile per hour." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why are some conversions exact and others approximate?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Imperial-to-metric conversions like 1 inch = 2.54 cm and 1 foot = 0.3048 m are exact by international definition (since 1959). Conversions like miles to kilometers (1 mi = 1.609344 km) are also exact. However, values displayed with many decimal places are floating-point representations that may show rounding artifacts at extreme precision." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I convert very small values like nanometers?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The converter supports nanometers (nm) and micrometers (μm), which are commonly used in science, engineering, and electronics. Nanometers are used to measure wavelengths of light, semiconductor features, and molecules." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is the difference between a meter and a foot?', a: 'One meter equals approximately 3.28084 feet. The meter is the base unit of length in the metric system (SI), while the foot is an imperial unit commonly used in the United States, United Kingdom, and other countries for everyday measurements.' },
-        { q: 'How many centimeters are in an inch?', a: 'One inch is exactly 2.54 centimeters. This is an exact conversion factor defined by international agreement, not an approximation.' },
-        { q: 'What is a nautical mile used for?', a: 'A nautical mile (1,852 meters) is used in maritime and aviation navigation. It is based on the circumference of the Earth — one nautical mile equals one minute of latitude. Speed at sea is measured in knots, where 1 knot = 1 nautical mile per hour.' },
-        { q: 'Why are some conversions exact and others approximate?', a: 'Imperial-to-metric conversions like 1 inch = 2.54 cm and 1 foot = 0.3048 m are exact by international definition (since 1959). Conversions like miles to kilometers (1 mi = 1.609344 km) are also exact. However, values displayed with many decimal places are floating-point representations that may show rounding artifacts at extreme precision.' },
-        { q: 'Can I convert very small values like nanometers?', a: 'Yes. The converter supports nanometers (nm) and micrometers (μm), which are commonly used in science, engineering, and electronics. Nanometers are used to measure wavelengths of light, semiconductor features, and molecules.' },
+        {
+          q: "What is the difference between a meter and a foot?",
+          a: "One meter equals approximately 3.28084 feet. The meter is the base unit of length in the metric system (SI), defined as the distance light travels in vacuum in 1/299,792,458 of a second. The foot is an imperial unit commonly used in the United States, United Kingdom, and other countries for everyday measurements, defined exactly as 0.3048 meters. The meter is used globally in scientific and engineering contexts, while the foot remains prevalent in construction, real estate, and aviation in the US and UK."
+        },
+        {
+          q: "How many centimeters are in an inch?",
+          a: "One inch is exactly 2.54 centimeters. This is an exact conversion factor defined by international agreement in 1959, not an approximation. The definition was established when the United States, United Kingdom, Canada, Australia, New Zealand, and South Africa jointly standardized the inch as precisely 25.4 millimeters (2.54 centimeters)."
+        },
+        {
+          q: "What is a nautical mile used for?",
+          a: "A nautical mile (1,852 meters) is used in maritime and aviation navigation worldwide. It is based on the circumference of the Earth — one nautical mile corresponds to one minute of latitude along the meridian. This makes it directly useful for chart-based navigation: the distance between two latitude markings on a nautical chart equals the number of nautical miles between them. Speed at sea is measured in knots, where 1 knot equals 1 nautical mile per hour."
+        },
+        {
+          q: "Why are some conversions exact and others approximate?",
+          a: "Imperial-to-metric conversions like 1 inch = 2.54 cm and 1 foot = 0.3048 m are exact by international definition (since 1959). Conversions like miles to kilometers (1 mi = 1.609344 km) are also exact. However, when results are displayed with many decimal places, IEEE 754 floating-point representation can introduce rounding artifacts at extreme precision (typically beyond the 15th significant digit). For all practical purposes, the conversions are exact within the display precision used by this tool."
+        },
+        {
+          q: "Can I convert very small values like nanometers?",
+          a: "Yes. The converter supports nanometers (nm) and micrometers (μm), which are commonly used in science, engineering, and electronics. Nanometers are used to measure wavelengths of visible light (400–700 nm), semiconductor transistor features (currently below 5 nm), and DNA molecule diameters (~2 nm). Micrometers are used in cell biology (human red blood cells are ~7 μm), precision machining, and microfluidic device fabrication."
+        },
+        {
+          q: "Why does the result show so many decimal places?",
+          a: "The converter dynamically adjusts decimal places based on the magnitude of the result. Large values (≥ 1,000) show 2–4 decimal places with locale-formatted thousands separators. Medium values (0.001 to 1,000) show 6–8 decimal places for precision. Very small values (< 0.001) switch to scientific notation. This adaptive formatting ensures readability across the full 18-order-of-magnitude range the tool supports, from nanometers to kilometers."
+        },
+        {
+          q: "Is the conversion factor for miles to kilometers exact?",
+          a: "Yes — 1 mile is exactly 1.609344 kilometers, defined by the international agreement that established 1 mile = 1609.344 meters. This is not an approximation. The factor 1.609344 is the precise result of dividing 1609.344 by 1000. All imperial-to-metric length conversions in this tool use exact factors defined by international standards, not empirical measurements."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

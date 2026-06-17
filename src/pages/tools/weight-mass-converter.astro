@@ -7,19 +7,18 @@ const tool = tools.find(t => t.slug === 'weight-mass-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Weight & Mass Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Weight &amp; Mass Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a value in any unit — see the conversion in all others instantly. All calculations run in your browser.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="weight-input">Value</label>
+        <label class="tool-label" for="weight-input">Value</label>
         <input id="weight-input" type="number" value="1" min="0" step="any" placeholder="Enter value"
-          class="input-themed"
-          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+          class="input-themed" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="weight-unit">Unit</label>
+        <label class="tool-label" for="weight-unit">Unit</label>
         <select id="weight-unit" class="select-themed" style="min-width:10rem;">
           <option value="mg">Milligrams (mg)</option>
           <option value="g">Grams (g)</option>
@@ -39,94 +38,93 @@ const tool = tools.find(t => t.slug === 'weight-mass-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Weight & Mass Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other weight and mass units update instantly — no buttons to click.
+    <h2 class="font-display seo-h2" >Weight &amp; Mass Converter Overview</h2>
+    <p class="seo-p" >
+      This weight and mass converter computes precise conversions between 9 metric and imperial mass units entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your measurements, whether you are working in logistics, cooking, science, or fitness.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter covers <strong>metric</strong> units (milligrams through metric tons) and <strong>imperial</strong> units (ounces through imperial tons), plus stones used in the UK and Australia. Results use high-precision floating-point math.
+    <p class="seo-p" >
+      The converter supports the most commonly used mass units across metric and imperial systems: milligrams, grams, kilograms, and metric tons for metric; ounces, pounds, stones, US short tons, and Imperial long tons for imperial. The imperial-to-metric conversion factors are exact international definitions (since 1959), which means conversions between any two units inherit that exactness. Results are dynamically formatted based on magnitude, switching between fixed notation, locale-formatted numbers, and scientific notation as appropriate.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, recipes, or messages.
-    </p>
+
+    <h3 class="font-display seo-h3-sm" >Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        ['Shipping and logistics', 'Freight companies, customs brokers, and warehouse managers frequently convert between kilograms and pounds or tons when processing international shipments. A single misinterpreted unit can result in incorrect freight charges, customs duties, or load calculations. This tool provides instant, exact conversions with copy-to-clipboard functionality, eliminating manual lookup errors when transferring measurements between shipping manifests, bills of lading, and inventory systems.'],
+        ['Cooking and nutrition', 'Recipes from different countries use different weight units — grams for metric recipes, ounces and pounds for imperial. A baker converting a 500g flour measurement to cups needs the weight equivalent, while a nutritionist calculating daily protein intake in grams must convert from ounces listed on food packaging. The quick-reference section helps visualise everyday weights like a smartphone (175g) or a laptop (1.5kg) for intuitive scale comparison.'],
+        ['Science and fitness', 'Laboratory measurements in chemistry and biology frequently use milligrams and grams for reagent quantities, while fitness professionals track body weight in pounds, kilograms, or stones depending on their region. The stones unit is specifically used in the UK, Ireland, and Australia for human body weight, where someone might report being 12 stone rather than 168 pounds. This converter handles all these contexts with exact factors.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How weight conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions go through <strong>kilograms</strong> as the base unit. Each unit has a fixed factor relative to one kilogram:
+    <h2 class="font-display seo-h2" >Deep-Dive: Conversion Factors &amp; Mathematical Logic</h2>
+    <p class="seo-p" >
+      The converter employs a hub-and-spoke conversion model using kilograms as the universal base unit. Every supported mass unit is defined by a fixed conversion factor relative to one kilogram. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain kilograms, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 ounce  = 0.028349523125 kg   (exact)
-1 pound  = 0.45359237 kg        (exact)
-1 stone  = 6.35029318 kg        (exact)
-1 US ton = 907.18474 kg         (exact)
-1 UK ton = 1016.0469088 kg      (exact)
-1 mg     = 0.000001 kg
-1 g      = 0.001 kg
-1 kg     = 1 kg
-1 t      = 1000 kg
 
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      The pound-to-kilogram conversion (0.45359237) is an <strong>exact definition</strong> established by international agreement in 1959. All calculations run in your browser — no data is sent anywhere.
+    <h3 class="font-display seo-h3-sm" >Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm" >
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">mg</code>, <code class="inline-code">lb</code>, <code class="inline-code">t</code>) to its exact factor in kilograms. Metric units use powers of 10 (e.g. <code class="inline-code">1 g = 0.001 kg</code>, <code class="inline-code">1 t = 1000 kg</code>), while imperial units use internationally defined exact values.
+    </p>
+    <p class="seo-p-sm" >
+      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to kilograms. For example, converting 5 pounds to kilograms: <code class="inline-code">5 x 0.45359237 = 2.26796185 kg</code>. This intermediate result is a IEEE 754 double-precision floating-point number, which provides approximately 15 to 17 significant decimal digits of precision.
+    </p>
+    <p class="seo-p-sm" >
+      <strong>3. Target conversion:</strong> The kilogram value is divided by the target unit's factor. Converting 2.26796185 kg to ounces: <code class="inline-code">2.26796185 / 0.028349523125 = 80 oz</code>. The combined formula is: <code class="inline-code">Result = Input x (FromFactor / ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm" >
+      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Large values (1 billion or greater) use scientific notation. Values between 1,000 and 1 billion use locale-formatted numbers with 2 to 4 decimal places. Values between 0.001 and 1,000 use 6 to 8 decimal places. Values below 0.001 use scientific notation. This ensures readability across the full 12-order-of-magnitude range (milligrams to metric tons).
+    </p>
+    <p class="seo-p-none" >
+      <strong>Exact vs. approximate factors:</strong> The imperial-to-metric conversion factors are exact by international definition (since 1959): <code class="inline-code">1 ounce = 0.028349523125 kg</code>, <code class="inline-code">1 pound = 0.45359237 kg</code>, <code class="inline-code">1 stone = 6.35029318 kg</code>, <code class="inline-code">1 US ton = 907.18474 kg</code>, <code class="inline-code">1 Imperial ton = 1016.0469088 kg</code>. The kilogram itself is defined by fixing the Planck constant at exactly 6.62607015 x 10 to the power of negative 34 J s, making it based on a fundamental constant of nature rather than a physical artifact.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is the difference between a kilogram and a pound?",
-          "acceptedAnswer": { "@type": "Answer", "text": "One kilogram equals approximately 2.20462 pounds. The kilogram is the base unit of mass in the metric system (SI), while the pound is an imperial unit commonly used in the United States and United Kingdom for everyday weight measurements." }
-        },
-        {
-          "@type": "Question",
-          "name": "How many ounces are in a pound?",
-          "acceptedAnswer": { "@type": "Answer", "text": "There are exactly 16 ounces in one pound. This is an exact conversion, not an approximation. The ounce is commonly used for smaller weight measurements, especially in cooking and packaging." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a stone used for?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A stone (st) equals 14 pounds or approximately 6.35 kilograms. It is commonly used in the United Kingdom, Ireland, and Australia for measuring human body weight. For example, a person might say they weigh '10 stone' rather than '140 pounds'." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the difference between a US ton and an Imperial ton?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A US ton (short ton) equals 2,000 pounds (907.18 kg). An Imperial ton (long ton) equals 2,240 pounds (1,016.05 kg). The Imperial ton is about 12% heavier. The US ton is used in the United States, while the Imperial ton is used in the UK for certain industries." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why is the kilogram the SI base unit for mass?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The kilogram was chosen as the SI base unit of mass in 1795. Since 2019, it is defined by fixing the numerical value of the Planck constant (h = 6.62607015 × 10⁻³⁴ J·s), making it based on a fundamental constant of nature rather than a physical artifact." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is the difference between a kilogram and a pound?', a: 'One kilogram equals approximately 2.20462 pounds. The kilogram is the base unit of mass in the metric system (SI), while the pound is an imperial unit commonly used in the United States and United Kingdom for everyday weight measurements.' },
-        { q: 'How many ounces are in a pound?', a: 'There are exactly 16 ounces in one pound. This is an exact conversion, not an approximation. The ounce is commonly used for smaller weight measurements, especially in cooking and packaging.' },
-        { q: 'What is a stone used for?', a: 'A stone (st) equals 14 pounds or approximately 6.35 kilograms. It is commonly used in the United Kingdom, Ireland, and Australia for measuring human body weight. For example, a person might say they weigh \'10 stone\' rather than \'140 pounds\'.' },
-        { q: 'What is the difference between a US ton and an Imperial ton?', a: 'A US ton (short ton) equals 2,000 pounds (907.18 kg). An Imperial ton (long ton) equals 2,240 pounds (1,016.05 kg). The Imperial ton is about 12% heavier. The US ton is used in the United States, while the Imperial ton is used in the UK for certain industries.' },
-        { q: 'Why is the kilogram the SI base unit for mass?', a: 'The kilogram was chosen as the SI base unit of mass in 1795. Since 2019, it is defined by fixing the numerical value of the Planck constant (h = 6.62607015 × 10⁻³⁴ J·s), making it based on a fundamental constant of nature rather than a physical artifact.' },
+        {
+          q: "What is the difference between a kilogram and a pound?",
+          a: "One kilogram equals approximately 2.20462 pounds. The kilogram is the base unit of mass in the metric system (SI), defined by fixing the Planck constant at exactly 6.62607015 x 10 to the power of negative 34 J s since 2019. The pound is an imperial unit commonly used in the United States and United Kingdom for everyday weight measurements, defined exactly as 0.45359237 kilograms by international agreement in 1959."
+        },
+        {
+          q: "How many ounces are in a pound?",
+          a: "There are exactly 16 ounces in one pound. This is an exact conversion, not an approximation. The ounce is commonly used for smaller weight measurements, especially in cooking, food labelling (nutrition facts), and postal services. One ounce equals exactly 28.349523125 grams."
+        },
+        {
+          q: "What is a stone used for?",
+          a: "A stone (st) equals exactly 14 pounds or approximately 6.35 kilograms. It is commonly used in the United Kingdom, Ireland, and Australia for measuring human body weight. For example, a person might say they weigh 10 stone rather than 140 pounds. The stone is not used in scientific or commercial contexts — it is purely a colloquial unit for personal body weight in these regions."
+        },
+        {
+          q: "What is the difference between a US ton and an Imperial ton?",
+          a: "A US ton (short ton) equals exactly 2,000 pounds (907.18474 kg). An Imperial ton (long ton) equals exactly 2,240 pounds (1,016.0469088 kg). The Imperial ton is about 12% heavier than the US ton. The US ton is the standard unit of mass for trucking, freight, and mining in the United States, while the Imperial ton remains in use in the UK for certain heavy industries and shipping."
+        },
+        {
+          q: "Why is the kilogram the SI base unit for mass?",
+          a: "The kilogram was originally defined in 1795 as the mass of one liter of water at 4 degrees Celsius, then replaced by a physical platinum-iridium artifact (the International Prototype of the Kilogram). Since 2019, the kilogram is defined by fixing the numerical value of the Planck constant (h = 6.62607015 x 10 to the power of negative 34 J s), making it based on a fundamental constant of nature rather than a physical artifact that could drift over time."
+        },
+        {
+          q: "Can I convert between stones and kilograms directly?",
+          a: "Yes. One stone equals exactly 6.35029318 kilograms. To convert stones to kilograms, multiply by 6.35029318. To convert kilograms to stones, divide by 6.35029318. This tool performs the conversion automatically — simply enter your value in either unit and all others update instantly. The stones unit is primarily used for body weight in the UK, Ireland, and Australia."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

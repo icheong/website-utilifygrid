@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'angle-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Angle Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter an angle value and select its unit — all other units update instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Angle Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter an angle value and select its unit — all other units update instantly.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="angle-input">Angle</label>
+        <label class="tool-label" for="angle-input">Angle</label>
         <input id="angle-input" type="number" value="90" step="any" placeholder="Enter value"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="angle-unit">Unit</label>
+        <label class="tool-label" for="angle-unit">Unit</label>
         <select id="angle-unit" class="select-themed" style="min-width:10rem;">
           <option value="deg" selected>Degree (°)</option>
           <option value="rad">Radian (rad)</option>
@@ -37,91 +37,97 @@ const tool = tools.find(t => t.slug === 'angle-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Angle Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric angle value</strong> and select its <strong>unit</strong> from the dropdown. All other angle units update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Angle Converter Overview</h2>
+    <p class="seo-p">
+      This angle converter computes precise conversions between 7 angular measurement units entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in mathematics, surveying, astronomy, navigation, or military applications.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports 7 standard angle units: <strong>degrees</strong>, <strong>radians</strong>, <strong>gradians</strong>, <strong>arcminutes</strong>, <strong>arcseconds</strong>, <strong>revolutions</strong>, and <strong>NATO mils</strong>.
+    <p class="seo-p">
+      The converter supports the most commonly used angle units across scientific, engineering, and practical contexts: degrees and radians for mathematics and physics; gradians for surveying and civil engineering; arcminutes and arcseconds for astronomy; revolutions for rotational mechanics; and NATO mils for military artillery. Results are dynamically formatted based on magnitude, switching between fixed notation, locale-formatted numbers, and scientific notation as appropriate.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common reference angles are shown below the results for quick comparison.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        ['Mathematics and physics education', 'Students and educators frequently convert between degrees and radians when working with trigonometric functions. A right angle equals 90° or π/2 radians. The sine function in most programming languages expects radians: sin(π/6) = 0.5, not sin(30°). Converting 45° to radians gives approximately 0.7854 rad. The quick-reference section helps visualise common angles like a right angle (90°), a straight angle (180°), or a full circle (360°) for intuitive understanding.'],
+        ['Surveying and civil engineering', 'Land surveyors use gradians (also called grads or gons) because they divide a right angle into exactly 100 parts, making percentage-based calculations straightforward. A 45° slope equals 50 grad. When reading European surveying equipment or blueprints, angles may be specified in gradians rather than degrees. Converting between these units ensures accurate interpretation of site plans and topographic data across international projects.'],
+        ['Astronomy and observational science', 'Astronomers measure angular separations, planetary positions, and stellar coordinates in degrees, arcminutes, and arcseconds. The Moon has an angular diameter of approximately 31 arcminutes (0.5167°), while Jupiter appears as small as 30 arcseconds (0.0083°) from Earth. Telescopes with equatorial mounts use right ascension measured in hours, minutes, and seconds of time, which must be converted to degrees for coordinate transformations.']
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How angle conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions use <strong>degrees</strong> as the base unit. Each unit has a fixed factor relative to one degree:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <p class="seo-p">
+      The converter employs a hub-and-spoke conversion model using degrees as the universal base unit. Every supported angle unit is defined by a fixed conversion factor relative to one degree. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain degrees, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 rad     = 180/π °  ≈ 57.29578°
-1 grad    = 0.9°
-1 arcmin  = 1/60 °   ≈ 0.0002778°
-1 arcsec  = 1/3600 ° ≈ 0.00000007716°
-1 rev     = 360°
-1 mil     = 0.05625°  (NATO: 6400 mil = 360°)
 
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Radians are the natural unit for angular measurement: one full circle equals 2π radians = 360°. Gradians (also called grads or gons) divide a right angle into 100 parts (400 grad = 360°). The NATO mil divides a circle into 6,400 parts for military artillery aiming.
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">deg</code>, <code class="inline-code">rad</code>, <code class="inline-code">arcmin</code>) to its exact factor in degrees. The radian uses the mathematical constant π: <code class="inline-code">1 rad = 180/π °</code>. Other units use rational fractions: <code class="inline-code">1 grad = 0.9°</code>, <code class="inline-code">1 arcmin = 1/60 °</code>, <code class="inline-code">1 rev = 360°</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to degrees. For example, converting 1 radian to degrees: <code class="inline-code">1 × (180/π) = 57.29578°</code>. This intermediate result is an IEEE 754 double-precision floating-point number, which provides approximately 15 to 17 significant decimal digits of precision.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Target conversion:</strong> The degree value is divided by the target unit's factor. Converting 57.29578° to gradians: <code class="inline-code">57.29578 / 0.9 = 63.66198 grad</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (1 trillion or greater) use scientific notation. Values between 1 billion and 1 trillion use locale-formatted numbers with 4 decimal places. Values between 1,000 and 1 billion use 4 to 6 decimal places. Values between 0.001 and 1,000 use 8 to 10 decimal places. Values below 0.001 use scientific notation with 6 decimal places. This ensures readability across the full range from arcseconds to revolutions.
+    </p>
+    <p class="seo-p-none">
+      <strong>Exact vs. approximate factors:</strong> The degree, gradian, arcminute, arcsecond, revolution, and NATO mil are all defined by exact rational relationships: <code class="inline-code">1 grad = 9/10 °</code>, <code class="inline-code">1 arcmin = 1/60 °</code>, <code class="inline-code">1 arcsec = 1/3600 °</code>, <code class="inline-code">1 rev = 360°</code>, <code class="inline-code">1 mil = 9/160 ° = 0.05625°</code>. The radian is the only unit involving an irrational number: <code class="inline-code">1 rad = 180/π °</code>, where π is transcendental. The tool computes this using JavaScript's built-in <code class="inline-code">Math.PI</code> constant, which provides 15 decimal digits of precision.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is the difference between degrees and radians?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Degrees divide a circle into 360 equal parts. Radians use the arc length equal to the radius: one full circle = 2π radians ≈ 6.2832 rad. Radians are the standard unit in mathematics and physics because they simplify many formulas (e.g., sin(θ), derivatives of trig functions)." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a gradian?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A gradian (also called grad, gon, or grade) divides a right angle into 100 parts, so a full circle = 400 grad. It was designed for metrication. It is used in some surveying and civil engineering contexts, mainly in Europe." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a NATO mil?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A NATO mil divides a circle into 6,400 equal parts (1 mil = 0.05625°). It is used for military artillery and gunnery to express angular measurements for targeting. The mil allows rough mental calculations for range and deflection." }
-        },
-        {
-          "@type": "Question",
-          "name": "How many arcminutes are in a degree?",
-          "acceptedAnswer": { "@type": "Answer", "text": "There are exactly 60 arcminutes (′) in one degree, and 60 arcseconds (″) in one arcminute. So 1° = 60′ = 3,600″. Arcminutes and arcseconds are commonly used in astronomy to express the angular size of objects." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why is a full circle 360 degrees?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The 360-degree circle dates to ancient Babylonian astronomy. The Babylonians used a base-60 (sexagesimal) number system, and 360 is close to the number of days in a year. 360 is also highly divisible (1, 2, 3, 4, 5, 6, 8, 9, 10, 12, etc.), making it easy to work with fractions of a circle." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is the difference between degrees and radians?', a: 'Degrees divide a circle into 360 equal parts. Radians use the arc length equal to the radius: one full circle = 2π radians ≈ 6.2832 rad. Radians are the standard unit in mathematics and physics because they simplify many formulas (e.g., sin(θ), derivatives of trig functions).' },
-        { q: 'What is a gradian?', a: 'A gradian (also called grad, gon, or grade) divides a right angle into 100 parts, so a full circle = 400 grad. It was designed for metrication. It is used in some surveying and civil engineering contexts, mainly in Europe.' },
-        { q: 'What is a NATO mil?', a: 'A NATO mil divides a circle into 6,400 equal parts (1 mil = 0.05625°). It is used for military artillery and gunnery to express angular measurements for targeting. The mil allows rough mental calculations for range and deflection.' },
-        { q: 'How many arcminutes are in a degree?', a: 'There are exactly 60 arcminutes (′) in one degree, and 60 arcseconds (″) in one arcminute. So 1° = 60′ = 3,600″. Arcminutes and arcseconds are commonly used in astronomy to express the angular size of objects.' },
-        { q: 'Why is a full circle 360 degrees?', a: 'The 360-degree circle dates to ancient Babylonian astronomy. The Babylonians used a base-60 (sexagesimal) number system, and 360 is close to the number of days in a year. 360 is also highly divisible (1, 2, 3, 4, 5, 6, 8, 9, 10, 12, etc.), making it easy to work with fractions of a circle.' },
+        {
+          q: "What is the difference between degrees and radians?",
+          a: "Degrees divide a circle into 360 equal parts. Radians use the arc length equal to the radius: one full circle = 2π radians ≈ 6.2832 rad. Radians are the standard unit in mathematics and physics because they simplify many formulas. For example, the derivative of sin(θ) is cos(θ) only when θ is in radians. In degrees, extra conversion factors appear in calculus formulas."
+        },
+        {
+          q: "What is a gradian?",
+          a: "A gradian (also called grad, gon, or grade) divides a right angle into 100 parts, so a full circle = 400 grad. It was designed for metrication during the French Revolution. It is used in some surveying and civil engineering contexts, mainly in Europe. The gradian makes percentage-based slope calculations easy: a 50% slope equals approximately 26.565° or 29.518 grad."
+        },
+        {
+          q: "What is a NATO mil?",
+          a: "A NATO mil divides a circle into 6,400 equal parts (1 mil = 0.05625°). It is used for military artillery and gunnery to express angular measurements for targeting. The mil allows rough mental calculations: 1 mil corresponds to approximately 1 meter of width at 1 kilometer of distance. This makes range estimation and adjustment calculations straightforward in the field."
+        },
+        {
+          q: "How many arcminutes are in a degree?",
+          a: "There are exactly 60 arcminutes (′) in one degree, and 60 arcseconds (″) in one arcminute. So 1° = 60′ = 3,600″. Arcminutes and arcseconds are commonly used in astronomy to express the angular size of objects. The full Moon has an angular diameter of about 31 arcminutes, while Venus at its smallest appears as small as 10 arcseconds."
+        },
+        {
+          q: "Why is a full circle 360 degrees?",
+          a: "The 360-degree circle dates to ancient Babylonian astronomy. The Babylonians used a base-60 (sexagesimal) number system, and 360 is close to the number of days in a year. 360 is also highly divisible (by 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18, 20, 24, 30, 36, 40, 45, 60, 72, 90, 120, 180, and 360), making it easy to work with fractions of a circle."
+        },
+        {
+          q: "How do I convert degrees to radians in my head?",
+          a: "To convert degrees to radians, multiply by π/180. For quick mental estimates: 90° = π/2 ≈ 1.571 rad, 180° = π ≈ 3.142 rad, 360° = 2π ≈ 6.283 rad. A useful shortcut: divide degrees by about 57.3 to get radians. For example, 60° ÷ 57.3 ≈ 1.047 rad (actual: π/3 ≈ 1.0472 rad)."
+        },
+        {
+          q: "What is the angular size of the Moon in different units?",
+          a: "The Moon has an angular diameter of approximately 0.5167° (about 31 arcminutes). In radians, this equals approximately 0.00902 rad. In gradians, it equals approximately 0.5741 grad. The Sun has a very similar angular size (about 0.533°), which is why total solar eclipses are possible when the Moon passes directly in front of the Sun."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

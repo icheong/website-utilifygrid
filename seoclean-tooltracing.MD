@@ -23,13 +23,11 @@ freelance-invoice-tax-calculator
 csv-to-json-xml-converter
 sql-schema-syntax-translator
 unix-timestamp-converter
-
-## TODO
 epub-to-pdf-formatter
 length-converter
 weight-mass-converter
 volume-converter
-temperature-converter	
+temperature-converter
 area-converter
 pressure-converter
 energy-converter
@@ -37,6 +35,8 @@ power-converter
 force-converter
 time-converter
 angle-converter
+
+## TODO
 fuel-consumption-converter
 numbers-converter
 data-storage-converter

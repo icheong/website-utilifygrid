@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'force-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Force Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a force value and select its unit — all other units update instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Force Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a force value and select its unit — all other units update instantly.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="force-input">Force</label>
+        <label class="tool-label" for="force-input">Force</label>
         <input id="force-input" type="number" value="100" step="any" placeholder="Enter value"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="force-unit">Unit</label>
+        <label class="tool-label" for="force-unit">Unit</label>
         <select id="force-unit" class="select-themed" style="min-width:10rem;">
           <option value="n" selected>Newton (N)</option>
           <option value="kn">Kilonewton (kN)</option>
@@ -40,94 +40,97 @@ const tool = tools.find(t => t.slug === 'force-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Force Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric force value</strong> and select its <strong>unit</strong> from the dropdown. All other force units update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Force Converter Overview</h2>
+    <p class="seo-p">
+      This force converter computes precise conversions between 10 SI, CGS, and imperial force units entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in structural engineering, biomechanics, physics, or automotive applications.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports 10 standard force units across SI, CGS, and imperial systems: <strong>N</strong>, <strong>kN</strong>, <strong>MN</strong>, <strong>dyn</strong>, <strong>lbf</strong>, <strong>ozf</strong>, <strong>kgf</strong>, <strong>gf</strong>, <strong>pdl</strong>, and <strong>kip</strong>.
+    <p class="seo-p">
+      The converter supports the most commonly used force units across SI, CGS, and imperial systems: newtons, kilonewtons, and meganewtons for SI; dyne for CGS; pound-force, ounce-force, kilogram-force, gram-force, poundal, and kip for imperial/US customary. Results are dynamically formatted based on magnitude, switching between fixed notation, locale-formatted numbers, and scientific notation as appropriate.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common real-world force values are shown below the results for quick comparison.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        ['Structural and civil engineering', 'Structural engineers calculate loads in kips or kilonewtons when designing buildings, bridges, and other structures. A typical residential floor load is about 1.5 kips (6,674 N), while a bridge pier might support 500 kips (2,224 kN). The converter helps translate between US drawings (kips, lbf) and international specifications (kN, N). The quick-reference section helps visualise everyday forces like an apple (1 N), a boxing punch (5,000 N), or a car tire tension (2,200 N) for intuitive scale comparison.'],
+        ['Biomechanics and human factors', 'Biomechanists measure human bite forces, grip strengths, and joint reaction forces in newtons. A strong human bite produces about 720 N (162 lbf), while a professional boxer generates up to 5,000 N in a punch. Athletes, ergonomists, and medical researchers convert between newtons and pound-force when comparing data across international studies. The tool handles the full range from gram-force (0.0098 N) to meganewtons (1,000,000 N) with IEEE 754 double-precision accuracy.'],
+        ['Automotive and aerospace applications', 'Car tire tension is about 2,200 N (495 lbf), while a rocket engine like the SpaceX Merlin produces 845,000 N (190,000 lbf) of thrust. Mechanics work in newtons when servicing airbag systems, while aerospace engineers use kilonewtons or pound-force for engine specifications. The tool converts between SI force units used in international aerospace standards and imperial units used in US military and commercial aviation.']
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How force conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions use <strong>newtons (N)</strong> as the base unit. Each unit has a fixed factor relative to one newton:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <p class="seo-p">
+      The converter employs a hub-and-spoke conversion model using newtons as the universal base unit. Every supported force unit is defined by a fixed conversion factor relative to one newton. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain newtons, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 kN      = 1,000 N
-1 MN      = 1,000,000 N
-1 dyn     = 0.00001 N
-1 lbf     = 4.448221615 N
-1 ozf     = 0.27801385 N
-1 kgf     = 9.80665 N        (exact, standard gravity)
-1 gf      = 0.00980665 N
-1 pdl     = 0.138254954 N
-1 kip     = 4,448.221615 N
 
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      The kilogram-force (kgf) is defined as the force exerted by one kilogram under standard gravity (9.80665 m/s²), which is why it is exact. The pound-force (lbf) is similarly derived from one pound-mass under standard gravity. All calculations run in your browser with full double-precision floating-point accuracy.
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">n</code>, <code class="inline-code">lbf</code>, <code class="inline-code">kgf</code>) to its exact factor in newtons. SI units use powers of 10 (e.g. <code class="inline-code">1 kN = 1,000 N</code>, <code class="inline-code">1 MN = 1,000,000 N</code>), while imperial and CGS units use internationally defined values.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to newtons. For example, converting 100 lbf to newtons: <code class="inline-code">100 × 4.44822 = 444.822 N</code>. This intermediate result is an IEEE 754 double-precision floating-point number, which provides approximately 15 to 17 significant decimal digits of precision.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Target conversion:</strong> The newton value is divided by the target unit's factor. Converting 444.822 N to kN: <code class="inline-code">444.822 / 1000 = 0.4448 kN</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (1 trillion or greater) use scientific notation. Values between 1 billion and 1 trillion use locale-formatted numbers with 2 decimal places. Values between 1,000 and 1 billion use 2 to 4 decimal places. Values between 0.001 and 1,000 use 6 to 8 decimal places. Values below 0.001 use scientific notation. This ensures readability across the full range from dynes to meganewtons.
+    </p>
+    <p class="seo-p-none">
+      <strong>Exact vs. approximate factors:</strong> The kilogram-force is defined as exactly 9.80665 N (standard gravity × 1 kg), making it exact. The pound-force is defined via the international pound (exactly 0.45359237 kg) and standard gravity, so <code class="inline-code">1 lbf = 4.4482216152605 N</code> (rounded for display). The dyne is defined exactly as 10⁻⁵ N. The poundal is defined as the force needed to accelerate 1 pound-mass at 1 ft/s², making <code class="inline-code">1 pdl = 0.138254954 N</code> approximate but derived from exact definitions.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is the difference between a newton and a kilogram-force?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A newton (N) is the SI unit of force: the force needed to accelerate 1 kg at 1 m/s². A kilogram-force (kgf) is the force of gravity on 1 kg at standard gravity: 1 kgf = 9.80665 N. They measure the same thing but use different reference frames." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a dyne?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A dyne (dyn) is the CGS unit of force: the force needed to accelerate 1 gram at 1 cm/s². It equals 0.00001 newtons. Dynes are used in physics and engineering where very small forces are measured." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a kip?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A kip is a unit of force equal to 1,000 pound-force (lbf), or approximately 4,448 newtons. It is commonly used in structural engineering in the United States to express building loads and structural member capacities." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is pound-force?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Pound-force (lbf) is the force exerted by gravity on one pound-mass at standard gravity (9.80665 m/s²). It equals about 4.448 newtons. It is the most commonly used force unit in US engineering." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the average human bite force?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The average human bite force is about 162 newtons (36 lbf) for incisors and 720 newns (162 lbf) for molars. Some studies record up to 700 N for a strong bite. For comparison, a lion's bite force is about 4,450 N." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is the difference between a newton and a kilogram-force?', a: 'A newton (N) is the SI unit of force: the force needed to accelerate 1 kg at 1 m/s². A kilogram-force (kgf) is the force of gravity on 1 kg at standard gravity: 1 kgf = 9.80665 N. They measure the same thing but use different reference frames.' },
-        { q: 'What is a dyne?', a: 'A dyne (dyn) is the CGS unit of force: the force needed to accelerate 1 gram at 1 cm/s². It equals 0.00001 newtons. Dynes are used in physics and engineering where very small forces are measured.' },
-        { q: 'What is a kip?', a: 'A kip is a unit of force equal to 1,000 pound-force (lbf), or approximately 4,448 newtons. It is commonly used in structural engineering in the United States to express building loads and structural member capacities.' },
-        { q: 'What is pound-force?', a: 'Pound-force (lbf) is the force exerted by gravity on one pound-mass at standard gravity (9.80665 m/s²). It equals about 4.448 newtons. It is the most commonly used force unit in US engineering.' },
-        { q: 'What is the average human bite force?', a: 'The average human bite force is about 162 newtons (36 lbf) for incisors and 720 newtons (162 lbf) for molars. Some studies record up to 700 N for a strong bite. For comparison, a lion\'s bite force is about 4,450 N.' },
+        {
+          q: "What is the difference between a newton and a kilogram-force?",
+          a: "A newton (N) is the SI unit of force: the force needed to accelerate 1 kg at 1 m/s². A kilogram-force (kgf) is the force of gravity on 1 kg at standard gravity: 1 kgf = 9.80665 N. They measure the same thing but use different reference frames. The newton is independent of gravity, while kgf depends on the local gravitational field."
+        },
+        {
+          q: "What is a dyne?",
+          a: "A dyne (dyn) is the CGS unit of force: the force needed to accelerate 1 gram at 1 cm/s². It equals 0.00001 newtons. Dynes are used in physics and engineering where very small forces are measured, such as surface tension, capillary action, and micro-electromechanical systems (MEMS)."
+        },
+        {
+          q: "What is a kip?",
+          a: "A kip is a unit of force equal to 1,000 pound-force (lbf), or approximately 4,448 newtons. It is commonly used in structural engineering in the United States to express building loads and structural member capacities. A typical residential floor load is about 1.5 kips, while a bridge pier might support 500 kips."
+        },
+        {
+          q: "What is pound-force?",
+          a: "Pound-force (lbf) is the force exerted by gravity on one pound-mass at standard gravity (9.80665 m/s²). It equals about 4.448 newtons. It is the most commonly used force unit in US engineering. Pound-force should not be confused with pound-mass, which measures mass, not force."
+        },
+        {
+          q: "What is the average human bite force?",
+          a: "The average human bite force is about 162 newtons (36 lbf) for incisors and 720 newtons (162 lbf) for molars. Some studies record up to 700 N for a strong bite. For comparison, a lion's bite force is about 4,450 N, and a great white shark's bite force is estimated at 18,000 N."
+        },
+        {
+          q: "How do I convert newtons to kilograms?",
+          a: "To convert newtons to kilograms of mass, divide by 9.80665 (standard gravity). For example, 100 N corresponds to approximately 10.197 kg. This conversion tells you how much mass would produce that force under Earth's gravity. On the Moon (gravity = 1.62 m/s²), 100 N would correspond to 61.7 kg."
+        },
+        {
+          q: "What is the difference between pound-force and poundal?",
+          a: "Pound-force (lbf) is the force of gravity on one pound-mass at standard gravity: 1 lbf = 4.448 N. A poundal (pdl) is the force needed to accelerate one pound-mass at 1 ft/s²: 1 pdl = 0.1383 N. Pound-force is about 32.2 times larger than poundal because it includes the effect of Earth's gravitational acceleration (32.2 ft/s²)."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

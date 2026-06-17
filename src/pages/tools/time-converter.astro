@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'time-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Time Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a time value and select its unit — all other units update instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Time Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a time value and select its unit — all other units update instantly.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="time-input">Time</label>
+        <label class="tool-label" for="time-input">Time</label>
         <input id="time-input" type="number" value="1" step="any" placeholder="Enter value"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="time-unit">Unit</label>
+        <label class="tool-label" for="time-unit">Unit</label>
         <select id="time-unit" class="select-themed" style="min-width:10rem;">
           <option value="ns">Nanosecond (ns)</option>
           <option value="us">Microsecond (μs)</option>
@@ -42,96 +42,97 @@ const tool = tools.find(t => t.slug === 'time-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Time Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric time value</strong> and select its <strong>unit</strong> from the dropdown. All other time units update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Time Converter Overview</h2>
+    <p class="seo-p">
+      This time converter computes precise conversions between 12 time units ranging from nanoseconds to centuries entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in computing, project planning, physics, or everyday scheduling.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports 12 standard time units from nanoseconds to centuries: <strong>ns</strong>, <strong>μs</strong>, <strong>ms</strong>, <strong>s</strong>, <strong>min</strong>, <strong>hr</strong>, <strong>day</strong>, <strong>week</strong>, <strong>month</strong>, <strong>year</strong>, <strong>decade</strong>, and <strong>century</strong>.
+    <p class="seo-p">
+      The converter supports the most commonly used time units across scientific, computing, and everyday contexts: nanoseconds, microseconds, and milliseconds for high-precision timing; seconds, minutes, hours, and days for standard timekeeping; weeks, months, years, decades, and centuries for longer durations. Months and years use astronomical averages (365.25 days per year, 30.44 days per month) to provide consistent conversions across calendar variations.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common time durations are shown below the results for quick comparison.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        ['Computing and network latency', 'Computer scientists measure processor cycle times in nanoseconds — a modern CPU operates at about 3 GHz, meaning each cycle takes roughly 0.33 ns. Network latency is typically measured in milliseconds: a fast internet connection to a nearby server has about 10 ms ping, while a transatlantic connection might have 80 ms. Converting between these scales helps engineers understand relative performance and optimize system response times.'],
+        ['Project management and scheduling', 'Project managers convert between hours, days, and weeks when estimating task durations. A task estimated at 40 hours of work equals exactly 1 standard work week (5 days × 8 hours). Converting 200 hours to days gives 8.33 days, helping managers allocate resources across multi-week sprints. The quick-reference section helps visualise everyday durations like a heartbeat (0.8 s), a song track (240 s), or a NYC-to-London flight (28,800 s) for intuitive scale comparison.'],
+        ['Physics and scientific research', 'Physicists work across extreme time scales: atomic vibrations occur in femtoseconds (10⁻¹⁵ s), radioactive decay half-lives range from nanoseconds to billions of years, and astronomical observations span millennia. Converting 1 ns to microseconds gives 0.001 μs, while converting 1 century to nanoseconds yields 3.156 × 10¹⁸ ns. This tool handles the full 27-order-of-magnitude range from nanoseconds to centuries with IEEE 754 double-precision accuracy.']
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How time conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions use <strong>seconds</strong> as the base unit. Each unit has a fixed factor relative to one second:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <p class="seo-p">
+      The converter employs a hub-and-spoke conversion model using seconds as the universal base unit. Every supported time unit is defined by a fixed conversion factor relative to one second. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain seconds, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 ns      = 10⁻⁹ s
-1 μs      = 10⁻⁶ s
-1 ms      = 0.001 s
-1 min     = 60 s
-1 hr      = 3,600 s
-1 day     = 86,400 s
-1 week    = 604,800 s
-1 month   = 2,629,746 s     (avg 30.44 days)
-1 year    = 31,557,600 s    (avg 365.25 days)
-1 decade  = 315,576,000 s
-1 century = 3,155,760,000 s
 
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Months and years use astronomical averages: a year is 365.25 days (accounting for leap years), and a month is a year ÷ 12. This means 1 year = 12 months exactly in this model. For calendar-precise calculations, the actual number of days varies by month and year.
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">ns</code>, <code class="inline-code">hr</code>, <code class="inline-code">year</code>) to its exact factor in seconds. Small units use powers of 10 (e.g. <code class="inline-code">1 ms = 0.001 s</code>, <code class="inline-code">1 μs = 0.000001 s</code>), while larger units use standard definitions.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to seconds. For example, converting 2 hours to seconds: <code class="inline-code">2 × 3600 = 7200 s</code>. This intermediate result is an IEEE 754 double-precision floating-point number, which provides approximately 15 to 17 significant decimal digits of precision.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Target conversion:</strong> The second value is divided by the target unit's factor. Converting 7200 s to minutes: <code class="inline-code">7200 / 60 = 120 min</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (1 quadrillion or greater) use scientific notation. Values between 1 trillion and 1 quadrillion use locale-formatted numbers with 2 decimal places. Values between 1,000 and 1 trillion use 2 to 4 decimal places. Values between 0.001 and 1,000 use 6 to 8 decimal places. Values below 0.001 use scientific notation. This ensures readability across the full range from nanoseconds to centuries.
+    </p>
+    <p class="seo-p-none">
+      <strong>Exact vs. approximate factors:</strong> The small units (ns, μs, ms) and standard units (s, min, hr, day, week) are exact by definition: <code class="inline-code">1 min = 60 s</code>, <code class="inline-code">1 hr = 3600 s</code>, <code class="inline-code">1 day = 86,400 s</code>, <code class="inline-code">1 week = 604,800 s</code>. The month and year use astronomical averages: a year is defined as 365.25 days (the Julian year, accounting for leap years), making <code class="inline-code">1 year = 31,557,600 s</code> exact within this model. A month is defined as exactly 1/12 of a year, making <code class="inline-code">1 month = 2,629,746 s</code> exact within this model. Decades and centuries are exact multiples of the year.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "How many seconds are in a day?",
-          "acceptedAnswer": { "@type": "Answer", "text": "There are exactly 86,400 seconds in a day (24 hours × 60 minutes × 60 seconds = 86,400). This is used as a base unit in many scientific and computing applications." }
-        },
-        {
-          "@type": "Question",
-          "name": "How many days are in a year?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A calendar year has 365 days (or 366 in a leap year). The astronomical average is 365.25 days, which is why this converter uses 365.25 days per year. Four years have 1,461 days, giving an average of 365.25." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a nanosecond?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A nanosecond (ns) is one billionth of a second (10⁻⁹ s). Light travels about 30 cm (1 foot) in one nanosecond. Computer processors perform operations in nanoseconds, and it takes about 100 ns for a CPU cycle." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why are months considered 30.44 days?",
-          "acceptedAnswer": { "@type": "Answer", "text": "This converter uses the average month length: 365.25 days ÷ 12 = 30.4375 days ≈ 30.44 days. Actual months range from 28 to 31 days. This average is useful for rough time conversions but not for calendar-precise calculations." }
-        },
-        {
-          "@type": "Question",
-          "name": "How many hours are in a week?",
-          "acceptedAnswer": { "@type": "Answer", "text": "There are exactly 168 hours in a week (7 days × 24 hours = 168). A typical 40-hour work week represents about 23.8% of the total hours in a week." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'How many seconds are in a day?', a: 'There are exactly 86,400 seconds in a day (24 hours × 60 minutes × 60 seconds = 86,400). This is used as a base unit in many scientific and computing applications.' },
-        { q: 'How many days are in a year?', a: 'A calendar year has 365 days (or 366 in a leap year). The astronomical average is 365.25 days, which is why this converter uses 365.25 days per year. Four years have 1,461 days, giving an average of 365.25.' },
-        { q: 'What is a nanosecond?', a: 'A nanosecond (ns) is one billionth of a second (10⁻⁹ s). Light travels about 30 cm (1 foot) in one nanosecond. Computer processors perform operations in nanoseconds, and it takes about 100 ns for a CPU cycle.' },
-        { q: 'Why are months considered 30.44 days?', a: 'This converter uses the average month length: 365.25 days ÷ 12 = 30.4375 days ≈ 30.44 days. Actual months range from 28 to 31 days. This average is useful for rough time conversions but not for calendar-precise calculations.' },
-        { q: 'How many hours are in a week?', a: 'There are exactly 168 hours in a week (7 days × 24 hours = 168). A typical 40-hour work week represents about 23.8% of the total hours in a week.' },
+        {
+          q: "How many seconds are in a day?",
+          a: "There are exactly 86,400 seconds in a day (24 hours × 60 minutes × 60 seconds = 86,400). This is used as a base unit in many scientific and computing applications. A digital clock ticks 86,400 times per day, and a modern processor performs billions of operations in that span."
+        },
+        {
+          q: "How many days are in a year?",
+          a: "A calendar year has 365 days (or 366 in a leap year). The astronomical average is 365.25 days, which is why this converter uses 365.25 days per year. Four years have 1,461 days, giving an average of 365.25. This Julian year definition is used in astronomy and science for consistent time calculations."
+        },
+        {
+          q: "What is a nanosecond?",
+          a: "A nanosecond (ns) is one billionth of a second (10⁻⁹ s). Light travels about 30 cm (1 foot) in one nanosecond. Computer processors perform operations in nanoseconds, and it takes about 100 ns for a CPU cycle. A human eye blink takes about 300 million nanoseconds."
+        },
+        {
+          q: "Why are months considered 30.44 days?",
+          a: "This converter uses the average month length: 365.25 days ÷ 12 = 30.4375 days ≈ 30.44 days. Actual months range from 28 to 31 days. This average is useful for rough time conversions but not for calendar-precise calculations. For exact calendar calculations, you need to account for the specific month and year."
+        },
+        {
+          q: "How many hours are in a week?",
+          a: "There are exactly 168 hours in a week (7 days × 24 hours = 168). A typical 40-hour work week represents about 23.8% of the total hours in a week. The remaining 128 hours include sleeping (about 56 hours for 8 hours per night), personal time, and weekends."
+        },
+        {
+          q: "How do I convert milliseconds to hours?",
+          a: "To convert milliseconds to hours, divide by 3,600,000 (the number of milliseconds in an hour). For example, 7,200,000 ms equals 2 hours. To convert hours to milliseconds, multiply by 3,600,000. A quick mental shortcut: divide milliseconds by 1,000 to get seconds, then divide by 3,600 to get hours."
+        },
+        {
+          q: "What is the difference between a Julian year and a calendar year?",
+          a: "A Julian year is defined as exactly 365.25 days (86,400 × 365.25 = 31,557,600 seconds). A calendar year alternates between 365 and 366 days (leap years). The Julian year averages out leap years over a 4-year cycle, making it useful for scientific calculations. The Gregorian calendar's century rule (no leap year on years divisible by 100 unless also divisible by 400) makes the true average 365.2425 days."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

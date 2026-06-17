@@ -7,19 +7,18 @@ const tool = tools.find(t => t.slug === 'temperature-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Temperature Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a temperature in any scale — see the conversion in the others instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Temperature Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a temperature in any scale — see the conversion in the others instantly. All calculations run in your browser.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="temp-input">Temperature</label>
+        <label class="tool-label" for="temp-input">Temperature</label>
         <input id="temp-input" type="number" value="100" step="any" placeholder="Enter value"
-          class="input-themed"
-          style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
+          class="input-themed" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="temp-unit">Scale</label>
+        <label class="tool-label" for="temp-unit">Scale</label>
         <select id="temp-unit" class="select-themed" style="min-width:10rem;">
           <option value="c" selected>Celsius (°C)</option>
           <option value="f">Fahrenheit (°F)</option>
@@ -33,89 +32,100 @@ const tool = tools.find(t => t.slug === 'temperature-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Common Reference Points</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Common Reference Points</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Temperature Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric temperature</strong> and select its <strong>scale</strong> (Celsius, Fahrenheit, or Kelvin) from the dropdown. The other two scales update instantly — no buttons to click.
+    <h2 class="font-display seo-h2">Temperature Converter Overview</h2>
+    <p class="seo-p">
+      This temperature converter computes precise conversions between Celsius, Fahrenheit, and Kelvin entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your measurements, whether you are working in cooking, science, engineering, or everyday weather reporting.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports the three most commonly used temperature scales. <strong>Celsius</strong> is used worldwide for weather and cooking. <strong>Fahrenheit</strong> is primarily used in the United States. <strong>Kelvin</strong> is the SI absolute temperature scale used in science.
+    <p class="seo-p">
+      The converter supports the three most commonly used temperature scales worldwide. Celsius is the SI-derived scale used for weather forecasting, cooking, and scientific measurements in most countries. Fahrenheit is primarily used in the United States for weather and everyday temperature references. Kelvin is the SI absolute temperature scale used in physics, chemistry, and thermodynamics, where 0 K represents absolute zero — the theoretical lowest possible temperature.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that scale's result to your clipboard. Common reference points are shown below the results for quick comparison.
+    <p class="seo-p">
+      Unlike length or weight conversions, which use simple multiplicative factors, temperature scales have different zero points and interval sizes. The tool handles all six possible pairwise conversions using the correct linear formulas, applying the appropriate offset and multiplier for each pair. Results are displayed to two decimal places for precision, and each result can be copied to the clipboard with a single click.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        ['Cooking and baking', 'Recipes from different countries use different temperature scales — American recipes specify oven temperatures in Fahrenheit, while European and Australian recipes use Celsius. A baker converting a recipe that calls for 350°F needs to know that the equivalent is approximately 177°C. This tool provides instant conversions with copy-to-clipboard functionality, eliminating manual calculation errors when scaling recipes between regions.'],
+        ['Scientific research and engineering', 'Physicists, chemists, and engineers frequently convert between Celsius and Kelvin when working with thermodynamic calculations, gas laws, or cryogenic systems. The Kelvin scale is essential for equations like the ideal gas law (PV = nRT) and the Stefan-Boltzmann law, where temperature must be expressed in absolute terms. A conversion error of even a few kelvin can significantly affect experimental results or engineering tolerances.'],
+        ['International travel and weather', 'Travelers moving between countries encounter weather forecasts in different scales — Celsius in most of the world, Fahrenheit in the United States. Understanding that 25°C equals 77°F helps travelers pack appropriately and interpret local weather reports. The quick-reference section below the converter shows common temperatures like body temperature (37°C / 98.6°F) and water boiling point (100°C / 212°F) for intuitive comparison.']
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How temperature conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      Unlike length or weight, temperature scales have different zero points and intervals, so conversions use linear formulas rather than simple multiplication factors:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Formulas and Mathematical Logic</h2>
+    <p class="seo-p">
+      Temperature scales differ from length or weight scales because they have different zero points and different interval sizes between degrees. Celsius and Kelvin share the same interval size (1 degree = 1 kelvin), but Kelvin starts at absolute zero while Celsius starts at the freezing point of water offset by 273.15. Fahrenheit uses both a different zero point and a different interval size — there are 180 degrees between freezing and boiling (32°F to 212°F) compared to 100 degrees in Celsius (0°C to 100°C).
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Celsius to Fahrenheit:  °F = (°C × 9/5) + 32
-Fahrenheit to Celsius:  °C = (°F − 32) × 5/9
-Celsius to Kelvin:      K  = °C + 273.15
-Kelvin to Celsius:      °C = K − 273.15
-Fahrenheit to Kelvin:   K  = (°F − 32) × 5/9 + 273.15
-Kelvin to Fahrenheit:   °F = (K − 273.15) × 9/5 + 32</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      The Celsius and Kelvin scales share the same interval size (1 degree = 1 kelvin), so converting between them only requires an offset of 273.15. Fahrenheit uses a different interval (180 degrees between freezing and boiling vs. 100 for Celsius), hence the 9/5 multiplier. All calculations run in your browser — no data is sent anywhere.
+
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Identify source and target scales:</strong> The tool determines which of the six possible pairwise conversions to apply based on the user's input scale selection. Each pair has its own formula with a specific multiplier and offset.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Apply the appropriate linear formula:</strong> Temperature conversions follow the general form <code class="inline-code">T_target = T_source × multiplier + offset</code>. For Celsius to Fahrenheit, the multiplier is 9/5 (1.8) and the offset is +32. For Celsius to Kelvin, the multiplier is 1 and the offset is +273.15. The tool uses the correct formula for each of the six conversion paths.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Handle edge cases:</strong> The tool correctly processes negative temperatures, zero, and very large values. Absolute zero (−273.15°C) converts correctly to −459.67°F and 0 K across all scales. The formulas work identically for negative values because the linear relationship holds across the entire number line.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Format and display:</strong> Results are displayed to two decimal places using IEEE 754 double-precision floating-point arithmetic, which provides approximately 15 to 17 significant decimal digits of precision. This is more than sufficient for any practical temperature measurement, as most thermometers measure to at most one decimal place.
+    </p>
+    <p class="seo-p-none">
+      <strong>Why the formulas work:</strong> The Celsius-to-Fahrenheit formula <code class="inline-code">°F = (°C × 9/5) + 32</code> accounts for two differences: the 9/5 ratio compensates for the different interval sizes (180°F span vs 100°C span), and the +32 offset accounts for Fahrenheit's zero point being 32 degrees below Celsius's zero point. The Kelvin formulas are simpler because Kelvin shares Celsius's interval size, requiring only the 273.15 offset to shift the zero point.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is the formula to convert Celsius to Fahrenheit?",
-          "acceptedAnswer": { "@type": "Answer", "text": "To convert Celsius to Fahrenheit, multiply by 9/5 (or 1.8) and add 32: °F = (°C × 9/5) + 32. For example, 25°C equals 77°F." }
-        },
-        {
-          "@type": "Question",
-          "name": "At what temperature are Celsius and Fahrenheit equal?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Celsius and Fahrenheit are equal at −40 degrees. At that point, −40°C = −40°F. This is the only temperature where both scales read the same value." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is Kelvin used for?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Kelvin is the SI unit of temperature used in science and engineering. It is an absolute scale where 0 K (absolute zero) is the lowest possible temperature. It is commonly used in physics, chemistry, and thermodynamics." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why does the US use Fahrenheit?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Fahrenheit was developed by Daniel Gabriel Fahrenheit in 1724 and was the first standardized temperature scale. The US adopted it early and kept it for everyday use. Most other countries switched to Celsius during metrication in the 20th century." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is absolute zero?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Absolute zero is the lowest possible temperature: 0 K, −273.15°C, or −459.67°F. At this point, all molecular motion theoretically stops. It has never been reached in practice, though scientists have come within billionths of a degree." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is the formula to convert Celsius to Fahrenheit?', a: 'To convert Celsius to Fahrenheit, multiply by 9/5 (or 1.8) and add 32: °F = (°C × 9/5) + 32. For example, 25°C equals 77°F.' },
-        { q: 'At what temperature are Celsius and Fahrenheit equal?', a: 'Celsius and Fahrenheit are equal at −40 degrees. At that point, −40°C = −40°F. This is the only temperature where both scales read the same value.' },
-        { q: 'What is Kelvin used for?', a: 'Kelvin is the SI unit of temperature used in science and engineering. It is an absolute scale where 0 K (absolute zero) is the lowest possible temperature. It is commonly used in physics, chemistry, and thermodynamics.' },
-        { q: 'Why does the US use Fahrenheit?', a: 'Fahrenheit was developed by Daniel Gabriel Fahrenheit in 1724 and was the first standardized temperature scale. The US adopted it early and kept it for everyday use. Most other countries switched to Celsius during metrication in the 20th century.' },
-        { q: 'What is absolute zero?', a: 'Absolute zero is the lowest possible temperature: 0 K, −273.15°C, or −459.67°F. At this point, all molecular motion theoretically stops. It has never been reached in practice, though scientists have come within billionths of a degree.' },
+        {
+          q: "What is the formula to convert Celsius to Fahrenheit?",
+          a: "To convert Celsius to Fahrenheit, multiply by 9/5 (or 1.8) and add 32: °F = (°C × 9/5) + 32. For example, 25°C equals 77°F, and 0°C equals 32°F. The reverse formula is °C = (°F − 32) × 5/9."
+        },
+        {
+          q: "At what temperature are Celsius and Fahrenheit equal?",
+          a: "Celsius and Fahrenheit are equal at −40 degrees. At that point, −40°C = −40°F. This is the only temperature where both scales read the same value. It occurs because the two scales intersect when their offset and ratio differences cancel each other out."
+        },
+        {
+          q: "What is Kelvin used for?",
+          a: "Kelvin is the SI unit of temperature used in science and engineering. It is an absolute scale where 0 K (absolute zero) is the lowest possible temperature, corresponding to −273.15°C or −459.67°F. It is commonly used in physics, chemistry, and thermodynamics because thermodynamic equations require absolute temperature values."
+        },
+        {
+          q: "Why does the US use Fahrenheit?",
+          a: "Fahrenheit was developed by Daniel Gabriel Fahrenheit in 1724 and was the first standardized temperature scale. The United States adopted it early and retained it for everyday use during metrication in other countries. Most other nations switched to Celsius during the 20th century as part of metric system adoption."
+        },
+        {
+          q: "What is absolute zero?",
+          a: "Absolute zero is the lowest possible temperature: 0 K, −273.15°C, or −459.67°F. At this point, all molecular motion theoretically stops according to classical thermodynamics. It has never been reached in practice, though scientists have cooled matter to within billionths of a degree above absolute zero using laser cooling and other techniques."
+        },
+        {
+          q: "How do I convert Fahrenheit to Kelvin?",
+          a: "To convert Fahrenheit to Kelvin, first subtract 32 from the Fahrenheit value, then multiply by 5/9, and finally add 273.15: K = (°F − 32) × 5/9 + 273.15. For example, 212°F (boiling point of water) converts to 373.15 K, which equals 100°C."
+        },
+        {
+          q: "Why is there no degree symbol for Kelvin?",
+          a: "Kelvin does not use a degree symbol because it is an absolute scale based on fundamental physical constants, not a relative scale like Celsius or Fahrenheit. The kelvin is defined by fixing the numerical value of the Boltzmann constant at exactly 1.380649 × 10⁻²³ J/K. The International Bureau of Weights and Measures (BIPM) standardized this notation in 1967."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

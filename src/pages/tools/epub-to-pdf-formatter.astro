@@ -8,16 +8,16 @@ const tool = tools.find(t => t.slug === 'epub-to-pdf-formatter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Document to Print-Ready PDF</h2>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Document to Print-Ready PDF</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Convert your Markdown-formatted text into a print-ready PDF document. All processing happens in your browser — nothing is uploaded to any server.</p>
 
     <div style="display:grid; grid-template-columns:1fr auto; gap:0.75rem; margin-bottom:0.875rem; align-items:end;">
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Document Title</label>
-        <input id="doc-title" type="text" value="My Document"
-          class="input-themed" style="width:100%;"/>
+        <label class="tool-label" for="doc-title">Document Title</label>
+        <input id="doc-title" type="text" value="My Document" class="input-themed" style="width:100%;"/>
       </div>
       <div>
-        <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Font Size</label>
+        <label class="tool-label" for="font-size">Font Size</label>
         <select id="font-size" class="select-themed">
           <option value="11">11pt</option>
           <option value="12" selected>12pt</option>
@@ -27,11 +27,10 @@ const tool = tools.find(t => t.slug === 'epub-to-pdf-formatter')!;
     </div>
 
     <div style="margin-bottom:0.875rem;">
-      <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:0.4rem;">Content (supports Markdown headings and paragraphs)</label>
-      <textarea id="doc-content" rows="12"
+      <label class="tool-label" for="doc-content">Content (supports Markdown headings and paragraphs)</label>
+      <textarea id="doc-content" rows="12" class="input-themed tool-textarea"
         placeholder="# Chapter 1: Introduction&#10;&#10;Your content here. Separate paragraphs with a blank line.&#10;&#10;## Section 1.1&#10;&#10;More text goes here..."
-        class="input-themed"
-        style="width:100%; font-family:'Inter',sans-serif; resize:vertical; line-height:1.7;"></textarea>
+        style="width:100%;"></textarea>
     </div>
 
     <div style="display:flex; gap:0.75rem;">
@@ -40,37 +39,93 @@ const tool = tools.find(t => t.slug === 'epub-to-pdf-formatter')!;
       </button>
     </div>
 
-    <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.625rem; line-height:1.5;">
+    <p class="seo-p-sm" style="margin-top:0.625rem;">
       Opens a print-ready preview in a new window. Use your browser's Print dialog (Ctrl+P / Cmd+P) and select "Save as PDF" as the destination.
     </p>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to format your document</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste your manuscript or document text into the content area. Use standard Markdown for structure: <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;"># Heading 1</code>, <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">## Heading 2</code>, and blank lines between paragraphs.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Set your title, choose a font size, then click "Preview & Print to PDF". In the print dialog, select "Save as PDF" and choose A4 or Letter paper size. Margins are pre-set to publishing standard (2.5cm).</p>
+    <h2 class="font-display seo-h2" >Document to Print-Ready PDF Overview</h2>
+    <p class="seo-p" >
+      This document-to-PDF formatter converts Markdown-formatted text into a clean, print-ready layout entirely within your browser. Built with modern vanilla JavaScript and the browser's native Print API, the tool processes your content locally using standard DOM APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your manuscripts, reports, and sensitive documents.
+    </p>
+    <p class="seo-p" >
+      The formatter applies a lightweight Markdown parser that converts heading syntax and paragraph breaks into properly structured HTML. A print-specific CSS stylesheet then applies page margins, typography, and page-break rules appropriate for professional printed documents. The browser's native <code class="inline-code">window.print()</code> API handles the actual PDF generation through the operating system's print dialog, producing publication-quality output without requiring desktop software.
+    </p>
+
+    <h3 class="font-display seo-h3-sm" >Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Academic papers and theses', 'Students and researchers can quickly convert draft manuscripts written in Markdown into properly formatted PDF documents for submission. The tool applies consistent heading hierarchy, justified text, and standard margins (2.5cm) that meet most university formatting requirements. The font size selector (11pt, 12pt, 14pt) accommodates different institutional style guides without requiring manual CSS edits.'],
+        ['Technical documentation and reports', 'Software engineers, technical writers, and project managers frequently draft documentation in Markdown for version control compatibility. This tool converts those drafts into client-ready PDFs with proper typography and page breaks. The print-optimized CSS ensures code-like formatting is preserved while maintaining professional readability for non-technical stakeholders.'],
+        ['E-books and manuscript formatting', 'Authors working on novels, short stories, or non-fiction manuscripts can use this tool to generate preview PDFs from their Markdown drafts. The heading-based structure automatically creates a table-of-contents-friendly hierarchy, and the justified text with proper orphan/widow control produces clean, publishable pages suitable for beta readers or literary agents.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the formatting works</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">The tool applies a minimal Markdown parser that converts heading syntax and paragraph breaks into HTML. A print-specific CSS stylesheet applies page margins, typography, and page-break rules appropriate for printed documents.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The browser's native <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">window.print()</code> API handles the actual PDF generation via the OS print dialog. Nothing is uploaded to any server.</p>
+    <h2 class="font-display seo-h2" >Deep-Dive: Markdown Parsing &amp; Print-Ready Rendering</h2>
+    <p class="seo-p" >
+      The formatter employs a minimal, regex-based Markdown parser that transforms plain-text headings and paragraph breaks into semantically correct HTML. The parser operates in a single pass, applying three heading levels (<code class="inline-code"># H1</code>, <code class="inline-code">## H2</code>, <code class="inline-code">### H3</code>), inline bold (<code class="inline-code">**text**</code>) and italic (<code class="inline-code">*text*</code>) formatting, and paragraph detection via blank-line splitting. This approach prioritises speed and predictability over full Markdown specification compliance — tables, code blocks, images, and link syntax are intentionally excluded to keep the tool focused on document-style content.
+    </p>
+
+    <h3 class="font-display seo-h3-sm" >Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm" >
+      <strong>1. Heading detection:</strong> The parser uses the regex <code class="inline-code">/^### (.+)$/gm</code> (and equivalents for <code class="inline-code">##</code> and <code class="inline-code">#</code>) to identify heading lines. Each match is wrapped in the appropriate HTML heading tag (<code class="inline-code">&lt;h3&gt;</code>, <code class="inline-code">&lt;h2&gt;</code>, <code class="inline-code">&lt;h1&gt;</code>). The order of replacement matters — <code class="inline-code">###</code> is processed before <code class="inline-code">##</code> to prevent partial matching.
+    </p>
+    <p class="seo-p-sm" >
+      <strong>2. Inline formatting:</strong> Bold text surrounded by double asterisks is converted to <code class="inline-code">&lt;strong&gt;</code> elements, and italic text surrounded by single asterisks becomes <code class="inline-code">&lt;em&gt;</code> elements. These regex replacements operate on the remaining text after heading extraction, ensuring heading content is not incorrectly formatted as emphasis.
+    </p>
+    <p class="seo-p-sm" >
+      <strong>3. Paragraph segmentation:</strong> The input is split on one or more blank lines (two or more consecutive newline characters). Each resulting block that does not begin with a heading tag is wrapped in <code class="inline-code">&lt;p&gt;</code> tags. Newlines within a paragraph block are replaced with spaces, collapsing multi-line paragraphs into single-line HTML paragraphs. Empty blocks are filtered out to prevent spurious empty paragraphs.
+    </p>
+    <p class="seo-p-sm" >
+      <strong>4. Print CSS rendering:</strong> The generated HTML is injected into a new browser window along with a print-optimised stylesheet. The CSS uses <code class="inline-code">{'@page { size: A4; margin: 2.5cm; }'}</code> to set standard publication margins, Georgia serif font for readability, justified text alignment, and <code class="inline-code">page-break-after: avoid</code> on headings to prevent orphaned section titles. The <code class="inline-code">orphans: 3; widows: 3</code> CSS properties ensure at least three lines remain together at page boundaries, following standard typographic best practices.
+    </p>
+    <p class="seo-p-none" >
+      <strong>5. PDF generation:</strong> The browser's <code class="inline-code">window.print()</code> API triggers the operating system's native print dialog. Selecting "Save as PDF" as the destination instructs the browser's print engine to render the formatted HTML to a PDF file using the same layout engine that displays web pages. This produces vector-quality text and spacing, not rasterised screenshots, ensuring sharp output at any zoom level.
+    </p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq" >Frequently Asked Questions</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What Markdown syntax is supported?', a: '# H1, ## H2, ### H3 for headings; blank lines for paragraph breaks; **bold** and *italic* text. Tables and code blocks are not currently supported.' },
-        { q: 'Can I control the page size?', a: 'Page size is set in your browser\'s print dialog when you export to PDF. Select A4 for international standard or Letter for North American standard. The tool\'s CSS margins are sized for either.' },
-        { q: 'Why is the output not perfectly formatted?', a: 'This tool provides clean, readable document formatting — not desktop publishing. For complex layouts with columns, custom fonts, headers/footers, and precise image placement, use dedicated software like LibreOffice Writer, Word, or Adobe InDesign.' },
-        { q: 'Is my document content private?', a: 'Yes. All processing happens in your browser. Your document text is never sent to any server and is lost when you close or refresh the page. Nothing is stored.' },
+        {
+          q: "What Markdown syntax is supported?",
+          a: "The formatter supports three heading levels (# H1, ## H2, ### H3), paragraph breaks separated by blank lines, bold text with double asterisks (**text**), and italic text with single asterisks (*text*). Tables, code blocks, images, links, and lists are not currently supported. The parser is intentionally minimal, focusing on document-style content rather than full Markdown specification compliance."
+        },
+        {
+          q: "Can I control the page size and margins?",
+          a: "The page size defaults to A4 with 2.5cm margins, which is the international publication standard. You can change the paper size in your browser's print dialog (Ctrl+P / Cmd+P) — select A4 for international documents or Letter for North American standard. The margins are pre-configured to work with both sizes without overflow or excessive white space."
+        },
+        {
+          q: "Why is the output not perfectly formatted?",
+          a: "This tool provides clean, readable document formatting — not desktop publishing. The Markdown parser handles headings, paragraphs, and inline formatting, but does not support complex layouts with columns, custom fonts, headers/footers, or precise image placement. For publication-quality typesetting with those features, use dedicated software like LibreOffice Writer, Microsoft Word, or Adobe InDesign."
+        },
+        {
+          q: "Is my document content private?",
+          a: "Yes — all processing happens entirely in your browser using client-side JavaScript. Your document text is never transmitted to any server, no cookies are set, and no analytics track the content of your input. When you close the tab or navigate away, the text is permanently gone. This makes the tool suitable for confidential manuscripts, legal documents, and sensitive business reports."
+        },
+        {
+          q: "Why does the heading hierarchy matter for the PDF?",
+          a: "The heading hierarchy (H1 → H2 → H3) establishes a semantic structure that the print CSS uses for page-break avoidance. The CSS applies page-break-after: avoid to all heading elements, preventing a section title from appearing at the bottom of a page with its content on the next page. This is a standard typographic practice for professional documents and improves readability in printed output."
+        },
+        {
+          q: "Can I use this tool for EPUB or e-book formatting?",
+          a: "This tool converts Markdown to print-ready PDF — it does not directly produce EPUB files. However, the Markdown-to-HTML conversion is a useful first step for e-book authoring. The generated HTML can be further processed with dedicated EPUB tools (like Pandoc or Calibre) to produce valid EPUB3 files. The clean heading structure and paragraph formatting transfer well to e-book formats."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
