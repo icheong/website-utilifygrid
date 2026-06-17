@@ -2,43 +2,84 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import tools from '../../data/tools.json';
 const tool = tools.find(t => t.slug === 'unix-timestamp-converter')!;
+
+const useCases = [
+  {
+    title: 'Backend API Debugging',
+    desc: 'When an API response contains a field like `"created_at": 1735689600`, engineers need to instantly verify whether that timestamp corresponds to the expected date. Pasting the value here converts it to UTC, ISO 8601, and local time in under a second — far faster than mentally calculating elapsed seconds from the epoch or writing a throwaway script. This is especially valuable when debugging webhook payloads, JWT expiry claims, or database audit logs.'
+  },
+  {
+    title: 'Cross-Timezone Log Correlation',
+    desc: 'DevOps and SRE teams correlating server logs across data centers in different regions need a canonical, timezone-independent representation. Unix timestamps stored in logs are unambiguous globally, but human-readable UTC and ISO 8601 conversions are needed when writing incident reports or aligning events across AWS CloudWatch, GCP Logging, and local application logs. This tool converts the timestamp and surfaces the UTC string ready to copy into a post-mortem document.'
+  },
+  {
+    title: 'Scheduled Task and Cron Planning',
+    desc: 'Developers configuring scheduled jobs — cron expressions, AWS EventBridge rules, or database triggers — often need to verify that a computed future Unix timestamp maps to the correct wall-clock time before deploying. Pasting the computed epoch value into this tool and clicking "Use now" for comparison lets engineers confirm the offset is correct without spinning up a REPL or consulting documentation.'
+  }
+];
+
+const faqs = [
+  {
+    q: 'How do I know if my timestamp is in seconds or milliseconds?',
+    a: 'Timestamps in seconds are typically 10 digits long (e.g. 1735689600 represents a date in 2025). Millisecond timestamps are 13 digits long (e.g. 1735689600000). This tool automatically detects the unit by checking whether the input value exceeds 10¹² — values at or above that threshold are treated as milliseconds, all others as seconds. If you are unsure, compare the resulting UTC date to your expected date to confirm the detection was correct.'
+  },
+  {
+    q: 'What is the Unix epoch and why does it start in 1970?',
+    a: 'The Unix epoch is the reference point for all Unix timestamps: midnight UTC on 1 January 1970 (1970-01-01T00:00:00Z). It was chosen by the developers of Unix at Bell Labs because it was a convenient recent date when the system was being designed in the early 1970s. Every Unix timestamp expresses the number of seconds (or milliseconds) elapsed since that moment, making timestamps a simple, timezone-independent integer that is trivially sortable and comparable across systems.'
+  },
+  {
+    q: 'Why does my timestamp show a different local time to UTC?',
+    a: 'Local time is rendered using your browser\'s configured IANA timezone via the JavaScript Intl API. If you are in UTC+10 (Sydney), a timestamp representing 12:00 UTC will display as 22:00 local time. The UTC and ISO 8601 output fields are always timezone-independent and represent the same absolute moment regardless of where in the world the tool is used. If you need to display a specific timezone other than your local one, the ISO 8601 field is the most reliable value to pass to a server-side formatter.'
+  },
+  {
+    q: 'What is the maximum date this converter supports?',
+    a: 'JavaScript\'s Date object supports values between -8,640,000,000,000,000 ms and +8,640,000,000,000,000 ms, corresponding to approximately 271,821 BCE and 275,760 CE respectively. In practice, any timestamp representing a date in the foreseeable future is well within range. Values outside these bounds cause Date to return NaN, which this tool catches and reports as an out-of-range error.'
+  },
+  {
+    q: 'What is ISO 8601 and how does it differ from UTC?',
+    a: 'ISO 8601 is an international standard for representing dates and times as strings, produced by the International Organization for Standardization. The format output here — YYYY-MM-DDTHH:mm:ss.sssZ — is the most common machine-readable variant, where the trailing "Z" designates the UTC timezone. UTC (Coordinated Universal Time) is the timekeeping standard itself, not a string format. The ISO 8601 string is the recommended format for storing or transmitting timestamps in JSON APIs because it is unambiguous, sortable as a plain string, and human-readable.'
+  },
+  {
+    q: 'Can I convert a date back to a Unix timestamp?',
+    a: 'This tool currently converts from Unix timestamp to human-readable formats only. To go the other direction — from a date string to a Unix timestamp — you can use JavaScript\'s Date.parse("2025-01-01T00:00:00Z") / 1000 in the browser console, or use a dedicated date-to-epoch converter. The division by 1000 converts the millisecond result returned by Date.parse to seconds.'
+  }
+];
 ---
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Unix Timestamp Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Convert Unix timestamps to human-readable formats — or get the current timestamp now.</p>
+    <h2 class="font-display ts-tool-heading">Unix Timestamp Converter</h2>
+    <p class="ts-tool-subheading">Convert Unix timestamps to human-readable formats — or get the current timestamp now.</p>
 
-    <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.25rem;">
-      <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="ts-input">Unix Timestamp</label>
+    <div class="ts-input-row">
+      <div class="ts-input-field">
+        <label class="ts-label" for="ts-input">Unix Timestamp</label>
         <input id="ts-input" type="text" placeholder="e.g. 1735689600 or 1735689600000"
-          class="input-themed"
-          style="width:100%;padding:0.6rem 0.875rem;border-radius:0.5rem;font-size:1rem;font-family:'Fira Code',monospace;font-weight:600;box-sizing:border-box;" />
+          class="input-themed ts-input-mono" />
       </div>
-      <button id="btn-now" class="btn-secondary" type="button" style="white-space:nowrap;">Use now</button>
+      <button id="btn-now" class="btn-secondary ts-now-btn" type="button">Use now</button>
     </div>
 
-    <div id="results" style="display:none;flex-direction:column;gap:0.375rem;">
+    <div id="results" class="ts-results">
       <div class="info-row">
         <span class="info-label">UTC</span>
-        <div style="display:flex;align-items:center;gap:0.5rem;">
+        <div class="ts-value-row">
           <span class="info-value" id="out-utc"></span>
-          <button class="btn-secondary copy-val" data-target="out-utc" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+          <button class="btn-secondary copy-val ts-copy-btn" data-target="out-utc" type="button">Copy</button>
         </div>
       </div>
       <div class="info-row">
         <span class="info-label">ISO 8601</span>
-        <div style="display:flex;align-items:center;gap:0.5rem;">
+        <div class="ts-value-row">
           <span class="info-value" id="out-iso"></span>
-          <button class="btn-secondary copy-val" data-target="out-iso" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+          <button class="btn-secondary copy-val ts-copy-btn" data-target="out-iso" type="button">Copy</button>
         </div>
       </div>
       <div class="info-row">
         <span class="info-label">Local time</span>
-        <div style="display:flex;align-items:center;gap:0.5rem;">
+        <div class="ts-value-row">
           <span class="info-value" id="out-local"></span>
-          <button class="btn-secondary copy-val" data-target="out-local" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+          <button class="btn-secondary copy-val ts-copy-btn" data-target="out-local" type="button">Copy</button>
         </div>
       </div>
       <div class="info-row">
@@ -51,45 +92,69 @@ const tool = tools.find(t => t.slug === 'unix-timestamp-converter')!;
       </div>
       <div class="info-row">
         <span class="info-label">Milliseconds</span>
-        <div style="display:flex;align-items:center;gap:0.5rem;">
+        <div class="ts-value-row">
           <span class="info-value" id="out-ms"></span>
-          <button class="btn-secondary copy-val" data-target="out-ms" type="button" style="font-size:0.7rem;padding:0.2rem 0.55rem;flex-shrink:0;">Copy</button>
+          <button class="btn-secondary copy-val ts-copy-btn" data-target="out-ms" type="button">Copy</button>
         </div>
       </div>
     </div>
 
-    <p id="ts-error" style="display:none;color:#EF4444;font-size:0.82rem;margin-top:0.75rem;"></p>
+    <p id="ts-error" class="ts-error"></p>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the Unix Timestamp Converter</h2>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">Type or paste a Unix timestamp (in seconds or milliseconds) into the field. The tool auto-detects the unit based on the magnitude of the value. Results update instantly. Click <strong>Use now</strong> to convert the current moment.</p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">Copy buttons are provided for each format for quick pasting into code, docs, or databases.</p>
-  </div>
+    <h2 class="font-display seo-h2">Unix Timestamp Converter — Overview</h2>
+    <p class="seo-p">
+      A Unix timestamp is a single integer representing the number of seconds (or milliseconds) elapsed since the Unix epoch — midnight UTC on 1 January 1970. This tool converts any Unix timestamp into six immediately useful representations: UTC, ISO 8601, local browser time, relative time, day of week, and the millisecond equivalent. All processing runs entirely in your browser using the JavaScript <code class="inline-code">Date</code> API — no data is transmitted to any server, and there is no rate limit or file-size constraint.
+    </p>
+    <p class="seo-p">
+      Paste a timestamp into the input field, or click <strong>Use now</strong> to convert the current moment. The tool auto-detects whether the input is in seconds (10 digits) or milliseconds (13 digits) based on magnitude. Each output row has a copy button for quick insertion into code, documentation, or database queries.
+    </p>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.875rem;">Format reference</h2>
-    <div style="display:flex;flex-direction:column;gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Seconds</span><span class="info-value">Values &lt; 10¹² treated as seconds</span></div>
-      <div class="info-row"><span class="info-label">Milliseconds</span><span class="info-value">Values ≥ 10¹² treated as milliseconds</span></div>
-      <div class="info-row"><span class="info-label">Unix epoch</span><span class="info-value">Seconds since 1970-01-01T00:00:00Z</span></div>
-      <div class="info-row"><span class="info-label">ISO 8601</span><span class="info-value">YYYY-MM-DDTHH:mm:ss.sssZ</span></div>
+    <h3 class="font-display seo-h3-sm">Real-World Applications &amp; Use Cases</h3>
+    <div class="ts-usecases">
+      {useCases.map(({ title, desc }) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: Detection Logic &amp; Output Formats</h2>
+
+    <h3 class="font-display seo-h3-sm">Seconds vs. Milliseconds Auto-Detection</h3>
+    <p class="seo-p">
+      The converter applies a single threshold rule: if the numeric input is greater than or equal to <code class="inline-code">1e12</code> (one trillion), it is treated as milliseconds; otherwise it is treated as seconds and multiplied by 1,000 before being passed to <code class="inline-code">new Date(ms)</code>. This boundary was chosen because <code class="inline-code">1e12</code> milliseconds corresponds to 9 September 2001 — a date far enough in the past that any real-world timestamp representing a future or recent date in seconds will always be below the threshold, while any millisecond timestamp for a date after 2001 will always be above it. The resulting <code class="inline-code">Date</code> object is validated with <code class="inline-code">isNaN(d.getTime())</code> before rendering.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Output Format Reference</h3>
+    <div class="ts-format-table">
+      <div class="info-row"><span class="info-label">Seconds</span><span class="info-value">Values &lt; 10¹² — treated as Unix seconds, multiplied ×1000 internally</span></div>
+      <div class="info-row"><span class="info-label">Milliseconds</span><span class="info-value">Values ≥ 10¹² — passed directly to <code class="inline-code">new Date(ms)</code></span></div>
+      <div class="info-row"><span class="info-label">UTC</span><span class="info-value">Produced by <code class="inline-code">Date.toUTCString()</code> — RFC 7231 format, timezone-independent</span></div>
+      <div class="info-row"><span class="info-label">ISO 8601</span><span class="info-value">Produced by <code class="inline-code">Date.toISOString()</code> — format: YYYY-MM-DDTHH:mm:ss.sssZ</span></div>
+      <div class="info-row"><span class="info-label">Local time</span><span class="info-value">Produced by <code class="inline-code">Date.toLocaleString()</code> — respects browser IANA timezone</span></div>
+      <div class="info-row"><span class="info-label">Relative</span><span class="info-value">Computed from <code class="inline-code">Date.now()</code> diff — minutes, hours, or days from now / ago</span></div>
+    </div>
+
+    <h3 class="font-display seo-h3-sm">Relative Time Calculation</h3>
+    <p class="seo-p">
+      The relative time output computes the difference between the input timestamp and <code class="inline-code">Date.now()</code> in milliseconds, then buckets the result into human-readable labels: under 60,000 ms displays as "just now"; under 3,600,000 ms (one hour) shows rounded minutes; under 86,400,000 ms (one day) shows rounded hours; beyond that shows rounded days. The sign of the difference determines whether the suffix is "from now" or "ago", correctly handling future timestamps such as scheduled event times or token expiry values.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        {q:'How do I know if my timestamp is in seconds or milliseconds?',a:'Timestamps in seconds are typically 10 digits (e.g. 1735689600). Millisecond timestamps are 13 digits (e.g. 1735689600000). This tool detects the unit automatically based on the magnitude.'},
-        {q:'What is the Unix epoch?',a:'The Unix epoch is the starting point for Unix timestamps: midnight UTC on 1 January 1970 (1970-01-01T00:00:00Z). All Unix timestamps count seconds (or milliseconds) from this reference point.'},
-        {q:'Why does my timestamp show a different local time?',a:'Local time is displayed in your browser\'s configured timezone. If you are in UTC+10 (Sydney), a UTC timestamp of 12:00 will show as 22:00 local. The UTC and ISO fields are always timezone-independent.'},
-        {q:'What is the maximum date this can convert?',a:'JavaScript\'s Date object supports values up to approximately 8640000000000000 ms, which corresponds to September 13, 275760 CE. Values outside this range are not supported.'},
-      ].map(item=>(
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      {faqs.map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+             class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
@@ -97,6 +162,99 @@ const tool = tools.find(t => t.slug === 'unix-timestamp-converter')!;
   </div>
 
 </ToolLayout>
+
+<style>
+  /* ── Tool heading ───────────────────────────────────── */
+  .ts-tool-heading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+  .ts-tool-subheading {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── Input row ──────────────────────────────────────── */
+  .ts-input-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    align-items: end;
+    margin-bottom: 1.25rem;
+  }
+  .ts-input-field {
+    display: flex;
+    flex-direction: column;
+  }
+  .ts-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+  }
+  .ts-input-mono {
+    width: 100%;
+    padding: 0.6rem 0.875rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-family: 'Fira Code', monospace;
+    font-weight: 600;
+    box-sizing: border-box;
+  }
+  .ts-now-btn {
+    white-space: nowrap;
+  }
+
+  /* ── Results panel ──────────────────────────────────── */
+  .ts-results {
+    display: none;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  .ts-value-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .ts-copy-btn {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.55rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Error ──────────────────────────────────────────── */
+  .ts-error {
+    display: none;
+    color: #EF4444;
+    font-size: 0.82rem;
+    margin-top: 0.75rem;
+  }
+
+  /* ── SEO sections ───────────────────────────────────── */
+  .ts-usecases {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin-bottom: 0.75rem;
+  }
+  .ts-format-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .seo-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+</style>
 
 <script>
   const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
