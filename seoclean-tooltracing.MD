@@ -3,7 +3,6 @@ mortgage-calculator
 compound-interest-retirement
 percentage-calculator
 bmi-calculator
-hex-to-rgb
 word-counter
 colour-palette-css-generator
 jwt-debugger
@@ -21,9 +20,10 @@ kids-savings-compound-interest-visualizer
 saas-churn-ltv-cac-calculator
 car-loan-amortization-calculator
 freelance-invoice-tax-calculator
+csv-to-json-xml-converter
 
 ## TODO
-csv-to-json-xml-converter
+
 unix-timestamp-converter
 sql-schema-syntax-translator
 epub-to-pdf-formatter
