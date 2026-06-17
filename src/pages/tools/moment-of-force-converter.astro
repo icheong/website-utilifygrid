@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'moment-of-force-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Moment of Force Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a moment of force (torque) and select its unit — all other units update instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Moment of Force Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a moment of force (torque) and select its unit — all other units update instantly.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="mof-input">Moment of Force</label>
+        <label class="tool-label" for="mof-input">Moment of Force</label>
         <input id="mof-input" type="number" value="1" step="any" placeholder="Enter value"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="mof-unit">Unit</label>
+        <label class="tool-label" for="mof-unit">Unit</label>
         <select id="mof-unit" class="select-themed" style="min-width:12rem;">
           <option value="Nm" selected>N·m</option>
           <option value="kNm">kN·m</option>
@@ -44,7 +44,7 @@ const tool = tools.find(t => t.slug === 'moment-of-force-converter')!;
 
     <!-- Concept Visualisation: Wrench + Lever Arm -->
     <div style="margin-top:1.5rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.25rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem;">Why Lever Arm Length Matters — τ = F × r</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem;">Why Lever Arm Length Matters — τ = F × r</p>
       <div style="display:flex;align-items:flex-start;justify-content:center;gap:2rem;flex-wrap:wrap;">
         <!-- Left: wrench diagram -->
         <svg width="300" height="200" viewBox="0 0 300 200" id="wrench-svg">
@@ -79,7 +79,7 @@ const tool = tools.find(t => t.slug === 'moment-of-force-converter')!;
         </svg>
         <!-- Right: comparison -->
         <div style="flex:1;min-width:220px;max-width:300px;">
-          <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.75rem;">Same force, different lever arms:</p>
+          <p class="text-secondary" style="font-size:0.78rem;font-weight:600;margin-bottom:0.75rem;">Same force, different lever arms:</p>
           <svg width="100%" viewBox="0 0 260 150" id="bar-svg">
             <!-- Short arm: 0.25 m -->
             <rect x="0" y="8" width="64" height="22" rx="4" fill="#3B82F6"/>
@@ -96,7 +96,7 @@ const tool = tools.find(t => t.slug === 'moment-of-force-converter')!;
           </svg>
         </div>
       </div>
-      <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:1rem;line-height:1.6;">
+      <p class="seo-p-sm" style="text-align:center;margin-top:1rem;">
         Moment of force (torque) = <strong style="color:var(--text-primary);">Force × Perpendicular distance</strong> from the axis.
         Doubling the lever arm <strong style="color:#3B82F6;">doubles</strong> the torque — unlike moment of inertia where distance is <strong style="color:#EF4444;">squared</strong>.
       </p>
@@ -104,100 +104,97 @@ const tool = tools.find(t => t.slug === 'moment-of-force-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Common Moment of Force Values</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Common Moment of Force Values</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Moment of Force Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric moment of force (torque) value</strong> and select its <strong>unit</strong> from the dropdown. All other units update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Moment of Force Converter Overview</h2>
+    <p class="seo-p">
+      This moment of force converter computes precise conversions between 14 torque units — Newton-meters, kilonewton-meters, millinewton-meters, centinewton-meters, micronewton-meters, pound-feet, pound-inches, ounce-inches, kilogram-force meters, kilogram-force centimeters, gram-force centimeters, gram-force meters, dyne-centimeters, and dyne-meters — entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in automotive engineering, mechanical design, aerospace, or physics education.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports 14 units: <strong>N·m</strong>, <strong>kN·m</strong>, <strong>mN·m</strong>, <strong>cN·m</strong>, <strong>μN·m</strong>, <strong>lbf·ft</strong>, <strong>lbf·in</strong>, <strong>ozf·in</strong>, <strong>kgf·m</strong>, <strong>kgf·cm</strong>, <strong>gf·cm</strong>, <strong>gf·m</strong>, <strong>dyn·cm</strong>, and <strong>dyn·m</strong>.
+    <p class="seo-p">
+      Torque is defined as force multiplied by the perpendicular distance from the pivot axis (<code class="inline-code">τ = F × r</code>). Unlike moment of inertia where distance is squared, torque depends <strong>linearly</strong> on distance — doubling the lever arm doubles the torque. The wrench diagram below demonstrates this principle visually. The converter handles the full range from micronewton-meters (microelectronics) to kilonewton-meters (heavy machinery), with dynamic formatting that adapts to each result's magnitude.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. The wrench diagram below shows how torque relates to force and lever arm length.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Automotive maintenance and fastener specifications`, `Mechanics specify lug nut tightening torque in N·m or lbf·ft to ensure proper clamping force without stripping threads. A typical passenger car lug nut requires 80–110 N·m (60–80 lbf·ft). A heavy truck might require 300–600 N·m. Converting between N·m (metric specifications) and lbf·ft (US tools) is essential when using torque wrenches calibrated in different unit systems.`],
+        [`Industrial automation and servo motor sizing`, `Engineers specify servo motor torque in N·m or kgf·cm to ensure sufficient force for the application. A pick-and-place robot might require 0.5 N·m at the joint, while a CNC machine spindle might need 50 N·m. Converting between N·m (motor datasheets) and kgf·cm (legacy specifications) ensures proper motor selection and prevents under-powered designs.`],
+        [`Physics experiments and rotational mechanics labs`, `University physics labs measure torque using force sensors and lever arms, then verify it against calculated values. A 10 N force applied at 0.25 m produces 2.5 N·m of torque. Students need to convert between N·m (SI calculations), dyn·cm (CGS output from some sensors), and lbf·in (imperial lab equipment) when comparing results across different measurement systems.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How moment of force conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      Moment of force (torque) is the <strong>rotational equivalent of force</strong>. It measures how much a force acting at a distance tends to rotate an object. All conversions use <strong>N·m</strong> as the base unit:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <p class="seo-p">
+      All conversions use Newton-meters (N·m) as the universal base unit. Each supported torque unit is defined by a fixed conversion factor relative to one N·m. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain N·m, then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 kN·m    = 1000 N·m
-1 mN·m    = 0.001 N·m
-1 cN·m    = 0.01 N·m
-1 μN·m    = 1 × 10⁻⁶ N·m
-1 lbf·ft  = 1.35581796 N·m
-1 lbf·in  = 0.11298483 N·m
-1 ozf·in  = 0.00706155 N·m
-1 kgf·m   = 9.80665 N·m
-1 kgf·cm  = 0.0980665 N·m
-1 gf·cm   = 9.80665 × 10⁻⁵ N·m
-1 gf·m    = 0.00980665 N·m
-1 dyn·cm  = 1 × 10⁻⁷ N·m
-1 dyn·m   = 1 × 10⁻⁵ N·m
 
-τ = F × r
-
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Unlike moment of inertia (where distance is squared), torque depends <strong>linearly</strong> on distance. Doubling the lever arm doubles the torque — which is why a longer wrench makes bolts easier to loosen.
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">Nm</code>, <code class="inline-code">lfft</code>, <code class="inline-code">kgfcm</code>) to its conversion factor relative to N·m. SI units use powers of 10: <code class="inline-code">1 kN·m = 1,000 N·m</code>. Force-based units use standard definitions: <code class="inline-code">1 lbf·ft = 1.35582 N·m</code> (derived from <code class="inline-code">1 lbf = 4.44822 N</code> and <code class="inline-code">1 ft = 0.3048 m</code>).
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Hub conversion to N·m:</strong> The input value is multiplied by the source unit's factor. For example, converting 100 lbf·ft to N·m: <code class="inline-code">100 × 1.35582 = 135.582 N·m</code>. Converting 50 kgf·cm to N·m: <code class="inline-code">50 × 0.0980665 = 4.9033 N·m</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Target conversion from N·m:</strong> The N·m value is divided by the target unit's factor. Converting 135.582 N·m to lbf·in: <code class="inline-code">135.582 / 0.112985 ≈ 1,200 lbf·in</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (10³⁰ or greater) use scientific notation. Values between 1 and 10¹⁵ use locale-formatted numbers with 6 decimal places. Values between 0.001 and 1 use 8 decimal places. Values between 10⁻⁶ and 0.001 use 12 decimal places. Values below 10⁻⁶ use scientific notation. This ensures readability across the full range from dyne-centimeters to kilonewton-meters.
+    </p>
+    <p class="seo-p-none">
+      <strong>Exact conversion factors:</strong> All factors are derived from exact international definitions: <code class="inline-code">1 lbf = 4.448221615367 N</code> (derived from <code class="inline-code">1 lb = 0.45359237 kg</code> and <code class="inline-code">1 ft = 0.3048 m</code>), <code class="inline-code">1 kgf = 9.80665 N</code> (exactly, standard gravity), <code class="inline-code">1 dyn = 10⁻⁵ N</code> (exactly), and <code class="inline-code">1 ozf = 0.27801385 N</code> (derived from <code class="inline-code">1 oz = 1/16 lb</code>). These are all exact by definition, so the IEEE 754 approximations provide full double-precision accuracy.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is moment of force (torque)?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Moment of force, commonly called torque, is the rotational effect of a force applied at a distance from a pivot point. It equals Force × perpendicular distance (τ = F × r). The SI unit is the Newton-meter (N·m)." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the difference between moment of force and moment of inertia?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Moment of force (torque) is the cause of rotational acceleration — it equals F × r. Moment of inertia is the resistance to rotational acceleration — it equals Σmr². Torque is linear with distance; moment of inertia is quadratic. A long wrench gives more torque, but a heavy rim gives more moment of inertia." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why are N·m and J·m used interchangeably?",
-          "acceptedAnswer": { "@type": "Answer", "text": "N·m and J (joules) have the same dimensions (kg·m²/s²), but they represent different physical quantities. N·m is torque (force × distance), while J is energy (work done). The数值 may be the same, but the units are not interchangeable in physics. Torque is a vector; energy is a scalar." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a common torque value?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A car engine typically produces 100–500 N·m. A smartphone vibration motor produces about 0.001 N·m. A lug nut requires about 110 N·m (80 ft·lbf) to tighten. Earth's gravitational pull on the Moon produces about 4.7 × 10²⁶ N·m of torque." }
-        },
-        {
-          "@type": "Question",
-          "name": "How does a longer wrench help?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Torque = Force × distance. If you double the wrench length, you double the torque for the same applied force. This is why mechanics use breaker bars and cheater pipes — they increase the lever arm to generate more torque with less effort." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is moment of force (torque)?', a: 'Moment of force, commonly called torque, is the rotational effect of a force applied at a distance from a pivot point. It equals Force × perpendicular distance (τ = F × r). The SI unit is the Newton-meter (N·m).' },
-        { q: 'What is the difference between moment of force and moment of inertia?', a: 'Moment of force (torque) is the cause of rotational acceleration — it equals F × r. Moment of inertia is the resistance to rotational acceleration — it equals Σmr². Torque is linear with distance; moment of inertia is quadratic. A long wrench gives more torque, but a heavy rim gives more moment of inertia.' },
-        { q: 'Why are N·m and J used in different contexts?', a: 'N·m and J (joules) have the same dimensions (kg·m²/s²), but they represent different physical quantities. N·m is torque (force × distance), while J is energy (work done). The numbers may be the same, but the units are not interchangeable in physics. Torque is a vector; energy is a scalar.' },
-        { q: 'What is a common torque value?', a: 'A car engine typically produces 100–500 N·m. A smartphone vibration motor produces about 0.001 N·m. A lug nut requires about 110 N·m (80 ft·lbf) to tighten. Earth\'s gravitational pull on the Moon produces about 4.7 × 10²⁶ N·m of torque.' },
-        { q: 'How does a longer wrench help?', a: 'Torque = Force × distance. If you double the wrench length, you double the torque for the same applied force. This is why mechanics use breaker bars and cheater pipes — they increase the lever arm to generate more torque with less effort.' },
+        {
+          q: "What is moment of force (torque)?",
+          a: "Moment of force, commonly called torque, is the rotational effect of a force applied at a distance from a pivot point. It equals force multiplied by the perpendicular distance from the axis: <code class='inline-code'>τ = F × r</code>. The SI unit is the Newton-meter (N·m). Torque is a vector quantity; its direction indicates the axis and sense of rotation."
+        },
+        {
+          q: "What is the difference between moment of force and moment of inertia?",
+          a: "Moment of force (torque) is the cause of rotational acceleration — it equals F × r. Moment of inertia is the resistance to rotational acceleration — it equals Σmr². Torque depends linearly on distance; moment of inertia depends on the square of distance. A long wrench gives more torque, but a heavy rim gives more moment of inertia."
+        },
+        {
+          q: "Why are N·m and J used in different contexts?",
+          a: "N·m and J (joules) have the same dimensions (kg·m²/s²), but they represent different physical quantities. N·m is torque (force × distance), while J is energy (work done). The numerical values may be identical, but the units are not interchangeable in physics. Torque is a vector quantity; energy is a scalar. Using the wrong unit in equations produces incorrect results."
+        },
+        {
+          q: "What is a common torque value?",
+          a: "A car engine typically produces 100–500 N·m. A smartphone vibration motor produces approximately 0.001 N·m. A lug nut requires approximately 110 N·m (80 lbf·ft) to tighten properly. A bicycle pedal applies approximately 25 N·m. A Formula 1 engine produces approximately 450 N·m at over 15,000 RPM."
+        },
+        {
+          q: "How does a longer wrench help?",
+          a: "Torque equals force multiplied by distance. If you double the wrench length, you double the torque for the same applied force. This is why mechanics use breaker bars and cheater pipes — they increase the lever arm to generate more torque with less effort. The wrench diagram on this page demonstrates this linear relationship visually."
+        },
+        {
+          q: "What is the relationship between torque and power?",
+          a: "Power equals torque multiplied by angular velocity: <code class='inline-code'>P = τ × ω</code>, where τ is in N·m and ω is in rad/s. A motor producing 100 N·m at 3,000 RPM (314.16 rad/s) delivers approximately 31.4 kW (42 hp). This relationship is fundamental in engine and motor sizing — high torque at low RPM (diesel) vs. low torque at high RPM (gasoline) can produce the same power."
+        },
+        {
+          q: "How do I convert between lbf·ft and N·m?",
+          a: "To convert lbf·ft to N·m, multiply by 1.35582. To convert N·m to lbf·ft, divide by 1.35582 (or multiply by 0.73756). For example, 100 lbf·ft equals approximately 135.6 N·m, and 200 N·m equals approximately 147.5 lbf·ft. This conversion is essential when working with US tool specifications and metric engineering calculations."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

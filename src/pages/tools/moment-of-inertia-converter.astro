@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'moment-of-inertia-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Moment of Inertia Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a moment of inertia and select its unit — all other units update instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Moment of Inertia Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a moment of inertia and select its unit — all other units update instantly.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="moi-input">Moment of Inertia</label>
+        <label class="tool-label" for="moi-input">Moment of Inertia</label>
         <input id="moi-input" type="number" value="1" step="any" placeholder="Enter value"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="moi-unit">Unit</label>
+        <label class="tool-label" for="moi-unit">Unit</label>
         <select id="moi-unit" class="select-themed" style="min-width:12rem;">
           <option value="kgm2" selected>kg·m²</option>
           <option value="gcm2">g·cm²</option>
@@ -49,7 +49,7 @@ const tool = tools.find(t => t.slug === 'moment-of-inertia-converter')!;
       }
     </style>
     <div style="margin-top:1.5rem;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.25rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem;">Why Mass Farther From the Axis Matters More — I = Σmr²</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem;">Why Mass Farther From the Axis Matters More — I = Σmr²</p>
       <div style="display:flex;align-items:flex-start;justify-content:center;gap:2rem;flex-wrap:wrap;">
         <!-- Left: rotating mass distribution -->
         <div style="text-align:center;">
@@ -79,11 +79,11 @@ const tool = tools.find(t => t.slug === 'moment-of-inertia-converter')!;
             <text x="170" y="168" text-anchor="middle" font-size="9" font-weight="600" fill="#3B82F6" font-family="'Fira Code',monospace">r</text>
             <text x="230" y="168" text-anchor="middle" font-size="9" font-weight="600" fill="#EF4444" font-family="'Fira Code',monospace">2r</text>
           </svg>
-          <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.25rem;">Same mass <strong>m</strong> at different distances — all rotate together</p>
+          <p class="seo-p-sm" style="margin-top:0.25rem;">Same mass <strong>m</strong> at different distances — all rotate together</p>
         </div>
         <!-- Right: contribution bar chart -->
         <div style="flex:1;min-width:200px;max-width:280px;">
-          <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.75rem;">Each particle's contribution to I:</p>
+          <p class="text-secondary" style="font-size:0.78rem;font-weight:600;margin-bottom:0.75rem;">Each particle's contribution to I:</p>
           <svg width="100%" viewBox="0 0 260 180" id="bar-svg">
             <!-- Bar: 0.5r particle -->
             <rect x="0" y="10" width="16" height="24" rx="4" fill="#10B981"/>
@@ -103,7 +103,7 @@ const tool = tools.find(t => t.slug === 'moment-of-inertia-converter')!;
           </svg>
         </div>
       </div>
-      <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:1rem;line-height:1.6;">
+      <p class="seo-p-sm" style="text-align:center;margin-top:1rem;">
         Total I = 0.25mr² + 1mr² + 4mr² = <strong style="color:var(--text-primary);">5.25 mr²</strong> —
         the particle at <strong style="color:#EF4444;">2r</strong> alone contributes <strong style="color:#EF4444;">76%</strong> of the total.
       </p>
@@ -111,93 +111,97 @@ const tool = tools.find(t => t.slug === 'moment-of-inertia-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Common Moment of Inertia Values</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Common Moment of Inertia Values</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Moment of Inertia Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric moment of inertia value</strong> and select its <strong>unit</strong> from the dropdown. All other units update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Moment of Inertia Converter Overview</h2>
+    <p class="seo-p">
+      This moment of inertia converter computes precise conversions between 9 units — kilogram-meters squared, gram-centimeters squared, kilogram-centimeters squared, slug-feet squared, slug-inches squared, pound-feet squared, pound-inches squared, ounce-inches squared, and ounce-feet squared — entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in mechanical engineering, aerospace, physics education, or rotational dynamics.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports 9 units: <strong>kg·m²</strong>, <strong>g·cm²</strong>, <strong>kg·cm²</strong>, <strong>slug·ft²</strong>, <strong>slug·in²</strong>, <strong>lb·ft²</strong>, <strong>lb·in²</strong>, <strong>oz·in²</strong>, and <strong>oz·ft²</strong>.
+    <p class="seo-p">
+      Moment of inertia depends on both the <strong>mass</strong> and <strong>distribution</strong> of that mass relative to the rotation axis — the formula I = Σmr² shows that distance from the axis is squared, making mass distribution far more important than total mass. The interactive visualisation demonstrates this principle: the same mass m at distance 2r contributes four times more to the moment of inertia than at distance r. The converter handles values from microscopic (10⁻⁷ kg·m² for g·cm²) to astronomical (10³⁷ kg·m² for Earth), with dynamic formatting that adapts to each result's magnitude.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. The flywheel visualisation below the results shows a rotating disk to illustrate the concept.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Automotive and powertrain engineering`, `Engineers design flywheels, crankshafts, and drivetrain components with specific moment of inertia values to control rotational energy storage and vibration damping. A typical car flywheel has a moment of inertia of approximately 0.35 kg·m², while a Formula 1 flywheel might be as low as 0.05 kg·m² for faster engine response. Converting between lb·in² (common in US specifications) and kg·m² (common in SI design) is essential when sourcing components internationally.`],
+        [`Aerospace and satellite attitude control`, `Satellites use reaction wheels and control moment gyroscopes with precisely specified moments of inertia to manage orientation in space. A typical reaction wheel might have a moment of inertia of 0.01 kg·m², while the entire satellite might have a body moment of inertia of 50 kg·m². Converting between slug·ft² (legacy aerospace units) and kg·m² (modern SI) ensures compatibility between legacy control systems and modern specifications.`],
+        [`Physics education and laboratory experiments`, `University physics labs measure moment of inertia using rotational apparatus and verify it against calculated values for known shapes. A solid disk: I = ½mr², a thin hoop: I = mr², a solid sphere: I = ⅖mr². Students frequently need to convert between g·cm² (lab apparatus output) and kg·m² (textbook calculations) when comparing experimental results with theoretical predictions.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How moment of inertia conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      Moment of inertia depends on both the <strong>mass</strong> and <strong>distribution</strong> of that mass relative to the rotation axis. All conversions use <strong>kg·m²</strong> as the base unit:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <p class="seo-p">
+      All conversions use kilogram-meters squared (kg·m²) as the universal base unit. Each supported unit is defined by a fixed conversion factor relative to one kg·m². To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain kg·m², then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 g·cm²    = 1 × 10⁻⁷ kg·m²
-1 kg·cm²    = 1 × 10⁻⁴ kg·m²
-1 slug·ft²  = 1.35581796 kg·m²
-1 slug·in²  = 0.094154025 kg·m²
-1 lb·ft²    = 0.0421401101 kg·m²
-1 lb·in²    = 0.0029263965 kg·m²
-1 oz·in²    = 0.0001828998 kg·m²
-1 oz·ft²    = 0.002633756 kg·m²
 
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      For a solid disk: I = ½mr². For a thin hoop: I = mr². The <strong>shape</strong> of the object determines how mass is distributed — a hoop has twice the moment of inertia of a disk of the same mass and radius because all its mass is at the rim.
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">kgm2</code>, <code class="inline-code">gcm2</code>, <code class="inline-code">lbft2</code>) to its conversion factor relative to kg·m². CGS units use powers of 10: <code class="inline-code">1 g·cm² = 10⁻⁷ kg·m²</code>. Imperial units use exact definitions: <code class="inline-code">1 lb·ft² = 0.042140 kg·m²</code> (derived from <code class="inline-code">1 lb = 0.45359237 kg</code> and <code class="inline-code">1 ft = 0.3048 m</code>).
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Hub conversion to kg·m²:</strong> The input value is multiplied by the source unit's factor. For example, converting 100 g·cm² to kg·m²: <code class="inline-code">100 × 10⁻⁷ = 0.00001 kg·m²</code>. Converting 30 lb·in² to kg·m²: <code class="inline-code">30 × 0.002926 ≈ 0.08778 kg·m²</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Target conversion from kg·m²:</strong> The kg·m² value is divided by the target unit's factor. Converting 0.35 kg·m² to lb·ft²: <code class="inline-code">0.35 / 0.042140 ≈ 8.31 lb·ft²</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Shape formulas:</strong> Common geometric shapes have standard moment of inertia formulas. Solid disk: <code class="inline-code">I = ½mr²</code>. Thin hoop: <code class="inline-code">I = mr²</code>. Solid sphere: <code class="inline-code">I = ⅖mr²</code>. Thin rod about centre: <code class="inline-code">I = ¹⁄₁₂ mL²</code>. The shape determines how mass is distributed — a hoop has twice the moment of inertia of a disk of the same mass and radius because all its mass is at the rim.
+    </p>
+    <p class="seo-p-none">
+      <strong>Exact conversion factors:</strong> All factors are derived from exact international definitions: <code class="inline-code">1 lb = 0.45359237 kg</code> (exactly), <code class="inline-code">1 ft = 0.3048 m</code> (exactly), <code class="inline-code">1 in = 0.0254 m</code> (exactly), <code class="inline-code">1 slug = 14.59390 kg</code> (derived from <code class="inline-code">1 lbf = 4.448221615 N</code>), and <code class="inline-code">1 oz = 0.028349523125 kg</code> (exactly 1/16 of a pound). These are all exact rational values, so the IEEE 754 approximations provide full double-precision accuracy.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is moment of inertia?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Moment of inertia (I) measures an object's resistance to changes in its rotational motion. It depends on both the mass and how that mass is distributed relative to the rotation axis. More mass concentrated farther from the axis means higher moment of inertia." }
-        },
-        {
-          "@type": "Question",
-          "name": "How is moment of inertia different from mass?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Mass (m) is a scalar that resists linear acceleration. Moment of inertia (I) is the rotational analog — it resists angular acceleration. An object can have the same mass but different moments of inertia depending on how mass is distributed. A hollow cylinder has higher I than a solid cylinder of the same mass and radius." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the unit of moment of inertia?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The SI unit is kg·m² (kilogram-meter squared). In the imperial system, slug·ft² and lb·ft² are also used. In CGS, g·cm² is common. All of these can be converted using this tool." }
-        },
-        {
-          "@type": "Question",
-          "name": "What are common moment of inertia values?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A tennis ball has about 0.000005 kg·m², a bicycle wheel about 0.1 kg·m², and a car flywheel about 0.35 kg·m². Earth has an enormous moment of inertia of about 8 × 10³⁷ kg·m²." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the parallel axis theorem?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The parallel axis theorem states: I = I_cm + Md², where I_cm is the moment of inertia about the center of mass, M is the total mass, and d is the distance between the two parallel axes. This lets you calculate I about any axis if you know it about the center of mass." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is moment of inertia?', a: 'Moment of inertia (I) measures an object\'s resistance to changes in its rotational motion. It depends on both the mass and how that mass is distributed relative to the rotation axis. More mass concentrated farther from the axis means higher moment of inertia.' },
-        { q: 'How is moment of inertia different from mass?', a: 'Mass (m) is a scalar that resists linear acceleration. Moment of inertia (I) is the rotational analog — it resists angular acceleration. An object can have the same mass but different moments of inertia depending on how mass is distributed. A hollow cylinder has higher I than a solid cylinder of the same mass and radius.' },
-        { q: 'What is the unit of moment of inertia?', a: 'The SI unit is kg·m² (kilogram-meter squared). In the imperial system, slug·ft² and lb·ft² are also used. In CGS, g·cm² is common. All of these can be converted using this tool.' },
-        { q: 'What are common moment of inertia values?', a: 'A tennis ball has about 0.000005 kg·m², a bicycle wheel about 0.1 kg·m², and a car flywheel about 0.35 kg·m². Earth has an enormous moment of inertia of about 8 × 10³⁷ kg·m².' },
-        { q: 'What is the parallel axis theorem?', a: 'The parallel axis theorem states: I = I_cm + Md², where I_cm is the moment of inertia about the center of mass, M is the total mass, and d is the distance between the two parallel axes. This lets you calculate I about any axis if you know it about the center of mass.' },
+        {
+          q: "What is moment of inertia?",
+          a: "Moment of inertia (I) measures an object's resistance to changes in its rotational motion. It depends on both the total mass and how that mass is distributed relative to the rotation axis — the formula I = Σmr² shows that distance from the axis is squared, making mass distribution far more important than total mass alone. A hollow cylinder has higher moment of inertia than a solid cylinder of the same mass and radius."
+        },
+        {
+          q: "How is moment of inertia different from mass?",
+          a: "Mass (m) is a scalar that resists linear acceleration (F = ma). Moment of inertia (I) is the rotational analog — it resists angular acceleration (τ = Iα). An object can have the same mass but different moments of inertia depending on how mass is distributed. A figure skater pulling their arms in reduces their moment of inertia and spins faster, conserving angular momentum."
+        },
+        {
+          q: "What is the unit of moment of inertia?",
+          a: "The SI unit is kg·m² (kilogram-meter squared). In the imperial system, slug·ft² and lb·ft² are also used. In the CGS system, g·cm² is common. All of these can be converted using this tool. The unit is derived from mass × distance², reflecting the formula I = Σmr²."
+        },
+        {
+          q: "What are common moment of inertia values?",
+          a: "A tennis ball has approximately 0.000005 kg·m², a bicycle wheel approximately 0.1 kg·m², and a car flywheel approximately 0.35 kg·m². Earth has an enormous moment of inertia of approximately 8 × 10³⁷ kg·m². The wide range — over 40 orders of magnitude — illustrates why this tool supports both microgram-centimeter² and kilogram-meter² units."
+        },
+        {
+          q: "What is the parallel axis theorem?",
+          a: "The parallel axis theorem states: <code class='inline-code'>I = I_cm + Md²</code>, where I_cm is the moment of inertia about the centre of mass, M is the total mass, and d is the distance between the two parallel axes. This lets you calculate the moment of inertia about any axis if you know it about the centre of mass. It is widely used in engineering to compute combined moments of inertia for complex assemblies."
+        },
+        {
+          q: "Why does distance matter more than mass?",
+          a: "Because moment of inertia depends on the square of the distance from the axis (I = mr²), doubling the distance quadruples the moment of inertia, while doubling the mass only doubles it. This is why flywheels are designed with mass concentrated at the rim — it maximises energy storage for a given total mass. The interactive visualisation on this page demonstrates this principle with three equal masses at different distances."
+        },
+        {
+          q: "How do I calculate moment of inertia for a complex shape?",
+          a: "For composite shapes, use the summation principle: I_total = I₁ + I₂ + I₃ + ... for each component. Apply the parallel axis theorem to shift each component's moment of inertia to the common axis. Common formulas: solid disk I = ½mr², thin hoop I = mr², solid sphere I = ⅖mr², thin rod about centre I = ¹⁄₁₂ mL². This tool converts the final result to any desired unit."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

@@ -35,8 +35,6 @@ power-converter
 force-converter
 time-converter
 angle-converter
-
-## TODO
 fuel-consumption-converter
 numbers-converter
 data-storage-converter
@@ -47,6 +45,8 @@ density-converter
 specific-volume-converter
 moment-of-inertia-converter
 moment-of-force-converter
+
+## TODO
 pdf-merge
 pdf-split
 pdf-organize

@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'fuel-consumption-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Fuel Consumption Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a fuel economy value and select its unit — all other units update instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Fuel Consumption Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a fuel economy value and select its unit — all other units update instantly.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="fuel-input">Fuel Economy</label>
+        <label class="tool-label" for="fuel-input">Fuel Economy</label>
         <input id="fuel-input" type="number" value="8" step="any" placeholder="Enter value"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="fuel-unit">Unit</label>
+        <label class="tool-label" for="fuel-unit">Unit</label>
         <select id="fuel-unit" class="select-themed" style="min-width:12rem;">
           <option value="l100" selected>L/100km (lower = better)</option>
           <option value="kml">km/L (higher = better)</option>
@@ -34,7 +34,7 @@ const tool = tools.find(t => t.slug === 'fuel-consumption-converter')!;
     </div>
 
     <!-- Direction hint -->
-    <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1rem;">
+    <div class="seo-p-sm" style="margin-bottom:1rem;">
       L/100km, mL/100m: <strong>lower is better</strong> · All others: <strong>higher is better</strong>
     </div>
 
@@ -43,97 +43,97 @@ const tool = tools.find(t => t.slug === 'fuel-consumption-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Fuel Consumption Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric fuel economy value</strong> and select its <strong>unit</strong> from the dropdown. All other units update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Fuel Consumption Converter Overview</h2>
+    <p class="seo-p">
+      This fuel consumption converter computes precise conversions between 8 fuel economy units covering both metric and imperial systems entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are comparing vehicle specifications, analysing fleet efficiency, or researching international fuel standards.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports 8 fuel consumption units from both metric and imperial systems. <strong>L/100km</strong> and <strong>mL/100m</strong> are "lower is better" — all others are "higher is better."
+    <p class="seo-p">
+      The converter supports the most commonly used fuel economy units across global automotive and engineering contexts: <strong>L/100km</strong> (liters per 100 kilometers) is the standard metric used in most countries worldwide, <strong>km/L</strong> (kilometers per liter) is common in parts of Asia, <strong>US mpg</strong> and <strong>UK mpg</strong> are used in North America and the United Kingdom respectively, and <strong>mL/100m</strong>, <strong>m/mL</strong>, <strong>mi/US gal</strong>, and <strong>mi/imp gal</strong> serve niche engineering and regulatory applications. The tool handles the critical distinction between "lower is better" units (L/100km, mL/100m) and "higher is better" units (all others), where converting between the two types always involves a reciprocal operation.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common vehicle fuel economy values are shown below the results for quick comparison.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        ['International vehicle purchasing and fleet management', 'When importing vehicles or comparing specifications across markets, fuel economy ratings are reported in different units. A European car rated at 5.8 L/100km equals approximately 40.6 US mpg, while a Japanese car rated at 15 km/L equals 6.2 L/100km. Fleet managers overseeing multinational operations need to normalise fuel consumption data across regions to make informed procurement decisions and calculate total cost of ownership accurately.'],
+        ['Regulatory compliance and emissions reporting', 'Government agencies and environmental regulators report fleet average fuel economy in different units depending on jurisdiction. The US Environmental Protection Agency (EPA) uses US mpg, while the European Union uses L/100km. Automotive manufacturers must report compliance figures in the local unit and convert between them when submitting cross-border regulatory filings. This tool provides the precise reciprocal conversions needed for accurate compliance documentation.'],
+        ['Automotive journalism and consumer comparison', 'Automotive journalists and car-review websites frequently need to convert fuel economy figures when reporting on vehicles sold in different markets. A reviewer testing a European-market vehicle at 4.5 L/100km needs to communicate that as approximately 52.3 US mpg for American readers. The quick-reference section provides real-world vehicle benchmarks — from the Toyota Prius at 3.4 L/100km to the Ford F-150 at 12.4 L/100km — helping readers contextualise converted values.']
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How fuel consumption conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      Fuel consumption is expressed in two ways: <strong>volume per distance</strong> (L/100km) where lower is better, and <strong>distance per volume</strong> (km/L, mpg) where higher is better. Converting between these requires a <strong>reciprocal</strong> operation:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <p class="seo-p">
+      The converter employs a hub-and-spoke conversion model using kilometers per liter (km/L) as the universal base unit. Every supported fuel economy unit is defined by a fixed conversion factor relative to km/L. To convert from unit A to unit B, the tool converts the input value to km/L first, then converts from km/L to the target unit. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">From L/100km → km/L:
-  km/L = 100 ÷ L_per_100km
 
-From km/L → L/100km:
-  L/100km = 100 ÷ km_per_L
-
-From L/100km → US mpg:
-  US mpg = 235.215 ÷ L_per_100km
-
-From L/100km → UK mpg:
-  UK mpg = 282.481 ÷ L_per_100km
-
-1 US gal = 3.78541 L    1 imp gal = 4.54609 L
-1 mile   = 1.60934 km</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      The conversion between "lower is better" and "higher is better" units always involves a division (reciprocal). All calculations run in your browser with full double-precision floating-point accuracy.
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">l100</code>, <code class="inline-code">mpgus</code>, <code class="inline-code">kml</code>) to its conversion factor relative to km/L. For "higher is better" units, the factor is a direct multiplier. For "lower is better" units (L/100km, mL/100m), the factor is <code class="inline-code">-1</code> as a sentinel, and special reciprocal logic applies.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Hub conversion to km/L:</strong> The input value is converted to km/L using the source unit's factor. For direct units like km/L or m/mL, this is a simple multiplication. For reciprocal units, the tool applies the reciprocal formula: <code class="inline-code">km/L = 100 / (L/100km)</code> for L/100km, or <code class="inline-code">km/L = 100000 / (mL/100m)</code> for mL/100m. For US mpg, the formula is <code class="inline-code">km/L = US mpg × 2.352145833</code>, derived from <code class="inline-code">1 mile / 1 US gal = 1.60934 km / 3.78541 L</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Target conversion from km/L:</strong> The km/L value is divided by the target unit's factor. For reciprocal units, the formula is inverted: <code class="inline-code">L/100km = 100 / (km/L)</code>. For direct units like US mpg, the formula is <code class="inline-code">US mpg = km/L / 2.352145833</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code> for direct units, with reciprocal handling for volume-per-distance units.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values use scientific notation. Values between 1,000 and 1 trillion use locale-formatted numbers with 2 decimal places. Values between 1 and 1,000 use 2 to 4 decimal places. Values below 0.01 use scientific notation. This ensures readability across the full range from mL/100m to high-mpg hypermiling vehicles.
+    </p>
+    <p class="seo-p-none">
+      <strong>Exact conversion factors:</strong> The conversion factors are derived from exact international definitions: <code class="inline-code">1 mile = 1.609344 km</code> (exactly), <code class="inline-code">1 US gallon = 3.785411784 L</code> (exactly), and <code class="inline-code">1 imperial gallon = 4.54609 L</code> (exactly). The US mpg factor of <code class="inline-code">2.352145833</code> comes from <code class="inline-code">1.609344 / 3.785411784</code>, and the UK mpg factor of <code class="inline-code">2.824809703</code> comes from <code class="inline-code">1.609344 / 4.54609</code>. These factors are IEEE 754 double-precision approximations of the exact rational values, providing approximately 15 to 17 significant decimal digits of precision — far beyond the precision of any real-world fuel measurement.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is the difference between US mpg and UK mpg?",
-          "acceptedAnswer": { "@type": "Answer", "text": "US mpg uses US gallons (3.785 L) while UK mpg uses imperial gallons (4.546 L). Since an imperial gallon is about 20% larger, the same car will show a higher UK mpg number than US mpg. For example, 30 US mpg ≈ 36 UK mpg." }
-        },
-        {
-          "@type": "Question",
-          "name": "What does L/100km mean?",
-          "acceptedAnswer": { "@type": "Answer", "text": "L/100km (liters per 100 kilometers) measures how many liters of fuel a vehicle consumes to travel 100 km. Lower values mean better fuel efficiency. It is the standard metric used in most countries worldwide." }
-        },
-        {
-          "@type": "Question",
-          "name": "Is higher mpg always better?",
-          "acceptedAnswer": { "@type": "Answer", "text": "For distance-per-volume units (mpg, km/L), yes — higher means the vehicle travels further on the same amount of fuel. For volume-per-distance units (L/100km, mL/100m), lower is better because it means less fuel is consumed per distance." }
-        },
-        {
-          "@type": "Question",
-          "name": "How do I convert km/L to L/100km?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Divide 100 by the km/L value: L/100km = 100 ÷ km/L. For example, a car that gets 12.5 km/L consumes 8 L/100km (100 ÷ 12.5 = 8)." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a good fuel economy value?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A compact car typically gets 5–7 L/100km (35–50 US mpg). SUVs and trucks use 9–15 L/100km (16–26 US mpg). Hybrid cars can achieve 3–4 L/100km (58–78 US mpg). Electric vehicles don't use fuel but consume about 15–20 kWh/100km." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is the difference between US mpg and UK mpg?', a: 'US mpg uses US gallons (3.785 L) while UK mpg uses imperial gallons (4.546 L). Since an imperial gallon is about 20% larger, the same car will show a higher UK mpg number than US mpg. For example, 30 US mpg ≈ 36 UK mpg.' },
-        { q: 'What does L/100km mean?', a: 'L/100km (liters per 100 kilometers) measures how many liters of fuel a vehicle consumes to travel 100 km. Lower values mean better fuel efficiency. It is the standard metric used in most countries worldwide.' },
-        { q: 'Is higher mpg always better?', a: 'For distance-per-volume units (mpg, km/L), yes — higher means the vehicle travels further on the same amount of fuel. For volume-per-distance units (L/100km, mL/100m), lower is better because it means less fuel is consumed per distance.' },
-        { q: 'How do I convert km/L to L/100km?', a: 'Divide 100 by the km/L value: L/100km = 100 ÷ km/L. For example, a car that gets 12.5 km/L consumes 8 L/100km (100 ÷ 12.5 = 8).' },
-        { q: 'What is a good fuel economy value?', a: 'A compact car typically gets 5–7 L/100km (35–50 US mpg). SUVs and trucks use 9–15 L/100km (16–26 US mpg). Hybrid cars can achieve 3–4 L/100km (58–78 US mpg). Electric vehicles don\'t use fuel but consume about 15–20 kWh/100km.' },
+        {
+          q: "What is the difference between US mpg and UK mpg?",
+          a: "US mpg uses US gallons (3.785 L) while UK mpg uses imperial gallons (4.546 L). Since an imperial gallon is about 20% larger, the same car will show a higher UK mpg number than US mpg. For example, 30 US mpg is approximately 36 UK mpg. This is why it is critical to specify which mpg standard is being used when comparing vehicle fuel economy ratings."
+        },
+        {
+          q: "What does L/100km mean?",
+          a: "L/100km (liters per 100 kilometers) measures how many liters of fuel a vehicle consumes to travel 100 km. Lower values mean better fuel efficiency. It is the standard metric used in most countries worldwide, including the European Union, Australia, and much of Asia. A compact car typically achieves 5-7 L/100km, while a large SUV may use 10-15 L/100km."
+        },
+        {
+          q: "Is higher mpg always better?",
+          a: "For distance-per-volume units (mpg, km/L), yes — higher means the vehicle travels further on the same amount of fuel. For volume-per-distance units (L/100km, mL/100m), lower is better because it means less fuel is consumed per distance. The key distinction is that L/100km and mL/100m are reciprocal measures — converting between the two types always involves dividing by the value rather than multiplying."
+        },
+        {
+          q: "How do I convert km/L to L/100km?",
+          a: "Divide 100 by the km/L value: L/100km = 100 / km/L. For example, a car that gets 12.5 km/L consumes 8 L/100km (100 / 12.5 = 8). Conversely, to convert L/100km to km/L, divide 100 by the L/100km value. This reciprocal relationship means the conversion is not linear — halving L/100km does not double km/L."
+        },
+        {
+          q: "What is a good fuel economy value?",
+          a: "A compact car typically gets 5-7 L/100km (35-50 US mpg). SUVs and trucks use 9-15 L/100km (16-26 US mpg). Hybrid cars can achieve 3-4 L/100km (58-78 US mpg). Electric vehicles do not consume liquid fuel but consume about 15-20 kWh/100km, which is roughly equivalent to 1.5-2.0 L/100km when energy content is compared. The quick-reference section below the results shows real-world vehicle benchmarks for context."
+        },
+        {
+          q: "Why is converting between L/100km and mpg not a simple ratio?",
+          a: "L/100km and mpg are reciprocal measures, not linear ones. L/100km measures volume per distance, while mpg measures distance per volume. Converting between them requires dividing by the value (the reciprocal operation), not multiplying. For example, doubling km/L does not halve L/100km — it actually quarters it. This non-linear relationship is why the converter uses special reciprocal handling for these unit pairs."
+        },
+        {
+          q: "How accurate are the conversion factors?",
+          a: "The conversion factors are derived from exact international definitions: 1 mile = 1.609344 km exactly, 1 US gallon = 3.785411784 L exactly, and 1 imperial gallon = 4.54609 L exactly. The JavaScript factors are IEEE 754 double-precision approximations, providing approximately 15 to 17 significant decimal digits of precision. This is far more accurate than any real-world fuel measurement, which typically has uncertainty of 1-5% depending on driving conditions, fuel quality, and measurement method."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

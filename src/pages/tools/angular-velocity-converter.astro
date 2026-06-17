@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'angular-velocity-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Angular Velocity Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter an angular velocity and select its unit — all others update instantly with a live rotating diagram.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Angular Velocity Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter an angular velocity and select its unit — all others update instantly with a live rotating diagram.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.25rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="ang-input">Angular Velocity</label>
+        <label class="tool-label" for="ang-input">Angular Velocity</label>
         <input id="ang-input" type="number" value="60" step="any" placeholder="Enter value"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="ang-unit">Unit</label>
+        <label class="tool-label" for="ang-unit">Unit</label>
         <select id="ang-unit" class="select-themed" style="min-width:10rem;">
           <option value="rads" selected>Rad/s</option>
           <option value="degs">Deg/s</option>
@@ -59,8 +59,8 @@ const tool = tools.find(t => t.slug === 'angular-velocity-converter')!;
       </svg>
       <div style="min-width:0;">
         <p id="ang-display" style="font-size:1.8rem;font-weight:700;font-family:'Fira Code',monospace;color:var(--text-primary);margin-bottom:0.25rem;">60 RPM</p>
-        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0;">= <span id="ang-rads">6.2832</span> rad/s</p>
-        <p style="font-size:0.78rem;color:var(--text-muted);">= <span id="ang-degs">360</span> °/s</p>
+        <p class="seo-p-sm" style="margin-bottom:0;">= <span id="ang-rads">6.2832</span> rad/s</p>
+        <p class="seo-p-sm">= <span id="ang-degs">360</span> °/s</p>
       </div>
     </div>
 
@@ -69,92 +69,97 @@ const tool = tools.find(t => t.slug === 'angular-velocity-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Angular Velocity Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric angular velocity</strong> and select its <strong>unit</strong> from the dropdown. All other angular velocity units update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Angular Velocity Converter Overview</h2>
+    <p class="seo-p">
+      This angular velocity converter computes precise conversions between 8 rotational speed units — radians per second, degrees per second, revolutions per minute, revolutions per second, hertz, degrees per minute, degrees per hour, and arcseconds per second — entirely within your browser. Built with modern vanilla JavaScript and SVG animation APIs, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in mechanical engineering, physics, astronomy, or signal processing.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports 8 angular velocity units: <strong>rad/s</strong>, <strong>deg/s</strong>, <strong>RPM</strong>, <strong>rev/s</strong>, <strong>Hz</strong>, <strong>°/min</strong>, <strong>°/hr</strong>, and <strong>arcsec/s</strong>.
+    <p class="seo-p">
+      The converter features a live rotating SVG diagram that visually demonstrates the entered angular velocity, providing immediate intuitive feedback on the speed being converted. The tool handles the full range from extremely slow astronomical rotations (arcseconds per hour) to extremely fast centrifuge speeds (50,000+ RPM), with dynamic formatting that adapts to the magnitude of each result. The quick-reference section provides real-world benchmarks from clock hands to jet turbines for context.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      The live rotating diagram shows the speed visually — the arm rotates at the entered angular velocity. Common rotational speeds are shown below for quick comparison.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Mechanical engineering and motor specification`, `Engineers specifying motors, gearboxes, and rotating machinery must convert between RPM (the standard motor rating), rad/s (used in torque and power calculations), and Hz (used in vibration analysis). A motor rated at 3,600 RPM operates at 60 Hz and 377 rad/s. When calculating angular momentum (L = Iω), the angular velocity must be in rad/s — using RPM directly produces incorrect results. This tool provides instant conversion between all commonly used units.`],
+        [`Astronomical observation and telescope tracking`, `Astronomers measure celestial object rotations and telescope tracking rates in arcseconds per second or degrees per hour. Earth rotates at approximately 15°/hr (360° in 24 hours), which equals 0.004167°/s or 7.27 × 10⁻⁵ rad/s. Telescope mounts must track at precisely this rate to compensate for Earth's rotation. Converting between arcsec/s (observation) and rad/s (mount motor control) is essential for accurate celestial tracking.`],
+        [`Physics education and rotational dynamics`, `Students learning rotational mechanics need to convert between angular velocity units to apply formulas correctly. The relationship v = rω (linear velocity equals radius times angular velocity) requires ω in rad/s. A flywheel spinning at 600 RPM has an angular velocity of 62.83 rad/s. Converting to Hz gives 10 Hz, meaning it completes 10 full revolutions per second. The live rotating diagram helps students visualise these relationships.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How angular velocity conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions use <strong>radians per second (rad/s)</strong> as the base unit. Each unit has a fixed factor relative to one rad/s:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <p class="seo-p">
+      All conversions use radians per second (rad/s) as the universal base unit. Each supported angular velocity unit is defined by a fixed conversion factor relative to one rad/s. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain rad/s, then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 deg/s   = π/180 rad/s   ≈ 0.01745 rad/s
-1 RPM     = 2π/60 rad/s   ≈ 0.10472 rad/s
-1 rev/s   = 2π rad/s      ≈ 6.28319 rad/s
-1 Hz      = 2π rad/s      ≈ 6.28319 rad/s
-1 °/min   = π/10800 rad/s ≈ 0.00029 rad/s
-1 °/hr    = π/648000 rad/s
-1 arcsec/s= π/648000 rad/s
 
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      One full revolution = 2π radians = 360° = 1 Hz. So RPM = Hz × 60, and Hz = RPM ÷ 60. The radian is the natural angular unit: it equals the arc length divided by the radius.
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">rads</code>, <code class="inline-code">rpm</code>, <code class="inline-code">hz</code>) to its conversion factor relative to rad/s. The radian is the natural angular unit, so its factor is exactly 1. Degree-based units use <code class="inline-code">π/180</code> per degree. Revolution-based units use <code class="inline-code">2π</code> per revolution.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Hub conversion to rad/s:</strong> The input value is multiplied by the source unit's factor. For example, converting 60 RPM to rad/s: <code class="inline-code">60 × (2π/60) = 2π ≈ 6.2832 rad/s</code>. Converting 360°/s: <code class="inline-code">360 × (π/180) = 2π ≈ 6.2832 rad/s</code>. The key relationship is that 1 revolution = 2π radians = 360° = 1 Hz × 2π.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Target conversion from rad/s:</strong> The rad/s value is divided by the target unit's factor. Converting 2π rad/s to Hz: <code class="inline-code">2π / (2π) = 1 Hz</code>. Converting to arcsec/s: <code class="inline-code">2π / (π/648000) = 1,296,000 arcsec/s</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Live SVG animation:</strong> The rotating diagram uses <code class="inline-code">requestAnimationFrame</code> to update the arm position at the display refresh rate. The angular increment per frame is calculated as <code class="inline-code">ω × dt</code>, where <code class="inline-code">dt</code> is the time delta between frames in seconds. The arm length is 75 SVG units from the centre, and the arc path is computed using standard parametric circle equations.
+    </p>
+    <p class="seo-p-none">
+      <strong>Exact conversion factors:</strong> All factors are derived from exact mathematical definitions: <code class="inline-code">1 revolution = 2π radians = 360°</code>. The radian factor is exactly 1. The degree factor is exactly <code class="inline-code">π/180</code>. The RPM factor is exactly <code class="inline-code">2π/60 = π/30</code>. The Hz factor is exactly <code class="inline-code">2π</code>. The arcsecond factor is exactly <code class="inline-code">π/648000</code> (since 1 arcsecond = 1/3600 of a degree, and 1 degree = π/180 radians). These are irrational values (involving π), so the JavaScript factors are IEEE 754 double-precision approximations providing approximately 15 to 17 significant decimal digits of precision.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is angular velocity?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Angular velocity is the rate of change of angular position — how fast something rotates. It is measured as the angle swept per unit time. Common units include radians per second (rad/s), revolutions per minute (RPM), and degrees per second (°/s)." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the difference between RPM and Hz?",
-          "acceptedAnswer": { "@type": "Answer", "text": "RPM (revolutions per minute) counts full rotations per minute. Hz (hertz) counts full rotations per second. 1 Hz = 60 RPM. A washing machine spin cycle at 1200 RPM = 20 Hz. A 60 Hz power supply rotates at 3600 RPM." }
-        },
-        {
-          "@type": "Question",
-          "name": "How many radians are in a revolution?",
-          "acceptedAnswer": { "@type": "Answer", "text": "One full revolution equals exactly 2π radians (≈ 6.28319 rad). This is because the circumference of a circle is 2πr, so the angle swept when traveling the full circumference divided by the radius equals 2π." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a radian?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A radian is the angle formed when the arc length equals the radius. One full circle = 2π radians ≈ 6.283 radians. Radians are dimensionless and are the standard angular unit in mathematics and physics because they simplify many formulas." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the angular velocity of a clock's hour hand?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The hour hand completes one full revolution (2π radians) in 12 hours = 43,200 seconds. Its angular velocity is 2π/43200 ≈ 0.0001454 rad/s, or about 0.00833 RPM. The minute hand is 12× faster at about 0.1 RPM." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is angular velocity?', a: 'Angular velocity is the rate of change of angular position — how fast something rotates. It is measured as the angle swept per unit time. Common units include radians per second (rad/s), revolutions per minute (RPM), and degrees per second (°/s).' },
-        { q: 'What is the difference between RPM and Hz?', a: 'RPM (revolutions per minute) counts full rotations per minute. Hz (hertz) counts full rotations per second. 1 Hz = 60 RPM. A washing machine spin cycle at 1200 RPM = 20 Hz. A 60 Hz power supply rotates at 3600 RPM.' },
-        { q: 'How many radians are in a revolution?', a: 'One full revolution equals exactly 2π radians (≈ 6.28319 rad). This is because the circumference of a circle is 2πr, so the angle swept when traveling the full circumference divided by the radius equals 2π.' },
-        { q: 'What is a radian?', a: 'A radian is the angle formed when the arc length equals the radius. One full circle = 2π radians ≈ 6.283 radians. Radians are dimensionless and are the standard angular unit in mathematics and physics because they simplify many formulas.' },
-        { q: 'What is the angular velocity of a clock\'s hour hand?', a: 'The hour hand completes one full revolution (2π radians) in 12 hours = 43,200 seconds. Its angular velocity is 2π/43200 ≈ 0.0001454 rad/s, or about 0.00833 RPM. The minute hand is 12× faster at about 0.1 RPM.' },
+        {
+          q: "What is angular velocity?",
+          a: "Angular velocity is the rate of change of angular position — how fast something rotates around an axis. It is measured as the angle swept per unit time. Common units include radians per second (rad/s) for physics calculations, revolutions per minute (RPM) for motor ratings, and hertz (Hz) for frequency of rotation. Angular velocity is a vector quantity; its magnitude is the angular speed, and its direction follows the right-hand rule."
+        },
+        {
+          q: "What is the difference between RPM and Hz?",
+          a: "RPM (revolutions per minute) counts full rotations per minute. Hz (hertz) counts full rotations per second. The conversion is straightforward: 1 Hz = 60 RPM, so divide RPM by 60 to get Hz. A washing machine spin cycle at 1200 RPM equals 20 Hz. A 60 Hz AC power supply rotates at 3600 RPM. In physics formulas, always convert to rad/s first."
+        },
+        {
+          q: "How many radians are in a revolution?",
+          a: "One full revolution equals exactly 2π radians (approximately 6.28319 rad). This is because the circumference of a circle is 2πr, and the angle swept when traveling the full circumference divided by the radius equals 2π. This relationship is the foundation of radian measure and is used in virtually all rotational physics formulas."
+        },
+        {
+          q: "What is a radian?",
+          a: "A radian is the angle subtended at the centre of a circle by an arc whose length equals the radius. One full circle equals 2π radians. Radians are dimensionless (the radius cancels out) and are the standard angular unit in mathematics and physics because they simplify derivatives and integrals of trigonometric functions. For example, d/dx sin(x) = cos(x) only when x is in radians."
+        },
+        {
+          q: "What is the angular velocity of a clock's hour hand?",
+          a: "The hour hand completes one full revolution (2π radians) in 12 hours = 43,200 seconds. Its angular velocity is 2π/43200 ≈ 0.0001454 rad/s, or about 0.00833 RPM. The minute hand is 12× faster at approximately 0.1 RPM (0.01745 rad/s). The second hand rotates at exactly 1 RPM (0.1047 rad/s)."
+        },
+        {
+          q: "Why is rad/s preferred over RPM in physics?",
+          a: "The radian is a dimensionless unit that directly relates arc length to radius (s = rθ). This makes rad/s the natural unit for rotational kinematics and dynamics. Formulas like torque (τ = Iα), angular momentum (L = Iω), and rotational kinetic energy (KE = ½Iω²) all require ω in rad/s. Using RPM in these formulas produces incorrect results and requires additional conversion factors."
+        },
+        {
+          q: "What is the relationship between angular velocity and linear velocity?",
+          a: "Linear velocity equals radius times angular velocity: v = rω, where ω must be in rad/s. For a point on the rim of a disk with radius 0.5 m spinning at 600 RPM (62.83 rad/s), the linear velocity is 0.5 × 62.83 = 31.42 m/s (approximately 113 km/h). This relationship connects rotational and translational motion and is fundamental in mechanical engineering."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

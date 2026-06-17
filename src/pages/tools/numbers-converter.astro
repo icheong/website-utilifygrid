@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'numbers-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Number Base Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a number in any base — see its representation in all others instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Number Base Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a number in any base — see its representation in all others instantly.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="num-input">Number</label>
+        <label class="tool-label" for="num-input">Number</label>
         <input id="num-input" type="text" value="255" placeholder="Enter number"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="num-base">Base</label>
+        <label class="tool-label" for="num-base">Base</label>
         <select id="num-base" class="select-themed" style="min-width:10rem;">
           <option value="2">Binary (base 2)</option>
           <option value="3">Ternary (base 3)</option>
@@ -48,84 +48,91 @@ const tool = tools.find(t => t.slug === 'numbers-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Number Base Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>number</strong> and select its <strong>base</strong> from the dropdown. All other base representations update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Number Base Converter Overview</h2>
+    <p class="seo-p">
+      This number base converter computes instant representations of a value across 15 different numeral systems, from binary (base 2) through base 36, entirely within your browser. Built with modern vanilla JavaScript, the tool executes every conversion locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are a developer debugging bit patterns, a student learning positional notation, or an engineer working with embedded systems.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports <strong>15 common bases</strong>: binary through hexadecimal, plus ternary, quinary, senary, septenary, nonary, undecimal, duodecimal, vigesimal, base 32, and base 36.
+    <p class="seo-p">
+      The converter supports the most commonly used bases across computing, mathematics, and engineering: <strong>binary</strong> (base 2) for hardware-level representation, <strong>octal</strong> (base 8) and <strong>hexadecimal</strong> (base 16) for compact binary display, <strong>decimal</strong> (base 10) for human-readable values, and less common bases like <strong>ternary</strong> (base 3), <strong>duodecimal</strong> (base 12), and <strong>base 36</strong> for specialized applications. Digits above 9 use letters A–Z (case-insensitive), supporting the full range of digit values from 0 to 35. The tool handles the JavaScript safe integer range up to 2⁵³ − 1 (approximately 9 × 10¹⁵) with full precision.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Digits above 9 use letters A–Z (case-insensitive). Click any <strong>Copy</strong> button to copy that base's result to your clipboard.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Software debugging and low-level programming`, `Developers frequently need to convert between decimal, hexadecimal, and binary when debugging memory addresses, inspecting byte values, or working with bitwise operations. A memory address like 0x7FFF5FBFF8D0 is far more meaningful when converted to decimal (140,734,763,851,728) to understand its offset, or to binary to examine individual bit flags. This tool provides all 15 bases simultaneously, eliminating the need to mentally track which base each value represents.`],
+        [`Computer science education and positional notation`, `Students learning about numeral systems need to understand how the same value is represented differently across bases. Converting decimal 42 to binary (101010), octal (52), and hexadecimal (2A) demonstrates how positional weighting works: each digit position represents a power of the base. The tool's instant multi-base display helps students visualise these relationships and verify their manual calculations, reinforcing the concept that a number's value is independent of its representation.`],
+        [`Cryptography and encoding schemes`, `Cryptographic protocols and encoding schemes often use specific bases for key representation. Base64 encoding uses a 64-character alphabet (similar in concept to base 64, though technically a different encoding), and hexadecimal is the standard format for displaying cryptographic hashes (SHA-256 produces 64 hex characters). When working with hash values, converting between hex and binary helps verify that each hex digit maps to exactly 4 bits, which is essential for understanding data alignment and padding in cryptographic implementations.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How number base conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      A number's value is the same regardless of base. For example, decimal <strong>255</strong> = binary <strong>11111111</strong> = hex <strong>FF</strong> = octal <strong>377</strong>. The conversion works by decomposing the number into powers of the base:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Algorithms and Mathematical Logic</h2>
+    <p class="seo-p">
+      A number's value is the same regardless of its base representation. For example, decimal <strong>255</strong> equals binary <strong>11111111</strong>, hexadecimal <strong>FF</strong>, and octal <strong>377</strong>. The converter uses two distinct algorithms: a <strong>division-remainder algorithm</strong> for converting from decimal to any target base, and a <strong>positional-weight algorithm</strong> for parsing input from any source base into a decimal integer. Both algorithms operate on JavaScript's IEEE 754 double-precision integers, providing up to 15 to 17 significant digits of precision.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Binary 11111111:
-  1×2⁷ + 1×2⁶ + 1×2⁵ + 1×2⁴ + 1×2³ + 1×2² + 1×2¹ + 1×2⁰
-= 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1
-= 255 (decimal)
 
-Hexadecimal FF:
-  15×16¹ + 15×16⁰ = 240 + 15 = 255</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      The converter first parses the input into a JavaScript integer, then formats it into each target base. Bases above 16 use letters A–Z for digit values 10–35. JavaScript integers can safely represent values up to 2⁵³ − 1 (about 9 × 10¹⁵).
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Input parsing and validation:</strong> The tool reads the raw input string and validates each character against the source base. For example, if the source base is 8 (octal), any character other than 0–7 is rejected. Characters A–Z (case-insensitive) are mapped to digit values 10–35. The validated string is then parsed into a JavaScript integer using <code class="inline-code">parseInt(raw, base)</code>, which handles the positional-weight decomposition internally.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Division-remainder algorithm:</strong> To convert the decimal integer to a target base, the tool repeatedly divides by the target base and collects the remainders. For example, converting decimal 255 to binary: 255 ÷ 2 = 127 remainder 1, 127 ÷ 2 = 63 remainder 1, 63 ÷ 2 = 31 remainder 1, and so on. Reading the remainders from last to first gives 11111111. This algorithm produces digits in reverse order, so the result string is built by prepending each new digit.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Digit character mapping:</strong> Digit values 0–9 map to characters '0'–'9'. Digit values 10–35 map to characters 'A'–'Z'. The converter uses a constant string <code class="inline-code">DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'</code> as a lookup table, indexing by the remainder value. This supports all 15 bases from binary through base 36.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Output display:</strong> Each target base produces a result string displayed in a copyable row. The results are shown for all 15 bases simultaneously, with the source base highlighted implicitly by omission (it is the input, so it does not appear in the output grid). Values exceeding JavaScript's safe integer range (2⁵³ − 1) trigger an error message rather than displaying imprecise results.
+    </p>
+    <p class="seo-p-none">
+      <strong>Safe integer limits:</strong> JavaScript can safely represent integers up to <code class="inline-code">Number.MAX_SAFE_INTEGER</code> = 2⁵³ − 1 = 9,007,199,254,740,991 (approximately 9 × 10¹⁵). Beyond this threshold, IEEE 754 double-precision floats lose the ability to represent every consecutive integer, and conversion results may be incorrect. The converter enforces this limit to guarantee accuracy. Negative numbers are supported via a sign prefix, and the division-remainder algorithm preserves the sign through the conversion.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is a number base?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A number base (or radix) is the number of unique digits used to represent values. Base 10 (decimal) uses digits 0–9. Base 2 (binary) uses only 0 and 1. Base 16 (hexadecimal) uses 0–9 and A–F. The base determines how many digits are needed before carrying over to the next position." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why is binary used in computers?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Computers use binary because their hardware consists of transistors that have two states: on and off, represented as 1 and 0. This makes binary the most natural number system for electronic circuits. All data — numbers, text, images — is ultimately stored as binary." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why is hexadecimal used in programming?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Hexadecimal (base 16) is compact: one hex digit represents exactly 4 binary digits (bits). This makes it easy to read and write binary values. For example, binary 11111111 = hex FF = decimal 255. Hex is used for memory addresses, color codes, and binary data display." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the maximum number I can convert?",
-          "acceptedAnswer": { "@type": "Answer", "text": "This converter uses JavaScript's safe integer range: up to 2⁵³ − 1 = 9,007,199,254,740,991 (about 9 × 10¹⁵). Input values larger than this may lose precision. Negative numbers and decimal fractions are not currently supported." }
-        },
-        {
-          "@type": "Question",
-          "name": "What letters are used for digits above 9?",
-          "acceptedAnswer": { "@type": "Answer", "text": "For bases above 10, letters A through Z represent digit values 10 through 35. For example, in hexadecimal (base 16): A=10, B=11, C=12, D=13, E=14, F=15. In base 36: Z=35. The converter accepts both uppercase and lowercase input." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is a number base?', a: 'A number base (or radix) is the number of unique digits used to represent values. Base 10 (decimal) uses digits 0–9. Base 2 (binary) uses only 0 and 1. Base 16 (hexadecimal) uses 0–9 and A–F. The base determines how many digits are needed before carrying over to the next position.' },
-        { q: 'Why is binary used in computers?', a: 'Computers use binary because their hardware consists of transistors that have two states: on and off, represented as 1 and 0. This makes binary the most natural number system for electronic circuits. All data — numbers, text, images — is ultimately stored as binary.' },
-        { q: 'Why is hexadecimal used in programming?', a: 'Hexadecimal (base 16) is compact: one hex digit represents exactly 4 binary digits (bits). This makes it easy to read and write binary values. For example, binary 11111111 = hex FF = decimal 255. Hex is used for memory addresses, color codes, and binary data display.' },
-        { q: 'What is the maximum number I can convert?', a: 'This converter uses JavaScript\'s safe integer range: up to 2⁵³ − 1 = 9,007,199,254,740,991 (about 9 × 10¹⁵). Input values larger than this may lose precision. Negative numbers and decimal fractions are not currently supported.' },
-        { q: 'What letters are used for digits above 9?', a: 'For bases above 10, letters A through Z represent digit values 10 through 35. For example, in hexadecimal (base 16): A=10, B=11, C=12, D=13, E=14, F=15. In base 36: Z=35. The converter accepts both uppercase and lowercase input.' },
+        {
+          q: "What is a number base?",
+          a: "A number base (or radix) is the number of unique digits used to represent values in a positional numeral system. Base 10 (decimal) uses digits 0–9, base 2 (binary) uses only 0 and 1, and base 16 (hexadecimal) uses 0–9 and A–F. The base determines how many digit positions are needed before carrying over to the next position, just as decimal carries over after 9."
+        },
+        {
+          q: "Why is binary used in computers?",
+          a: "Computers use binary because their hardware consists of transistors that have two states: on and off, represented as 1 and 0. This makes binary the most natural number system for electronic circuits. All data — numbers, text, images, and sound — is ultimately stored and processed as binary values, with each binary digit (bit) representing a single on/off state."
+        },
+        {
+          q: "Why is hexadecimal used in programming?",
+          a: "Hexadecimal (base 16) is compact: one hex digit represents exactly 4 binary digits (bits), making it easy to read and write binary values. For example, binary 11111111 equals hex FF equals decimal 255. Hex is used for memory addresses, color codes (RGB values like #FF5733), character encoding (Unicode code points), and displaying binary data in a human-readable format."
+        },
+        {
+          q: "What is the maximum number I can convert?",
+          a: "This converter uses JavaScript's safe integer range: up to 2⁵³ − 1 = 9,007,199,254,740,991 (about 9 × 10¹⁵). Beyond this threshold, IEEE 754 double-precision floats lose the ability to represent every consecutive integer, and conversion results may be incorrect. The tool displays an error message rather than showing imprecise values."
+        },
+        {
+          q: "What letters are used for digits above 9?",
+          a: "For bases above 10, letters A through Z represent digit values 10 through 35. For example, in hexadecimal (base 16): A=10, B=11, C=12, D=13, E=14, F=15. In base 36: Z=35. The converter accepts both uppercase and lowercase input and displays uppercase output for consistency."
+        },
+        {
+          q: "How do I convert binary to decimal manually?",
+          a: "Multiply each binary digit by 2 raised to the power of its position (starting from 0 on the right), then sum the results. For example, binary 1010 = 1×2³ + 0×2² + 1×2¹ + 0×2⁰ = 8 + 0 + 2 + 0 = 10. This positional-weight method works for any base: replace 2 with the target base and the digit values accordingly."
+        },
+        {
+          q: "Why would I use base 32 or base 36?",
+          a: "Base 32 and base 36 are used in encoding schemes where compact, human-readable representations are needed. Base 32 is used in TOTP (time-based one-time passwords) and DNS records, while base 36 is used for short URLs and game IDs because it produces compact strings using only alphanumeric characters. Base 36 is particularly efficient: it can represent large numbers in fewer characters than hex or decimal."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'data-storage-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Data Storage Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a data size and select its unit — all other units update instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Data Storage Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a data size and select its unit — all other units update instantly.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="data-input">Data Size</label>
+        <label class="tool-label" for="data-input">Data Size</label>
         <input id="data-input" type="number" value="1" min="0" step="any" placeholder="Enter value"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="data-unit">Unit</label>
+        <label class="tool-label" for="data-unit">Unit</label>
         <select id="data-unit" class="select-themed" style="min-width:10rem;">
           <option value="bit">Bit</option>
           <option value="kb">Kilobit (kb)</option>
@@ -46,95 +46,97 @@ const tool = tools.find(t => t.slug === 'data-storage-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Quick References</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Data Storage Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric data size</strong> and select its <strong>unit</strong> from the dropdown. All other storage units update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Data Storage Converter Overview</h2>
+    <p class="seo-p">
+      This data storage converter computes precise conversions between 16 data units covering bits, bytes, decimal (SI) prefixes, and binary (IEC) prefixes entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are provisioning cloud storage, comparing hard drive capacities, or analysing network transfer rates.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports 16 data storage units: <strong>bits</strong>, <strong>bytes</strong>, and their kilo/mega/giga/tera/peta prefixes in both <strong>decimal (SI)</strong> and <strong>binary (IEC)</strong> systems.
+    <p class="seo-p">
+      The converter supports two distinct prefix systems that are frequently confused: <strong>decimal (SI)</strong> units use powers of 1000 (KB, MB, GB, TB, PB) as used by storage manufacturers, while <strong>binary (IEC)</strong> units use powers of 1024 (KiB, MiB, GiB, TiB, PiB) as used by operating systems. It also includes <strong>bit-level</strong> units (bit, kb, Mb, Gb, Tb) essential for network speed calculations. The critical difference — why a 1 TB hard drive appears as approximately 931 GiB in your operating system — is explained in the deep-dive section below.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common file sizes are shown below the results for quick comparison.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Cloud storage provisioning and cost estimation`, `Cloud providers like AWS, Azure, and Google Cloud charge based on stored data using decimal (SI) units. A 500 GB AWS S3 bucket holds 500 × 10⁹ bytes, but when accessed from a Linux instance, the OS reports approximately 465 GiB. Understanding this distinction prevents under-provisioning: if your application needs 1 TiB of usable space, you must allocate at least 1.1 TB (SI) from the provider. This tool converts between the two systems instantly, helping you calculate exact storage requirements and avoid unexpected overage charges.`],
+        [`Network speed and file transfer calculations`, `Internet speeds are advertised in megabits per second (Mbps), but file sizes are measured in megabytes (MB). A 100 Mbps connection transfers approximately 12.5 MB per second (100 ÷ 8 = 12.5). Converting a 4.7 GB DVD image to transfer time at 50 Mbps: 4.7 GB = 37.6 Gb, which takes approximately 752 seconds (about 12.5 minutes). This tool helps network engineers and users quickly convert between bit-based speed measurements and byte-based file sizes.`],
+        [`Forensic analysis and data recovery`, `Digital forensics requires precise byte-level calculations when imaging drives, estimating recovery timelines, or reporting evidence sizes. A forensic image of a 256 GB SSD contains exactly 256 × 10⁹ bytes (SI), which is approximately 238.4 GiB. When testifying, investigators must specify which unit system they used. The converter's support for all 16 units ensures accurate cross-referencing between manufacturer specifications, OS reports, and legal documentation.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How data storage conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      There are two different systems for data storage prefixes. <strong>Decimal (SI)</strong> uses powers of 1000. <strong>Binary (IEC)</strong> uses powers of 1024. All conversions use <strong>bytes</strong> as the base unit:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and the SI vs. IEC Distinction</h2>
+    <p class="seo-p">
+      The converter employs a hub-and-spoke conversion model using bytes as the universal base unit. Every supported data storage unit is defined by a fixed conversion factor relative to one byte. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain bytes, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">── Decimal (SI) ──────────────    ── Binary (IEC) ──────────────
-1 KB  = 1,000 bytes              1 KiB = 1,024 bytes
-1 MB  = 1,000,000 bytes          1 MiB = 1,048,576 bytes
-1 GB  = 10⁹ bytes               1 GiB = 1,073,741,824 bytes
-1 TB  = 10¹² bytes              1 TiB = 1,099,511,627,776 bytes
-1 PB  = 10¹⁵ bytes              1 PiB = 1,125,899,906,842,624 bytes
 
-1 bit = 1/8 byte
-1 kb  = 125 bytes     (1000 ÷ 8)
-1 Mb  = 125,000 bytes (10⁶ ÷ 8)
-1 Gb  = 125,000,000 bytes (10⁹ ÷ 8)
-1 Tb  = 125,000,000,000 bytes (10¹² ÷ 8)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Storage manufacturers use decimal (SI) units, so a "1 TB" hard drive holds 10¹² bytes. Operating systems use binary units, so they report that same drive as ~931 GiB. This is why a 1 TB drive shows as about 931 GB in your OS.
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">bit</code>, <code class="inline-code">kb2</code>, <code class="inline-code">gib</code>) to its factor in bytes. Bit-level units divide by 8 (e.g. <code class="inline-code">1 kb = 125 bytes</code>). Decimal byte units use powers of 1000 (e.g. <code class="inline-code">1 MB = 1,000,000 bytes</code>). Binary byte units use powers of 1024 (e.g. <code class="inline-code">1 MiB = 1,048,576 bytes</code>).
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Hub conversion to bytes:</strong> The input value is multiplied by the source unit's factor to convert to bytes. For example, converting 1 TB to bytes: <code class="inline-code">1 × 1,000,000,000,000 = 10¹² bytes</code>. Converting 1 TiB to bytes: <code class="inline-code">1 × 1,099,511,627,776 = 2⁴⁰ bytes</code>. This intermediate result is an IEEE 754 double-precision floating-point number.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Target conversion from bytes:</strong> The byte value is divided by the target unit's factor. Converting 10¹² bytes to GiB: <code class="inline-code">10¹² / 1,073,741,824 ≈ 931.3 GiB</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (10¹⁸ or greater) use scientific notation. Values between 10¹⁵ and 10¹⁸ use locale-formatted numbers with 2 decimal places. Values between 1,000 and 10¹⁵ use 2 to 4 decimal places. Values below 1 use 6 to 8 decimal places. This ensures readability across the full range from bits to pebibytes.
+    </p>
+    <p class="seo-p-none">
+      <strong>Exact conversion factors:</strong> All factors are exact by definition: <code class="inline-code">1 KB = 10³ bytes</code>, <code class="inline-code">1 KiB = 2¹⁰ bytes = 1,024 bytes</code>, <code class="inline-code">1 MB = 10⁶ bytes</code>, <code class="inline-code">1 MiB = 2²⁰ bytes = 1,048,576 bytes</code>, and so on. The ratio between SI and IEC units at each tier is approximately 1.024 (e.g. <code class="inline-code">1 GB / 1 GiB = 10⁹ / 2³⁰ ≈ 0.9313</code>). This means a 1 TB drive has approximately 93.1% of the capacity that an IEC-based system would report as 1 TiB.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Why does my 1 TB hard drive show as 931 GB?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Manufacturers use decimal (SI) prefixes where 1 TB = 10¹² bytes. Your OS uses binary (IEC) where 1 GiB = 2³⁰ bytes = 1,073,741,824 bytes. So 10¹² ÷ 1,073,741,824 ≈ 931 GiB. The capacity is the same; only the labeling differs." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the difference between a bit and a byte?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A bit is the smallest unit of data: a single 0 or 1. A byte is 8 bits. Network speeds are measured in bits per second (Mbps), while file sizes are measured in bytes (KB, MB, GB). To convert, divide bits by 8 to get bytes." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is a kibibyte?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A kibibyte (KiB) is a binary unit equal to 1,024 bytes (2¹⁰). It was created by the IEC to distinguish from the kilobyte (KB) which is exactly 1,000 bytes. KiB, MiB, GiB, TiB, and PiB are the binary equivalents of KB, MB, GB, TB, and PB." }
-        },
-        {
-          "@type": "Question",
-          "name": "How many bits are in a byte?",
-          "acceptedAnswer": { "@type": "Answer", "text": "There are exactly 8 bits in one byte. This has been the standard since the 1960s. A byte can represent values from 0 to 255, which is enough to encode a single ASCII character." }
-        },
-        {
-          "@type": "Question",
-          "name": "How much storage does a 2-hour movie need?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A compressed 1080p movie is typically 2–5 GB. A 4K movie is 15–50 GB. A Blu-ray disc holds 25–50 GB. The exact size depends on the codec, bitrate, and audio quality." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Why does my 1 TB hard drive show as 931 GB?', a: 'Manufacturers use decimal (SI) prefixes where 1 TB = 10¹² bytes. Your OS uses binary (IEC) where 1 GiB = 2³⁰ bytes = 1,073,741,824 bytes. So 10¹² ÷ 1,073,741,824 ≈ 931 GiB. The capacity is the same; only the labeling differs.' },
-        { q: 'What is the difference between a bit and a byte?', a: 'A bit is the smallest unit of data: a single 0 or 1. A byte is 8 bits. Network speeds are measured in bits per second (Mbps), while file sizes are measured in bytes (KB, MB, GB). To convert, divide bits by 8 to get bytes.' },
-        { q: 'What is a kibibyte?', a: 'A kibibyte (KiB) is a binary unit equal to 1,024 bytes (2¹⁰). It was created by the IEC to distinguish from the kilobyte (KB) which is exactly 1,000 bytes. KiB, MiB, GiB, TiB, and PiB are the binary equivalents of KB, MB, GB, TB, and PB.' },
-        { q: 'How many bits are in a byte?', a: 'There are exactly 8 bits in one byte. This has been the standard since the 1960s. A byte can represent values from 0 to 255, which is enough to encode a single ASCII character.' },
-        { q: 'How much storage does a 2-hour movie need?', a: 'A compressed 1080p movie is typically 2–5 GB. A 4K movie is 15–50 GB. A Blu-ray disc holds 25–50 GB. The exact size depends on the codec, bitrate, and audio quality.' },
+        {
+          q: "Why does my 1 TB hard drive show as 931 GB?",
+          a: "Manufacturers use decimal (SI) prefixes where 1 TB = 10¹² bytes. Your operating system uses binary (IEC) where 1 GiB = 2³⁰ bytes = 1,073,741,824 bytes. Dividing 10¹² by 1,073,741,824 gives approximately 931.3 GiB. The actual storage capacity is identical — only the labeling convention differs. This discrepancy has caused consumer confusion since the early days of personal computing."
+        },
+        {
+          q: "What is the difference between a bit and a byte?",
+          a: "A bit is the smallest unit of data: a single binary digit (0 or 1). A byte is exactly 8 bits. Network speeds are measured in bits per second (Mbps, Gbps), while file sizes and storage capacities are measured in bytes (KB, MB, GB). To convert between them, divide bits by 8 to get bytes, or multiply bytes by 8 to get bits."
+        },
+        {
+          q: "What is a kibibyte?",
+          a: "A kibibyte (KiB) is a binary unit equal to exactly 1,024 bytes (2¹⁰). It was defined by the International Electrotechnical Commission (IEC) in 1998 to distinguish from the kilobyte (KB), which is exactly 1,000 bytes under the SI system. The IEC also defined mebibyte (MiB), gibibyte (GiB), tebibyte (TiB), and pebibyte (PiB) as binary equivalents of their SI counterparts."
+        },
+        {
+          q: "How many bits are in a byte?",
+          a: "There are exactly 8 bits in one byte. This has been the universal standard since the 1960s. A single byte can represent 2⁸ = 256 distinct values (0 to 255), which is sufficient to encode one ASCII character. Early computers used different byte sizes (5, 6, 7, or 9 bits), but 8 bits became the industry standard."
+        },
+        {
+          q: "How much storage does a 2-hour movie need?",
+          a: "A compressed 1080p movie typically requires 2 to 5 GB (decimal). A 4K movie requires 15 to 50 GB. A Blu-ray disc holds 25 to 50 GB. The exact size depends on the video codec (H.264, H.265/HEVC, AV1), bitrate, resolution, audio format, and any bonus features included on the disc."
+        },
+        {
+          q: "Why do network speeds use bits but file sizes use bytes?",
+          a: "This is a historical convention from telecommunications. Early modems transmitted data one bit at a time over serial lines, so speeds were naturally measured in bits per second. File systems, however, group bits into bytes for efficient storage and addressing. The convention persists today: a 1 Gbps Ethernet connection transfers approximately 125 MB per second."
+        },
+        {
+          q: "What is the difference between KB and KiB in practice?",
+          a: "1 KB = 1,000 bytes (decimal/SI) while 1 KiB = 1,024 bytes (binary/IEC). The difference is small at the kilobyte level (2.4%) but compounds at larger scales: 1 MB vs 1 MiB differs by about 4.9%, and 1 GB vs 1 GiB differs by about 7.4%. At the terabyte level, the difference is approximately 10%, which is why a 1 TB drive shows as roughly 931 GiB."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

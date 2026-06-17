@@ -7,19 +7,19 @@ const tool = tools.find(t => t.slug === 'specific-volume-converter')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Specific Volume Converter</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Enter a specific volume and select its unit — all other units update instantly.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Specific Volume Converter</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Enter a specific volume and select its unit — all other units update instantly.</p>
 
     <!-- Input row -->
     <div style="display:grid;grid-template-columns:1fr auto;gap:0.75rem;align-items:end;margin-bottom:1.5rem;">
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sv-input">Specific Volume</label>
+        <label class="tool-label" for="sv-input">Specific Volume</label>
         <input id="sv-input" type="number" value="0.001" step="any" placeholder="Enter value"
           class="input-themed"
           style="font-family:'Fira Code',monospace;font-weight:600;font-size:1.1rem;" />
       </div>
       <div>
-        <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="sv-unit">Unit</label>
+        <label class="tool-label" for="sv-unit">Unit</label>
         <select id="sv-unit" class="select-themed" style="min-width:12rem;">
           <option value="m3kg" selected>m³/kg</option>
           <option value="cm3g">cm³/g</option>
@@ -39,95 +39,97 @@ const tool = tools.find(t => t.slug === 'specific-volume-converter')!;
 
     <!-- Quick references -->
     <div style="margin-top:1.5rem;">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Material Specific Volumes</p>
+      <p class="text-secondary" style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Material Specific Volumes</p>
       <div id="refs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.375rem;"></div>
     </div>
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Specific Volume Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric specific volume value</strong> and select its <strong>unit</strong> from the dropdown. All other units update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Specific Volume Converter Overview</h2>
+    <p class="seo-p">
+      This specific volume converter computes precise conversions between 9 specific volume units — cubic meters per kilogram, cubic centimeters per gram, milliliters per gram, liters per kilogram, liters per gram, cubic feet per pound, cubic inches per pound, US gallons per pound, and imperial gallons per pound — entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in thermodynamics, fluid mechanics, HVAC engineering, or materials science.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports 9 specific volume units: <strong>m³/kg</strong>, <strong>cm³/g</strong>, <strong>mL/g</strong>, <strong>L/kg</strong>, <strong>L/g</strong>, <strong>ft³/lb</strong>, <strong>in³/lb</strong>, <strong>US gal/lb</strong>, and <strong>Imp gal/lb</strong>.
+    <p class="seo-p">
+      Specific volume is the mathematical reciprocal of density (<code class="inline-code">v = 1/ρ</code>), meaning a substance with high density has low specific volume and vice versa. The converter handles the full range from gases (air at approximately 0.816 m³/kg) to dense metals (osmium at approximately 0.0000443 m³/kg), with dynamic formatting that adapts to each result's magnitude. The material reference section provides benchmarks for common substances including air, water, metals, and precious metals.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard. Common material specific volumes are shown below for quick comparison.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Thermodynamics and steam table calculations`, `Specific volume is a fundamental property in thermodynamics, appearing directly in steam tables and the ideal gas law (<code class="inline-code">v = RT/P</code>). Power plant engineers use specific volume to calculate steam flow rates, turbine efficiency, and boiler performance. At standard atmospheric pressure, water steam has a specific volume of approximately 1.694 m³/kg, while liquid water at the same conditions has a specific volume of 0.001 m³/kg — a ratio of nearly 1,700 to 1.`],
+        [`HVAC system design and refrigeration`, `HVAC engineers specify refrigerant properties using specific volume to size compressors, condensers, and evaporators. R-134a refrigerant has a specific volume of approximately 0.029 m³/kg at typical evaporator conditions, which determines the volume flow rate the compressor must handle. Converting between metric (m³/kg) and imperial (ft³/lb) units is essential when working with equipment from different manufacturers.`],
+        [`Chemical process engineering and mixing`, `Chemical engineers use specific volume to calculate vessel capacities, mixing ratios, and flow rates in process plants. A reactor vessel designed to hold 10,000 kg of a fluid with specific volume 0.0015 m³/kg requires a capacity of 15 m³. Converting between cm³/g (lab measurements) and m³/kg (plant specifications) ensures accurate scale-up from laboratory to production.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How specific volume conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      Specific volume is the <strong>inverse of density</strong>: v = 1/ρ. All conversions use <strong>m³/kg</strong> as the base unit:
+    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <p class="seo-p">
+      All conversions use cubic meters per kilogram (m³/kg) as the universal base unit. Each supported specific volume unit is defined by a fixed conversion factor relative to one m³/kg. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain m³/kg, then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 cm³/g   = 0.001 m³/kg
-1 mL/g     = 0.001 m³/kg
-1 L/kg     = 0.001 m³/kg
-1 L/g      = 1 m³/kg
-1 ft³/lb   = 0.062428 m³/kg
-1 in³/lb   = 0.036127 m³/kg
-1 US gal/lb = 0.008345 m³/kg
-1 Imp gal/lb = 0.010022 m³/kg
 
-v (m³/kg) = 1 / ρ (kg/m³)
-
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      For example, water has a density of 1,000 kg/m³, so its specific volume is 1/1000 = 0.001 m³/kg = 1 cm³/g = 1 mL/g. This is why cm³/g, mL/g, and L/kg all have the same conversion factor to m³/kg.
+    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">m3kg</code>, <code class="inline-code">cm3g</code>, <code class="inline-code">ft3lb</code>) to its conversion factor relative to m³/kg. Metric units use powers of 10: <code class="inline-code">1 cm³/g = 0.001 m³/kg</code> (since 1 cm³ = 10⁻⁶ m³ and 1 g = 10⁻³ kg). Imperial units use exact definitions: <code class="inline-code">1 ft³/lb = 0.062428 m³/kg</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Hub conversion to m³/kg:</strong> The input value is multiplied by the source unit's factor. For example, converting 1 cm³/g to m³/kg: <code class="inline-code">1 × 0.001 = 0.001 m³/kg</code>. Converting 27.68 in³/lb to m³/kg: <code class="inline-code">27.68 × 0.036127 ≈ 1.0 m³/kg</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Target conversion from m³/kg:</strong> The m³/kg value is divided by the target unit's factor. Converting 0.001 m³/kg to ft³/lb: <code class="inline-code">0.001 / 0.062428 ≈ 0.01602 ft³/lb</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Values above 1,000 use locale-formatted numbers with 4 decimal places. Values between 1 and 1,000 use 6 decimal places. Values between 0.001 and 1 use 8 decimal places. Values between 10⁻⁶ and 0.001 use 10 decimal places. Values below 10⁻⁶ use scientific notation. This ensures readability across the full range from gas-phase specific volumes to dense metal alloys.
+    </p>
+    <p class="seo-p-none">
+      <strong>Exact conversion factors:</strong> All factors are derived from exact definitions: <code class="inline-code">1 lb = 0.45359237 kg</code> (exactly), <code class="inline-code">1 ft = 0.3048 m</code> (exactly), <code class="inline-code">1 in = 0.0254 m</code> (exactly), <code class="inline-code">1 US gallon = 3.785411784 L</code> (exactly), and <code class="inline-code">1 imp gallon = 4.54609 L</code> (exactly). The metric factors are exact rational values: <code class="inline-code">1 cm³/g = 10⁻³ m³/kg</code> exactly. These are all exact by definition, so the IEEE 754 approximations provide full double-precision accuracy.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is specific volume?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Specific volume is the volume occupied by a unit mass of a substance. It is the reciprocal of density (v = 1/ρ). For example, water has a specific volume of 0.001 m³/kg, meaning 1 kg of water occupies 0.001 m³ (1 liter)." }
-        },
-        {
-          "@type": "Question",
-          "name": "How is specific volume different from density?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Density = mass/volume (kg/m³). Specific volume = volume/mass (m³/kg). They are mathematical reciprocals. High density means low specific volume and vice versa. Gold has high density (19,300 kg/m³) and low specific volume (0.0000518 m³/kg)." }
-        },
-        {
-          "@type": "Question",
-          "name": "Where is specific volume used?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Specific volume is commonly used in thermodynamics and fluid mechanics. It appears in steam tables, ideal gas calculations (v = RT/P), and HVAC system design. Engineers use it to determine how much space a given mass of fluid occupies." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the specific volume of air?",
-          "acceptedAnswer": { "@type": "Answer", "text": "At sea level and 15°C, air has a density of about 1.225 kg/m³, giving a specific volume of about 0.816 m³/kg. This means 1 kg of air occupies about 816 liters — air is much less dense than water (0.001 m³/kg)." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why are cm³/g, mL/g, and L/kg the same value?",
-          "acceptedAnswer": { "@type": "Answer", "text": "All three units equal 0.001 m³/kg because 1 cm³ = 1 mL = 0.001 L = 0.001 dm³, and 1 kg = 1000 g. So 1 cm³/g = (0.001 m³)/(1 kg) × (1000 g/1 kg)⁻¹ × (100 cm/m)³⁻¹ = 0.001 m³/kg. Similarly for mL/g and L/kg." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is specific volume?', a: 'Specific volume is the volume occupied by a unit mass of a substance. It is the reciprocal of density (v = 1/ρ). For example, water has a specific volume of 0.001 m³/kg, meaning 1 kg of water occupies 0.001 m³ (1 liter).' },
-        { q: 'How is specific volume different from density?', a: 'Density = mass/volume (kg/m³). Specific volume = volume/mass (m³/kg). They are mathematical reciprocals. High density means low specific volume and vice versa. Gold has high density (19,300 kg/m³) and low specific volume (0.0000518 m³/kg).' },
-        { q: 'Where is specific volume used?', a: 'Specific volume is commonly used in thermodynamics and fluid mechanics. It appears in steam tables, ideal gas calculations (v = RT/P), and HVAC system design. Engineers use it to determine how much space a given mass of fluid occupies.' },
-        { q: 'What is the specific volume of air?', a: 'At sea level and 15°C, air has a density of about 1.225 kg/m³, giving a specific volume of about 0.816 m³/kg. This means 1 kg of air occupies about 816 liters — air is much less dense than water (0.001 m³/kg).' },
-        { q: 'Why are cm³/g, mL/g, and L/kg the same value?', a: 'All three units equal 0.001 m³/kg because 1 cm³ = 1 mL = 0.001 L = 0.001 dm³, and 1 kg = 1000 g. So 1 cm³/g = (0.001 m³)/(1 kg) × (1000 g/1 kg)⁻¹ × (100 cm/m)³⁻¹ = 0.001 m³/kg. Similarly for mL/g and L/kg.' },
+        {
+          q: "What is specific volume?",
+          a: "Specific volume is the volume occupied by a unit mass of a substance, defined as the reciprocal of density (<code class='inline-code'>v = 1/ρ</code>). For example, water has a specific volume of 0.001 m³/kg, meaning 1 kilogram of water occupies exactly 0.001 cubic meters (1 liter). Specific volume is used when it is more convenient to think about volume per unit mass rather than mass per unit volume."
+        },
+        {
+          q: "How is specific volume different from density?",
+          a: "Density equals mass divided by volume (kg/m³), while specific volume equals volume divided by mass (m³/kg). They are mathematical reciprocals. A substance with high density (like gold at 19,300 kg/m³) has low specific volume (0.0000518 m³/kg). A substance with low density (like air at 1.225 kg/m³) has high specific volume (0.816 m³/kg)."
+        },
+        {
+          q: "Where is specific volume used?",
+          a: "Specific volume is commonly used in thermodynamics and fluid mechanics. It appears in steam tables, ideal gas calculations (<code class='inline-code'>v = RT/P</code>), and HVAC system design. Engineers use it to determine how much space a given mass of fluid occupies, which is essential for sizing pipes, ducts, compressors, and storage vessels."
+        },
+        {
+          q: "What is the specific volume of air?",
+          a: "At sea level and 15°C, air has a density of approximately 1.225 kg/m³, giving a specific volume of approximately 0.816 m³/kg. This means 1 kilogram of air occupies about 816 liters — air is nearly 800 times less dense than water. The specific volume of air changes significantly with temperature and pressure, which is why HVAC calculations must account for these variations."
+        },
+        {
+          q: "Why are cm³/g, mL/g, and L/kg the same value?",
+          a: "All three units equal 0.001 m³/kg because of the relationships between metric units: 1 cm³ = 1 mL = 0.001 L, and 1 kg = 1,000 g. Therefore 1 cm³/g = (0.001 L) / (0.001 kg) = 1 L/kg = 0.001 m³/kg. This equivalence simplifies conversions between laboratory and industrial specifications."
+        },
+        {
+          q: "How does specific volume change with temperature?",
+          a: "Specific volume generally increases with temperature because most materials expand when heated (thermal expansion). For gases, specific volume increases dramatically with temperature at constant pressure, following the ideal gas law. For liquids and solids, the change is much smaller — water's specific volume increases by about 0.02% between 4°C and 20°C."
+        },
+        {
+          q: "How do I calculate specific volume from density?",
+          a: "Divide 1 by the density value. For example, if a fluid has a density of 800 kg/m³, its specific volume is 1/800 = 0.00125 m³/kg. In imperial units, if the density is 50 lb/ft³, the specific volume is 1/50 = 0.02 ft³/lb. This tool performs this calculation automatically for all supported unit pairs."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
