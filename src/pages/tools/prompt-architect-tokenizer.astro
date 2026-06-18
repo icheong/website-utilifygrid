@@ -45,43 +45,54 @@ const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Prompt Architect</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Type or paste your prompt text, then click a format button to see it structured for Claude (XML tags), GPT (JSON messages array), or Gemini (plain structured). The token count, word count, and estimated API cost update live based on your $/1K tokens setting.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Use this to compare prompt structures across models and estimate costs before running large-scale inference.</p>
+    <h2 class="font-display seo-h2">How to use the Prompt Architect</h2>
+    <p class="seo-p">Type or paste your AI prompt into the input field. Click one of the three format buttons to see it structured for Claude (XML tags), GPT (JSON messages array), or Gemini (plain structured text). The token count, character count, word count, and estimated API cost update live based on your $/1000 tokens setting. Copy the formatted output with one click.</p>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem;">Model-specific formatting</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0;">Convert a single prompt into Claude XML, GPT JSON, or Gemini structured format with one click, ensuring each provider receives input in its optimal structure.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem;">Cost estimation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0;">Set your provider's rate per 1000 tokens to see a live cost estimate as you type, helping you budget API spend before running inference.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem;">Prompt iteration</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0;">Edit your prompt text and instantly see how token count and cost change, enabling rapid A/B testing of phrasing, few-shot examples, and context length.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Format structures explained</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+    <h2 class="font-display seo-h2">Format structures explained</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
       {[
-        ['Claude XML', 'Anthropic recommends wrapping context, instructions, and data in XML tags like <instructions>, <context>, and <task>. This helps Claude understand structure and reduces prompt injection risk.'],
-        ['GPT JSON', 'OpenAI API expects a messages array with role/content objects: [{role:"system",content:"..."},{role:"user",content:"..."}]. System prompts set behaviour; user messages contain the task.'],
+        ['Claude XML', 'Anthropic recommends wrapping context, instructions, and data in XML tags like <code class=\'inline-code\'>&lt;instructions&gt;</code>, <code class=\'inline-code\'>&lt;context&gt;</code>, and <code class=\'inline-code\'>&lt;task&gt;</code>. This helps Claude understand structure and reduces prompt injection risk.'],
+        ['GPT JSON', `OpenAI API expects a messages array with role/content objects: <code class="inline-code">[{role:'system',content:'...'},{role:'user',content:'...'}]</code>. System prompts set behaviour; user messages contain the task.`],
         ['Gemini Structured', 'Google Gemini works best with clearly delineated sections using markdown-style headers and plain structured prose. Context, role, and task are clearly separated as labelled paragraphs.'],
-        ['Token Count', 'Estimated as total characters / 4 (a common approximation). Actual token counts depend on the model\'s tokeniser. Use the model\'s native tokenisation API for precision pricing.'],
+        ['Token count', 'Estimated as total characters divided by 4, a common approximation. Actual token counts depend on the model\'s tokenizer. Use the model\'s native tokenization API for precise pricing.'],
       ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0;">{desc}</p>
+        <div>
+          <h3 class="font-display seo-h3-sm">{label}</h3>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.25rem 0 0;" set:html={desc} />
         </div>
       ))}
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'How accurate is the token count?', a: 'The chars/4 estimate is within 10–15% for most English text. Code, non-Latin scripts, and special characters may tokenise differently. For pricing accuracy, use tiktoken (OpenAI) or the Anthropic/Google SDKs which count tokens precisely using the model\'s actual tokeniser.' },
-        { q: 'Should I use a system prompt or a user prompt for instructions?', a: 'For GPT models, system messages are more authoritative for persistent instructions, persona, and constraints. User messages represent the actual request. For Claude, Anthropic recommends placing instructions in a human turn wrapped in XML tags when using the API, as Claude\'s training optimises for this pattern.' },
-        { q: 'What is prompt injection and how do I prevent it?', a: 'Prompt injection occurs when user-supplied text contains instructions that override your system prompt (e.g., "Ignore all previous instructions…"). Mitigations: use XML delimiters to separate instructions from data, sanitise user input, use model-specific safety features, and avoid placing sensitive instructions in easily-overridable positions.' },
-        { q: 'How can I reduce token costs?', a: 'Shorten prompts by removing verbose explanations and using concise phrasing. Use few-shot examples only when necessary. Cache system prompts using provider prompt caching features. For high-volume tasks, batch API calls. Consider smaller/cheaper models for simple classification tasks where quality is sufficient.' },
+        { q: 'How accurate is the token count?', a: 'The chars/4 estimate is within 10-15% for most English text. Code, non-Latin scripts, and special characters may tokenize differently. For pricing accuracy, use tiktoken (OpenAI) or the Anthropic/Google SDKs which count tokens precisely using the model\'s actual tokenizer.' },
+        { q: 'Should I use a system prompt or a user prompt for instructions?', a: 'For GPT models, system messages are more authoritative for persistent instructions, persona, and constraints. User messages represent the actual request. For Claude, Anthropic recommends placing instructions in a human turn wrapped in XML tags when using the API.' },
+        { q: 'What is prompt injection and how do I prevent it?', a: 'Prompt injection occurs when user-supplied text contains instructions that override your system prompt. Mitigations include using XML delimiters to separate instructions from data, sanitising user input, and using model-specific safety features.' },
+        { q: 'How can I reduce token costs?', a: 'Shorten prompts by removing verbose explanations and using concise phrasing. Use few-shot examples only when necessary. Cache system prompts using provider prompt caching features. For high-volume tasks, batch API calls. Consider smaller models for simple classification tasks.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          class="result-card">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
+          <p itemprop="text" class="seo-faq-a">{item.a}</p>
         </div>
       ))}
     </div>

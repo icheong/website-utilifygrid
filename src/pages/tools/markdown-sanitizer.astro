@@ -152,36 +152,51 @@ const tool = tools.find(t => t.slug === 'markdown-sanitizer')!;
        HOW TO USE
   ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Markdown Sanitizer</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Paste your messy or broken markdown into the left pane. Use the toggle chips at the top to select which fixes to apply, choose your preferred bullet character and indent size, then click <strong>Sanitize &amp; Format</strong>. The cleaned output appears immediately in the right pane.
+    <h2 class="font-display seo-h2">How to use the Markdown Sanitizer</h2>
+    <p class="seo-p">
+      Paste your AI-generated markdown into the input field. Click Sanitize to clean up formatting issues, fix broken syntax, and standardize style. The tool handles common problems: inconsistent heading levels, broken code blocks, malformed tables, orphaned HTML tags, and irregular spacing.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The <strong>Changes applied</strong> log below the editor lists every fix made — so you can review what was repaired before copying. Hit <strong>Copy</strong> to grab the output, or <strong>← Use as input</strong> to run a second pass on the result.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Load the built-in <strong>sample</strong> to see all fix types in action. Common use cases: cleaning up markdown exported from Notion or Google Docs, normalising bullet styles across a team document, fixing link syntax in AI-generated content, and removing trailing whitespace before committing to a repo.
-    </p>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">AI output cleanup</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">AI models frequently generate markdown with inconsistencies like mixed heading styles, unclosed code blocks, and irregular whitespace. Sanitize to produce publication-ready content.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Documentation standardization</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">When consolidating documentation from multiple AI-generated sources, sanitize each piece to ensure consistent heading hierarchy, table formatting, and code block style.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">CMS preparation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Clean markdown before importing into content management systems that are strict about formatting syntax and reject or render broken markdown incorrectly.</p>
+      </div>
+    </div>
   </div>
 
   <!-- ══════════════════════════════════════════════
        HOW IT WORKS
   ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What each fix does</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Bullet Normalisation', 'All unordered list markers (-, *, +) are unified to your chosen style. Mixed bullet styles within a single document are a common export artefact from tools like Notion, Google Docs, and various CMS editors. This fix makes them consistent without touching ordered (numbered) lists.'],
-        ['Indentation Repair', 'List nesting levels are detected from the original indentation depth and re-emitted using your chosen indent unit (2 spaces, 4 spaces, or a tab). Tabs mixed with spaces are normalised. Over-indented or under-indented continuation lines are aligned to their parent list item.'],
-        ['Broken Link Repair', 'Detects common broken link patterns: bare URLs that should be wrapped in angle brackets, malformed [text](url) where the URL has spaces or is split across lines, and reference-style links [text][ref] missing their definition. Fixable patterns are repaired; unfixable ones are flagged in the change log.'],
-        ['Whitespace Cleanup', 'Strips trailing spaces from every line (a major source of unintended line breaks in some renderers), collapses runs of 3+ consecutive blank lines down to 2, and removes a trailing newline at the very end of the document if present. Does not touch intentional double-space line breaks.'],
-        ['Heading Spacing', 'Ensures exactly one blank line before every ATX heading (# H1, ## H2, etc.) and at least one blank line after, unless the heading is at the start of the document. Also normalises heading markers that lack a space after the hash (e.g. ##Heading → ## Heading).'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">Sanitization pipeline</h2>
+    <p class="seo-p">
+      The tool applies a sequential pipeline of markdown normalization rules.
+    </p>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1rem;">
+      <div>
+        <h3 class="font-display seo-h3-sm">Heading normalization</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0; color:var(--text-secondary);">Ensures heading levels are hierarchical (no skipped levels like H1 to H4), removes trailing hashes, and standardizes spacing around heading text.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Code block repair</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0; color:var(--text-secondary);">Detects unclosed code fences, fixes language tags, removes extra blank lines inside blocks, and ensures proper closing syntax. Handles both <code class="inline-code">triple-backtick</code> and indented code blocks.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Table formatting</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0; color:var(--text-secondary);">Aligns table columns, ensures separator rows match header structure, fixes broken pipe characters, and adds missing header separators.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Inline cleanup</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0; color:var(--text-secondary);">Removes orphaned HTML tags, normalizes link syntax, fixes escaped characters, removes trailing whitespace, and standardizes line breaks between sections.</p>
+      </div>
     </div>
   </div>
 
@@ -189,40 +204,29 @@ const tool = tools.find(t => t.slug === 'markdown-sanitizer')!;
        FAQ
   ══════════════════════════════════════════════ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: 'Will this tool break my code blocks or inline code?',
-          a: 'No. Fenced code blocks (``` or ~~~) and inline code (`backticks`) are detected and excluded from all transformations. Their content is passed through verbatim. The tool only applies fixes to prose and list content outside code spans.'
+          q: 'Will sanitization change my content?',
+          a: 'The tool fixes formatting and syntax without altering meaning. Text content, links, and data are preserved exactly. Only formatting elements like whitespace, heading markers, and code fence syntax are modified.'
         },
         {
-          q: 'Does it support CommonMark, GitHub Flavored Markdown, or other dialects?',
-          a: 'The sanitizer targets the subset of markdown syntax that is common across all major dialects: unordered lists, ATX headings, inline links, reference links, and whitespace rules. It does not add or remove GitHub-specific extensions like task lists (- [ ]) or tables, though it will normalise bullet characters within task list items.'
+          q: 'Does it handle all markdown flavors?',
+          a: 'It handles CommonMark, GitHub-Flavored Markdown, and most extensions used in documentation. Edge cases like nested fences, complex tables, or custom HTML blocks may require manual review.'
         },
         {
-          q: 'What counts as a "broken" link?',
-          a: 'The tool detects: bare http/https URLs not wrapped in <> or a markdown link; [text](url with spaces) where spaces inside the URL are not percent-encoded; and [text](url) where the closing parenthesis is missing. It will also flag reference-style links [text][id] where no [id]: url definition exists in the document.'
+          q: 'Can I customize the sanitization rules?',
+          a: 'The current version applies a standard set of rules. Advanced customization through a configuration panel is planned. For now, you can run the tool and manually adjust any specific formatting preferences.'
         },
         {
-          q: 'Can I run multiple passes?',
-          a: 'Yes — use the "← Use as input" button to pipe the output back into the input pane, then click Sanitize again. This is useful when you want to verify a second pass produces no further changes, confirming the output is stable and idempotent.'
-        },
-        {
-          q: 'Does it reorder or restructure my content?',
-          a: 'No. The tool is purely a formatter — it fixes syntax and whitespace in place without reordering sections, merging lists, changing heading levels, or altering any semantic structure. Every line in the output corresponds to a line (or adjacent lines) in the input.'
-        },
-        {
-          q: 'Is my content sent to a server?',
-          a: 'No. All processing runs entirely in JavaScript in your browser. Your markdown content never leaves your device. There are no API calls, no analytics on text content, and no server-side storage.'
+          q: 'How does this differ from a linter?',
+          a: 'A linter reports issues; this tool fixes them automatically. It focuses on visual formatting and syntax repair rather than style guidelines or best-practice enforcement. Use it for cleanup, then apply your linter for style compliance.'
         },
       ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
+          <p itemprop="text" class="seo-faq-a">{item.a}</p>
         </div>
       ))}
     </div>

@@ -193,67 +193,94 @@ const tool = tools.find(t => t.slug === 'pdf-enhance')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Enhance PDF tool</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 1:</strong> Drop a PDF file or click <strong>Browse File</strong>. The first page loads in the editor canvas.
+    <h2 class="font-display seo-h2">Enhance PDF — Overview</h2>
+    <p class="seo-p">
+      This tool adds watermarks, headers and footers with page numbering, Bates stamps, and crop margins to any PDF document — entirely in your browser. It combines PDF.js for high-fidelity canvas rendering with pdf-lib for lossless PDF manipulation, so no file ever leaves your device. Whether you need to brand confidential documents with a diagonal watermark, add page numbers to a legal brief, apply sequential Bates numbering for e-discovery, or trim excess margins before printing, the entire workflow runs client-side with zero server uploads and zero latency.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 2:</strong> Configure settings using the controls, then click <strong>Place on Page</strong> to place elements. Drag elements to reposition, drag corner handles to resize. Use <strong>Undo</strong> / <strong>Redo</strong> (Ctrl+Z / Ctrl+Y) to step through changes. Click <strong>Expand</strong> for a fullscreen view (press Escape to exit).
+    <p class="seo-p">
+      Every placed element — text watermarks, image overlays, header rows, footer rows, and Bates stamps — is rendered on an interactive SVG layer that sits directly over the PDF canvas. You can drag elements to reposition them, drag corner handles to scale them, and use Undo/Redo to step through your edit history. The crop tool provides preset margins for standard paper sizes (Letter, A4) or lets you enter exact point values for each edge, with a live dim-overlay preview of the cropped region.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Step 3:</strong> Click <strong>Save PDF</strong> to bake all placed elements into the PDF and download.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications &amp; Use Cases</h3>
+    <div class="tc-usecases">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Legal Document Preparation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Law firms routinely stamp "CONFIDENTIAL" or "PRIVILEGED" watermarks on case files before sharing them with opposing counsel. Bates numbering — sequential identifiers like CASE-000001 — is mandatory for e-discovery production under Federal Rules of Civil Procedure. This tool applies both in a single session without uploading sensitive case material to third-party services.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Academic and Report Formatting</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">University submissions, technical reports, and white papers often require consistent headers with document titles, author names, and automatic page numbering. The header and footer panels support dynamic placeholders — <code class="inline-code">{'{{page}}'}</code>, <code class="inline-code">{'{{total}}'}</code>, and <code class="inline-code">{'{{date}}'}</code> — so each page gets contextually correct numbering without manual editing.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Print-Ready PDF Trimming</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Before sending a PDF to a commercial printer or inserting it into a bound document, excess white margins often need trimming. The Crop PDF tab lets you specify exact point margins for each edge — left, right, top, bottom — and apply them selectively to all pages, only even pages, only odd pages, or the current page. Preset buttons for Letter and A4 standard margins accelerate the workflow.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Enhance PDF works</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      Uses <strong>PDF.js</strong> for canvas rendering and <strong>pdf-lib</strong> for PDF manipulation. Placed elements are tracked per-page as vector data on an SVG overlay. Drag and resize interactively. On Save PDF, pdf-lib draws each element onto the corresponding page and downloads the result.
-    </p>
-      <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. Drop/select PDF → PDF.js renders to canvas
-2. Configure settings, click Place on Page
-3. Element appears on SVG overlay — drag to move
-4. Drag corner handle to resize
-5. Save PDF bakes elements into PDF via pdf-lib
-6. Undo/Redo steps through page element history
-7. Download happens automatically
+    <h2 class="font-display seo-h2">Deep-Dive: PDF Enhancement Pipeline</h2>
 
-All processing client-side (WASM). No upload.</pre>
+    <h3 class="font-display seo-h3-sm">PDF Rendering via PDF.js</h3>
+    <p class="seo-p">
+      When a user drops or selects a PDF file, the raw bytes are read into an <code class="inline-code">ArrayBuffer</code> and passed to PDF.js (<code class="inline-code">pdfjsLib.getDocument</code>). PDF.js parses the PDF object tree, resolves font dictionaries, image XObjects, and content streams, then rasterizes the selected page to an HTML5 canvas at a calculated scale factor. The scale is derived from the container width divided by the unscaled viewport width, capped at 2x to prevent pixel overflow on high-DPI displays. The canvas dimensions and the SVG overlay's <code class="inline-code">viewBox</code> are synchronised to match the viewport size, ensuring pixel-accurate element placement.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Interactive SVG Overlay</h3>
+    <p class="seo-p">
+      Placed elements — watermarks, headers, footers, and Bates stamps — are not drawn onto the canvas directly. Instead, each element is rendered as SVG primitives (<code class="inline-code">&lt;text&gt;</code>, <code class="inline-code">&lt;image&gt;</code>, <code class="inline-code">&lt;rect&gt;</code>) on an absolutely-positioned SVG layer that overlays the canvas. This separation preserves the original PDF rendering while enabling interactive drag-and-resize. The SVG uses a coordinate system that maps PDF points to viewport pixels via the formula <code class="inline-code">vpX = pdfX * (vpW / pdfPageW)</code>, with the Y-axis inverted because PDF coordinates originate at the bottom-left while SVG coordinates originate at the top-left.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Baking Elements into PDF via pdf-lib</h3>
+    <p class="seo-p">
+      On "Save PDF", the tool loads the original PDF bytes into pdf-lib (<code class="inline-code">PDFDocument.load</code>), embeds a Helvetica font (<code class="inline-code">StandardFonts.Helvetica</code>), and iterates over every page's element array. For each element, pdf-lib's <code class="inline-code">page.drawText</code> or <code class="inline-code">page.drawImage</code> is called with the element's coordinates, size, colour (converted from hex to RGB via <code class="inline-code">parseColor</code>), opacity, and rotation. Text placeholders like <code class="inline-code">{'{{page}}'}</code> and <code class="inline-code">{'{{total}}'}</code> are resolved at bake time using <code class="inline-code">replacePlaceholders</code>, so each page receives its correct page number. The modified document is serialised via <code class="inline-code">libDoc.save()</code> and downloaded as a new PDF blob.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Crop Margin Calculation</h3>
+    <p class="seo-p">
+      The crop feature modifies each page's MediaBox and CropBox — the PDF standard's rectangle descriptors that define visible and printable areas. When the user specifies left, right, top, and bottom margins in points (1 pt = 1/72 inch), the tool calculates the new origin and dimensions: <code class="inline-code">newX = szX + cropL</code>, <code class="inline-code">newY = szY + cropB</code>, <code class="inline-code">newW = width - cropL - cropR</code>, <code class="inline-code">newH = height - cropT - cropB</code>. The crop can be applied to all pages, only even/odd pages, or the current page, and the dim-overlay preview updates in real time as values change.
+    </p>
+
+    <p class="seo-p">
+      All processing happens client-side using WebAssembly compiled versions of PDF.js and pdf-lib. No data is uploaded to any server. The complete pipeline runs in the browser with zero external API calls after the initial CDN library load.
+    </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "Is my data uploaded?", "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens in your browser using WebAssembly. Your files never leave your device." } },
-        { "@type": "Question", "name": "Can I reposition elements?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every placed element can be dragged to reposition and resized via corner handles, just like the Edit PDF tool." } },
-        { "@type": "Question", "name": "What is Bates numbering?", "acceptedAnswer": { "@type": "Answer", "text": "Bates numbering adds sequential identifiers to each page for legal indexing. Configure prefix, start number, digits, and suffix." } },
-        { "@type": "Question", "name": "Can I undo changes?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Use Undo/Redo buttons or Ctrl+Z/Ctrl+Y to step through the history of applied PDF states." } }
-      ]
-    }
-    </script>
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Is my data uploaded?', a: 'No. All processing happens in your browser using WebAssembly. Your files never leave your device.' },
-        { q: 'Can I reposition elements?', a: 'Yes. Every placed element can be dragged to reposition and resized via corner handles, just like the Edit PDF tool.' },
-        { q: 'What is Bates numbering?', a: 'Bates numbering adds sequential identifiers to each page for legal indexing. Configure prefix, start number, digits, and suffix.' },
-        { q: 'Can I undo changes?', a: 'Yes. Use Undo/Redo buttons or Ctrl+Z/Ctrl+Y to step through the history of applied PDF states.' },
+        { q: 'Is my PDF data uploaded to any server?', a: 'No. The entire enhancement pipeline runs locally in your browser. PDF.js renders pages to a canvas element, and pdf-lib modifies the PDF bytes in memory using WebAssembly. Your file never leaves your device, which makes this tool safe for confidential legal documents, medical records, and proprietary business materials.' },
+        { q: 'Can I reposition and resize placed elements?', a: 'Yes. Every placed element — watermarks, headers, footers, and Bates stamps — is rendered on an interactive SVG overlay. Drag the element body to reposition it, or drag the blue corner handle to scale it. Double-clicking an element removes it from the page.' },
+        { q: 'What is Bates numbering and when is it required?', a: 'Bates numbering is a sequential identification system used in legal and medical document management. Each page receives a unique identifier — typically a prefix, sequential number with zero-padding, and optional suffix — to ensure every page in a production set can be individually referenced during litigation, audits, or regulatory compliance reviews.' },
+        { q: 'Can I undo changes after placing elements?', a: 'Yes. The tool maintains a per-page undo/redo history stack. Use the Undo and Redo buttons or the keyboard shortcuts Ctrl+Z and Ctrl+Y (Cmd+Z / Cmd+Y on macOS) to step through previous states. Each placement, drag, resize, and clear action creates a new history entry.' },
+        { q: 'How does the crop feature affect the final PDF?', a: 'The crop tool modifies each page\'s MediaBox and CropBox — the standard PDF rectangles that define the visible and printable area. Specified margins in points (1 point = 1/72 inch) are subtracted from each edge. You can apply crops to all pages, only even or odd pages, or just the current page. The dim-overlay preview updates in real time so you can see the result before saving.' },
+        { q: 'What image formats are supported for image watermarks?', a: 'The tool accepts PNG and JPEG images for watermark overlays. Images are embedded into the PDF via pdf-lib\'s embedPng or embedJpg methods during the save step. The image watermark is automatically scaled to fit within 40% of the page dimensions and centred by default, though you can drag it to any position after placement.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+             class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
     </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7">
+      <strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This tool is for educational and document-preparation purposes only. It does not constitute legal advice. Bates numbering, watermarking, and cropping features are provided as convenience utilities — verify that output documents meet the specific formatting requirements of your jurisdiction, court, or regulatory body before submission.
+    </div>
   </div>
 
 </ToolLayout>
+
+<style>
+  .tc-usecases {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin-bottom: 0.75rem;
+  }
+</style>
 
 <!-- CDN libs -->
 <script is:inline src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>

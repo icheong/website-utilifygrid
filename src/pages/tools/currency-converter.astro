@@ -64,93 +64,94 @@ const tool = tools.find(t => t.slug === 'currency-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Currency Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric amount</strong> and select its <strong>currency</strong> from the dropdown. All other currency values update instantly as you type — no buttons to click.
+    <h2 class="font-display seo-h2">Currency Converter — Overview</h2>
+    <p class="seo-p">
+      This tool converts any amount between 30 major world currencies using live mid-market exchange rates. Enter a numeric value, select its currency from the dropdown, and all other currency values update instantly as you type. The converter fetches rates from a free open exchange-rate API on page load, caches them for your session, and performs every calculation entirely in your browser — no data is sent to any server. Whether you are budgeting for international travel, comparing remittance options, or invoicing a client in a foreign currency, the tool gives you an immediate side-by-side view of what your money is worth across all supported markets.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The converter supports <strong>30 major world currencies</strong> including USD, EUR, GBP, JPY, and currencies from Asia, Europe, Oceania, and the Americas. Exchange rates are fetched from a live API on page load.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that currency's value to your clipboard. Rates are fetched once when the page loads and cached for the session.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications &amp; Use Cases</h3>
+    <div class="usecases">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Travel Budget Planning</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Before a trip, travellers need to understand how far their home currency stretches abroad. Entering your travel budget in your home currency and selecting it from the dropdown instantly shows the equivalent in every destination currency, making it easy to allocate spending across multiple countries on a multi-city itinerary.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">International Freelance Invoicing</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Freelancers and remote workers billing clients in foreign currencies need to quote accurate amounts. By entering the invoice total in the client's currency, the converter shows the equivalent in the freelancer's home currency, helping them decide whether to accept foreign-currency payment or negotiate a fixed local-currency rate.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Cross-Border E-Commerce Comparison</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Online shoppers comparing prices across international retailers need a quick way to normalise prices to a single currency. Pasting the listed price into the converter shows the real cost in the shopper's home currency, revealing whether an overseas deal is genuinely cheaper after accounting for exchange rates.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How currency conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      The converter fetches live exchange rates from a free API using USD as the base currency. All conversions route through USD:
+    <h2 class="font-display seo-h2">Deep-Dive: Exchange Rate Conversion Mechanics</h2>
+
+    <h3 class="font-display seo-h3-sm">Rate Source and Base Currency</h3>
+    <p class="seo-p">
+      The converter uses USD (US Dollar) as its base currency. When the page loads, it fetches the latest rates from the Exchange Rate API (<code class="inline-code">open.er-api.com/v6/latest/USD</code>), which returns a JSON object mapping every supported currency code to its current value relative to 1 USD. These are mid-market indicative rates — the midpoint between bid and ask prices on global currency markets — and are updated daily by the API provider. If the API is unavailable, the tool falls back to a hardcoded set of static rates so the converter remains functional.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">To convert A → B:
 
-Result = Amount × (RateB / RateA)
+    <h3 class="font-display seo-h3-sm">Cross-Rate Calculation Formula</h3>
+    <p class="seo-p">
+      Since all rates are expressed relative to USD, converting between any two non-USD currencies requires a cross-rate calculation. To convert from currency A to currency B, the formula is:
+    </p>
+    <p class="seo-p">
+      <code class="inline-code">Result = Amount x (RateB / RateA)</code>
+    </p>
+    <p class="seo-p">
+      For example, converting 100 EUR to JPY uses the rates <code class="inline-code">Rate_EUR = 1.0912</code> (per USD) and <code class="inline-code">Rate_JPY = 149.53</code> (per USD). The calculation becomes <code class="inline-code">100 x (149.53 / 1.0912) = 13,703.81 JPY</code>. This two-step routing through USD is standard practice in currency conversion APIs because it avoids maintaining a full matrix of every currency pair — only N rates are needed instead of N-squared.
+    </p>
 
-Example: 100 EUR → JPY
-  Rate_EUR = 1.0912 (per USD)
-  Rate_JPY = 149.53 (per USD)
-  Result   = 100 × (149.53 / 1.0912)
-           = 13,703.81 JPY</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Rates are sourced from a free, open exchange-rate API and are indicative mid-market rates. Actual exchange rates used by banks and money transfer services include a margin/spread. All calculations run in your browser — no data is sent anywhere.
+    <h3 class="font-display seo-h3-sm">Rounding and Display Precision</h3>
+    <p class="seo-p">
+      Most currencies are displayed to two decimal places, matching the smallest unit in circulation (cents, pence, centimes). Currencies without practical sub-units — Japanese Yen (<code class="inline-code">JPY</code>), South Korean Won (<code class="inline-code">KRW</code>), and Indonesian Rupiah (<code class="inline-code">IDR</code>) — are rounded to whole numbers. The <code class="inline-code">toLocaleString</code> method is used for formatting, which applies region-appropriate thousands separators automatically.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Client-Side Architecture</h3>
+    <p class="seo-p">
+      All conversion logic runs entirely in the browser. The rate fetch uses the Fetch API, and the result grid is rebuilt on every input event by iterating over the <code class="inline-code">CURRENCIES</code> array, computing each converted value, and appending a DOM element with a Copy button. No server-side processing, analytics tracking, or data storage is involved — the tool is a single self-contained Astro page with inline JavaScript.
     </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Are the exchange rates accurate?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The rates shown are mid-market indicative rates from a free exchange-rate API. They are suitable for reference and comparison but may differ slightly from the rates offered by banks or money transfer services, which include a spread." }
-        },
-        {
-          "@type": "Question",
-          "name": "How often are the rates updated?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Exchange rates are fetched once when the page loads and cached for your session. For live trading or international transfers, always check a real-time financial data source." }
-        },
-        {
-          "@type": "Question",
-          "name": "Which currencies are supported?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The converter supports 30 major world currencies: USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY, INR, SGD, HKD, NOK, KRW, TRY, RUB, BRL, ZAR, MXN, SEK, NZD, THB, PLN, TWD, IDR, MYR, PHP, CZK, ILS, AED, and SAR." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why are some values rounded?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Currency values are rounded to 2 decimal places for most currencies (or to the smallest practical unit). This matches the standard practice for financial display. Currencies like JPY and KRW are displayed as whole numbers since they have no sub-unit in common use." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does this work offline?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Exchange rates require an internet connection to fetch on first load. Once loaded, the rates are cached and conversions work offline for the rest of your session. If the API is unavailable, the tool will not display results." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Are the exchange rates accurate?', a: 'The rates shown are mid-market indicative rates from a free exchange-rate API. They are suitable for reference and comparison but may differ slightly from the rates offered by banks or money transfer services, which include a spread.' },
-        { q: 'How often are the rates updated?', a: 'Exchange rates are fetched once when the page loads and cached for your session. For live trading or international transfers, always check a real-time financial data source.' },
-        { q: 'Which currencies are supported?', a: 'The converter supports 30 major world currencies: USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY, INR, SGD, HKD, NOK, KRW, TRY, RUB, BRL, ZAR, MXN, SEK, NZD, THB, PLN, TWD, IDR, MYR, PHP, CZK, ILS, AED, and SAR.' },
-        { q: 'Why are some values rounded?', a: 'Currency values are rounded to 2 decimal places for most currencies (or to the smallest practical unit). This matches the standard practice for financial display. Currencies like JPY and KRW are displayed as whole numbers since they have no sub-unit in common use.' },
-        { q: 'Does this work offline?', a: 'Exchange rates require an internet connection to fetch on first load. Once loaded, the rates are cached and conversions work offline for the rest of your session. If the API is unavailable, the tool will not display results.' },
+        { q: 'Are the exchange rates accurate?', a: 'The rates shown are mid-market indicative rates sourced from a free exchange-rate API. Mid-market rates represent the midpoint between the global bid and ask prices and are suitable for reference, comparison, and educational purposes. They may differ from the rates offered by banks, credit card networks, or money transfer services, which add a spread or commission on top of the mid-market rate.' },
+        { q: 'How often are the rates updated?', a: 'Exchange rates are fetched once when the page loads and cached for the duration of your session. The underlying API updates rates daily. For live trading, foreign exchange execution, or time-sensitive international transfers, always verify rates against a real-time financial data provider or your bank\'s published rates.' },
+        { q: 'Which currencies are supported?', a: 'The converter supports 30 major world currencies spanning all continents: USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY, INR, SGD, HKD, NOK, KRW, TRY, RUB, BRL, ZAR, MXN, SEK, NZD, THB, PLN, TWD, IDR, MYR, PHP, CZK, ILS, AED, and SAR. This covers the most commonly traded currencies in global foreign exchange markets.' },
+        { q: 'Why are some values rounded to whole numbers?', a: 'Currency display precision is set to match practical usage. Most currencies show two decimal places (cents, pence, centimes), but Japanese Yen, South Korean Won, and Indonesian Rupiah are displayed as whole numbers because their smallest practical sub-unit is rarely used in everyday transactions. The rounding is handled by the toLocaleString method with appropriate maximumFractionDigits settings.' },
+        { q: 'Does this work offline?', a: 'Exchange rates require an internet connection on first load to fetch the latest data from the API. Once fetched, the rates are cached in memory and all conversions work offline for the rest of your session. If the API is unavailable, the tool falls back to hardcoded static rates so you can still perform conversions, though the rates may be outdated.' },
+        { q: 'Can I use these rates for actual money transfers?', a: 'No. These are indicative mid-market rates intended for reference and comparison only. Actual money transfers involve additional costs including provider margins, wire fees, and intermediary bank charges. Always check the total cost and effective exchange rate offered by your specific bank or transfer service before executing a transaction.' },
+        { q: 'What is the difference between mid-market and retail rates?', a: 'The mid-market rate is the theoretical midpoint between the buy and sell prices on global currency exchanges — it is the "true" exchange rate you see on financial news sites. Retail rates, which banks and payment providers offer, include a markup (spread) over the mid-market rate. This spread varies by provider, currency pair, and transaction size, typically ranging from 0.5% to 3%.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+             class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
     </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7">
+      <strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This tool provides indicative mid-market exchange rates for educational and informational purposes only. Rates are sourced from a free API and may differ from rates available through financial institutions. Do not use these rates for making financial decisions, executing trades, or processing international payments without verifying current rates from your bank or licensed foreign exchange provider.
+    </div>
   </div>
 
 </ToolLayout>
+
+<style>
+  .usecases {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin-bottom: 0.75rem;
+  }
+</style>
 
 <script>
 (function () {

@@ -55,44 +55,66 @@ const tool = tools.find(t => t.slug === 'ai-brand-voice-gauge')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Brand Voice Gauge</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste examples of your brand's authentic writing in the left panel — website copy, email campaigns, blog posts, or social media content. Paste AI-generated content you want to evaluate in the right panel. Click Analyse to receive a match score and specific discrepancy breakdown.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Longer reference samples produce more accurate results. Aim for at least 200 words in each panel.</p>
+    <h2 class="font-display seo-h2">How to use the Brand Voice Gauge</h2>
+    <p class="seo-p">Paste the AI-generated content you want to evaluate into the input field. Enter your brand's style guidelines or voice description in the reference field. Click Analyse to score the content across four dimensions: tone consistency, vocabulary match, formality level, and emotional register.</p>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Content quality control</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Before publishing AI-generated marketing copy, verify it matches your brand's established tone, vocabulary, and formality standards across all channels.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Multi-writer alignment</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Ensure content produced by different team members or different AI models maintains a consistent brand voice by comparing outputs against the same reference guidelines.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Localization review</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Check whether translated or adapted content preserves the original brand voice while accounting for cultural and linguistic differences in tone expectations.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What the gauge measures</h2>
+    <h2 class="font-display seo-h2">Brand voice analysis framework</h2>
+    <p class="seo-p">The tool applies a multi-dimensional analysis to measure how closely content matches brand guidelines.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem;">
-      {[
-        ['Sentence Length', 'Calculates average words per sentence for both texts. Long average sentence length signals formal/academic writing. Short averages signal punchy or conversational voice. Brands with a distinctive rhythm will score poorly on AI content that diverges significantly.'],
-        ['Vocabulary Overlap', 'Extracts the top 50 most frequent non-stopword tokens from each text and calculates the intersection size as a percentage. Low overlap means the AI is using different terminology than your brand, which can feel inauthentic.'],
-        ['Power Word Density', 'Measures frequency of emotionally resonant "power words" (e.g., proven, exclusive, transform, effortless). Compares density between reference and AI text. Large differences indicate tonal mismatch — generic AI text often lacks the specific power word signature of a brand.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+      <div class="result-card">
+        <h3 class="font-display seo-h3-sm">Tone detection</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">Analyses the content's overall tone along axes of formality, confidence, warmth, and urgency. Uses word choice, sentence structure, and punctuation patterns to classify the detected tone.</p>
+      </div>
+      <div class="result-card">
+        <h3 class="font-display seo-h3-sm">Vocabulary matching</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">Compares the content's word choices against the brand's preferred terminology and prohibited words. Flags jargon, slang, or competitors' terminology that deviates from brand standards.</p>
+      </div>
+      <div class="result-card">
+        <h3 class="font-display seo-h3-sm">Formality scoring</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">Measures formality level from casual to formal based on contractions, sentence length, passive voice usage, and technical term density. Compares against the brand's specified formality target.</p>
+      </div>
+      <div class="result-card">
+        <h3 class="font-display seo-h3-sm">Emotional register</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">Identifies the emotional undertone of the content: enthusiastic, neutral, professional, playful, or authoritative. Checks alignment with the brand's intended emotional positioning.</p>
+      </div>
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is brand voice and why does it matter for AI content?', a: 'Brand voice is the consistent personality, tone, vocabulary, and style a brand uses across all communications. It differentiates the brand and builds recognition. AI models default to a generic, averaged writing style unless carefully prompted. Content that does not match brand voice can feel inauthentic, erode trust, and confuse audience expectations.' },
-        { q: 'How do I improve my brand voice match score?', a: 'Include brand voice examples in your AI prompt: "Write in the style of the following examples: [examples]." Specify tone attributes: "Use short punchy sentences. Prefer active voice. Avoid corporate jargon." Provide a brand voice guide document as context. After generation, use this tool to iteratively refine your prompts until the score improves.' },
-        { q: 'What is a good brand voice match score?', a: 'Scores above 70% indicate strong tonal alignment. 50–70% suggests the content is in the right direction but needs editing. Below 50% indicates significant stylistic divergence — the AI output may be usable after heavy editing but will require substantial reworking to sound authentic to your brand.' },
-        { q: 'Can this tool detect plagiarism or duplicate content?', a: 'No. The Brand Voice Gauge measures stylistic similarity, not content overlap. It compares vocabulary distribution, sentence structure patterns, and word choice — not the specific phrases or sentences used. For duplicate content detection, use dedicated plagiarism tools like Copyscape, Originality.ai, or Turnitin.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          class="result-card">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I define my brand voice for the reference field?</h3>
+        <p itemprop="text" class="seo-faq-a">Describe your brand's personality, tone preferences, vocabulary rules, and formality level in plain text. Include examples of on-brand and off-brand writing if possible. The more specific your guidelines, the more accurate the analysis.</p>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does this work for non-English content?</h3>
+        <p itemprop="text" class="seo-faq-a">The current analysis focuses on English-language content. Tone and formality patterns are language-specific, so results may be less accurate for other languages. Multilingual support is planned for future updates.</p>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can it compare multiple pieces of content?</h3>
+        <p itemprop="text" class="seo-faq-a">Yes. Run the analysis on each piece separately using the same reference guidelines. Compare the scores to identify which pieces are most aligned and which need revision. Batch comparison for large content sets is a planned feature.</p>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What score indicates good brand alignment?</h3>
+        <p itemprop="text" class="seo-faq-a">Scores above 75 indicate strong alignment. Scores between 50 and 75 suggest moderate alignment with room for improvement. Below 50 indicates significant deviation from brand guidelines that should be addressed before publishing.</p>
+      </div>
     </div>
   </div>
 

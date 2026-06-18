@@ -24,30 +24,51 @@ const tool = tools.find(t => t.slug === 'prompt-chain-builder')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to build a prompt chain</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Add steps to your chain using the button below. Each step has a role (system, user, or assistant) and a content field. Reorder steps using the up/down arrows. Export as JSON (for direct API use) or as a readable text preview. Use the chain to design multi-turn conversations or iterative refinement workflows.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">A typical chain: system → user (task) → assistant (expected response template) → user (refinement instruction).</p>
+    <h2 class="font-display seo-h2">How to build a prompt chain</h2>
+    <p class="seo-p">Add steps to your chain using the Add Step button. Each step has a role (system, user, or assistant) and a content field. Reorder steps using the up and down arrows. Export as JSON for direct API use or as a readable text preview.</p>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Multi-turn conversation design</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Build a system-to-user-to-assistant sequence to prototype chatbot flows before writing any API code.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Few-shot prompting</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Pre-fill assistant messages with example responses to guide the model's output format and style consistently.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Iterative refinement chains</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Design a loop where the model's output feeds back into a new user message, enabling step-by-step improvement of code, text, or analysis.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What is a prompt chain?</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">A prompt chain is a structured sequence of messages passed to an LLM API as the messages array. Rather than a single prompt, multi-turn chains let you pre-fill the conversation history to guide the model's reasoning, set up personas, provide worked examples, and build iterative refinement loops. The exported JSON can be pasted directly into the OpenAI or Anthropic API playground.</p>
+    <h2 class="font-display seo-h2">What is a prompt chain?</h2>
+    <p class="seo-p">A prompt chain is a structured sequence of messages passed to an LLM API as the messages array. Rather than a single prompt, multi-turn chains let you pre-fill the conversation history to guide the model's reasoning, set up personas, provide worked examples, and build iterative refinement loops.</p>
+    <h3 class="font-display seo-h3-sm">System role</h3>
+    <p class="seo-p" set:html="Sets the context, persona, and constraints. Processed before any user messages. For GPT, passed as <code class='inline-code'>{role:'system'}</code>; for Claude, as a separate system parameter." />
+    <h3 class="font-display seo-h3-sm">User role</h3>
+    <p class="seo-p">Contains the actual task or question. In multi-step chains, later user messages can reference earlier assistant responses to create iterative refinement.</p>
+    <h3 class="font-display seo-h3-sm">Assistant role</h3>
+    <p class="seo-p">Pre-filling an assistant message primes the model to continue from a specific starting point. Useful for constraining output format, chain-of-thought reasoning, and few-shot examples.</p>
+    <h3 class="font-display seo-h3-sm">Export formats</h3>
+    <p class="seo-p">JSON export produces a valid messages array ready for OpenAI or Anthropic API calls. Text export provides a human-readable summary of each step for documentation and review.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is the "system" role used for?', a: 'The system message sets the context, persona, and constraints for the model. It is processed before any user messages and is most effective for defining tone, output format requirements, and what the model should and should not do. In GPT models it is passed as {role:"system"}; in Claude it can be a separate system parameter.' },
-        { q: 'What is the "assistant" role used for?', a: 'Pre-filling an assistant message primes the model to continue from a specific starting point. This is useful for: constraining output format (start the assistant message with "["), chain-of-thought reasoning where you show worked steps, or few-shot examples where you demonstrate the expected pattern.' },
-        { q: 'How many steps should a prompt chain have?', a: 'There is no hard limit, but longer chains consume more tokens and cost more. Typical effective chains are 2–6 messages. Beyond that, consider whether the task should be broken into separate API calls with the output of one passed as context to the next (true chaining).' },
-        { q: 'Can I use this chain with Claude as well as GPT?', a: 'Yes with adaptation. The JSON messages format exports in OpenAI format. For Anthropic Claude API, the system message should be passed as a separate system parameter, and the remaining messages array contains only user/assistant alternating turns. The text export works as a human-readable reference for both.' },
+        { q: 'How many steps should a prompt chain have?', a: 'There is no hard limit, but longer chains consume more tokens and cost more. Typical effective chains are 2 to 6 messages. Beyond that, consider whether the task should be broken into separate API calls with the output of one passed as context to the next.' },
+        { q: 'Can I use this chain with Claude as well as GPT?', a: 'Yes with adaptation. The JSON format exports in OpenAI style. For Anthropic Claude API, the system message should be passed as a separate system parameter, and the remaining messages array contains only user and assistant alternating turns.' },
+        { q: 'What is the difference between a chain and a single prompt?', a: 'A single prompt sends one message and gets one response. A chain pre-fills multiple turns of conversation history, letting you control the model\'s persona, show examples, and structure complex reasoning before the model generates its response.' },
+        { q: 'How do I handle variable inputs in a chain?', a: 'Use placeholder text like [INSERT DATA HERE] in your step content. After exporting, replace these placeholders with actual values programmatically or manually before sending to the API. This keeps your chain template reusable across different inputs.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          class="result-card">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

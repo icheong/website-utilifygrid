@@ -57,10 +57,21 @@ pdf-n-up
 pdf-edit
 pdf-sign
 qr-code
-
-## TODO
 pdf-enhance
 currency-converter
+prompt-architect-tokenizer
+prompt-chain-builder
+hallucination-fact-check-guard
+structured-data-ai-formatter
+token-analyzer
+prompt-safety-stress-tester
+ai-brand-voice-gauge
+markdown-sanitizer
+html-to-markdown
+
+## TODO
+plagiarism-compare-checker
+timezone-schedule-picker
 htaccess-nginx-redirect-builder
 compression-inspector
 password-hash-evaluator
@@ -78,23 +89,12 @@ code-diff-checker
 markdown-to-html-converter
 json-schema-validator
 variable-case-converter
-prompt-architect-tokenizer
-prompt-chain-builder
-hallucination-fact-check-guard
-structured-data-ai-formatter
-context-window-analyzer
-prompt-safety-stress-tester
-ai-brand-voice-gauge
 smart-log-cleaner
 delimiter-swapper
 text-column-extractor
 anagram-word-puzzle-finder
-plagiarism-compare-checker
-timezone-schedule-picker
 lorem-ipsum-customizer
 list-randomizer
-markdown-sanitizer
-html-to-markdown
 whitespace-trimmer
 slug-generator
 bulk-case-mutator

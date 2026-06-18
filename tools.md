@@ -46,7 +46,7 @@ prompt-architect-tokenizer
 prompt-chain-builder
 hallucination-fact-check-guard
 structured-data-ai-formatter
-context-window-analyzer
+token-analyzer
 prompt-safety-stress-tester
 ai-brand-voice-gauge
 smart-log-cleaner

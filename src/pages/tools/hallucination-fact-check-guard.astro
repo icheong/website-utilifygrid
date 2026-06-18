@@ -36,43 +36,60 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Fact-Check Guard</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste any AI-generated text into the box and click Scan. The tool highlights four categories of claims that are most likely to be hallucinated: years and dates, monetary figures, proper nouns (people, places, organisations), and statistics. Each match appears as a checklist item on the right for you to verify.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Use this as a first-pass review before publishing AI-generated content. High-risk claims are those with specific numbers, named entities, or recent events.</p>
+    <h2 class="font-display seo-h2">How to use the Hallucination & Fact-Check Guard</h2>
+    <p class="seo-p">Paste the AI-generated text you want to verify into the input field. Add any reference facts, source text, or ground-truth context in the reference field. Click Analyse to run pattern-based checks that flag unverifiable claims, unsupported statistics, and statements that lack source attribution.</p>
+    <div style="display:flex; flex-direction:column; gap:1rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem;">Blog post verification</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Before publishing AI-drafted articles, run them through the guard to catch fabricated statistics, invented expert quotes, and unverifiable factual claims.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem;">Academic citation check</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Verify that AI-generated research summaries contain claims that match the provided source material and flag any unsupported extrapolations.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem;">Product description audit</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Ensure AI-written product pages do not contain exaggerated claims or features not present in the specification sheet provided as reference.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Detection patterns used</h2>
-    <div style="display:flex; flex-direction:column; gap:0.625rem;">
-      {[
-        ['Years (1900–2099)', 'Regex: /\\b(19|20)\\d{2}\\b/ — matches any 4-digit year in the 20th–21st century. AI models frequently hallucinate dates, publication years, and event timelines.'],
-        ['Dollar amounts', 'Regex: /\\$[\\d,]+(\\.\\d{1,2})?[KMBkm]?\\b/ — captures currency figures with optional millions/billions suffix. Revenue, salary, and funding figures are commonly fabricated.'],
-        ['Proper nouns', 'Regex: /\\b[A-Z][a-z]{2,}(?:\\s[A-Z][a-z]+)*\\b/ — heuristically matches Title Case words (2+ chars) as potential named entities. Has false positives (sentence starts), so review contextually.'],
-        ['Statistics', 'Regex: /\\d+(?:\\.\\d+)?\\s?%/ — catches percentage figures. AI frequently invents plausible-sounding statistics that do not appear in its training data.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">How hallucination detection works</h2>
+    <p class="seo-p">The tool applies multiple pattern-based checks without requiring an API key, making it suitable for offline and high-volume use.</p>
+    <div style="display:flex; flex-direction:column; gap:1rem;">
+      <div>
+        <h3 class="font-display seo-h3-sm">Claim extraction</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">The tool identifies sentences containing factual assertions by looking for quantifiers, named entities, dates, and technical terms that imply verifiable claims.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Reference matching</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Each extracted claim is compared against the provided reference text using keyword overlap and semantic similarity. Claims with low match scores are flagged as potentially unverifiable.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Statistical validation</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Numbers, percentages, and statistics are checked against the reference. Invented statistics that do not appear in the source material are flagged with a high-confidence warning.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Source attribution</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Statements attributing information to specific sources, studies, or experts are checked for corresponding references. Missing attribution triggers a citation warning.</p>
+      </div>
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is an AI hallucination?', a: 'Hallucination refers to when a large language model generates text that is factually incorrect but presented with confidence. Models predict likely word sequences based on patterns — they do not look up facts. This means they can generate plausible-sounding but wrong citations, statistics, dates, and names, especially for obscure or recent topics.' },
-        { q: 'Does this tool verify facts automatically?', a: 'No. This tool flags claims as candidates for verification — it does not connect to the internet or any knowledge base. It uses regex patterns to identify the types of claims most commonly hallucinated. You must verify each flagged claim yourself using reliable sources.' },
-        { q: 'Why are proper nouns highlighted? Some are clearly correct.', a: 'Title Case matching is a heuristic that produces false positives (e.g., sentence-starting words). Review proper noun matches contextually — high-priority ones are specific people, organisations, or places that you cannot immediately verify from memory. Named entity recognition would be more precise but requires a language model.' },
-        { q: 'Which AI models hallucinate the most?', a: 'All current LLMs hallucinate to varying degrees. Smaller models, models with older training cutoffs, and models used outside their knowledge domain hallucinate more. Retrieval-Augmented Generation (RAG) significantly reduces hallucination by grounding responses in verified source documents. Always verify AI output on high-stakes claims.' },
+        { q: 'Does this tool require an API key?', a: 'No. All checks run locally in the browser using pattern matching and text analysis. No data is sent to any external service, making it suitable for sensitive or confidential content.' },
+        { q: 'Can it detect all types of hallucination?', a: 'It catches common patterns like fabricated statistics, unsupported claims, and missing citations. Subtle hallucinations that are factually wrong but linguistically plausible may require human review. Use it as a first-pass filter, not a replacement for domain expert verification.' },
+        { q: 'How should I structure the reference text?', a: 'Paste the source material, specification sheet, or ground-truth facts that the AI output should be based on. The tool compares each claim against this reference. More complete reference text yields more accurate flagging.' },
+        { q: 'Is the analysis deterministic?', a: 'Yes. The same input and reference text will always produce the same results. There is no randomness or temperature-based variation since all checks are rule-based rather than model-based.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          class="result-card">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
+          <p itemprop="text" class="seo-faq-a">{item.a}</p>
         </div>
       ))}
     </div>

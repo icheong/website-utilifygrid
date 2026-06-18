@@ -30,32 +30,49 @@ const tool = tools.find(t => t.slug === 'structured-data-ai-formatter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to format structured data</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste AI-generated text and select a schema type. The tool parses the text to extract relevant fields and generates valid JSON-LD markup. Copy the output and paste it into the <code style="background:var(--bg-surface-2);padding:0.1rem 0.3rem;border-radius:0.25rem;">&lt;head&gt;</code> or body of your HTML page.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">For best results: Product — include a product name, price, and description. FAQ — write Q&amp;A pairs with "Q:" and "A:" prefixes. Recipe — include ingredients on separate lines and a title.</p>
+    <h2 class="font-display seo-h2">How to format structured data for AI</h2>
+    <p class="seo-p">Paste your raw data as JSON, CSV, or key-value pairs into the input field. Select the target AI model (ChatGPT, Claude, Gemini, or Llama) and choose a format style (table, list, or JSON). Click Format to generate optimised output that preserves data fidelity while staying within the model's context window.</p>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem;">Dataset preparation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0;">Convert messy CSV exports or API responses into cleanly formatted text that LLMs can parse without losing structure or introducing encoding errors.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem;">Context window packing</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0;">Compress verbose JSON into compact table or list format to fit more data into a prompt without exceeding token limits.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem;">Multi-model testing</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0;">Format the same dataset for different models to compare how each handles structured input and identify which model preserves data accuracy best.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What is JSON-LD structured data?</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">JSON-LD (JSON for Linked Data) is the Google-recommended format for embedding structured data in web pages. It uses Schema.org vocabulary to describe page content in a machine-readable way. Search engines use it to generate rich results (FAQ accordions, product pricing, recipe cards) in search result pages.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The formatter uses heuristics (line structure, Q:/A: prefixes, price patterns) to extract fields from unstructured text. Always review and edit the output — it is a starting scaffold, not a definitive parse.</p>
+    <h2 class="font-display seo-h2">Structured data formatting pipeline</h2>
+    <p class="seo-p">The tool applies a three-stage pipeline to transform raw data into AI-optimised text.</p>
+    <h3 class="font-display seo-h3-sm">Input parsing</h3>
+    <p class="seo-p">Raw data is parsed into an internal representation regardless of source format. JSON is parsed natively. CSV is split into headers and rows. Key-value pairs are normalised into a consistent schema.</p>
+    <h3 class="font-display seo-h3-sm">Optimisation</h3>
+    <p class="seo-p">The parsed data is formatted according to the selected style. Table format uses aligned columns with headers. List format uses hierarchical bullet points. JSON format produces minified or pretty-printed output based on token budget.</p>
+    <h3 class="font-display seo-h3-sm">Token budgeting</h3>
+    <p class="seo-p">The tool estimates token count using the <code class="inline-code">chars/4</code> approximation and warns if the formatted output exceeds typical context windows. Compact formatting options reduce token usage by 20-40% compared to raw data.</p>
+    <h3 class="font-display seo-h3-sm">Model-specific adaptation</h3>
+    <p class="seo-p">Output is adapted for the selected model's preferences. Claude receives XML-tagged sections. ChatGPT receives system/user role markers. Gemini receives markdown-structured sections. Llama receives plain text with clear delimiters.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Does structured data directly improve SEO rankings?', a: 'Structured data does not directly boost rankings, but it enables rich results in Google Search (FAQ dropdowns, star ratings, recipe cards, price panels) which significantly increase click-through rates. Google also uses structured data to understand page content better, which can improve indexing accuracy and Featured Snippet eligibility.' },
-        { q: 'Where should I place the JSON-LD script tag?', a: 'Google supports JSON-LD anywhere in the HTML document, but the recommended placement is in the <head> section. For dynamic content (e.g., React, Vue, Astro), it can be injected into the document head programmatically. Avoid injecting it after page load with JavaScript — Google prefers server-rendered structured data.' },
-        { q: 'How do I validate my structured data?', a: 'Use Google\'s Rich Results Test (search.google.com/test/rich-results) to validate JSON-LD and see which rich result types it qualifies for. The Schema Markup Validator (validator.schema.org) checks conformance to the Schema.org specification. Both tools are free and accept URL or code input.' },
-        { q: 'Can I include multiple schema types on one page?', a: 'Yes — a page can contain multiple JSON-LD blocks, each with a different @type. For example, a product page might have both a Product schema (for the main product) and a BreadcrumbList schema (for navigation). Each block should be a separate <script type="application/ld+json"> tag.' },
+        { q: 'What data formats are supported?', a: 'JSON (objects and arrays), CSV with headers, and plain key-value pairs separated by colons or equals signs. The parser is lenient with formatting and handles missing quotes, trailing commas, and inconsistent whitespace.' },
+        { q: 'How does formatting affect model performance?', a: 'Well-structured input reduces hallucination because the model can clearly distinguish between data fields. Consistent formatting also improves extraction accuracy when you ask the model to parse results back into structured data.' },
+        { q: 'Can I use this with custom API pipelines?', a: 'Yes. The JSON output mode produces a clean, parseable format that can be embedded directly into API request payloads. The formatted text output works with any LLM provider\'s text input endpoint.' },
+        { q: 'Does compression lose information?', a: 'No. The formatting changes presentation, not content. All values are preserved exactly. Compression reduces whitespace, abbreviates headers, and removes redundant formatting while maintaining data fidelity.' },
       ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          class="result-card">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
+          <p itemprop="text" class="seo-faq-a">{item.a}</p>
         </div>
       ))}
     </div>
