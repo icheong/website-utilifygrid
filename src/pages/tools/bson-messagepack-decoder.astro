@@ -63,38 +63,92 @@ const tool = tools.find(t => t.slug === 'bson-messagepack-decoder')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the BSON / MessagePack Decoder</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste a hex-encoded binary string or upload a file containing BSON (MongoDB) or MessagePack data. Click <strong>Decode</strong> to parse the binary structure and display it as formatted, syntax-highlighted JSON.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Use the sample buttons to load example payloads. BSON is the binary format used by MongoDB for document storage. MessagePack is a compact binary serialisation format used in APIs and message queues.</p>
-  </div>
+    <h2 class="font-display seo-h2">BSON and MessagePack Decoder Overview</h2>
+    <p class="seo-p">
+      This binary serialisation decoder parses BSON (MongoDB's binary document format) and MessagePack (a compact binary interchange format) into human-readable, syntax-highlighted JSON. Paste a hex-encoded binary string or upload a raw binary file, and click Decode to inspect the decoded data structure. Running entirely in-browser with custom JavaScript decoders, no binary data ever leaves your device — critical for debugging sensitive MongoDB documents or API payloads.
+    </p>
+    <p class="seo-p">
+      The decoder automatically detects whether the input is BSON or MessagePack by comparing the BSON document length header against the actual byte length. Sample payloads are provided for both formats to help you get started. The output is displayed with colour-coded syntax highlighting for keys, string values, numbers, booleans, and nulls. A stats line shows the total number of JSON lines and the original binary byte count for reference.
+    </p>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Decoding approach</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">BSON</span><span class="info-value">Walks the binary document structure (int32, cstring, element types)</span></div>
-      <div class="info-row"><span class="info-label">MessagePack</span><span class="info-value">Reads compact binary type markers and variable-length integers</span></div>
-      <div class="info-row"><span class="info-label">Types</span><span class="info-value">Integers, doubles, strings, booleans, null, arrays, objects, dates</span></div>
-      <div class="info-row"><span class="info-label">Output</span><span class="info-value">Fully parsed JavaScript object → formatted JSON with syntax highlighting</span></div>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['MongoDB document debugging', 'A database developer working with MongoDB can extract a BSON document from a collection, convert it to hex using MongoDB tools, and paste it into the decoder to inspect the full document structure. This is invaluable when diagnosing serialisation issues, validating schema migrations, or auditing document contents in a read-only environment.'],
+        ['MessagePack API payload inspection', 'A backend developer consuming a MessagePack-based API (common in high-performance microservices) can capture the raw binary response and decode it to JSON for inspection. This helps verify that server-side serialisation is producing the expected structure and that all fields are correctly typed.'],
+        ['Binary format education and learning', 'A developer learning about binary serialisation formats can use the sample payloads to see how BSON and MessagePack represent the same data differently. The decoded JSON output reveals the type system differences — for example, how BSON uses integer type markers while MessagePack uses variable-length encoding.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: Binary Format Decoding Engines</h2>
+    <p class="seo-p">
+      Both decoders are implemented as lightweight, zero-dependency JavaScript functions that operate on <code class="inline-code">Uint8Array</code> buffers. The hex input is first converted to bytes using a simple hex-to-byte conversion, stripping whitespace and validating even-length constraints.
+    </p>
+    <h3 class="seo-h3-sm">BSON Decoder</h3>
+    <p class="seo-p">
+      The BSON decoder implements the MongoDB BSON specification by walking the binary document structure sequentially. It reads the 4-byte document size header (little-endian <code class="inline-code">int32</code>), then iterates through elements where each element consists of a 1-byte type tag, a null-terminated C-string field name, and a type-specific value. Supported BSON types include double (0x01), UTF-8 string (0x02), embedded document (0x03), array (0x04), binary data (0x05), ObjectId (0x07), boolean (0x08), UTC datetime (0x09), null (0x0A), 32-bit integer (0x10), and 64-bit integer (0x12). The decoder terminates when it encounters the null byte (0x00) marking the end of the document.
+    </p>
+    <h3 class="seo-h3-sm">MessagePack Decoder</h3>
+    <p class="seo-p">
+      The MessagePack decoder reads the binary stream using a format-first approach: the first byte of each value determines both the type and the byte length of the data. Positive fixints (0x00-0x7f) encode small integers in a single byte. Negative fixints (0xe0-0xff) encode negative small integers. The decoder handles all standard MessagePack formats including <code class="inline-code">nil</code>, <code class="inline-code">false</code>, <code class="inline-code">true</code>, 32-bit and 64-bit floats, 8/16/32-bit unsigned and signed integers, fixstr/str 8/16/32 for strings, fixarray/array 16/32 for arrays, and fixmap/map 16/32 for maps. The decoder supports variable-length encoding without relying on any external libraries.
+    </p>
+    <h3 class="seo-h3-sm">Auto-Detection Logic</h3>
+    <p class="seo-p-none">
+      The auto-detection reads the first 4 bytes as a little-endian <code class="inline-code">int32</code>. If this value equals the total byte length and is at least 5 bytes (the minimum BSON document size: 4-byte header + 1-byte terminator), the input is decoded as BSON. Otherwise, it falls back to the MessagePack decoder. This heuristic works reliably because a valid MessagePack payload that coincidentally has this property is extremely unlikely in practice.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'How do I get hex from a BSON file?', a: 'You can use the file upload mode, or convert to hex using command line tools: xxd -p file.bson (Linux/Mac) or certutil -encodehex file.bson output.txt (Windows).' },
-        { q: 'Does it support MongoDB Extended JSON?', a: 'The decoder outputs standard JSON. MongoDB-specific types like ObjectId and Date are decoded to their closest JSON representation (string for ObjectId, number for Date timestamp).' },
-        { q: 'What is the file size limit?', a: 'There is no hard limit, but very large files (>10 MB) may be slow to decode in the browser. The hex input is limited by textarea performance; use file upload for large payloads.' },
-        { q: 'Can it encode JSON to BSON/MessagePack?', a: 'Not yet. This tool is decode-only. Encoding support may be added in a future update.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I get hex from a BSON file?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">You can use the file upload mode to load a <code class="inline-code">.bson</code> file directly, or convert to hex using command-line tools: <code class="inline-code">xxd -p file.bson</code> on Linux or macOS, <code class="inline-code">Format-Hex file.bson</code> in PowerShell, or <code class="inline-code">certutil -encodehex file.bson output.txt</code> on Windows. Paste the resulting hex string into the hex input field.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does it support MongoDB Extended JSON?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The decoder outputs standard JSON, not MongoDB Extended JSON format. BSON-specific types like ObjectId and Date are decoded to their closest standard JSON representation — ObjectId appears as a string literal (e.g. <code class="inline-code">ObjectId("507f1f77bcf86cd799439011")</code>) and Date values are output as ISO 8601 strings. This keeps the output parsable by any standard JSON library.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the file size limit?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard-coded limit, but very large files (over 10 MB) may be slow to decode due to the single-threaded JavaScript execution model. For hex input, textarea performance degrades with very long strings — use file upload mode for large payloads. Files up to a few megabytes decode in under a second on modern hardware.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can it encode JSON to BSON or MessagePack?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">This tool is decode-only. Encoding from JSON to BSON or MessagePack requires building binary structures with correct type markers, byte ordering, and length prefixes — a substantially different implementation. Encoding support may be added in a future update if there is sufficient demand from the developer community.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How accurate is the BSON/MessagePack auto-detection?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The auto-detection compares the first 4 bytes (interpreted as a little-endian int32) against the total byte length. BSON documents always start with their exact document size, so a match reliably identifies BSON. MessagePack payloads very rarely have a first 4-byte value that coincides with the total byte length, making the heuristic robust in practice. If detection fails, you can force interpretation by verifying the raw hex structure manually.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 

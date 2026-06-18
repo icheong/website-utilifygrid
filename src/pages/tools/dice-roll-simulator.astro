@@ -65,67 +65,99 @@ const tool = tools.find(t => t.slug === 'dice-roll-simulator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Dice Roller</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Click the <strong>die type tags</strong> (d4, d4t, d6, d8, d10, d12, d20, d%) to select which dice to roll. Use the <strong>+/−</strong> controls to set how many of each type (up to 6 per type, 12 total). Then click <strong>Roll Dice</strong> to throw your dice.
+    <h2 class="font-display seo-h2">Dice Roller Simulator Overview</h2>
+    <p class="seo-p">
+      This dice roller simulator provides a realistic, physics-driven virtual dice experience for tabletop role-playing games, board games, and educational probability demonstrations. Built entirely with vanilla JavaScript and the Three.js 3D library, every roll runs locally in your browser using the Web Crypto API for cryptographically secure random number generation. No data is transmitted to any server, and no tracking scripts are involved — the 100% client-side architecture ensures complete privacy and zero latency.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Keyboard shortcut:</strong> Press <strong>Space</strong> to roll the dice quickly without clicking.
+    <p class="seo-p">
+      The simulator supports all standard polyhedral dice used in RPG systems: d4, d4t (top-read), d6, d8, d10, d12, d20, and d% (percentile). Each die is rendered as a true three-dimensional object with face-specific textures, and the rolling animation uses quaternion-based spherical linear interpolation for smooth, natural tumbling. The results are displayed with a breakdown per die type, along with a roll history that tracks session statistics including average, minimum, and maximum values.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Each die is rendered as a true 3D object using Three.js that tumbles through space before landing on its result. You can select <strong>multiple die types</strong> to roll them all at once — perfect for RPG spell attacks or board game turns.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Perfect 100:</strong> When rolling d10 + d% together, if d10 shows 0 and d% shows 00, you've rolled a Perfect 100 — the rarest percentile roll!
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click <strong>Copy</strong> to copy the latest roll result to your clipboard.
-    </p>
-  </div>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How it works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row">
-        <span class="info-label">Randomness</span>
-        <span class="info-value">Uses <code style="font-family:'Fira Code',monospace; font-size:0.8rem; background:var(--bg-surface-3); padding:0.15rem 0.4rem; border-radius:0.25rem;">crypto.getRandomValues()</code> for cryptographically secure results.</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Fairness</span>
-        <span class="info-value">Each die face has an equal probability — 1/N for an N-sided die.</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">3D Rendering</span>
-        <span class="info-value">All dice use Three.js with real 3D geometries and canvas-based face textures with purple gradients.</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Animation</span>
-        <span class="info-value">Three.js dice tumble with quaternion slerp for smooth rotation. Twinkle particles burst on result.</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Privacy</span>
-        <span class="info-value">Everything runs in your browser. No data is sent to any server.</span>
-      </div>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Tabletop RPG game masters and players', 'A Dungeon Master running a D&D session can roll initiative, saving throws, and damage dice for multiple creatures simultaneously. The ability to select and roll different die types in a single click saves time and maintains game flow, while the cryptographically secure randomness ensures fair outcomes for all players.'],
+        ['Probability educators and students', 'Statistics teachers can demonstrate the law of large numbers and probability distributions by rolling large volumes of dice and observing the frequency of each outcome. The roll history and session statistics provide immediate data for classroom analysis without needing physical dice.'],
+        ['Board game enthusiasts', 'Players of games that use non-standard dice combinations — such as Warhammer, Pathfinder, or custom tabletop systems — can quickly simulate complex rolls to test strategies, evaluate damage ranges, or resolve disputes about the rarity of specific outcomes.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: Dice Roll Mechanics and Random Number Generation</h2>
+    <p class="seo-p">
+      The core randomness engine relies on <code class="inline-code">crypto.getRandomValues()</code>, the Web Crypto API's cryptographically secure pseudorandom number generator (CSPRNG). Unlike <code class="inline-code">Math.random()</code>, which uses a pseudo-random number generator seeded with the current timestamp, the Web Crypto API draws entropy from the operating system's secure random source — the same mechanism used by TLS/SSL protocols, password generators, and banking applications.
+    </p>
+    <h3 class="seo-h3-sm">Fairness and Probability Model</h3>
+    <p class="seo-p">
+      Each die face has exactly 1/N probability, where N is the number of sides. For a d20, every face from 1 to 20 has a 5% chance. The implementation uses rejection sampling to eliminate modulo bias: when generating a random integer in a range that does not evenly divide 2^32, values exceeding the largest multiple of the range are discarded and re-rolled. This guarantees perfect uniform distribution across all supported die types, including edge cases like percentile dice where a d10 paired with a d% produces values from 0 to 99 with equal probability.
+    </p>
+    <h3 class="seo-h3-sm">3D Rendering and Animation Pipeline</h3>
+    <p class="seo-p">
+      Each die is instantiated as a Three.js <code class="inline-code">BufferGeometry</code> with the correct number of faces: a tetrahedron for d4, a cube for d6, an octahedron for d8, a pentagonal trapezohedron for d10, a dodecahedron for d12, and an icosahedron for d20. Face textures are procedurally generated on a canvas element with purple gradient fills. The tumbling animation uses quaternion slerp (spherical linear interpolation) to rotate the die from a random starting orientation to the face corresponding to the rolled value over a 1.4-second duration. On completion, particle twinkles burst from the die using CSS keyframe animations with randomised delays and colours.
+    </p>
+    <p class="seo-p-none">
+      The Perfect 100 detection logic identifies when a d10 roll of 0 coincides with a d% roll of 00. These pairs are excluded from the additive total and replaced with a flat 100 bonus, accurately modelling the percentile convention used in games like Call of Cthulhu and Warhammer Fantasy Roleplay.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: "Is the dice roll truly random?", a: "Yes. Each roll uses the Web Crypto API's crypto.getRandomValues(), which is cryptographically secure and suitable for gaming, simulations, and statistical sampling." },
-        { q: "Can I roll multiple die types at once?", a: "Yes! Click multiple die type tags to select them, then use the +/- controls to set how many of each type. All selected dice will roll simultaneously." },
-        { q: "What dice types are supported?", a: "The roller supports all standard RPG dice: d4 (bottom-read tetrahedron), d4t (top-read tetrahedron), d6 (cube), d8 (octahedron), d10 (pentagonal trapezohedron), d12 (dodecahedron), d20 (icosahedron), and d% (percentile, numbered 00-90)." },
-        { q: "What is a Perfect 100?", a: "When rolling d10 + d% together, any pair of d10 showing 0 and d% showing 00 counts as a Perfect 100 (value 100). With multiple dice, each such pair triggers!" },
-        { q: "Is this fair for actual gameplay?", a: "Yes — each face has exactly equal probability. The randomness source is the same cryptographic API used by banking and security software." }
-      ].map(item => (
-        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-          <h3 itemprop="name" style="font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:700; color:var(--text-primary); margin:0 0 0.35rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.85rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is the dice roll truly random?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Each roll uses the Web Crypto API's <code class="inline-code">crypto.getRandomValues()</code>, which is a cryptographically secure pseudorandom number generator. This is the same entropy source used by TLS/SSL encryption, password managers, and banking applications. It passes all standard randomness tests and is suitable for gaming, simulations, and statistical sampling.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I roll multiple die types at once?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Click multiple die type tags to select them, then use the +/- controls to set how many of each type — up to 6 per type and 12 dice total per roll. All selected dice will roll simultaneously and their results are displayed together, making it ideal for RPG turns that involve multiple damage dice, ability checks, or saving throws of different denominations.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What dice types are supported?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The roller supports all standard RPG dice: d4 (bottom-read tetrahedron), d4t (top-read tetrahedron), d6 (cube), d8 (octahedron), d10 (pentagonal trapezohedron), d12 (dodecahedron), d20 (icosahedron), and d% (percentile, numbered 00-90). The d4t variant uses a vertex-up orientation so the topmost number is read directly, while the standard d4 reads the number at the base.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is a Perfect 100?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">When rolling d10 and d% together, any pair where the d10 shows 0 and the d% shows 00 counts as a Perfect 100 — the maximum possible value. In percentile-based systems like Call of Cthulhu or Warhammer Fantasy Roleplay, this represents an exceptional success in skill checks. With multiple dice selected, each matching pair triggers independently.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is this fair for actual gameplay?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Each face has exactly equal probability, enforced by the rejection-sampling technique that eliminates modulo bias. The randomness source is the same cryptographic API used by banking and security software, making the rolls provably fair for competitive play, tournament settings, and official RPG sessions where impartial outcomes are expected.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens if I exceed the 12-die limit?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool enforces a maximum of 12 dice per roll to maintain smooth 3D rendering performance in the browser. If your game requires more dice, you can run multiple rolls in sequence — the history section keeps a log of all previous results, including averages and extremes, so you can aggregate outcomes across multiple rolls manually.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 

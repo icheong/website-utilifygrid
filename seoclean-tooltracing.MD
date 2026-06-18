@@ -118,8 +118,6 @@ coin-flipper
 random-number-generator
 alphabet-randomizer
 date-randomizer
-
-## TODO
 dice-roll-simulator
 json-prettifier
 json-path-query-evaluator
@@ -132,3 +130,6 @@ json-string-escaper
 bson-messagepack-decoder
 json-tree-visualizer
 mock-json-generator
+
+## TODO
+

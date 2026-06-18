@@ -77,38 +77,88 @@ const tool = tools.find(t => t.slug === 'json-path-query-evaluator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSONPath Evaluator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste a JSON payload into the data panel and write a JSONPath query in the input field. The result updates live as you type. The cheat sheet below the input shows common query patterns.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The evaluator supports standard JSONPath syntax including dot notation, bracket notation, wildcard selectors, array slicing, filter expressions, and recursive descent (<code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem; font-size:0.85rem;">..</code>).</p>
-  </div>
+    <h2 class="font-display seo-h2">JSON Path Query Evaluator Overview</h2>
+    <p class="seo-p">
+      This JSONPath query evaluator lets you extract and filter specific data from JSON documents using the standard JSONPath query language. Paste any valid JSON payload into the data panel, enter a JSONPath expression in the query field, and the matching results update live as you type. Running entirely client-side with vanilla JavaScript, every query executes in your browser using a custom recursive-descent parser — no data is sent to any server, and no tracking occurs.
+    </p>
+    <p class="seo-p">
+       The evaluator supports the full standard JSONPath syntax: dot notation (<code class="inline-code">$.store.book</code>), bracket notation (<code class="inline-code">$['store']['book']</code>), wildcard selectors (<code class="inline-code">$[*]</code>), array index access (<code class="inline-code">$[0]</code>), recursive descent (<code class="inline-code">$..author</code>), and filter expressions (<code class="inline-code">$[?(@.price &lt; 10)]</code>). A built-in cheat sheet below the input field catalogs common query patterns for quick reference.
+    </p>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Query evaluation approach</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Parsing</span><span class="info-value">JSON.parse() builds the data tree</span></div>
-      <div class="info-row"><span class="info-label">Query engine</span><span class="info-value">Custom recursive-descent JSONPath evaluator</span></div>
-      <div class="info-row"><span class="info-label">Filters</span><span class="info-value">[?(@.field op value)] expressions with ==, !=, <, >, <=, >=</span></div>
-      <div class="info-row"><span class="info-label">Output</span><span class="info-value">Matches are serialised as formatted JSON</span></div>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['API integration testing', 'A QA engineer testing a REST API endpoint can paste the full JSON response into the evaluator and use JSONPath queries to verify specific fields exist and contain expected values. For example, <code class="inline-code">$.data.users[*].email</code> confirms all user objects have an email field, while <code class="inline-code">$[?(@.status == "active")]</code> filters for active records only.'],
+        ['Log analysis and debugging', 'A developer investigating a production issue can paste a large JSON log entry or stack trace and use recursive descent (<code class="inline-code">$..error</code>) to instantly locate all error fields regardless of nesting depth. This is orders of magnitude faster than manually expanding nested objects in a tree viewer.'],
+        ['Data pipeline validation', 'A data engineer processing JSON through ETL pipelines can validate the output structure by querying for expected keys and counts. Expressions like <code class="inline-code">$.records.length</code> or <code class="inline-code">$[?(@.timestamp > "2024-01-01")]</code> provide immediate structural verification without writing a full test suite.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: JSONPath Query Engine Implementation</h2>
+    <p class="seo-p">
+      The query engine uses a tokeniser-recursive descent architecture. The tokeniser splits the raw JSONPath expression into segments by identifying path separators (dots), bracket groups, filter expressions, and the recursive descent operator (<code class="inline-code">..</code>). Each token is classified by type: dot-access key, bracket-access key, array index, wildcard, filter expression, or recursive descent.
+    </p>
+    <h3 class="seo-h3-sm">Recursive-Descent Evaluation</h3>
+    <p class="seo-p">
+      After tokenisation, the evaluator walks the parsed JavaScript object tree by applying each token in sequence. For dot and bracket tokens, it performs direct property access on the current result set. For wildcards (<code class="inline-code">*</code>), it expands arrays to all elements and objects to all values. Filter expressions are evaluated by applying the comparison operator (<code class="inline-code">==</code>, <code class="inline-code">!=</code>, <code class="inline-code">&lt;</code>, <code class="inline-code">&gt;</code>, <code class="inline-code">&lt;=</code>, <code class="inline-code">&gt;=</code>) between each element's field and the provided value, supporting string, numeric, boolean, and null comparisons.
+    </p>
+    <h3 class="seo-h3-sm">Recursive Descent (<code class="inline-code">..</code>)</h3>
+    <p class="seo-p-none">
+      The recursive descent operator performs a depth-first traversal of the entire object subtree. At each node, the evaluator checks whether the node matches the subsequent token — for example, <code class="inline-code">$..author</code> finds all properties named "author" at any depth. This is implemented using a stack-based traversal that visits every nested object and array element, collecting matches in a flat array. The result is deduplicated and formatted as a JSON array.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is JSONPath?', a: 'JSONPath is a query language for JSON, similar to XPath for XML. It allows you to select and extract specific parts of a JSON document using path expressions like $.store.book[0].title.' },
-        { q: 'Does it support JMESPath?', a: 'The current implementation supports standard JSONPath syntax. JMESPath has a different syntax (e.g. store.book[*].title vs $.store.book[*].title). JMESPath support may be added in a future update.' },
-        { q: 'Can I use filter expressions?', a: 'Yes. Filter expressions use the syntax [?(@.price < 10)] where @ refers to the current element. Supported operators are ==, !=, <, >, <=, and >=.' },
-        { q: 'Is there a query length limit?', a: 'No hard limit. Very long queries may be slow due to the recursive evaluation, but typical queries with 5-10 path segments evaluate instantly.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is JSONPath?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">JSONPath is a query language for JSON documents, conceptually similar to XPath for XML. It allows you to select and extract specific parts of a JSON document using path expressions. The syntax uses <code class="inline-code">$</code> to refer to the root object, dot or bracket notation for property access, wildcards for all children, and filter expressions for conditional selection.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does it support JMESPath?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The implementation supports standard JSONPath syntax (RFC 9535 style). JMESPath uses a different syntax — for example, <code class="inline-code">store.book[*].title</code> in JMESPath vs <code class="inline-code">$.store.book[*].title</code> in JSONPath. The two are not interchangeable. We recommend checking your project's query language before choosing an evaluator.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I use filter expressions?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Filter expressions use the syntax <code class="inline-code">[?(@.price &lt; 10)]</code> where <code class="inline-code">@</code> refers to the current element being evaluated. Supported operators are <code class="inline-code">==</code>, <code class="inline-code">!=</code>, <code class="inline-code">&lt;</code>, <code class="inline-code">&gt;</code>, <code class="inline-code">&lt;=</code>, and <code class="inline-code">&gt;=</code>. Values can be strings (quoted), numbers, or booleans. Nested field access like <code class="inline-code">@.address.city</code> is also supported within filters.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is there a query length or complexity limit?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard-coded limit. Standard queries with 5-10 path segments plus filter expressions evaluate in milliseconds. Extremely long queries with deeply nested recursive descent on very large data sets may be slower due to the recursive traversal pattern. For large payloads, consider narrowing the scope with a more specific path.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens if the JSON data or query is invalid?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">If the JSON data is invalid, the evaluator displays a parse error from the native <code class="inline-code">JSON.parse()</code> method. If the query is syntactically invalid, the evaluator may return no matches or throw an error depending on the specific malformation. The tool defaults to showing an empty result rather than crashing, allowing you to adjust the query incrementally.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 

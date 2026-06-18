@@ -83,39 +83,88 @@ const tool = tools.find(t => t.slug === 'json-diff-patch-comparer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Diff Tool</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste the original JSON into the Source panel and the modified version into the Target panel. Click <strong>Compare</strong> to see a visual diff. Switch between Side by Side, Unified, and JSON Patch views.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The JSON Patch view produces an RFC 6902 compliant array of operations (add, remove, replace, move, copy, test) that describe exactly how to transform the source into the target.</p>
-  </div>
+    <h2 class="font-display seo-h2">JSON Diff and Patch Comparer Overview</h2>
+    <p class="seo-p">
+      This JSON diff tool compares two JSON documents side-by-side and highlights every addition, deletion, and modification with distinct colour coding. Paste your original (source) JSON and your modified (target) JSON, click Compare, and instantly visualise the differences. The tool runs entirely in your browser using vanilla JavaScript — no data is uploaded to any server, ensuring sensitive payloads remain private.
+    </p>
+    <p class="seo-p">
+      Three viewing modes are available: Side by Side presents the changes in parallel panels; Unified view renders all changes as a single annotated diff stream with colour-coded lines; JSON Patch view generates a standard RFC 6902 patch document that describes exactly how to transform the source into the target using operations like <code class="inline-code">add</code>, <code class="inline-code">remove</code>, and <code class="inline-code">replace</code>. A stats row displays the total count of each operation type.
+    </p>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Diff algorithm</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Comparison</span><span class="info-value">Recursive deep comparison of both JSON trees</span></div>
-      <div class="info-row"><span class="info-label">Additions</span><span class="info-value">Keys present in target but not source (green)</span></div>
-      <div class="info-row"><span class="info-label">Deletions</span><span class="info-value">Keys present in source but not target (red)</span></div>
-      <div class="info-row"><span class="info-label">Modifications</span><span class="info-value">Keys with different values in source and target (yellow)</span></div>
-      <div class="info-row"><span class="info-label">Patch generation</span><span class="info-value">RFC 6902 operations with JSON Pointer paths</span></div>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['API schema migration audits', 'A backend developer refactoring a REST API can diff the old and new response schemas to identify every field change before deploying. The JSON Patch output can be used directly in PATCH endpoints to apply changes incrementally, reducing the risk of breaking clients that depend on specific fields.'],
+        ['Configuration file comparison', 'A DevOps engineer troubleshooting a deployment can diff the current and previous versions of a JSON configuration file to pinpoint exactly which values changed. The unified view provides a single scrollable changelog, making it easy to spot unintended modifications.'],
+        ['Database document migration', 'A developer migrating MongoDB documents to a new schema can compare sample documents before and after transformation. The deep recursive diff catches changes at any nesting depth, including nested array reordering and embedded object field additions.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: Recursive Diff Algorithm and JSON Patch Generation</h2>
+    <p class="seo-p">
+      The diff engine performs a recursive deep comparison of the two JSON trees. The algorithm starts by parsing both inputs with <code class="inline-code">JSON.parse()</code>, then traverses the resulting object graphs simultaneously using a depth-first strategy. At each node, it compares types and values using strict equality (<code class="inline-code">===</code>) for primitives and structural equality for objects and arrays.
+    </p>
+    <h3 class="seo-h3-sm">Change Detection Rules</h3>
+    <p class="seo-p">
+      When comparing two objects, the algorithm computes the union of all keys from both source and target. For each key: if present only in the source, it is recorded as a <code class="inline-code">remove</code> operation; if present only in the target, it is recorded as an <code class="inline-code">add</code> operation; if present in both but with different values, the algorithm recurses into the values or records a <code class="inline-code">replace</code> for primitive mismatches. Arrays are compared element-by-element by index rather than by value identity, which means reordered elements produce remove+add pairs rather than modifications.
+    </p>
+    <h3 class="seo-h3-sm">JSON Pointer Path Construction</h3>
+    <p class="seo-p-none">
+      Each detected change is annotated with its JSON Pointer (RFC 6901) path, built incrementally during the recursive traversal. For example, a change in <code class="inline-code">data.users[0].address.city</code> produces the pointer <code class="inline-code">/data/users/0/address/city</code>. The final patch output is a JSON array of operation objects, each containing the <code class="inline-code">op</code>, <code class="inline-code">path</code>, and (for add/replace) <code class="inline-code">value</code> fields, fully compliant with the RFC 6902 specification.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is RFC 6902?', a: 'RFC 6902 is the standard for JSON Patch — a JSON document describing a series of operations (add, remove, replace, move, copy, test) to transform one JSON document into another. It is widely used in REST APIs (e.g. PATCH requests).' },
-        { q: 'Does order of array elements matter?', a: 'Yes. Arrays are compared element-by-element. If elements are reordered, the diff will show deletions and additions rather than modifications. This is because JSON Patch operates on array indices.' },
-        { q: 'Can it handle deeply nested changes?', a: 'Yes. The diff algorithm recursively walks the entire JSON tree and generates JSON Pointer paths (e.g. /a/b/0/c) for every change, no matter how deeply nested.' },
-        { q: 'Is the patch output valid?', a: 'Yes. The generated patch follows RFC 6902 exactly. You can use it with any compliant JSON Patch library (e.g. json-patch in Python, fast-json-patch in JavaScript).' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is RFC 6902?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">RFC 6902 is the IETF standard that defines JSON Patch — a JSON document format describing a sequence of operations (add, remove, replace, move, copy, test) to transform one JSON document into another. It is widely used in REST APIs for partial updates via the HTTP PATCH method, allowing clients to send only the changes rather than the entire document.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does order of array elements matter?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Arrays are compared element-by-element by their index position. If elements are reordered, the diff will show deletions at the original indices and additions at the new indices rather than modifications to the elements themselves. This is because JSON Patch operates on array indices as paths, and reordering cannot be expressed as a single replace operation.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can it handle deeply nested changes?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The diff algorithm recursively walks the entire JSON tree to any depth and generates JSON Pointer paths for every change, no matter how deeply nested. A change to a field five levels deep will produce a path like <code class="inline-code">/a/b/0/c/d</code>, making it trivial to locate and apply the exact change.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is the patch output valid for use in production?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The generated patch follows RFC 6902 exactly and can be used with any compliant JSON Patch library, such as <code class="inline-code">json-patch</code> in Python, <code class="inline-code">fast-json-patch</code> in JavaScript, or <code class="inline-code">java-json-patch</code> in Java. The output is a plain JSON array of operation objects that can be directly serialised into an HTTP PATCH request body.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What if the source and target are identical?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">If both JSON documents are structurally and semantically identical, the tool reports "No differences found" in all views. The stats row shows zero for all operation types, and the JSON Patch output is an empty array — confirming that no transformations are needed to reconcile the two documents.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 

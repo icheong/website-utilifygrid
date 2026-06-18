@@ -48,37 +48,88 @@ const tool = tools.find(t => t.slug === 'json-string-escaper')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON String Escaper</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>Escape Mode:</strong> Paste raw JSON and click Escape. The output is a single-line string with all double quotes backslash-escaped (<code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">\"</code>), ready to paste into Java, C#, C++, or any language that needs a JSON string literal.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;"><strong>Unescape Mode:</strong> Paste an escaped string (e.g. from a log or source file) and click Unescape. The output is the original readable, formatted JSON.</p>
-  </div>
+    <h2 class="font-display seo-h2">JSON String Escaper and Unescaper Overview</h2>
+    <p class="seo-p">
+      This JSON string escaper converts between raw JSON documents and backslash-escaped string literals suitable for embedding in source code. Two modes are available: Escape Mode takes valid JSON and produces a single-line string with all special characters escaped, ready to paste into Java, C#, Python, or any language that uses backslash-escape sequences. Unescape Mode reverses the process, taking an escaped string literal and producing a readable, formatted JSON document.
+    </p>
+    <p class="seo-p">
+      The tool operates entirely client-side. In Escape mode, it parses the input with <code class="inline-code">JSON.parse()</code>, then uses <code class="inline-code">JSON.stringify()</code> to produce the escaped representation. In Unescape mode, it reverses the backslash sequences using the JavaScript parser's built-in unescaping, then optionally re-formats the result as pretty-printed JSON. An error is shown immediately for invalid input.
+    </p>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Escaping process</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Escape</span><span class="info-value">JSON.stringify() wraps all special chars in backslashes</span></div>
-      <div class="info-row"><span class="info-label">Unescape</span><span class="info-value">JSON.parse() reverses all escape sequences</span></div>
-      <div class="info-row"><span class="info-label">Chars escaped</span><span class="info-value">&quot; \ / b f n r t and Unicode escapes</span></div>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Embedding JSON in unit test fixtures', 'A developer writing unit tests in Java or C# can escape a JSON fixture object and paste the result directly into a string literal within the test method. This avoids the tedious manual process of escaping each double quote and backslash, and eliminates syntax errors from incomplete escaping.'],
+        ['Recovering JSON from log files and error traces', 'A DevOps engineer investigating a production incident finds an escaped JSON string in a log file. Using Unescape mode, they can convert the log entry back to formatted JSON in one click, making it possible to inspect the original data structure and identify the root cause of the error.'],
+        ['Preparing JSON for shell script variables', 'A developer writing a Bash or PowerShell script that passes JSON as an environment variable or command-line argument can use Escape mode to produce a safe, single-line string. The escaped output is guaranteed not to break the quoting of the enclosing shell script.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: Escape and Unescape Mechanics</h2>
+    <p class="seo-p">
+      The escape process uses a well-known technique: double-serialisation with <code class="inline-code">JSON.stringify()</code>. The input JSON is first parsed into an object via <code class="inline-code">JSON.parse()</code>, which validates it. This object is then passed to <code class="inline-code">JSON.stringify()</code> which produces a JavaScript string representation. Calling <code class="inline-code">JSON.stringify()</code> again on that string produces the final output — a JSON string literal whose value is the original JSON document. Every special character is correctly escaped according to the ECMAScript specification: double quotes become <code class="inline-code">\"</code>, backslashes become <code class="inline-code">\\</code>, and control characters like newline and tab become <code class="inline-code">\n</code> and <code class="inline-code">\t</code>.
+    </p>
+    <h3 class="seo-h3-sm">Unescape Process</h3>
+    <p class="seo-p">
+      The unescape mode reverses each layer of escaping. It first strips the outer JSON string encoding via <code class="inline-code">JSON.parse()</code>, which interprets all backslash-escape sequences and returns the raw string value. If that raw string is itself valid JSON, it is parsed and re-formatted with indentation. If the unescaped result is not valid JSON (for example, if the original input was a plain escaped string), it is returned as-is. This layered approach handles both fully escaped JSON documents and partially escaped strings.
+    </p>
+    <h3 class="seo-h3-sm">Character Escape Reference</h3>
+    <p class="seo-p-none">
+      The JSON escape specification (RFC 8259) requires escaping of the following characters: double quote (<code class="inline-code">"</code> → <code class="inline-code">\"</code>), backslash (<code class="inline-code">\</code> → <code class="inline-code">\\</code>), forward slash (<code class="inline-code">/</code> → <code class="inline-code">\/</code>), backspace (<code class="inline-code">\b</code>), form feed (<code class="inline-code">\f</code>), newline (<code class="inline-code">\n</code>), carriage return (<code class="inline-code">\r</code>), tab (<code class="inline-code">\t</code>), and all non-ASCII or non-printable Unicode characters using <code class="inline-code">\uXXXX</code> hexadecimal escape sequences.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'When would I use escape mode?', a: 'When you need to embed JSON inside a string literal in source code — for example, test fixtures in Java, C#, Python, or shell scripts. The escaped output can be pasted directly into a quoted string.' },
-        { q: 'What characters are escaped?', a: 'Double quotes ("), backslashes (backslash), forward slashes (/), and control characters: backspace (backspace), form feed (form feed), newline (newline), carriage return (carriage return), and tab (tab). Non-printable characters use Unicode escape notation.' },
-        { q: 'Can I escape invalid JSON?', a: 'No. The tool first parses the input with JSON.parse(). If it is not valid JSON, an error is shown. Fix the JSON first, then escape it.' },
-        { q: 'What languages does this work with?', a: 'The escaped output is valid in any language that uses backslash-escape sequences: Java, C#, C++, JavaScript, Python, Go, Rust, Ruby, PHP, and more.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">When would I use escape mode?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Escape mode is useful when you need to embed JSON inside a string literal in source code — for example, test fixtures in Java or C#, environment variables in shell scripts, or JSON payloads in Python string templates. The escaped output can be pasted directly into a quoted string in any language that uses backslash-escape conventions.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What characters are escaped?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">All characters required by the JSON specification (RFC 8259) are escaped: double quotes (<code class="inline-code">"</code>), backslashes, and control characters including backspace, form feed, newline, carriage return, and tab. Non-ASCII and non-printable Unicode characters are represented using <code class="inline-code">\uXXXX</code> hexadecimal escape sequences. Forward slashes may optionally be escaped.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I escape invalid JSON?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. The tool first parses the input with <code class="inline-code">JSON.parse()</code> to validate it. If the input is not valid JSON, an error message is displayed showing the parser's position information. You must fix the JSON syntax first, then run the escape operation. Invalid input cannot be meaningfully escaped because the parser cannot determine the intended structure.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What languages does the escaped output work with?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The escaped output is valid in any language that uses backslash-escape sequences for string literals: Java, C#, C++, JavaScript, TypeScript, Python, Go, Rust, Ruby, PHP, Kotlin, Swift, and many others. The escaping follows the universal JSON string encoding, which is compatible with the common subset of escape sequences across these languages.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does the tool handle Unicode surrogate pairs correctly?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. <code class="inline-code">JSON.stringify()</code> handles UTF-16 surrogate pairs natively. Emoji and other characters outside the Basic Multilingual Plane are either passed through as-is in the escaped output (if the runtime supports direct encoding) or represented as two <code class="inline-code">\uXXXX</code> surrogate escapes. The round-trip through parse and stringify preserves all Unicode characters correctly.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 

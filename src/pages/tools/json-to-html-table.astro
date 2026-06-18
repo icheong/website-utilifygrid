@@ -49,41 +49,96 @@ const tool = tools.find(t => t.slug === 'json-to-html-table')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Table Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste a JSON array of objects into the input field and click <strong>Render Table</strong>. Nested objects are flattened using dot notation (e.g. <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">address.city</code>) for column headers.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Click any column header to sort. Use the text filter to search across all columns. Click <strong>Copy Table</strong> to copy all visible rows as tab-separated data to your clipboard — ready to paste into Excel, Google Sheets, or any text editor.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;"><strong>JSONPath Query:</strong> Use the JSONPath input to filter your data with path expressions. Examples: <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">$[*]?(@.age>25)</code> returns all items where age exceeds 25. <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">$.data[*]</code> traverses a nested <code>data</code> array. <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">$[*]?(@.role=="Developer")</code> filters by exact match. Press Enter or click Apply to execute.</p>
-  </div>
+    <h2 class="font-display seo-h2">JSON to HTML Table Converter Overview</h2>
+    <p class="seo-p">
+      This JSON to HTML table converter transforms a JSON array of objects into a fully interactive, sortable, and filterable HTML table. Paste your data into the input area, click Render Table, and instantly view your data in a structured grid. Nested objects are automatically flattened using dot-notation column headers (e.g., <code class="inline-code">address.city</code>), and you can click any column header to sort ascending or descending. The entire tool runs client-side in your browser with zero server interaction.
+    </p>
+    <p class="seo-p">
+      Beyond basic rendering, the table supports text filtering across all columns and JSONPath query expressions for more advanced data selection. You can copy the visible rows as tab-separated values (TSV) to your clipboard for pasting into Excel or Google Sheets, or export them as a TSV file. The tool handles arrays of varying schemas gracefully — missing fields in some objects are left as empty cells, and the column set is the union of all keys across all objects.
+    </p>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Data processing</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Parsing</span><span class="info-value">JSON.parse() validates the input array</span></div>
-      <div class="info-row"><span class="info-label">Flattening</span><span class="info-value">Nested objects use dot notation for column names</span></div>
-      <div class="info-row"><span class="info-label">Sorting</span><span class="info-value">Client-side column sort (click header)</span></div>
-      <div class="info-row"><span class="info-label">Export</span><span class="info-value">Tab-separated values (.tsv) for Excel compatibility</span></div>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Quick data inspection for API responses', 'A developer receiving a JSON array from an API endpoint can paste it directly into the tool for instant visualisation. Sorting by columns like "date" or "price" reveals patterns or outliers immediately, without needing to write SQL queries or open a spreadsheet application.'],
+        ['Data cleaning and preparation for analysis', 'An analyst working with JSON exports from databases can view the data in a table, apply filters to isolate records of interest, and copy the filtered subset as TSV into Excel for further analysis. The JSONPath query feature allows complex filtering like $[*]?(@.age > 30) directly in the browser.'],
+        ['Non-technical team member data access', 'A product manager or business analyst who receives JSON data from engineering can render it as a table without needing coding skills or database access. The sortable columns and text filter make it easy to find specific records, compare values across rows, and gain insights independently.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: Object Flattening and Client-Side Table Rendering</h2>
+    <p class="seo-p">
+      The rendering pipeline begins with <code class="inline-code">JSON.parse()</code> to validate and parse the input. The parsed array is then passed through a recursive flattening function that transforms each nested object into a flat key-value map. For each property, if the value is a primitive (string, number, boolean, null), it is stored directly. If it is a nested object, the function recurses with the parent key as a prefix joined by a dot — for example, <code class="inline-code">{'{address: {city: "Sydney"}}'}</code> becomes <code class="inline-code">{'{"address.city": "Sydney"}'}</code>. Arrays are serialised as JSON strings in the cell.
+    </p>
+    <h3 class="seo-h3-sm">Column Discovery and Sorting</h3>
+    <p class="seo-p">
+      The column set is computed as the union of all flattened keys across every object in the array. This means that objects with differing schemas still produce a complete table: any object missing a field that exists in another object gets an empty cell for that column. Sorting is performed client-side using JavaScript's native <code class="inline-code">Array.sort()</code> with automatic type detection — numeric values are compared numerically, while strings use locale-aware comparison.
+    </p>
+    <h3 class="seo-h3-sm">JSONPath Query Integration</h3>
+    <p class="seo-p-none">
+      The integrated JSONPath evaluator allows users to filter the data before rendering. The evaluator supports a practical subset: root access (<code class="inline-code">$</code>), dot/bracket property access, array index and wildcard (<code class="inline-code">[*]</code>), recursive descent (<code class="inline-code">$..key</code>), and filter expressions with comparison operators. When a JSONPath query is active, only the matching subset of records is displayed, and the table header updates to reflect the filtered column set.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What JSON format does it expect?', a: 'An array of objects, e.g. [{"name":"Alice","age":30},{"name":"Bob","age":25}]. Each object becomes a row. Keys become column headers. Nested objects are flattened with dot notation.' },
-        { q: 'How does the Copy Table button work?', a: 'Click Copy Table to copy all currently visible rows (respecting any active filter or JSONPath query) to your clipboard as tab-separated values (TSV). You can then paste directly into Excel, Google Sheets, or any spreadsheet application. The format is plain text — no binary file required.' },
-        { q: 'What JSONPath expressions are supported?', a: 'The tool supports a subset of JSONPath: $ (root), $.key (dot access), $[0] (index), $[*] (all elements), $..key (recursive descent), and filter expressions like $[*]?(@.age>25). Filters support >, <, >=, <=, ==, and != operators. Strings can be quoted with single or double quotes.' },
-        { q: 'How does the Excel export work?', a: 'The export generates a tab-separated values (TSV) file with a .xlsx extension. Excel, Google Sheets, and LibreOffice Calc all open it natively. For true binary .xlsx, a dedicated library would be needed.' },
-        { q: 'Is there a row limit?', a: 'No hard limit — the table renders entirely in the browser. For very large datasets (10k+ rows), rendering may be slow. Consider paginating your data on the server side or using a JSONPath query to narrow the result set.' },
-        { q: 'Does it handle missing fields?', a: 'Yes. If some objects have keys others don\'t, the missing cells are left empty. The table adapts to the union of all keys found across all objects.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What JSON format does it expect?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+           <p itemprop="text" class="seo-faq-a">The input must be a JSON array of objects, for example <code class="inline-code">{'[{"name":"Alice","age":30},{"name":"Bob","age":25}]'}</code>. Each object becomes a table row and its keys become column headers. Nested objects are flattened using dot notation for column names. Arrays of primitive values are not supported as top-level elements.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does the Copy Table button work?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Click Copy Table to copy all currently visible rows (respecting any active text filter or JSONPath query) to your clipboard as tab-separated values (TSV). You can then paste directly into Excel, Google Sheets, or any spreadsheet application. The format is plain text with tabs as column delimiters, requiring no binary file conversion.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What JSONPath expressions are supported?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool supports a practical subset of JSONPath: <code class="inline-code">$</code> (root), <code class="inline-code">$.key</code> (dot access), <code class="inline-code">$[0]</code> (index), <code class="inline-code">$[*]</code> (all elements), <code class="inline-code">$..key</code> (recursive descent), and filter expressions like <code class="inline-code">$[*]?(@.age&gt;25)</code>. Filters support <code class="inline-code">&gt;</code>, <code class="inline-code">&lt;</code>, <code class="inline-code">&gt;=</code>, <code class="inline-code">&lt;=</code>, <code class="inline-code">==</code>, and <code class="inline-code">!=</code> operators with string or numeric comparison.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does the Excel export work?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The export generates a tab-separated values (TSV) file with a <code class="inline-code">.tsv</code> extension. Excel, Google Sheets, and LibreOffice Calc all open TSV files natively with correct column alignment. For true binary <code class="inline-code">.xlsx</code> format with formatting and formulas, a dedicated spreadsheet library such as SheetJS would be required.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is there a row limit?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard-coded limit — the table renders entirely in the browser DOM. For very large datasets (10,000+ rows), rendering may be slow due to DOM insertion overhead. Consider narrowing your data with a JSONPath query or text filter before rendering, or paginate the data server-side before pasting it into the tool.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does it handle missing fields across objects?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. If some objects have keys that others don't, the missing cells are rendered as empty. The column set is computed as the union of all keys found across every object in the array. This makes the tool tolerant of sparse or evolving data schemas, ideal for inspecting real-world data that is not perfectly uniform.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 

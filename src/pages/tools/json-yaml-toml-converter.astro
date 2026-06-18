@@ -52,38 +52,92 @@ const tool = tools.find(t => t.slug === 'json-yaml-toml-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste JSON into the left panel and click <strong>JSON → YAML</strong> (or <strong>JSON → TOML</strong>) to convert. You can also paste YAML/TOML into the right panel and click <strong>YAML → JSON</strong> to convert back.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The converter handles nested objects, arrays, null values, strings, numbers, booleans, and date strings. All conversion is client-side.</p>
-  </div>
+    <h2 class="font-display seo-h2">JSON to YAML / TOML Converter Overview</h2>
+    <p class="seo-p">
+      This bidirectional converter translates JSON documents into YAML or TOML format — and back again — using a custom JavaScript serialisation engine that runs entirely in your browser. Paste valid JSON into the left panel, select your target format (YAML or TOML), and the converted output appears instantly. You can also paste YAML or TOML into the right panel and convert back to JSON for round-trip verification. Every operation is 100% client-side, meaning your data never leaves your device.
+    </p>
+    <p class="seo-p">
+      The converter handles all standard JSON types including nested objects, arrays, strings, numbers, booleans, and null values. TOML output uses <code class="inline-code">[table]</code> sections for nested objects and <code class="inline-code">[[array-of-tables]]</code> for object arrays. YAML output uses block-style formatting with consistent indentation and proper quoting for keys and values that contain special characters. Both formats preserve the full structural fidelity of the original JSON.
+    </p>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Conversion approach</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">JSON → YAML</span><span class="info-value">Recursive serialisation with proper indentation and block sequences</span></div>
-      <div class="info-row"><span class="info-label">YAML → JSON</span><span class="info-value">Regex-based YAML parser handling nested mappings, sequences, and scalars</span></div>
-      <div class="info-row"><span class="info-label">JSON → TOML</span><span class="info-value">Tables for objects, arrays of tables for object arrays, inline for primitives</span></div>
-      <div class="info-row"><span class="info-label">TOML → JSON</span><span class="info-value">Section parser that builds nested objects from [table] headers</span></div>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['DevOps configuration migration', 'A platform engineer migrating infrastructure-as-code from JSON (Terraform variables) to YAML (Ansible playbooks or Kubernetes manifests) can convert configurations instantly. The round-trip capability validates that no data is lost during the format transition, which is critical for production deployments.'],
+        ['TOML-based project configuration', 'A developer setting up a Python project that uses pyproject.toml for dependencies and tooling (as required by PEP 621) can convert existing JSON configuration to TOML format. The converter handles nested tool sections correctly, producing valid TOML that tools like Poetry or PDM can consume directly.'],
+        ['Data exchange between heterogeneous systems', 'An integration engineer bridging two systems that use different serialisation formats can use this converter as a translation layer. JSON input from one API can be converted to YAML for a CI/CD pipeline, or TOML configuration from a Rust application can be converted to JSON for analysis in a JavaScript monitoring dashboard.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: Serialisation Engine and Format-Specific Mechanics</h2>
+    <p class="seo-p">
+      The conversion pipeline starts by parsing the input with <code class="inline-code">JSON.parse()</code> to build an in-memory JavaScript object tree. This parsed tree is then passed to a format-specific serialiser that recursively walks the structure and emits the target format with correct indentation, quoting, and structural markers.
+    </p>
+    <h3 class="seo-h3-sm">YAML Serialisation</h3>
+    <p class="seo-p">
+      The YAML serialiser produces block-style YAML with 2-space indentation. Objects are rendered as mappings with <code class="inline-code">key: value</code> syntax. Arrays become block sequences with leading hyphens. String values are quoted only when they contain characters that could be misinterpreted as YAML syntax (colons, hashes, leading whitespace, or numeric patterns). Nested objects and arrays are indented recursively. The serialiser does not support YAML anchors, aliases, or multi-line literal blocks, targeting the common subset used in most configuration files.
+    </p>
+    <h3 class="seo-h3-sm">TOML Serialisation</h3>
+    <p class="seo-p">
+      The TOML serialiser groups object keys into three categories: scalar values, nested tables, and arrays of tables. Scalars (strings, numbers, booleans) are emitted as top-level key-value pairs. Nested objects become <code class="inline-code">[table]</code> sections with dotted keys for deeper nesting. Arrays of homogeneous objects become <code class="inline-code">[[array-of-tables]]</code> sections per the TOML v1.0 specification. String values are quoted with double quotes and escape sequences for special characters. Inline arrays of primitive values use the <code class="inline-code">[1, 2, 3]</code> syntax.
+    </p>
+    <h3 class="seo-h3-sm">YAML/TOML to JSON (Reverse Conversion)</h3>
+    <p class="seo-p-none">
+      For reverse conversion, the input is parsed using a lightweight format-specific parser. The YAML parser handles nested mappings, block sequences, and quoted/ unquoted scalars using regex-based tokenisation with indentation tracking. The TOML parser processes <code class="inline-code">[table]</code> and <code class="inline-code">[[array-of-tables]]</code> headers to build nested objects, then converts the result to JSON via <code class="inline-code">JSON.stringify()</code>.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Does YAML/TOML support everything JSON does?', a: 'Mostly. YAML supports all JSON types plus dates, anchors, and multi-line strings. TOML supports dates natively and has stricter typing. Both support nested objects and arrays, but edge cases may differ.' },
-        { q: 'Can it handle circular references?', a: 'No. Circular references are not valid in JSON, YAML, or TOML. If your input contains a circular reference, the JSON.parse() step will reject it.' },
-        { q: 'What about YAML anchors and aliases?', a: 'YAML anchors (&name) and aliases (*name) are not supported in this converter. The parser treats them as literal strings. Use a dedicated YAML library for full anchor support.' },
-        { q: 'Is the TOML output valid?', a: 'Yes, for standard structures. The converter generates valid TOML for flat objects, nested tables, and arrays. Complex TOML features like inline tables in arrays may not be fully supported.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does YAML or TOML support everything JSON does?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Mostly. YAML supports all JSON types plus dates, anchors, and multi-line literal strings. TOML supports dates natively and has stricter type inference. Both formats support nested objects and arrays, but edge cases may differ. For example, TOML does not have a null type — null values in JSON are omitted during TOML conversion.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can it handle circular references?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. Circular references are not representable in JSON, YAML, or TOML as standard serialisation formats. If your input contains a circular reference, the initial <code class="inline-code">JSON.parse()</code> step will accept it, but <code class="inline-code">JSON.stringify()</code> will throw a <code class="inline-code">TypeError</code>. Ensure your data is acyclic before attempting conversion.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What about YAML anchors and aliases?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">YAML anchors (<code class="inline-code">&name</code>) and aliases (<code class="inline-code">*name</code>) are not supported in this converter. The parser treats them as literal strings during reverse conversion. For full anchor support, including resolution and dereferencing, use a dedicated YAML library such as <code class="inline-code">js-yaml</code> in JavaScript or <code class="inline-code">PyYAML</code> in Python.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is the TOML output valid?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes, for standard structures. The converter generates valid TOML v1.0 for flat objects, nested tables, and arrays. Complex TOML features such as inline tables within arrays, dotted keys on table headers, or multi-line basic strings are not fully supported. If your use case requires these features, verify the output against a TOML validator.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I verify the round-trip accuracy?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Paste the output back into the converter in reverse mode. For example, after converting JSON to YAML, paste the YAML output into the right panel and click YAML to JSON. If the round-tripped JSON matches the original, the conversion is accurate. Minor formatting differences (such as whitespace) do not affect semantic equality.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 

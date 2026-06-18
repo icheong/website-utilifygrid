@@ -55,43 +55,96 @@ const tool = tools.find(t => t.slug === 'json-fixer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Fixer</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste any malformed JSON — with trailing commas, single quotes, unquoted keys, missing brackets, or mixed quotes — and click <strong>Fix &amp; Format</strong>. The tool automatically detects and repairs each issue.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">A detailed repair log shows exactly what was changed (e.g. "Fixed 2 trailing commas, wrapped 1 key in quotes"). Use the sample buttons to see common broken-JSON patterns.</p>
-  </div>
+    <h2 class="font-display seo-h2">JSON Fixer and Automatic Repair Tool Overview</h2>
+    <p class="seo-p">
+      This JSON fixer automatically detects and repairs common syntax errors in malformed JSON documents — including trailing commas, single-quoted strings, unquoted property names, and missing closing brackets. Paste broken JSON into the input panel and click Fix &amp; Format to see the repaired, prettified output alongside a detailed repair log that itemises every change made. All processing is 100% client-side with no server uploads, keeping your data completely private.
+    </p>
+    <p class="seo-p">
+      The tool runs a multi-stage repair pipeline that normalises quotes, strips trailing commas, wraps bare identifier keys in double quotes, and balances unmatched brackets. After each repair stage, the result is passed to <code class="inline-code">JSON.parse()</code> for validation. If the JSON is already valid, it is simply prettified without any modifications. The repair log provides full transparency into what was changed and why, so you can verify the corrections before using the output.
+    </p>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the repair pipeline works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       {[
-        ['Quote Normalisation', 'Single quotes are swapped for double quotes where they wrap string values or keys.'],
-        ['Trailing Comma Removal', 'Commas after the last element in arrays or objects are stripped.'],
-        ['Unquoted Key Wrapping', 'Property names not wrapped in double quotes are automatically quoted.'],
-        ['Bracket Balancing', 'Missing closing braces or brackets are appended to form a valid structure.'],
-        ['Validation', 'The repaired string is parsed with JSON.parse(). If still invalid, the error is reported.'],
-      ].map(([label, desc]) => (
-        <div class="info-row"><span class="info-label">{label}</span><span class="info-value">{desc}</span></div>
+        ['Copy-paste from JavaScript source code', 'A developer copying an object literal from JavaScript code often ends up with trailing commas and single-quoted keys, which are valid in JS but invalid in JSON. Instead of manually editing every line, paste the JS object literal into the fixer and get valid JSON in one click.'],
+        ['Recovering truncated API responses', 'An engineer debugging a partial API response that got cut off mid-response can use the bracket balancer to infer and append missing closing braces. While not guaranteed to recover the original intent, it often produces parseable JSON that reveals most of the data.'],
+        ['Migrating legacy configuration files', 'A systems administrator converting YAML-like or relaxed JSON configs (with unquoted keys, single quotes, or trailing commas) to strict RFC 8259 JSON can batch-fix files through the tool. The repair log documents every transformation for auditability.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
       ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: Multi-Stage Repair Pipeline</h2>
+    <p class="seo-p">
+      The repair engine processes input through a sequence of independent stages, each targeting a specific class of JSON syntax error. Each stage operates character-by-character with awareness of string literal boundaries to avoid corrupting values.
+    </p>
+    <h3 class="seo-h3-sm">Stage 1: Quote Normalisation</h3>
+    <p class="seo-p">
+      Single quotes (<code class="inline-code">'</code>) that appear outside of double-quoted strings are replaced with double quotes (<code class="inline-code">"</code>). The scanner tracks whether it is inside a double-quoted string by counting quote characters and respecting backslash escapes. This ensures that single quotes inside string values — such as contractions like <code class="inline-code">don't</code> — are preserved while structural single quotes are corrected.
+    </p>
+    <h3 class="seo-h3-sm">Stage 2: Trailing Comma Removal</h3>
+    <p class="seo-p">
+      Commas that appear immediately before a closing brace <code class="inline-code">}</code> or bracket <code class="inline-code">]</code> (with optional whitespace between) are removed. The scanner skips over whitespace after a comma and checks whether the next non-whitespace character is a closing delimiter. This handles the most common JSON syntax error introduced by languages that permit trailing commas.
+    </p>
+    <h3 class="seo-h3-sm">Stage 3: Unquoted Key Wrapping</h3>
+    <p class="seo-p">
+      Property names that consist only of alphanumeric characters, underscores, and dollar signs — and are not already wrapped in quotes — are detected by scanning for identifier-like tokens following opening braces or commas. Each detected bare identifier is wrapped in double quotes. The scanner uses a regex pattern to identify valid JavaScript identifier tokens, which is conservative enough to avoid false positives on values.
+    </p>
+    <h3 class="seo-h3-sm">Stage 4: Bracket Balancing</h3>
+    <p class="seo-p-none">
+      A stack-based algorithm traverses the string and tracks opening braces <code class="inline-code">{'{'}</code> and brackets <code class="inline-code">[</code>, pushing each onto a stack. When a closing delimiter is encountered, it is matched against the top of the stack. After the full scan, any unmatched open delimiters on the stack are appended as closing delimiters in reverse order. This heuristic fixes cases where a document was truncated or a closing bracket was omitted during manual editing.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Can it fix completely broken JSON?', a: 'It handles the most common issues: trailing commas, single quotes, unquoted keys, and missing brackets. If the JSON is fundamentally malformed (e.g. missing entire sections), the tool will report the remaining error after attempting repairs.' },
-        { q: 'Does fixing change the data?', a: 'No. The repairs only fix syntax — no values, types, or structure are altered. The repaired JSON is semantically identical to what the original author intended.' },
-        { q: 'What if the fix is wrong?', a: 'Always review the repair log. The tool makes conservative assumptions — for example, it only wraps keys that clearly look like bare identifiers (no spaces, not already quoted). Edge cases may need manual review.' },
-        { q: 'Why does my JSON have trailing commas?', a: 'Many languages (JavaScript, Python dicts, YAML) allow trailing commas. When JSON is generated or edited in these contexts, trailing commas often sneak in. The JSON spec (RFC 8259) does not allow them.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can it fix completely broken JSON?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool handles the most common issues: trailing commas, single quotes, unquoted keys, and missing brackets. If the JSON is fundamentally malformed — for example, if it is entirely non-JSON text or missing most of its content — the repair pipeline will report the remaining error after attempting all stages. The repair log shows exactly what was changed and what still failed.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does fixing change the data?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. The repairs only fix syntax — no values, types, or structural relationships are altered. The repaired JSON is semantically identical to what the original author intended. The repair log provides transparency into each transformation so you can verify that no unintended changes were made.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What if the fix is wrong?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Always review the repair log. The tool makes conservative assumptions — for example, it only wraps keys that clearly look like bare identifiers (alphanumeric, no spaces, not already quoted). Edge cases such as numeric-only keys or keys with special characters may require manual intervention. If the repair produces unexpected output, check the log and manually correct the original input.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why does my JSON have trailing commas?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Many languages and environments (JavaScript object literals, Python dicts, YAML, and some configuration formats) allow trailing commas for cleaner diffs and easier reordering. When JSON is generated or manually edited in these contexts, trailing commas often sneak in. JSON per RFC 8259 strictly forbids them, which is why a dedicated fixer is needed.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does the tool handle mixed quote usage within string values?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The quote normaliser is context-aware and tracks double-quote boundaries precisely. If a string value contains a single quote (e.g. <code class="inline-code">don't</code>), it is left untouched because the normaliser only swaps single quotes that appear outside of double-quoted strings. However, nested or mismatched quote styles inside values may still produce invalid output and should be reviewed manually.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 

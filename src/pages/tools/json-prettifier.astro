@@ -73,38 +73,88 @@ const tool = tools.find(t => t.slug === 'json-prettifier')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Prettifier</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste raw, minified, or poorly formatted JSON into the left panel. Choose your indentation style (2 spaces, 4 spaces, or tabs) and toggle <strong>Sort keys</strong> if you want alphabetical ordering. Click <strong>Prettify</strong> to format.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The stats row shows the before/after byte size and total line count. All processing is client-side — your data never leaves the browser.</p>
-  </div>
+    <h2 class="font-display seo-h2">JSON Prettifier and Formatter Overview</h2>
+    <p class="seo-p">
+      This JSON prettifier transforms raw, minified, or poorly formatted JSON into clean, human-readable output with configurable indentation. Running entirely in-browser with vanilla JavaScript, the tool parses input using the native <code class="inline-code">JSON.parse()</code> method and re-serialises it with <code class="inline-code">JSON.stringify()</code> using your chosen indentation style. Every operation occurs client-side — no data is uploaded to any server, ensuring complete privacy for sensitive configuration files, API responses, or data exports.
+    </p>
+    <p class="seo-p">
+      You can choose between 2-space, 4-space, or tab indentation, and optionally sort object keys alphabetically for deterministic, diff-friendly output. The stats row displays the before-and-after byte sizes and total line count, giving you immediate feedback on how formatting affects file size. The tool also functions as a JSON validator: invalid input produces a clear error message with the parser's exact position information.
+    </p>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How prettification works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Parsing</span><span class="info-value">Native JSON.parse() validates the input</span></div>
-      <div class="info-row"><span class="info-label">Sorting</span><span class="info-value">Object.keys().sort() orders properties alphabetically</span></div>
-      <div class="info-row"><span class="info-label">Formatting</span><span class="info-value">JSON.stringify(obj, null, indent) applies indentation</span></div>
-      <div class="info-row"><span class="info-label">Output</span><span class="info-value">Canonical, human-readable JSON</span></div>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['API developers debugging responses', 'A backend developer inspecting a REST API response can paste the raw payload into the prettifier to immediately see the structure with proper indentation. The sort-keys feature makes it easy to compare two similar responses side by side when debugging serialisation issues.'],
+        ['Configuration file maintenance', 'DevOps engineers working with JSON configuration files for tools like ESLint, Prettier, or tsconfig can normalise formatting across a team by running configs through the prettifier with consistent indentation settings. The byte-size stats help identify unnecessarily large config files.'],
+        ['Data analysts preparing shared datasets', 'Analysts who export JSON data from databases or APIs can format it before sharing with colleagues. The sorted keys option produces a canonical representation that simplifies code review and makes it trivial to spot missing or unexpected fields in pull requests.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: JSON Parsing and Serialisation Mechanics</h2>
+    <p class="seo-p">
+      The prettifier operates in three distinct stages: parsing, optional sorting, and serialisation. The parsing stage uses the native <code class="inline-code">JSON.parse()</code> method, which implements the ECMAScript JSON grammar per the ECMA-404 and RFC 8259 specifications. This method validates the input against the strict JSON grammar — any deviation, such as trailing commas, single quotes, or unquoted keys, triggers a <code class="inline-code">SyntaxError</code> with the exact line and column position of the failure.
+    </p>
+    <h3 class="seo-h3-sm">Key Sorting Algorithm</h3>
+    <p class="seo-p">
+      When the sort-keys option is enabled, the tool performs a recursive traversal of the parsed object tree using a depth-first approach. At each object level, <code class="inline-code">Object.keys()</code> collects the property names, which are then sorted lexicographically using the default JavaScript comparison (UTF-16 code unit ordering). The sorted keys are assigned to a new object in order, and the process recurses into nested objects and arrays. This produces deterministic output regardless of the original key insertion order.
+    </p>
+    <h3 class="seo-h3-sm">Serialisation with <code class="inline-code">JSON.stringify()</code></h3>
+    <p class="seo-p-none">
+      The final stage calls <code class="inline-code">JSON.stringify(obj, null, indent)</code> where <code class="inline-code">indent</code> is either a number (2 or 4 spaces) or the tab character. The native implementation handles all JSON types correctly, including edge cases such as <code class="inline-code">null</code>, <code class="inline-code">Infinity</code> (serialised as <code class="inline-code">null</code>), <code class="inline-code">NaN</code> (serialised as <code class="inline-code">null</code>), and circular references (which throw a <code class="inline-code">TypeError</code>). The byte-size comparison uses <code class="inline-code">TextEncoder</code> for accurate UTF-8 byte counts.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Does sorting keys change the meaning of the JSON?', a: 'No. JSON object key order is not semantically significant per the specification. Sorting keys alphabetically makes the output deterministic and easier to diff or compare.' },
-        { q: 'Can it handle very large JSON files?', a: 'Yes. The tool runs entirely in the browser using native JSON.parse(). For files over 50 MB, formatting may take a moment — the browser will remain responsive during processing.' },
-        { q: 'What happens if the JSON is invalid?', a: 'The tool will show a parse error with the position (line and column) where the issue was detected. Fix the error in the input and try again.' },
-        { q: 'Why use tabs instead of spaces?', a: 'Tabs produce smaller files and let each developer set their preferred visual width in their editor. Some style guides (e.g. some Go and Rust configs) mandate tabs for indentation.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does sorting keys change the meaning of the JSON?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. JSON object key order is not semantically significant per the ECMA-404 and RFC 8259 specifications. Sorting keys alphabetically makes the output deterministic and easier to diff or compare across different API versions or configuration files.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can it handle very large JSON files?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The tool runs entirely in the browser using native <code class="inline-code">JSON.parse()</code>, which is highly optimised in all modern JavaScript engines. For files over 50 MB, parsing and formatting may take a moment, but the browser remains responsive during processing because the work is performed synchronously on the main thread in small bursts.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens if the JSON is invalid?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool displays a parse error with the exact line and column position where the issue was detected, using the error message from the native JavaScript engine. Common issues include trailing commas, single-quoted strings, unquoted property names, and missing closing brackets. Fix the reported error in the input and click Prettify again.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why use tabs instead of spaces for indentation?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Tabs produce smaller file sizes because each indentation level is a single character rather than multiple space characters. Additionally, tabs let each developer configure their preferred visual width in their editor. Some style guides, such as those used in Go and Rust projects, mandate tabs for indentation as a project convention.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does the tool preserve the original value types?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The round-trip through <code class="inline-code">JSON.parse()</code> and <code class="inline-code">JSON.stringify()</code> preserves all JSON types exactly: strings, numbers, booleans, null, arrays, and objects. Numbers that exceed JavaScript's safe integer range (above 2^53) may lose precision due to IEEE 754 double-precision representation, which is a limitation of the JSON specification itself.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 

@@ -33,38 +33,92 @@ const tool = tools.find(t => t.slug === 'json-tree-visualizer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Tree Visualizer</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste any JSON into the input field and click <strong>Visualise</strong>. The tree renders with collapsible nodes — click any object or array node to expand/collapse its children.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Hover over a key node to see its data type (String, Number, Boolean, Array, Object, Null) and raw value. Use <strong>Expand All</strong> / <strong>Collapse All</strong> for quick navigation of large structures.</p>
-  </div>
+    <h2 class="font-display seo-h2">JSON Tree Visualizer Overview</h2>
+    <p class="seo-p">
+      This interactive JSON tree visualizer transforms raw, nested JSON data into a collapsible, type-highlighted tree structure that you can explore node by node. Running entirely in-browser with vanilla JavaScript, the tool parses input using the native <code class="inline-code">JSON.parse()</code> method and constructs a live DOM tree without uploading any data to external servers. Every operation is performed client-side, ensuring complete privacy for sensitive configuration files, API payloads, or database exports.
+    </p>
+    <p class="seo-p">
+      Paste any valid JSON into the input field and click <strong>Visualise</strong>. The tree renders with collapsible object and array nodes — click any branch to expand or collapse its children. Hover over a key to see its data type (String, Number, Boolean, Array, Object, Null) and raw value in a tooltip. Use <strong>Expand All</strong> and <strong>Collapse All</strong> for quick navigation of deeply nested structures, and <strong>Load Sample</strong> to see the tool in action with a pre-built example.
+    </p>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Rendering approach</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Parsing</span><span class="info-value">JSON.parse() builds the object tree</span></div>
-      <div class="info-row"><span class="info-label">Tree walk</span><span class="info-value">Recursive DOM construction with expand/collapse state</span></div>
-      <div class="info-row"><span class="info-label">Interaction</span><span class="info-value">Click to toggle, hover for type tooltip, CSS transitions for smooth collapse</span></div>
-      <div class="info-row"><span class="info-label">Performance</span><span class="info-value">Lazy rendering — children are only built when first expanded</span></div>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Debugging complex API responses', 'A backend developer inspecting a deeply nested REST API response can paste the raw payload into the tree visualizer to immediately understand the structure, identify unexpected null values, and verify that all expected fields are present without manually parsing flat JSON text.'],
+        ['Inspecting configuration files', 'DevOps engineers working with multi-level JSON configuration files for Kubernetes, Docker Compose, or CI/CD pipelines can use the tree view to navigate nested objects and arrays without losing context, making it easy to spot misconfigurations or missing keys in deeply nested sections.'],
+        ['Teaching and learning JSON structure', 'Students and educators can use the visualizer to demonstrate how JSON objects, arrays, and primitive values relate to each other in a hierarchical structure. The color-coded type badges and expand/collapse interaction make abstract data structures concrete and tangible.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: Recursive Tree Construction and Lazy Rendering</h2>
+    <p class="seo-p">
+      The visualizer operates in three distinct stages: parsing, recursive tree construction, and interactive state management. The parsing stage uses the native <code class="inline-code">JSON.parse()</code> method, which implements the ECMAScript JSON grammar per the ECMA-404 and RFC 8259 specifications. This method validates the input against strict JSON grammar — any deviation, such as trailing commas, single quotes, or unquoted keys, triggers a <code class="inline-code">SyntaxError</code> that is displayed in the error panel.
+    </p>
+    <h3 class="seo-h3-sm">Recursive DOM Construction</h3>
+    <p class="seo-p">
+      After parsing, the tool walks the resulting object tree using a recursive depth-first traversal. For each object or array node, the algorithm creates a collapsible row element with a toggle indicator and a badge showing the type and child count (e.g., <code class="inline-code">Object(3)</code> or <code class="inline-code">Array(5)</code>). Primitive values — strings, numbers, booleans, and null — are rendered as leaf nodes with color-coded type badges: green for strings, purple for numbers, pink for booleans, and grey for null.
+    </p>
+    <h3 class="seo-h3-sm">Lazy Rendering and Performance</h3>
+    <p class="seo-p">
+      To handle large JSON structures efficiently, the tool uses lazy rendering. Child nodes are only constructed in the DOM when the parent node is first expanded. This means that a 10,000-node JSON object only renders the top-level keys initially, and deeper levels are built on demand. This approach keeps the initial render fast and reduces memory consumption for structures that are only partially explored.
+    </p>
+    <h3 class="seo-h3-sm">Type Detection and Tooltip Metadata</h3>
+    <p class="seo-p-none">
+      Each node determines its type using a strict classification function: <code class="inline-code">Array.isArray()</code> checks for arrays, <code class="inline-code">null</code> is checked by strict equality (since <code class="inline-code">typeof null === 'object'</code> in JavaScript), and all remaining objects are classified as Object. Primitives use the <code class="inline-code">typeof</code> operator. On hover, a tooltip displays the full type and a truncated preview of the value (capped at 120 characters) for quick inspection without expanding the node.
+    </p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'How large can the JSON be?', a: 'The tool handles most practical JSON payloads. Very large structures (100k+ nodes) may be slow to render initially. Collapsed nodes are not rendered until expanded, which helps with performance.' },
-        { q: 'Can I copy a subtree?', a: 'Not yet. A future update may add right-click context menu to copy subtrees as JSON. For now, use the JSON Prettifier to format and copy the full output.' },
-        { q: 'Does it highlight types?', a: 'Yes. Each node shows its type: String (green), Number (purple), Boolean (pink), Null (grey), Array (blue label), Object (blue label). Hover over any key to see the full type tooltip.' },
-        { q: 'What about circular references?', a: 'Standard JSON cannot contain circular references. JSON.parse() will reject such input. Use a serialisation library that handles cycles if needed.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How large can the JSON input be?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool handles most practical JSON payloads. Because child nodes are only built when first expanded (lazy rendering), the initial render remains fast even for large structures. Very large inputs with 100,000 or more nodes may take a moment to parse, but collapsed branches do not consume DOM resources until expanded.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I copy a subtree as JSON?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The current version does not include a right-click context menu for copying subtrees. For full JSON output, paste the original input into the JSON Prettifier tool, which formats and copies the complete structure. A future update may add subtree export functionality.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does the tool handle different data types?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Each node is assigned a type badge with a distinct color: green for String, purple for Number, pink for Boolean, grey for Null, and blue labels for Array and Object. Hovering over any key displays a tooltip with the full type and raw value, making it easy to distinguish between types at a glance without expanding nested structures.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does it support circular references in JSON?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Standard JSON per RFC 8259 cannot contain circular references, and <code class="inline-code">JSON.parse()</code> will reject such input. If your data structure contains cycles, you will need to serialise it with a library that handles circular references, then manually break the cycles before pasting into this tool.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens if the JSON is invalid?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">If the input is not valid JSON, the tool displays the exact error message from the JavaScript engine in a red error box below the input area. Common issues include trailing commas, single-quoted strings, unquoted keys, and missing closing brackets. Fix the reported error and click Visualise again.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
