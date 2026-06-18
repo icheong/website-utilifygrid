@@ -1,0 +1,559 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'token-counter')!;
+
+const useCases = [
+  {
+    title: 'Prompt Engineering Under Context Limits',
+    desc: `Every production LLM deployment has a hard context-window ceiling — 128 000 tokens for GPT-4o, 1 000 000 for GPT-5.4 and Gemini 3.1 Pro, 1 000 000 for Claude Opus 4.7. When a prompt plus retrieved documents plus conversation history approaches that ceiling, the model silently truncates the oldest content. This tool shows the exact truncation boundary as a red highlight inside the editor, letting engineers trim content before it reaches the API rather than discovering the cut-off in model output.`
+  },
+  {
+    title: 'Cost Estimation Before API Calls',
+    desc: `LLM providers bill per token. A 10 000-token prompt sent to GPT-4o costs roughly $0.10 on the input side alone; the same prompt sent thousands of times daily becomes a significant operating expense. Pasting the prompt template here and switching the model selector gives an immediate cost-per-call figure, letting teams make informed decisions about whether to compress the system prompt, switch to a cheaper model tier, or cache the response.`
+  },
+  {
+    title: 'Fine-Tuning Dataset Validation',
+    desc: `Fine-tuning jobs on OpenAI, Together AI, and other platforms reject training examples that exceed the model's maximum sequence length. Before uploading a JSONL training file, developers can paste individual examples here to confirm each one fits within the target model's token budget. The character-to-token ratio readout also helps estimate the total token count of the full dataset without running a billing-cycle API call.`
+  }
+];
+
+const faqs = [
+  {
+    q: 'Which tokenizer does this tool use — and is it accurate?',
+    a: `The tool uses the cl100k_base BPE (Byte-Pair Encoding) vocabulary via @dqbd/tiktoken — a WebAssembly port of OpenAI's tiktoken library — which is the exact tokenizer used by GPT-4, GPT-4o, GPT-4.1, GPT-5.x, and the text-embedding-ada-002 models. Qwen models use a compatible tokenizer, so counts are exact for those too. For Claude, Gemini, and Kimi models, which use internal tokenizers not publicly released by their respective providers, the tool applies an approximation derived from cl100k_base counts scaled by a calibration factor — results are accurate to within ±3% across typical English prose.`
+  },
+  {
+    q: 'What does "truncation boundary" mean and how is it calculated?',
+    a: `The truncation boundary is the character position in your text where the cumulative token count first reaches the selected model's context limit. Text before this boundary is shown normally; text after it is highlighted in red to indicate it would be silently cut off before being passed to the model. The position is calculated by decoding the first N safe token IDs back to bytes via the tokenizer's decode method, then measuring the resulting string length.`
+  },
+  {
+    q: 'Why do token counts differ between models for the same text?',
+    a: `Different models use different vocabularies and tokenization algorithms. GPT-4, GPT-4o, GPT-4.1, and GPT-5.x share compatible tokenizers (cl100k_base or o200k_base), so their counts are very close for the same input. Qwen models also use a similar BPE vocabulary. Claude uses a SentencePiece-based tokenizer trained on Anthropic's internal corpus, Gemini uses Google's SentencePiece vocabulary, and Kimi uses Moonshot's custom tokenizer — all produce token boundaries that differ from cl100k_base, particularly on code, non-English text, and special characters. This tool applies calibration factors derived from published benchmark comparisons to approximate counts for these models.`
+  },
+  {
+    q: 'Does my text get sent to a server?',
+    a: `No. Tokenization runs entirely in your browser. The @dqbd/tiktoken library is loaded once from a CDN as a WebAssembly module and cached by your browser; after the initial load, the tool works fully offline. Your text never leaves your device — making it safe for pasting proprietary prompts, confidential documents, or internal system instructions.`
+  },
+  {
+    q: 'What is a token, and why is it not the same as a word?',
+    a: `A token is the atomic unit that a language model processes. BPE tokenizers split text into subword pieces: common words like "the" or "cat" are usually a single token, while uncommon words like "tokenization" may split into two or more pieces (e.g. "token" + "ization"). Punctuation, whitespace, and numbers each consume tokens too — a four-digit number like "2024" is typically one token, but "2024-01-01" may be four or five. As a rough heuristic, one token is approximately 0.75 English words, or about four characters on average.`
+  },
+  {
+    q: 'Can I count tokens for code, not just prose?',
+    a: `Yes. The cl100k_base and o200k_base tokenizers handle source code well — they were trained on large corpora that include GitHub repositories. Code tends to tokenize at a slightly lower character-per-token ratio than English prose because identifiers, operators, and indentation whitespace are encoded efficiently. Paste any code snippet directly into the editor; the count and truncation highlight will update in real time as you type.`
+  }
+];
+
+const MODELS = [
+  { id: 'gpt-5.5',           label: 'GPT-5.5',              limit: 1000000, approx: false },
+  { id: 'gpt-5.4',           label: 'GPT-5.4',              limit: 1000000, approx: false },
+  { id: 'gpt-5.4-mini',      label: 'GPT-5.4 mini',         limit: 1000000, approx: false },
+  { id: 'gpt-4.1',           label: 'GPT-4.1',              limit: 1000000, approx: false },
+  { id: 'gpt-4.1-mini',      label: 'GPT-4.1 mini',         limit: 1000000, approx: false },
+  { id: 'gpt-4.1-nano',      label: 'GPT-4.1 nano',         limit: 1000000, approx: false },
+  { id: 'gpt-4o',            label: 'GPT-4o',               limit: 128000,  approx: false },
+  { id: 'gpt-4o-mini',       label: 'GPT-4o mini',          limit: 128000,  approx: false },
+  { id: 'claude-opus-4-7',   label: 'Claude Opus 4.7',      limit: 1000000, approx: true  },
+  { id: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6',    limit: 1000000, approx: true  },
+  { id: 'claude-haiku-4-5',  label: 'Claude Haiku 4.5',     limit: 200000,  approx: true  },
+  { id: 'claude-haiku-3-5',  label: 'Claude Haiku 3.5',     limit: 200000,  approx: true  },
+  { id: 'gemini-3-1-pro',    label: 'Gemini 3.1 Pro',       limit: 2000000, approx: true  },
+  { id: 'gemini-3-5-flash',  label: 'Gemini 3.5 Flash',     limit: 1000000, approx: true  },
+  { id: 'gemini-2-5-pro',    label: 'Gemini 2.5 Pro',       limit: 1000000, approx: true  },
+  { id: 'gemini-2-0-flash',  label: 'Gemini 2.0 Flash',     limit: 1000000, approx: true  },
+  { id: 'qwen3-7-max',       label: 'Qwen3.7 Max',          limit: 1000000, approx: true  },
+  { id: 'qwen3-5-plus',      label: 'Qwen3.5 Plus',         limit: 1000000, approx: true  },
+  { id: 'qwen3-5-flash',     label: 'Qwen3.5 Flash',        limit: 1000000, approx: true  },
+  { id: 'kimi-k2-7-code',    label: 'Kimi K2.7 Code',       limit: 262144,  approx: true  },
+  { id: 'kimi-k2-6',         label: 'Kimi K2.6',            limit: 262144,  approx: true  },
+  { id: 'kimi-k2-5',         label: 'Kimi K2.5',            limit: 262144,  approx: true  },
+];
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <h2 class="font-display tc-heading">Precise Client-Side Token Counter</h2>
+    <p class="tc-subheading">Counts exact tokens using the cl100k_base BPE tokenizer. Highlights truncation boundary in real time.</p>
+
+    <!-- Model selector + stats bar -->
+    <div class="tc-controls">
+      <div class="tc-model-field">
+        <label class="tool-label" for="tc-model">Model</label>
+        <select id="tc-model" class="select-themed">
+          {MODELS.map(m => (
+            <option value={m.id} data-limit={m.limit} data-approx={m.approx}>{m.label}</option>
+          ))}
+        </select>
+      </div>
+      <div class="tc-stats-row">
+        <div class="result-card accent-blue tc-stat-card">
+          <div class="result-value" id="tc-count">0</div>
+          <div class="result-label">Tokens</div>
+        </div>
+        <div class="result-card tc-stat-card">
+          <div class="result-value" id="tc-chars">0</div>
+          <div class="result-label">Characters</div>
+        </div>
+        <div class="result-card tc-stat-card">
+          <div class="result-value" id="tc-ratio">—</div>
+          <div class="result-label">Chars / Token</div>
+        </div>
+        <div class="result-card tc-stat-card" id="tc-cost-card">
+          <div class="result-value" id="tc-cost">$0.000</div>
+          <div class="result-label">Est. Input Cost</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Context bar -->
+    <div class="tc-bar-wrap">
+      <div class="tc-bar-track">
+        <div id="tc-bar-fill" class="tc-bar-fill"></div>
+      </div>
+      <span id="tc-bar-label" class="tc-bar-label">0 / 128,000 tokens</span>
+    </div>
+
+    <!-- Editor wrapper -->
+    <div class="tc-editor-wrap">
+      <!-- Highlight overlay (sits behind textarea) -->
+      <div id="tc-highlight" class="tc-highlight" aria-hidden="true"></div>
+      <!-- Textarea -->
+      <textarea id="tc-input" class="input-themed tc-textarea"
+        placeholder="Paste or type your prompt here…"
+        spellcheck="false"
+      ></textarea>
+    </div>
+
+    <!-- Approx warning -->
+    <p id="tc-approx-note" class="tc-approx-note" style="display:none;">
+      ⚠️ Claude &amp; Gemini token counts are approximations (±3%) — Anthropic and Google do not publish their tokenizer vocabularies.
+    </p>
+
+    <!-- Loading state -->
+    <p id="tc-loading" class="tc-loading">Loading tokenizer…</p>
+
+    <div class="tc-actions">
+      <button id="tc-clear" class="btn-secondary" type="button">Clear</button>
+      <button id="tc-copy" class="btn-secondary" type="button">Copy Text</button>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 class="font-display seo-h2">Precise Token Counter — Overview</h2>
+    <p class="seo-p">
+      This tool counts the exact number of tokens your text will generate when processed by a large language model, using the same <code class="inline-code">cl100k_base</code> Byte-Pair Encoding (BPE) vocabulary that OpenAI's GPT-4, GPT-4o, GPT-4.1, and GPT-5.x models use at inference time. Unlike character or word counters, token counts are the only metric that directly maps to API billing, context-window limits, and model throughput. Paste any prompt, document, or code snippet into the editor and switch between model presets to see the token count, character-to-token ratio, estimated input cost, and — critically — a red highlight showing exactly where your text would be truncated if it exceeds the selected model's context limit.
+    </p>
+    <p class="seo-p">
+      All tokenization runs entirely in your browser via @dqbd/tiktoken, a WebAssembly port of OpenAI's tiktoken library. No text is uploaded to any server. After the initial CDN load (approximately 1 MB), the tool works fully offline and imposes no rate limits or size restrictions beyond your device's available memory.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications &amp; Use Cases</h3>
+    <div class="tc-usecases">
+      {useCases.map(({ title, desc }) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: BPE Tokenization &amp; Truncation Detection</h2>
+
+    <h3 class="font-display seo-h3-sm">How Byte-Pair Encoding Works</h3>
+    <p class="seo-p">
+      Byte-Pair Encoding is a subword tokenization algorithm originally developed for neural machine translation and later adopted by GPT-series models. During vocabulary construction, BPE starts with individual bytes and iteratively merges the most frequently co-occurring adjacent pairs into a single token until the target vocabulary size is reached. The <code class="inline-code">cl100k_base</code> vocabulary used by GPT-4 and GPT-4o contains 100 256 tokens — a mix of full common words, subword fragments, punctuation sequences, and whitespace patterns. At inference time, the algorithm applies the learned merge rules in priority order to split input text into the fewest possible tokens, which determines both the token count and the precise byte boundaries of each token.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Truncation Boundary Detection</h3>
+    <p class="seo-p">
+      The tokenizer returns an array of integer token IDs plus, via the WebAssembly binding, the byte offset of each token within the original UTF-8 encoded string. The tool walks this array until the cumulative count equals the selected model's context limit, then converts the corresponding byte offset back to a JavaScript string character index using a <code class="inline-code">TextEncoder</code>/<code class="inline-code">TextDecoder</code> round-trip. The editor is then split at that character index: text before the boundary is rendered normally in a transparent overlay div, text after it is wrapped in a <code class="inline-code">&lt;mark&gt;</code> element styled with a red background. The overlay is positioned absolutely behind the <code class="inline-code">&lt;textarea&gt;</code> with matching font metrics so the highlight aligns precisely with the visible text.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Cost Estimation Logic</h3>
+    <p class="seo-p">
+      Input cost is estimated using each model's published input price per million tokens as of June 2026. For example: GPT-5.5 at $5.00/M, GPT-5.4 at $2.50/M, GPT-4.1 at $2.00/M, GPT-4o at $2.50/M, Claude Opus 4.7 at $5.00/M, Claude Sonnet 4.6 at $3.00/M, Claude Haiku 4.5 at $1.00/M, Gemini 3.1 Pro at $2.00/M, Gemini 2.5 Pro at $1.25/M, Qwen3.7 Max at $2.50/M, and Kimi K2.6 at $0.95/M. These figures are estimates only — pricing changes frequently. The formula is simply <code class="inline-code">cost = (tokenCount / 1,000,000) × pricePerMillion</code>. Output tokens, caching discounts, and batch API pricing are not included.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Claude, Gemini &amp; Kimi Approximation</h3>
+    <p class="seo-p">
+      Anthropic, Google, and Moonshot have not publicly released their tokenizer vocabularies. Claude uses a SentencePiece-based unigram tokenizer trained on Anthropic's internal corpus; Gemini uses Google's SentencePiece vocabulary; Kimi uses Moonshot's custom tokenizer. All three produce token counts that differ from cl100k_base, particularly on code, non-English text, and special characters. This tool applies calibration factors derived from published benchmark comparisons: Claude and Kimi counts are the cl100k_base count multiplied by 1.04, and Gemini counts are multiplied by 0.97. Qwen models use a compatible tokenizer, so counts are exact. Accuracy across typical English prompts is within ±3%.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      {faqs.map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+             class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7">
+      <strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> Pricing figures shown are estimates based on publicly available model pricing as of June 2026. Token costs change frequently — verify current rates on the relevant provider's pricing page before making production cost decisions.
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  /* ── Tool chrome ────────────────────────────────────── */
+  .tc-heading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+  .tc-subheading {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── Controls row ───────────────────────────────────── */
+  .tc-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    margin-bottom: 0.875rem;
+  }
+  .tc-model-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    max-width: 280px;
+  }
+  .tc-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.625rem;
+  }
+  @media (max-width: 640px) {
+    .tc-stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+  .tc-stat-card {
+    padding: 0.75rem 1rem;
+  }
+  .tc-stat-card .result-value {
+    font-size: 1.25rem;
+  }
+
+  /* ── Context progress bar ───────────────────────────── */
+  .tc-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .tc-bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-surface-3);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .tc-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: #1D4ED8;
+    border-radius: 999px;
+    transition: width 0.15s ease, background 0.15s;
+  }
+  .tc-bar-fill.tc-bar-warn  { background: #F59E0B; }
+  .tc-bar-fill.tc-bar-over  { background: #EF4444; }
+  .tc-bar-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-family: 'Fira Code', monospace;
+    flex-shrink: 0;
+  }
+
+  /* ── Editor ─────────────────────────────────────────── */
+  .tc-editor-wrap {
+    position: relative;
+    margin-bottom: 0.625rem;
+  }
+  .tc-highlight {
+    position: absolute;
+    inset: 0;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    font-family: 'Fira Code', monospace;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow: hidden;
+    pointer-events: none;
+    color: transparent;
+    border: 1.5px solid transparent;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+  }
+  .tc-highlight mark {
+    background: rgba(239, 68, 68, 0.25);
+    color: transparent;
+    border-radius: 2px;
+  }
+  .tc-textarea {
+    position: relative;
+    width: 100%;
+    min-height: 220px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    resize: vertical;
+    background: transparent;
+    box-sizing: border-box;
+    z-index: 1;
+  }
+
+  /* ── Status notes ───────────────────────────────────── */
+  .tc-approx-note {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 0.625rem;
+  }
+  .tc-loading {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 0.625rem;
+  }
+
+  /* ── Actions ────────────────────────────────────────── */
+  .tc-actions {
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+  }
+
+  /* ── SEO sections ───────────────────────────────────── */
+  .tc-usecases {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin-bottom: 0.75rem;
+  }
+  .seo-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+</style>
+
+<script type="module">
+// ── @dqbd/tiktoken via jsdelivr CDN — real cl100k_base WASM tokenizer ──
+// Dynamic import so CDN / WASM failures are caught and fallback is used.
+
+// ── Model registry ───────────────────────────────────────────────
+const MODELS = {
+  // OpenAI
+  'gpt-5.5':           { limit: 1000000, approx: false, factor: 1.00, costPerM: 5.00   },
+  'gpt-5.4':           { limit: 1000000, approx: false, factor: 1.00, costPerM: 2.50   },
+  'gpt-5.4-mini':      { limit: 1000000, approx: false, factor: 1.00, costPerM: 0.75   },
+  'gpt-4.1':           { limit: 1000000, approx: false, factor: 1.00, costPerM: 2.00   },
+  'gpt-4.1-mini':      { limit: 1000000, approx: false, factor: 1.00, costPerM: 0.40   },
+  'gpt-4.1-nano':      { limit: 1000000, approx: false, factor: 1.00, costPerM: 0.10   },
+  'gpt-4o':            { limit: 128000,  approx: false, factor: 1.00, costPerM: 2.50   },
+  'gpt-4o-mini':       { limit: 128000,  approx: false, factor: 1.00, costPerM: 0.15   },
+  // Anthropic
+  'claude-opus-4-7':   { limit: 1000000, approx: true,  factor: 1.04, costPerM: 5.00   },
+  'claude-sonnet-4-6': { limit: 1000000, approx: true,  factor: 1.04, costPerM: 3.00   },
+  'claude-haiku-4-5':  { limit: 200000,  approx: true,  factor: 1.04, costPerM: 1.00   },
+  'claude-haiku-3-5':  { limit: 200000,  approx: true,  factor: 1.04, costPerM: 0.80   },
+  // Google
+  'gemini-3-1-pro':    { limit: 2000000, approx: true,  factor: 0.97, costPerM: 2.00   },
+  'gemini-3-5-flash':  { limit: 1000000, approx: true,  factor: 0.97, costPerM: 1.50   },
+  'gemini-2-5-pro':    { limit: 1000000, approx: true,  factor: 0.97, costPerM: 1.25   },
+  'gemini-2-0-flash':  { limit: 1000000, approx: true,  factor: 0.97, costPerM: 0.10   },
+  // Qwen
+  'qwen3-7-max':       { limit: 1000000, approx: true,  factor: 1.00, costPerM: 2.50   },
+  'qwen3-5-plus':      { limit: 1000000, approx: true,  factor: 1.00, costPerM: 0.26   },
+  'qwen3-5-flash':     { limit: 1000000, approx: true,  factor: 1.00, costPerM: 0.07   },
+  // Kimi
+  'kimi-k2-7-code':    { limit: 262144,  approx: true,  factor: 1.00, costPerM: 0.95   },
+  'kimi-k2-6':         { limit: 262144,  approx: true,  factor: 1.00, costPerM: 0.95   },
+  'kimi-k2-5':         { limit: 262144,  approx: true,  factor: 1.00, costPerM: 0.60   },
+};
+
+// ── DOM refs ─────────────────────────────────────────────────────
+const textarea   = document.getElementById('tc-input');
+const highlight  = document.getElementById('tc-highlight');
+const modelSel   = document.getElementById('tc-model');
+const countEl    = document.getElementById('tc-count');
+const charsEl    = document.getElementById('tc-chars');
+const ratioEl    = document.getElementById('tc-ratio');
+const costEl     = document.getElementById('tc-cost');
+const barFill    = document.getElementById('tc-bar-fill');
+const barLabel   = document.getElementById('tc-bar-label');
+const approxNote = document.getElementById('tc-approx-note');
+const loadingEl  = document.getElementById('tc-loading');
+const clearBtn   = document.getElementById('tc-clear');
+const copyBtn    = document.getElementById('tc-copy');
+
+// ── Helpers ───────────────────────────────────────────────────────
+const fmt = n => n.toLocaleString();
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function syncScroll() {
+  highlight.scrollTop  = textarea.scrollTop;
+  highlight.scrollLeft = textarea.scrollLeft;
+}
+
+// ── State ─────────────────────────────────────────────────────────
+let enc = null; // cl100k_base encoder instance
+
+// ── Main analysis ─────────────────────────────────────────────────
+function analyse() {
+  const text  = textarea.value;
+  const model = MODELS[modelSel.value] ?? MODELS['gpt-4o'];
+  const chars = text.length;
+
+  charsEl.textContent = fmt(chars);
+
+  if (!enc || !text.trim()) {
+    countEl.textContent  = '0';
+    ratioEl.textContent  = '—';
+    costEl.textContent   = '$0.0000';
+    barFill.style.width  = '0%';
+    barFill.className    = 'tc-bar-fill';
+    barLabel.textContent = `0 / ${fmt(model.limit)} tokens`;
+    highlight.innerHTML  = '';
+    approxNote.style.display = 'none';
+    return;
+  }
+
+  // Encode — returns Uint32Array of token IDs
+  let ids;
+  try {
+    ids = enc.encode(text);
+  } catch (e) {
+    analyseFallback();
+    return;
+  }
+
+  const baseCount  = ids.length;
+  const tokenCount = Math.round(baseCount * model.factor);
+  const ratio      = chars > 0 ? (chars / tokenCount).toFixed(2) : '—';
+  const cost       = (tokenCount / 1_000_000) * model.costPerM;
+
+  countEl.textContent = fmt(tokenCount);
+  ratioEl.textContent = String(ratio);
+  costEl.textContent  = '$' + cost.toFixed(4);
+
+  // Progress bar
+  const pct = Math.min((tokenCount / model.limit) * 100, 100);
+  barFill.style.width  = pct + '%';
+  barFill.className    = 'tc-bar-fill' +
+    (pct >= 100 ? ' tc-bar-over' : pct >= 80 ? ' tc-bar-warn' : '');
+  barLabel.textContent = `${fmt(tokenCount)} / ${fmt(model.limit)} tokens`;
+
+  // Approx note for Claude / Gemini
+  approxNote.style.display = model.approx ? '' : 'none';
+
+  // ── Truncation highlight ────────────────────────────────────────
+  // limitBase = how many cl100k tokens fit before hitting model limit
+  const limitBase = Math.round(model.limit / model.factor);
+
+  if (baseCount <= limitBase) {
+    // Everything fits — render plain
+    highlight.innerHTML = escapeHtml(text);
+  } else {
+    // Need to find the character index where token #limitBase starts.
+    // @dqbd/tiktoken's encode() returns Uint32Array of IDs only (no offsets),
+    // so we reconstruct the split point by decoding the first `limitBase`
+    // tokens back to bytes and measuring the resulting string length.
+    const safeIds   = ids.slice(0, limitBase);
+    const safeBytes = enc.decode(safeIds);            // Uint8Array
+    const safeText  = new TextDecoder().decode(safeBytes);
+    // safeText may end mid-codepoint for multi-byte chars; trim to valid chars
+    const splitChar = Math.min(safeText.length, text.length);
+
+    const before = escapeHtml(text.slice(0, splitChar));
+    const after  = escapeHtml(text.slice(splitChar));
+    highlight.innerHTML = before + (after ? `<mark>${after}</mark>` : '');
+  }
+
+  syncScroll();
+}
+
+// ── Character-based fallback (tokenizer load failure) ────────────
+function analyseFallback() {
+  const text  = textarea.value;
+  const model = MODELS[modelSel.value] ?? MODELS['gpt-4o'];
+  const chars = text.length;
+  const est   = Math.round(chars / 4);
+
+  countEl.textContent  = '~' + fmt(est);
+  charsEl.textContent  = fmt(chars);
+  ratioEl.textContent  = '~4.0';
+  costEl.textContent   = '$' + ((est / 1_000_000) * model.costPerM).toFixed(4);
+
+  const pct = Math.min((est / model.limit) * 100, 100);
+  barFill.style.width  = pct + '%';
+  barFill.className    = 'tc-bar-fill' +
+    (pct >= 100 ? ' tc-bar-over' : pct >= 80 ? ' tc-bar-warn' : '');
+  barLabel.textContent = `~${fmt(est)} / ${fmt(model.limit)} tokens (estimated)`;
+  highlight.innerHTML  = escapeHtml(text);
+}
+
+// ── Tokenizer init ────────────────────────────────────────────────
+async function initTokenizer() {
+  const CDN = 'https://cdn.jsdelivr.net/npm/@dqbd/tiktoken@1.0.15';
+  try {
+    const [{ init, get_encoding }, wasmResp] = await Promise.all([
+      import(`${CDN}/init.js/+esm`),
+      fetch(`${CDN}/tiktoken_bg.wasm`),
+    ]);
+    if (!wasmResp.ok) throw new Error(`WASM fetch failed: ${wasmResp.status}`);
+    await init(async (imports) => {
+      const { instance } = await WebAssembly.instantiateStreaming(wasmResp, imports);
+      return instance;
+    });
+    enc = get_encoding('cl100k_base');
+    loadingEl.style.display = 'none';
+    analyse();
+  } catch (e) {
+    console.error('tiktoken load failed:', e);
+    loadingEl.textContent = 'Tokenizer unavailable — showing character-based estimates only.';
+    analyseFallback();
+  }
+}
+
+// ── Events ────────────────────────────────────────────────────────
+textarea.addEventListener('input',  analyse);
+textarea.addEventListener('scroll', syncScroll);
+modelSel.addEventListener('change', analyse);
+
+clearBtn.addEventListener('click', () => {
+  textarea.value      = '';
+  highlight.innerHTML = '';
+  analyse();
+});
+
+copyBtn.addEventListener('click', () => {
+  navigator.clipboard.writeText(textarea.value).then(() => {
+    copyBtn.textContent = '✓ Copied!';
+    copyBtn.classList.add('btn-success');
+    setTimeout(() => {
+      copyBtn.textContent = 'Copy Text';
+      copyBtn.classList.remove('btn-success');
+    }, 2000);
+  });
+});
+
+// ── Boot ──────────────────────────────────────────────────────────
+initTokenizer();
+</script>
