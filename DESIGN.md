@@ -69,15 +69,35 @@ All tool pages must use these standardised classes for form elements. Do not ove
 
 ## 4. Real-World Applications / Use Cases
 
-- Must be rendered as a set of `seo-card-sm` components (flex column cards).
-- **Do not** use plain `<p>` tags, custom grid tiles, or inline-styled divs for use‑cases.
-- Each card:
+- Must be rendered as a set of `seo-card-sm` components inside a **flex column wrapper**.
+- **Do not** use plain `<p>` tags, custom grid tiles, inline-styled divs, or CSS grid layouts for use‑cases.
+- **Do not** use `grid grid-cols-*` classes on the use-case wrapper — this creates a tile layout that breaks the design.
+- The wrapper div **must** use this exact inline style:
+  ```html
+  <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+  ```
+- Each card inside the wrapper:
   - Outer container: `<div class="border-theme surface-2 seo-card-sm">`
   - Title: `<strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>`
   - Description: `<p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>`
 - The `seo-card-sm` class provides:
   - `display: flex; flex-direction: column; gap: 0.625rem;`
   - Consistent padding, border, and background via `border-theme` and `surface-2`.
+- Example (from mortgage-calculator):
+  ```html
+  <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+  <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+    {[
+      ['Title one', 'Description one.'],
+      ['Title two', 'Description two.'],
+    ].map(([title, desc]) => (
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+      </div>
+    ))}
+  </div>
+  ```
 
 ## 5. Deep-Dive / Technical Mechanics & Formulas
 

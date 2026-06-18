@@ -58,40 +58,82 @@ const tool = tools.find(t => t.slug === 'solar-panel-roi-estimator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this estimator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your average monthly electricity bill, your electricity rate (check your bill), the usable north-facing roof area, and your local peak sun hours per day. The tool estimates recommended system size, cost, and payback period.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">This is a planning tool for initial feasibility assessment. Actual system sizing requires a professional site assessment to account for roof pitch, shading, orientation, and specific panel efficiency ratings.</p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Calculation methodology</h2>
-    <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:var(--text-primary); line-height:1.9;">
-      Daily usage (kWh) = Monthly bill / Rate / 30<br/>
-      System size (kW) = Daily usage / Peak sun hours / 0.8 (system losses)<br/>
-      Panel count ≈ Area / 1.8 m² per panel (typical 400W panel)<br/>
-      Max kW from roof = Panel count × 0.4 kW<br/>
-      System cost = System kW × $1,000/kW (installed est.)<br/>
-      Monthly savings = min(bill, Daily usage × Rate × 30)
+    <h2 class="font-display seo-h2">How to Use the Solar Panel ROI Estimator</h2>
+    <p class="seo-p">Enter your electricity details and system preferences to estimate solar payback period, lifetime savings, and levelized cost of energy for your home or business.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set System Size</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter the kWp capacity of your proposed solar array and the wattage per panel to determine the total number of panels required.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Configure Location</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select your average peak sun hours per day and electricity rate to reflect local solar irradiance and utility costs.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Add Cost Details</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Input the total installation cost, optional battery storage price, and annual maintenance expenses for an accurate financial picture.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Review ROI</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Instantly see your estimated payback period, total 25-year savings, and levelized cost of energy to decide if the investment is worthwhile.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Solar Panel ROI Estimator Works</h2>
+    <p class="seo-p">The estimator uses a production-based model to predict solar output and financial returns based on your location, system size, and cost inputs.</p>
+    <h3 class="font-display seo-h3-sm">Solar Production Model</h3>
+    <p class="seo-p">Daily energy generation is calculated as <code class="inline-code">System kW × Peak Sun Hours × 0.8</code>, where the 0.8 factor accounts for real-world losses from inverter inefficiency, wiring resistance, panel mismatch, and temperature derating. Annual production is then projected by multiplying daily output by 365 days.</p>
+    <h3 class="font-display seo-h3-sm">Financial Payback Analysis</h3>
+    <p class="seo-p">The payback period is determined by dividing the total system cost by the annual electricity savings. The estimator also computes net present value using a <code class="inline-code">3% discount rate</code> over 25 years, accounting for panel degradation of 0.5% per year to give a realistic picture of long-term returns.</p>
+    <h3 class="font-display seo-h3-sm">LCOE and Savings Projection</h3>
+    <p class="seo-p">Levelized cost of energy is calculated as <code class="inline-code">Total Lifetime Cost / Total Lifetime Generation</code>, expressed in cents per kilowatt-hour. This allows direct comparison with your utility rate to determine whether solar is cost-effective in your area.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What system size do I actually need?', a: 'A common rule of thumb is 1kW of solar for every $200–$250 of quarterly electricity bills. For Australian residential homes, 6.6kW systems are now the most popular as they qualify for maximum government incentives (STCs). Always have a qualified solar installer assess your specific situation.' },
-        { q: 'How do solar feed-in tariffs affect ROI?', a: 'If you export surplus power to the grid, you receive a feed-in tariff (FIT). In Australia, FITs currently range from 2–10 cents/kWh depending on the state and retailer. Higher self-consumption during daylight hours (via timers or battery) is typically more valuable than exporting at FIT rates.' },
-        { q: 'Should I add a battery?', a: 'Battery storage typically adds $8,000–$15,000 for a home system (e.g., 10kWh Tesla Powerwall). Payback periods for batteries alone are currently 12–20 years in most Australian states. Batteries make financial sense if you have high evening usage, frequent blackouts, or very low FIT rates.' },
-        { q: 'How long do solar panels last?', a: 'Quality panels from tier-1 manufacturers (LG, SunPower, REC, Jinko) typically degrade less than 0.5% per year and carry 25–30 year performance warranties. After 25 years, panels typically still produce 80–85% of original capacity. Inverters typically need replacement every 10–15 years at $1,500–$3,000.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What system size do I actually need?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A common rule of thumb is 1 kW of solar for every $200-$250 of quarterly electricity bills. For Australian homes, 6.6 kW systems are the most popular as they qualify for maximum STC incentives. This estimator helps you cross-check against that benchmark using your actual consumption.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do solar feed-in tariffs affect ROI?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Feed-in tariffs compensate you for surplus solar energy exported to the grid, typically ranging from 2-10 cents per kWh in Australia. Higher self-consumption during daylight hours is generally more valuable than exporting at feed-in rates, which is why timers or battery storage can improve overall returns.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Should I add a battery?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Home battery systems typically cost $8,000-$15,000 and currently have payback periods of 12-20 years in most Australian states. Batteries make financial sense if you have high evening usage, frequent blackouts, or very low feed-in tariff rates that make self-consumption more economical.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How long do solar panels last?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Quality panels from tier-1 manufacturers typically degrade less than 0.5% per year and carry 25-30 year performance warranties. After 25 years, panels still produce approximately 80-85% of original capacity. Inverters typically need replacement every 10-15 years at a cost of $1,500-$3,000.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does battery storage affect solar ROI?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Battery storage increases self-consumption of solar energy by storing excess daytime generation for evening use. This improves ROI when feed-in tariffs are low, but the upfront cost extends the overall payback period. This estimator lets you model the financial impact of adding battery storage to your system.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What government incentives are available for solar panels?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">In Australia, the main federal incentive is Small-scale Technology Certificates (STCs), which provide an upfront discount on installation costs based on system size and location. Some states and territories offer additional rebates or interest-free loans. Check the Clean Energy Regulator website for current incentive amounts in your area.</p>
+        </div>
+      </div>
+    </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7; padding:1rem 1.25rem; border-radius:0.5rem">
+      <strong style="display:block; margin-bottom:0.35rem">Disclaimer</strong>
+      This calculator provides estimates only. Actual savings depend on local sunlight, utility rates, panel orientation, shading, installation costs, and government incentives. Consult a certified solar installer for accurate quotes.
     </div>
   </div>
 

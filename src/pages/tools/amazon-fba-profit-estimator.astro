@@ -76,44 +76,78 @@ const tool = tools.find(t => t.slug === 'amazon-fba-profit-estimator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this estimator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your expected sale price, landed cost of goods (including manufacturing + freight to Amazon warehouse), product weight, and category. The tool applies Amazon's referral fee percentage and estimates the FBA fulfillment fee based on weight tiers.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Use this as a pre-launch sanity check. Always verify current fees in Amazon Seller Central's Revenue Calculator as rates change regularly.</p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How fees are calculated</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Referral Fee', 'A percentage of the sale price charged by Amazon per transaction. Rates range from 6% (grocery) to 17% (clothing). Minimum referral fees of $0.30–$1.00 apply for most categories.'],
-        ['FBA Fulfillment Fee', 'Charged per unit shipped by Amazon. Based on weight tiers: under 250g ≈ $3.22, 250g–500g ≈ $4.75, 500g–1kg ≈ $5.40, 1kg–2kg ≈ $6.10, over 2kg ≈ $6.50 + $0.38/100g. Dimensional weight may apply.'],
-        ['ROI vs Margin', 'ROI = Net Profit / COGS × 100. Margin = Net Profit / Sale Price × 100. FBA sellers typically target ROI above 50% and margin above 20% to account for PPC advertising, returns, and storage fees.'],
-      ].map(([label, desc]) => (
-        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">How to Use the Amazon FBA Profit Estimator</h2>
+    <p class="seo-p">Estimate your per-unit profit, ROI, and net margin on any Amazon product before you commit to sourcing. Follow the four steps below to get an accurate fee breakdown.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Product Details</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Input your expected selling price, shipping weight in kilograms, and product category. The category determines Amazon's referral fee percentage applied to each sale.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Cost Parameters</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter your landed cost of goods per unit, including manufacturing, freight, and packaging. This figure is critical for calculating your true net profit and return on investment.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Fulfillment Plan</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose between FBA (Fulfillment by Amazon) and FBM (Fulfillment by Merchant) based on your logistics setup. The tool calculates the appropriate fulfillment fees for your selected method and marketplace.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Review Profitability</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Examine the full fee breakdown, including referral fees, fulfillment fees, and your net profit. Check the ROI and margin indicators to determine whether the product meets your profitability thresholds.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Amazon FBA Profit Estimator Works</h2>
+    <p class="seo-p">The estimator breaks down every cost Amazon deducts from your sale price so you can see exactly where your profit goes.</p>
+    <h3 class="font-display seo-h3-sm">Amazon Fee Calculation Engine</h3>
+    <p class="seo-p">Amazon charges a <code class="inline-code">referral fee</code> as a percentage of the sale price, which varies by product category from 6% (grocery) to 17% (clothing). On top of that, the <code class="inline-code">FBA fulfillment fee</code> is a per-unit charge based on weight tiers — for example, items under 250g cost roughly $3.22 while items between 500g and 1kg cost about $5.40. The tool applies both fees to give you the total Amazon take per unit.</p>
+    <h3 class="font-display seo-h3-sm">FBA vs FBM Cost Comparison</h3>
+    <p class="seo-p">When you select FBA, the tool includes Amazon's per-unit fulfillment fee and estimates monthly <code class="inline-code">storage fees</code> based on product dimensions. Under FBM, those fulfillment fees are replaced with your own shipping costs, and you handle packing and customer service. This comparison helps you decide whether paying Amazon to handle logistics makes financial sense for your product.</p>
+    <h3 class="font-display seo-h3-sm">Break-Even and ROI Analysis</h3>
+    <p class="seo-p">The tool calculates <code class="inline-code">net margin</code> (profit divided by sale price) and <code class="inline-code">ROI</code> (profit divided by cost of goods). These metrics tell you whether a product is worth pursuing. A healthy Amazon FBA product typically targets a net margin above 20% and an ROI above 50%, which leaves room for advertising spend, returns, and unexpected cost increases.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What other costs should I factor in?', a: 'Beyond referral and FBA fees, common costs include: Amazon PPC advertising (typically 5–20% of revenue for new products), monthly storage fees ($0.75–$2.40/cubic foot depending on season), product photography, listing translation, return processing, and the $39.99/month Professional selling plan fee.' },
-        { q: 'What is a healthy ROI for Amazon FBA?', a: 'Most experienced FBA sellers target a minimum 30% ROI on cost of goods before advertising. After PPC spend, profitable products typically return 20–50% ROI. Products below 20% ROI are usually difficult to scale profitably once advertising costs are factored in.' },
-        { q: 'Does Amazon charge VAT or GST on fees?', a: 'Yes — Amazon charges GST on fees for Australian sellers and VAT for EU marketplace fees. These are separate from the referral and fulfillment fees shown here and should be factored into your pricing, particularly if you are not GST-registered.' },
-        { q: 'When do FBA fees increase?', a: 'Amazon typically increases FBA fees annually, with the January–February period being most common. Peak season surcharges (October–December) also apply for storage. Always check the current fee schedule in Seller Central before committing to sourcing decisions.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between FBA and FBM fees?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">FBA (Fulfillment by Amazon) charges a per-unit fulfillment fee based on product weight, plus monthly storage fees for inventory held in Amazon's warehouses. FBM (Fulfillment by Merchant) eliminates those Amazon fulfillment charges, but you must cover your own warehousing, packing, shipping, and customer service costs. FBA fees are predictable and scale with volume, while FBM costs depend entirely on your logistics setup.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How accurate are the Amazon fee estimates?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The estimator uses Amazon's published referral fee rates and standard FBA weight-based fulfillment tiers, so the figures are a reliable baseline for planning. However, actual fees can vary due to dimensional weight pricing, category-specific minimums, and seasonal surcharges. Always cross-check your estimates in Amazon Seller Central's Revenue Calculator before finalizing sourcing decisions.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What other costs should I factor in?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Beyond referral and FBA fulfillment fees, budget for Amazon PPC advertising (typically 5 to 20 percent of revenue for new listings), monthly storage fees ($0.75 to $2.40 per cubic foot depending on season), product photography, listing optimization, return processing, and the $39.99 per month Professional selling plan fee. These hidden costs can quickly erode margins if not accounted for upfront.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is a healthy ROI for Amazon FBA?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Most experienced FBA sellers target a minimum 30 percent ROI on cost of goods before advertising spend. After factoring in PPC, returns, and storage, a sustainable product typically delivers 20 to 50 percent ROI. Anything below 20 percent is difficult to scale profitably once all operational costs are included, especially in competitive categories with rising ad bids.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does Amazon charge VAT or GST on fees?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes, Amazon charges GST on fees for Australian sellers and VAT on EU marketplace fees. These taxes are applied on top of the referral and fulfillment fees shown in this tool and are separate from product-level sales tax. If you are not registered for GST or VAT, these charges reduce your net margin and should be factored into your pricing strategy.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">When do FBA fees increase?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Amazon typically updates FBA fees once a year, with increases most commonly announced in January or February. Peak season storage surcharges also apply from October through December. Review the current fee schedule in Seller Central before committing to large sourcing orders, as even small per-unit increases can significantly impact profitability at scale.</p>
+        </div>
+      </div>
     </div>
   </div>
 

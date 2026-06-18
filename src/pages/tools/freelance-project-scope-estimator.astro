@@ -31,33 +31,82 @@ const tool = tools.find(t => t.slug === 'freelance-project-scope-estimator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this estimator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your hourly rate, then review the pre-loaded scope items. Toggle each item on or off, adjust the estimated hours range for each deliverable, and add any custom items specific to your project. The total estimate updates live.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The range (low–high) uses the minimum and maximum hours you specify, multiplied by your hourly rate. This is ideal for providing clients with a scoped estimate while preserving flexibility.</p>
+    <h2 class="font-display seo-h2">How to Use the Freelance Project Scope Estimator</h2>
+    <p class="seo-p">Follow these steps to build an accurate project budget and deliver a professional, client-ready estimate.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Define Project Scope</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select project type (web, app, design, etc.) and toggle the relevant deliverables on or off. Each pre-loaded item represents a common phase of a freelance project.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Hours and Rate</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter your hourly or daily rate, then adjust the minimum and maximum hours for each scope item. The estimator uses these values to calculate a realistic cost range.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Add Expenses</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Include hosting, licenses, travel, third-party services, and any other project-specific costs. Custom scope items let you account for expenses unique to your engagement.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Review Estimate</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See your total budget range, per-phase breakdown, and margin assumptions at a glance. Use the low-to-high range when quoting clients so expectations stay realistic.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Scope item structure</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Each scope item has a name, a minimum hours estimate, and a maximum hours estimate. The total low = sum of all enabled item mins × rate. The total high = sum of all enabled item maxes × rate. Include a 10–20% buffer in your max hours for unknowns and client revisions.</p>
+    <h2 class="font-display seo-h2">How the Freelance Project Scope Estimator Works</h2>
+    <p class="seo-p">The estimator applies a transparent cost model so you can understand every number in your quote.</p>
+    <h3 class="font-display seo-h3-sm">Scope-Based Cost Model</h3>
+    <p class="seo-p">Each project type comes with a set of <code class="inline-code">scope items</code> representing typical deliverables such as discovery, design, development, and testing. You assign a <code class="inline-code">minimum hours</code> and <code class="inline-code">maximum hours</code> estimate to every active item. The low total is the sum of all enabled minimums multiplied by your rate; the high total is the sum of all maximums. This produces a realistic budget range rather than a single fragile number.</p>
+    <h3 class="font-display seo-h3-sm">Expense and Overhead Calculation</h3>
+    <p class="seo-p">Beyond hourly labor, the tool lets you add custom items for fixed costs such as <code class="inline-code">hosting</code>, <code class="inline-code">software licenses</code>, <code class="inline-code">travel</code>, and <code class="inline-code">third-party services</code>. Each custom item contributes directly to the total, ensuring your estimate captures the full cost of delivery, not just your personal time.</p>
+    <h3 class="font-display seo-h3-sm">Margin and Contingency Analysis</h3>
+    <p class="seo-p">The difference between the low and high estimates creates a natural <code class="inline-code">contingency buffer</code>. This spread covers scope refinements, client revisions, and unexpected issues without requiring a separate markup. When presenting to clients, the range lets you anchor the conversation around a fair midpoint while preserving room for profit.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Should I quote fixed price or hourly?', a: 'Fixed-price projects provide clients with budget certainty and let you earn more if you are efficient. Hourly works better for ongoing or poorly-defined work where scope changes are frequent. Many freelancers use a fixed price for discovery/design phases and hourly for development, with a monthly retainer for maintenance.' },
-        { q: 'How do I handle scope creep?', a: 'Include a clear scope document with your quote, specify what is excluded, define how many revision rounds are included, and use a change order process for additions. Scope creep is best prevented at the contract stage, not mid-project.' },
-        { q: 'What contingency should I add to estimates?', a: 'A common rule is to add 20–30% to your initial estimate for client communication overhead, unexpected technical issues, and revision rounds. Less experienced freelancers should add 40–50% until they have calibrated their estimation accuracy.' },
-        { q: 'How should I present this estimate to a client?', a: 'Present a range (e.g., $4,500–$6,000) rather than a single figure, with a clear breakdown by deliverable. Explain that the range depends on final scope decisions and revision rounds. This sets honest expectations and makes the lower end feel like a win for the client.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Should I quote fixed price or hourly?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Fixed-price projects give clients budget certainty and let you earn more when you work efficiently. Hourly billing suits ongoing or poorly defined work where scope changes frequently. Many freelancers combine the two, charging a fixed price for discovery and design, hourly for development, and a monthly retainer for maintenance.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I handle scope creep?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Prevent scope creep by including a detailed scope document with your quote that lists what is excluded and how many revision rounds are covered. Use a formal change order process for any additions requested mid-project. The earlier you set these boundaries, the less friction you will face during execution.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What contingency should I add to estimates?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A common approach is to build a 20 to 30 percent buffer into your estimate to cover client communication overhead, unexpected technical issues, and revision rounds. Less experienced freelancers may want to start at 40 to 50 percent until they have calibrated their estimation accuracy against real project outcomes.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How should I present this estimate to a client?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Present a range such as $4,500 to $6,000 rather than a single figure, paired with a clear breakdown by deliverable. Explain that the range depends on final scope decisions and revision rounds. This sets honest expectations and makes the lower end feel like a win for the client.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I estimate hours for a project I have not done before?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https:://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Break the project into smaller, familiar tasks and estimate each one individually. Research similar projects on freelance platforms or speak with peers who have built comparable products. Start with your best guess, then add a higher contingency buffer until you have real data from your own completed projects.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Should I include contingency in my freelance quote?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Every freelance project carries uncertainty, and contingency protects both you and the client from surprise costs. Build it into your rate or hour range rather than listing it as a separate line item so the quote remains clean. When scope stays within bounds, the contingency becomes additional profit; when it does not, it absorbs the overage without requiring renegotiation.</p>
+        </div>
+      </div>
+    </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7; padding:1rem 1.25rem; border-radius:0.5rem">
+      <strong style="display:block; margin-bottom:0.35rem">Disclaimer</strong>
+      This tool provides budget estimates for project planning only. Actual project costs depend on scope changes, contractor rates, local market conditions, and unforeseen issues. Always obtain professional quotes.
     </div>
   </div>
 

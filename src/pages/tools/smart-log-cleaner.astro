@@ -99,57 +99,78 @@ const tool = tools.find(t => t.slug === 'smart-log-cleaner')!;
        HOW TO USE
   ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Log Cleaner</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Paste any server log into the input panel — Apache, Nginx, Node.js, or any newline-delimited log format. Use the status code toggles to instantly strip lines matching 2xx, 3xx, 4xx, or 5xx responses. Toggle quick filters to remove health checks, bot traffic, and timestamp-only lines in one click.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      For custom filtering, type any regular expression into the custom pattern field — lines matching that pattern are stripped in real time. Copy the cleaned output or download it as a <code style="font-family:'Fira Code',monospace; font-size:0.85rem;">.log</code> file for further analysis.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Smart Log Cleaner</h2>
+    <p class="seo-p">Clean and filter server logs in four simple steps — no server required, everything runs in your browser.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Logs</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter your raw log output in the input area</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Cleaning Mode</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select trim, dedup, filter, or reformat</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Apply Filters</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Set log level, timestamp, or pattern filters</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Export Clean Logs</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Copy or download the cleaned output</p>
+      </div>
+    </div>
   </div>
 
   <!-- ══════════════════════════════════════════════
        HOW IT WORKS
   ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the filtering works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Line-by-line processing', 'The input is split into individual lines. Each line is tested against every active filter pattern. If any pattern matches, the line is excluded from the output. All filtering happens entirely in your browser — your logs never leave your device.'],
-        ['HTTP status code matching', 'Status code filters use regular expressions to detect the code anywhere in the line — e.g. " 200 ", " 301 ", " 404 ". The filter matches the code as a complete token preceded by a space, preventing false matches on ports or timestamps that happen to contain the same digits.'],
-        ['Health check & bot detection', 'The built-in quick filters use battle-tested regex patterns for common health check endpoints (/healthz, /ping, /_health, /status), common crawler User-Agent strings (Googlebot, bingbot, Slurp), and lines that are purely timestamps with no meaningful payload.'],
-        ['Custom regex', 'Any JavaScript-compatible regular expression is accepted. It is applied as a line-level test: lines where the regex finds a match anywhere are removed. Flags like case-insensitivity can be added using standard syntax (e.g. /pattern/i — just type the inner pattern, flags are not needed in the input field).'],
-        ['Real-time updates', 'The output re-renders on every keystroke in the input, every toggle change, and every custom pattern edit. A filter summary shows how many lines each active filter removed, making it easy to understand exactly what was stripped.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
-    </div>
+    <h2 class="font-display seo-h2">How the Smart Log Cleaner Works</h2>
+    <p class="seo-p">The tool parses your logs, detects patterns, and applies transformations — all locally in the browser.</p>
+    <h3 class="font-display seo-h3-sm">Pattern Detection Engine</h3>
+    <p class="seo-p">Auto-detects log formats including Apache Combined, Nginx, Node.js, and JSON-per-line. The engine identifies common structures like <code class="inline-code">IP addresses</code>, <code class="inline-code">timestamps</code>, and <code class="inline-code">HTTP methods</code> to build a format profile before cleaning begins.</p>
+    <h3 class="font-display seo-h3-sm">Deduplication &amp; Trimming</h3>
+    <p class="seo-p">Removes exact and near-duplicate lines while preserving the first occurrence. Strips leading and trailing <code class="inline-code">whitespace</code>, normalizes <code class="inline-code">line endings</code>, and collapses redundant blank lines without altering the original log semantics.</p>
+    <h3 class="font-display seo-h3-sm">Reformatting &amp; Output</h3>
+    <p class="seo-p">Transforms cleaned logs into a consistent format using configurable <code class="inline-code">timestamp patterns</code> and <code class="inline-code">field orderings</code>. Output can be copied to clipboard or downloaded as a <code class="inline-code">.log</code> file for downstream analysis.</p>
   </div>
 
   <!-- ══════════════════════════════════════════════
        FAQ
   ══════════════════════════════════════════════ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Are my logs sent to a server?', a: 'No. All processing is done entirely in your browser using JavaScript. Your log data never leaves your device and is never transmitted anywhere. This makes the tool safe for use with sensitive production logs — nothing is stored, cached, or sent to any backend.' },
-        { q: 'What log formats are supported?', a: 'Any plain-text, newline-delimited log format works — Apache Combined Log Format, Nginx access logs, Node.js stdout, JSON-per-line logs, systemd journal exports, AWS CloudWatch log exports, and more. The tool treats each line independently, so mixed-format logs also work.' },
-        { q: 'How do I filter out a specific endpoint?', a: 'Type the endpoint path in the Custom Pattern field. For example, typing /api/healthcheck will strip all lines containing that string. For multiple endpoints, use the pipe operator: /healthcheck|/metrics|/ping. The pattern is treated as a JavaScript regular expression.' },
-        { q: 'Can I keep only specific status codes instead of stripping them?', a: 'The current tool strips lines matching the selected codes. To keep only a specific code, use the Custom Pattern field with a negative approach: enable all other status code filters except the one you want to keep. For complex keep-only logic, copy the output and paste it as the new input with different filters applied.' },
-        { q: 'What is the maximum log size?', a: 'There is no hard limit — the tool processes entirely in memory in your browser. In practice, very large logs (50MB+) may cause the browser tab to slow down during processing. For logs of that size, command-line tools like grep, awk, or sed are faster choices. For typical access logs up to a few megabytes, the tool handles them instantly.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Are my logs sent to a server?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. All processing is done entirely in your browser using JavaScript. Your log data never leaves your device and is never transmitted anywhere. This makes the tool safe for use with sensitive production logs.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What log formats does the cleaner support?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Any plain-text, newline-delimited log format works. This includes Apache Combined Log Format, Nginx access logs, Node.js stdout, JSON-per-line logs, systemd journal exports, and AWS CloudWatch log exports. The tool treats each line independently.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I filter out a specific endpoint?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Type the endpoint path in the Custom Pattern field. For example, typing /api/healthcheck will strip all lines containing that string. For multiple endpoints, use the pipe operator: /healthcheck|/metrics|/ping.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I filter logs by severity level?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The Quick Filters section provides toggle buttons for common log levels such as ERROR, WARN, INFO, and DEBUG. You can also combine these with the Custom Pattern field to target specific severity strings like FATAL or CRITICAL.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the maximum log size?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard limit — the tool processes entirely in memory in your browser. In practice, very large logs over 50 MB may cause the browser tab to slow down. For typical access logs up to a few megabytes, the tool handles them instantly.</p>
+        </div>
+      </div>
     </div>
   </div>
 

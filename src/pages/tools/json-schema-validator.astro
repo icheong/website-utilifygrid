@@ -34,33 +34,78 @@ const tool = tools.find(t => t.slug === 'json-schema-validator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How to use the JSON Validator</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste your JSON into the text area and click Validate &amp; Format to check validity and pretty-print with 2-space indentation. Errors are shown with the approximate line and column position. Use Minify to compact the JSON for copying into a payload or config file.</p>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">The stats row shows the total key count (including nested), maximum nesting depth, and byte size — useful for understanding large API responses.</p>
+    <h2 class="font-display seo-h2">How to Use the JSON Schema Validator</h2>
+    <p class="seo-p">Validate JSON data against a JSON Schema definition in seconds. Provide a schema, paste your data, and the tool reports every violation with its exact location.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Define Your Schema</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Write or paste your JSON Schema definition that describes the expected structure, types, and constraints of your data.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Provide Sample Data</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter the JSON data you want to validate. This can be an API response, a config object, or any JSON payload you need to check.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Run Validation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the validate button to check your data against the schema. The tool instantly reports whether the data is valid or contains errors.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Review Errors</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See detailed error messages with JSON paths so you know exactly which field failed and why, making fixes quick and straightforward.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:0.75rem;">How validation works</h2>
-    <p style="color:#475569; font-size:0.9rem; line-height:1.75;">Parsing uses the native <code style="background:#F1F5F9; padding:0.1rem 0.3rem; border-radius:0.25rem;">JSON.parse()</code>. When it throws, the error message is parsed to extract the position offset, which is converted to a line and column number. The parsed object is then walked recursively to count total keys and measure depth.</p>
+    <h2 class="font-display seo-h2">How the JSON Schema Validator Works</h2>
+    <p class="seo-p">The validator parses both the schema and your data, then walks through every property to verify compliance against the defined rules.</p>
+    <h3 class="font-display seo-h3-sm">Schema Draft Detection</h3>
+    <p class="seo-p">The tool auto-detects the JSON Schema draft version from the <code class="inline-code">$schema</code> keyword. It supports Draft-04, Draft-07, and Draft 2020-12, adjusting validation behavior for keyword differences between each revision.</p>
+    <h3 class="font-display seo-h3-sm">Type and Constraint Checking</h3>
+    <p class="seo-p">Every property is validated against its declared <code class="inline-code">type</code>, <code class="inline-code">required</code> fields are verified, and constraint keywords like <code class="inline-code">pattern</code>, <code class="inline-code">minimum</code>, <code class="inline-code">maxLength</code>, and <code class="inline-code">enum</code> are evaluated to ensure the data matches the schema exactly.</p>
+    <h3 class="font-display seo-h3-sm">Error Path Reporting</h3>
+    <p class="seo-p">When a violation is found, the tool returns a full JSON path such as <code class="inline-code">user.addresses[0].zip</code> so you can locate the offending field instantly, even in deeply nested structures.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:#0F172A; margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Why does JSON not allow trailing commas?', a: 'JSON is based on the RFC 8259 specification which strictly prohibits trailing commas after the last array element or object property. Many parsers and languages accept "JSON5" or "JSONC" (JSON with Comments) which do allow trailing commas, but standard JSON.parse() will reject them.' },
-        { q: 'What is the difference between JSON and JSONP?', a: 'JSON is a pure data format. JSONP (JSON with Padding) was a technique to work around browser same-origin policy by wrapping JSON in a callback function call. It is largely obsolete — modern APIs use CORS headers instead. JSONP has security implications and should not be used in new applications.' },
-        { q: 'How do I fix "Unexpected token" errors?', a: 'Common causes: unquoted property names (must use double quotes), single quotes instead of double quotes, trailing commas, undefined or NaN values (not valid JSON), JavaScript comments (// or /* */), missing commas between elements, and extra commas. Check the line and column shown in the error box.' },
-        { q: 'What is JSON Schema validation?', a: 'JSON Schema is a specification for defining the structure and constraints of JSON data (like a type system). This tool validates that the input is syntactically valid JSON. For schema validation (validating against a JSON Schema document), use libraries like Ajv (JavaScript) or jsonschema (Python).' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:#fff; border:1.5px solid #E2E8F0; border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:#0F172A; margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:#475569; line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What JSON Schema drafts are supported?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The validator supports JSON Schema Draft-04, Draft-07, and Draft 2020-12. It automatically detects the draft version from the <code class="inline-code">$schema</code> keyword in your schema document and applies the correct validation rules for that revision.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I validate nested or deeply nested objects?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The validator traverses the entire data tree recursively, validating every nested object and array element against the corresponding schema definition. Errors include full JSON paths so you can pinpoint issues at any depth.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why does JSON not allow trailing commas?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">JSON follows the RFC 8259 specification which strictly prohibits trailing commas after the last property or array element. While formats like JSON5 and JSONC allow them, standard JSON parsers will reject trailing commas as a syntax error.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between JSON and JSONP?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">JSON is a lightweight data format. JSONP was a workaround for browser same-origin restrictions that wrapped JSON in a callback function. It is now obsolete since modern APIs use CORS instead, and JSONP carries security risks that make it unsuitable for new projects.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I fix Unexpected token errors?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">These errors are usually caused by unquoted property names, single quotes instead of double quotes, trailing commas, JavaScript comments, or missing commas. Check the line and column number shown in the error message to locate the issue quickly.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is JSON Schema validation?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">JSON Schema is a standard for defining the structure, types, and constraints of JSON data. This tool lets you define a schema and validate any JSON payload against it, checking types, required fields, patterns, ranges, and more in real time.</p>
+        </div>
+      </div>
     </div>
   </div>
 

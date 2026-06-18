@@ -59,33 +59,82 @@ const tool = tools.find(t => t.slug === 'home-renovation-cost-estimator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this estimator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Select the room type you are renovating, enter the approximate floor area in square metres, and choose a quality tier. Budget covers basic finishes and standard fixtures. Mid-range includes quality fixtures and professional installation. Premium covers high-end materials, custom joinery, and top-tier finishes.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The breakdown shows approximate cost allocations for major trades. Use this as a starting point before obtaining formal quotes from licensed contractors.</p>
+    <h2 class="font-display seo-h2">How to Use the Home Renovation Cost Estimator</h2>
+    <p class="seo-p">This tool helps you plan a realistic renovation budget by breaking down costs per room, factoring in quality tiers, and providing a clear cost allocation across major trades.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Your Budget</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Define your total estimated budget and select the renovation type (kitchen, bathroom, etc.) from the dropdown. This sets the foundation for all subsequent calculations.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Break Down by Room</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Allocate percentage-based budgets to each room you plan to renovate. The tool uses industry-standard allocation percentages for kitchens, bathrooms, bedrooms, and other spaces.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Refine Your Numbers</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Adjust individual room costs, add contingency buffers, and fine-tune allocations based on your specific project requirements and contractor quotes.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Review & Plan</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See your complete renovation budget breakdown in an easy-to-read table. Download a PDF summary to share with contractors or keep for your records.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How estimates are calculated</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Each room type has a cost-per-square-metre range based on industry averages. The quality tier multiplies this range (budget 0.7×, mid 1.0×, premium 1.7×). The breakdown percentages represent typical trade cost allocations (e.g., kitchens: 40% cabinetry, 20% labour, 15% appliances, etc.).</p>
+    <h2 class="font-display seo-h2">How the Home Renovation Cost Estimator Works</h2>
+    <p class="seo-p">The estimator uses a data-driven approach to calculate realistic renovation costs based on industry averages and standard allocation models.</p>
+    <h3 class="font-display seo-h3-sm">Budget Allocation Model</h3>
+    <p class="seo-p">Each renovation type uses a <code class="inline-code">percentage-based allocation model</code> that distributes costs across major trades. For example, kitchen renovations typically allocate 40% to cabinetry, 20% to appliances, and 40% to labour and installations. These percentages are derived from industry surveys and reflect typical cost distributions.</p>
+    <h3 class="font-display seo-h3-sm">Dynamic Contingency Calculator</h3>
+    <p class="seo-p">The tool automatically calculates a <code class="inline-code">contingency buffer</code> based on your total budget and renovation complexity. This buffer accounts for unexpected issues like structural problems, permit delays, or material price fluctuations that commonly arise during renovations.</p>
+    <h3 class="font-display seo-h3-sm">Visual Output & PDF Export</h3>
+    <p class="seo-p">Results are displayed in a clear, color-coded breakdown table showing cost allocations by trade category. The <code class="inline-code">PDF export feature</code> generates a professional summary document that includes your budget allocation, contingency calculations, and room-by-room breakdown for easy sharing with contractors.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Why is kitchen renovation so expensive per m²?', a: 'Kitchens have the highest density of trades: plumbing, electrical, gas, cabinetry, tiling, and appliances all converge. The cost per m² is therefore high even for small kitchens, as most costs are fixed (connection charges, appliance pricing) regardless of room size.' },
-        { q: 'What contingency should I budget for?', a: 'The industry rule of thumb is a 10–20% contingency on top of quoted prices. Renovations in older homes frequently uncover hidden issues (asbestos, outdated wiring, substandard plumbing) that add cost. A 15% contingency is a reasonable starting point for most projects.' },
-        { q: 'Should I go owner-builder or use a licensed contractor?', a: 'Owner-builder permits save on margin but require significant time, coordination, and knowledge. Licensing requirements vary by state. Most lenders and insurers treat owner-built properties differently, which can affect future resale or financing. For complex multi-trade renovations, a licensed builder typically offers better risk management.' },
-        { q: 'Do renovations add value to property?', a: 'Kitchen and bathroom renovations typically return 50–80% of their cost in increased property value, according to real estate industry surveys. However, over-capitalising (spending more than the suburb ceiling) reduces return on investment. Cosmetic improvements (paint, flooring, landscaping) often provide the best ROI relative to cost.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why is kitchen renovation so expensive per m²?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Kitchens have the highest density of trades: plumbing, electrical, gas, cabinetry, tiling, and appliances all converge in a compact space. The <code class="inline-code">cost per m²</code> is therefore high even for small kitchens, as most costs are fixed regardless of room size.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What contingency should I budget for?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The industry rule of thumb is a <code class="inline-code">10–20% contingency</code> on top of quoted prices. Renovations in older homes frequently uncover hidden issues like asbestos, outdated wiring, or substandard plumbing that add cost.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Should I go owner-builder or use a licensed contractor?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a"><code class="inline-code">Owner-builder permits</code> save on margin but require significant time, coordination, and knowledge. Licensing requirements vary by state, and most lenders and insurers treat owner-built properties differently, which can affect future resale or financing.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Do renovations add value to property?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Kitchen and bathroom renovations typically return <code class="inline-code">50–80%</code> of their cost in increased property value. However, over-capitalising (spending more than the suburb ceiling) reduces return on investment, so cosmetic improvements often provide the best ROI.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is a typical contingency percentage for home renovations?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A <code class="inline-code">15% contingency</code> is a reasonable starting point for most renovations. Older homes or complex projects may require 20% or more, while simple cosmetic updates might only need 10%.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I add custom line items to the renovation budget?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes, you can add custom line items by adjusting the percentage allocations for each trade category. This allows you to include specific materials, permits, or specialized labour costs unique to your project.</p>
+        </div>
+      </div>
+    </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7; padding:1rem 1.25rem; border-radius:0.5rem">
+      <strong style="display:block; margin-bottom:0.35rem">Disclaimer</strong>
+      This estimator provides budget guidance only. Actual renovation costs vary by location, contractor, materials, permits, and site conditions. Always obtain professional quotes before committing to work.
     </div>
   </div>
 

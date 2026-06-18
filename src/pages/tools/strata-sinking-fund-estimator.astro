@@ -56,33 +56,82 @@ const tool = tools.find(t => t.slug === 'strata-sinking-fund-estimator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this estimator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your building's unit count, current sinking fund balance, building age, and planning horizon. Review the pre-loaded asset list (roof, lifts, etc.), update replacement costs to your building's specifics, and adjust lifespans. The tool calculates what portion of each asset's replacement cost should be accumulated over the planning horizon.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">This is a planning aid only. Australian strata legislation requires a formal 10-year capital works fund plan prepared by a qualified quantity surveyor or engineer every 5 years.</p>
+    <h2 class="font-display seo-h2">How to Use the Strata Sinking Fund Estimator</h2>
+    <p class="seo-p">Plan your strata property's capital works fund by entering building details, asset lifespans, and replacement costs. The estimator calculates the total fund required and the annual per-unit contribution needed to keep the fund on track.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Building Details</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter the number of units in your scheme, the current sinking fund balance, and the building's age in years.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Define Asset Lifespan</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">For each common property asset such as the roof, paint, lift, or common areas, set the remaining useful life before replacement is needed.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Cost Estimates</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Input the estimated replacement cost for each asset. These figures are typically sourced from a quantity surveyor or recent maintenance quotes.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Review Fund Plan</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See the total required fund, your fund's adequacy percentage, and the annual levy per unit needed to meet future capital works obligations.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the required fund is calculated</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">For each asset, the tool calculates the replacement cost attributable to the planning horizon based on the asset's age and lifespan. The sum of these contributions is the total required fund. Adequacy = Current Balance / Required Fund × 100. The annual levy is the shortfall divided by the horizon divided by the number of units.</p>
+    <h2 class="font-display seo-h2">How the Strata Sinking Fund Estimator Works</h2>
+    <p class="seo-p">The estimator uses an asset lifecycle model to determine how much each common property asset should contribute to the sinking fund over the chosen planning horizon.</p>
+    <h3 class="font-display seo-h3-sm">Asset Lifecycle Model</h3>
+    <p class="seo-p">Each asset is assigned a total <code class="inline-code">lifespan</code> in years. The tool calculates what portion of that lifespan falls within the planning horizon. For example, if a roof has a 30-year lifespan and the horizon is 10 years, one-third of the replacement cost is allocated to the fund. This remaining-life-based approach ensures contributions are spread evenly over the asset's useful life.</p>
+    <h3 class="font-display seo-h3-sm">Per-Unit Contribution Calculation</h3>
+    <p class="seo-p">The total required fund is the sum of all per-asset allocations. The tool then subtracts the <code class="inline-code">current fund balance</code> to find any shortfall. This shortfall is divided evenly across the planning horizon and the number of units, giving the <code class="inline-code">annual levy per unit</code> required to fully fund all anticipated capital works.</p>
+    <h3 class="font-display seo-h3-sm">Escalation and Inflation Adjustment</h3>
+    <p class="seo-p">Cost estimates entered in the tool represent today's dollars. Real-world sinking funds should factor in <code class="inline-code">cost escalation</code> for construction and materials inflation, which typically runs above general CPI. Adjust your replacement cost estimates upward to account for expected price growth over the planning horizon.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is a sinking fund?', a: 'A sinking fund (also called a capital works fund) is money collected from owners in advance to fund major repairs and replacement of common property assets (roofs, lifts, pools, driveways, façades). It differs from the administrative fund, which covers ongoing running costs like insurance and cleaning.' },
-        { q: 'What happens if the sinking fund is inadequate?', a: 'Inadequate sinking funds lead to special levies — large one-off charges to owners when major works are needed. Special levies can be thousands of dollars per unit and are a common source of strata disputes. They also negatively impact property values and sales.' },
-        { q: 'Is there a legal minimum for sinking funds?', a: 'Australian strata legislation requires that contributions be sufficient to fund anticipated capital works. NSW requires a 10-year capital works fund plan. Victoria requires a maintenance plan. Queensland requires a sinking fund forecast. Exact requirements and penalties vary by state.' },
-        { q: 'How often should a capital works plan be reviewed?', a: 'Most states require a review every 5 years. However, the plan should also be reviewed after any major unexpected expenditure, significant changes to the building, or when asset lifespans are revised based on new inspections or engineering reports.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          class="result-card">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is a sinking fund?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A sinking fund, also known as a capital works fund, is money collected from owners in advance to pay for major repairs and replacements of common property assets such as roofs, lifts, pools, and driveways. It is separate from the administrative fund, which covers day-to-day running costs like insurance and cleaning.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens if the sinking fund is inadequate?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">When the sinking fund does not have enough to cover upcoming capital works, the owners corporation must raise a special levy. These one-off charges can be thousands of dollars per unit, are a frequent source of strata disputes, and can negatively affect property values and saleability.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is there a legal minimum for sinking funds?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Australian strata legislation requires that contributions be sufficient to fund anticipated capital works. NSW requires a 10-year capital works fund plan, Victoria requires a maintenance plan, and Queensland requires a sinking fund forecast. Exact requirements and penalties differ by state, so check your local strata legislation for compliance obligations.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How often should a capital works plan be reviewed?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Most states require a formal review every five years. The plan should also be updated after any major unexpected expenditure, significant changes to the building, or when asset lifespans are revised following new inspections or engineering reports.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How often should a sinking fund valuation be updated?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A sinking fund valuation should be updated at least every five years in line with the capital works plan review cycle. More frequent updates are recommended if major works are brought forward, asset conditions change, or construction costs rise faster than expected.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between a sinking fund and a maintenance fund?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A sinking fund, or capital works fund, covers major future expenses like roof replacements and lift refurbishments. A maintenance fund, part of the administrative fund, pays for ongoing day-to-day repairs such as gardening, minor plumbing fixes, and cleaning. Both are essential for keeping a strata property in good condition.</p>
+        </div>
+      </div>
+    </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7; padding:1rem 1.25rem; border-radius:0.5rem">
+      <strong style="display:block; margin-bottom:0.35rem">Disclaimer</strong>
+      This calculator provides estimates for budgeting purposes only. Actual sinking fund contributions depend on building age, condition, local regulations, and professional valuations. Consult a strata management professional for accurate fund planning.
     </div>
   </div>
 

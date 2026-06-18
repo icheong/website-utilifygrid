@@ -33,33 +33,78 @@ const tool = tools.find(t => t.slug === 'code-diff-checker')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Diff Checker</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Paste the original version of your text or code into the left panel (A), and the modified version into the right panel (B). Click Compare to see a line-by-line diff. Green lines were added, red lines were removed, and grey lines are unchanged.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Useful for reviewing code changes before a pull request, comparing configuration files, or spotting differences in documents.</p>
+    <h2 class="font-display seo-h2">How to Use the Code Diff Checker</h2>
+    <p class="seo-p">Compare two versions of text or code side-by-side and instantly see every addition, deletion, and modification highlighted.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Original Code</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter the original version of your text or code into the left panel labeled A.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Modified Code</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter the changed version of your text or code into the right panel labeled B.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Diff Mode</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select from unified, split, or inline diff views to match your review workflow.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Analyze Results</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">View additions, deletions, and modifications highlighted in green, red, and grey for quick analysis.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the diff algorithm works</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The tool implements a Myers-style line-level diff algorithm. Both inputs are split into lines. A longest common subsequence (LCS) is found between the two line arrays. Lines in A but not LCS are marked removed (red). Lines in B but not LCS are marked added (green). Shared lines are marked unchanged (grey).</p>
+    <h2 class="font-display seo-h2">How the Code Diff Checker Works</h2>
+    <p class="seo-p">Under the hood, the Code Diff Checker uses a longest common subsequence algorithm to detect every difference between your two inputs.</p>
+    <h3 class="font-display seo-h3-sm">Diff Algorithm Engine</h3>
+    <p class="seo-p">Both inputs are split into individual lines. The tool computes a longest common subsequence (LCS) matrix to identify which lines are shared and which have changed, producing an optimal edit script.</p>
+    <h3 class="font-display seo-h3-sm">Highlight and Categorization</h3>
+    <p class="seo-p">Lines present only in the original are marked as <code class="inline-code">removed</code> in red. Lines present only in the modified version are marked as <code class="inline-code">added</code> in green. This makes it easy to scan for exactly what changed.</p>
+    <h3 class="font-display seo-h3-sm">Context-Aware Comparison</h3>
+    <p class="seo-p">Unchanged lines between modifications are preserved as <code class="inline-code">context</code> lines in grey, giving you surrounding code or text to orient yourself within the diff output.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Can I diff binary files?', a: 'This tool works on text content only. Binary files (images, PDFs, executables) cannot be meaningfully diffed as text. For binary comparison, use tools like BeyondCompare, or use git diff --binary for version-controlled repositories.' },
-        { q: 'Is whitespace significant in the comparison?', a: 'Yes — this tool performs exact line-by-line comparison. A line that differs only in trailing whitespace or indentation will be marked as changed. This is intentional for code diffs where indentation is meaningful (e.g., Python, YAML). Strip trailing whitespace in your editor before comparing if you want to ignore it.' },
-        { q: 'How do I use this for a code review?', a: 'Copy the old version of a function or file, paste it into panel A. Copy the new version and paste it into panel B. The diff output shows exactly what changed, helping reviewers focus on additions and removals rather than scanning the entire file.' },
-        { q: 'What is a unified diff format?', a: 'The unified diff format (used by git diff) shows removed lines prefixed with − and added lines with +, with a few lines of context. This tool shows a similar view but colour-coded in a dark terminal style for readability.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          class="result-card">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I diff binary files?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">This tool works on text content only. Binary files like images, PDFs, and executables cannot be meaningfully compared as text. For binary comparison, use dedicated tools such as Beyond Compare or run git diff --binary in version-controlled repositories.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is whitespace significant in the comparison?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. This tool performs exact line-by-line comparison, so a line that differs only in trailing whitespace or indentation will be flagged as changed. This is intentional for code where indentation matters. Strip trailing whitespace in your editor before comparing if you want to ignore it.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I use this for a code review?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Copy the old version of a function or file into panel A and the new version into panel B. The diff output shows exactly what changed, helping reviewers focus on additions and removals rather than scanning the entire file.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is a unified diff format?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The unified diff format, used by git diff, shows removed lines prefixed with a minus sign and added lines with a plus sign, along with a few surrounding context lines. This tool provides a similar view with colour-coded highlighting for readability.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I compare files from different programming languages?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The tool compares plain text line-by-line regardless of language. You can paste JavaScript, Python, HTML, SQL, or any other text-based code and the diff engine will highlight every difference accurately.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is there a file size limit for code comparison?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard file size limit, but very large inputs may slow down the browser. For best performance, compare files under a few thousand lines at a time. Larger comparisons will still work but may take noticeably longer to render.</p>
+        </div>
+      </div>
     </div>
   </div>
 

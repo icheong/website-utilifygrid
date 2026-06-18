@@ -21,39 +21,77 @@ const tool = tools.find(t => t.slug === 'variable-case-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the Case Converter</h2>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">Type or paste any string — the converter recognises camelCase, PascalCase, snake_case, kebab-case, SCREAMING_SNAKE, and space-separated words automatically. All case formats appear instantly. Click any Copy button to copy that format.</p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">For bulk conversion of many identifiers at once, use the <a href="/tools/bulk-case-mutator" style="color:#1D4ED8;">Bulk Case Mutator</a> tool.</p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.875rem;">Case format reference</h2>
-    <div style="display:flex;flex-direction:column;gap:0.375rem;">
-      <div class="info-row"><span class="info-label">camelCase</span><span class="info-value">getUserProfile — first word lower, rest title</span></div>
-      <div class="info-row"><span class="info-label">PascalCase</span><span class="info-value">GetUserProfile — all words title-cased</span></div>
-      <div class="info-row"><span class="info-label">snake_case</span><span class="info-value">get_user_profile — all lower, underscores</span></div>
-      <div class="info-row"><span class="info-label">SCREAMING</span><span class="info-value">GET_USER_PROFILE — all upper, underscores</span></div>
-      <div class="info-row"><span class="info-label">kebab-case</span><span class="info-value">get-user-profile — all lower, hyphens</span></div>
-      <div class="info-row"><span class="info-label">Title Case</span><span class="info-value">Get User Profile — space separated</span></div>
+    <h2 class="font-display seo-h2">How to Use the Variable Case Converter</h2>
+    <p class="seo-p">Convert any identifier or variable name between standard programming case formats in seconds.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Variable Names</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter one identifier at a time. The converter accepts camelCase, snake_case, PascalCase, kebab-case, or any other delimited format as input.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Case</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Every supported case format is displayed at once — camelCase, PascalCase, snake_case, SCREAMING_SNAKE, kebab-case, Title Case, dot.case, and more.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Results</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button next to any format to copy that converted name straight to your clipboard for immediate use in your code.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Variable Case Converter Works</h2>
+    <p class="seo-p">The converter uses a three-stage pipeline to split raw input into words and reassemble them in any target format.</p>
+
+    <h3 class="font-display seo-h3-sm">Word Tokenization</h3>
+    <p class="seo-p">Input strings are split on common delimiters such as underscores, hyphens, and dots. Capitalization boundaries — where a lowercase letter meets an uppercase letter — are also treated as split points. Consecutive capitals are grouped intelligently so acronyms like <code class="inline-code">HTTP</code> or <code class="inline-code">XMLParser</code> separate into <code class="inline-code">HTTP</code> and <code class="inline-code">XML</code> + <code class="inline-code">Parser</code> rather than fragmenting each letter.</p>
+
+    <h3 class="font-display seo-h3-sm">Case Transformation Rules</h3>
+    <p class="seo-p">Once tokens are identified, each target format applies its own rules. <code class="inline-code">camelCase</code> lowercases the first word and capitalizes every subsequent word. <code class="inline-code">PascalCase</code> capitalizes every word. <code class="inline-code">snake_case</code> and <code class="inline-code">kebab-case</code> join all-lower tokens with underscores or hyphens. <code class="inline-code">SCREAMING_SNAKE_CASE</code> uppercases every token before joining with underscores.</p>
+
+    <h3 class="font-display seo-h3-sm">Batch Processing</h3>
+    <p class="seo-p">Every supported format is computed and displayed simultaneously on a single keystroke. The entire pipeline — tokenization, transformation, and rendering — runs client-side in the browser with no server round-trip, so conversions are effectively instantaneous.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        {q:'What case should I use for CSS class names?',a:'CSS class names conventionally use kebab-case (e.g. .nav-item, .btn-primary). BEM methodology uses a combination: .block__element--modifier. Tailwind and utility-first CSS frameworks also use kebab-case.'},
-        {q:'What case should I use for JavaScript variables?',a:'JavaScript variables and function names conventionally use camelCase (getUserData). Class names and constructors use PascalCase (UserService). Constants often use SCREAMING_SNAKE_CASE (MAX_RETRIES). This follows the ECMAScript conventions.'},
-        {q:'What case should Python variables use?',a:'Python follows PEP 8: variables and functions use snake_case, class names use PascalCase (CapWords), and module-level constants use SCREAMING_SNAKE_CASE. Using the correct convention makes Python code immediately readable to other Python developers.'},
-        {q:'Does it handle acronyms correctly?',a:'Acronyms in input (like HTTP, API, URL) are treated as separate word tokens. In camelCase output they become parseHttpRequest; in PascalCase ParseHttpRequest. This is the most widely used convention though some style guides capitalise the full acronym (parseHTTPRequest).'},
-      ].map(item=>(
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What case should I use for CSS class names?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">CSS class names conventionally use kebab-case (e.g. .nav-item, .btn-primary). BEM methodology extends this with double underscores and double hyphens (block__element--modifier). Utility-first frameworks like Tailwind also stick with kebab-case.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What case should I use for JavaScript variables?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">JavaScript variables and function names conventionally use camelCase (getUserData). Class names and constructors use PascalCase (UserService). Constants often use SCREAMING_SNAKE_CASE (MAX_RETRIES). Following these conventions makes your code immediately recognizable to other developers.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What case should Python variables use?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Python follows PEP 8: variables and functions use snake_case, class names use PascalCase (CapWords), and module-level constants use SCREAMING_SNAKE_CASE. Using the correct convention makes Python code immediately readable to other Python developers.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does it handle acronyms correctly?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Acronyms in input (like HTTP, API, URL) are recognized as single word tokens during tokenization. In camelCase output they become parseHttp; in PascalCase ParseHttp. Consecutive capitals are grouped so the acronym stays intact.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I convert between any case formats?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The converter first tokenizes your input into words regardless of the source format, then reassembles them into every target format. So camelCase, snake_case, PascalCase, kebab-case, and even dot.case inputs all work as starting points.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does the converter handle abbreviations and acronyms?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Abbreviations and acronyms are preserved as coherent tokens. For example, parseXMLHttpRequest produces camelCase parseXmlHttpRequest and PascalCase ParseXmlHttpRequest, keeping the multi-letter caps sequences grouped rather than splitting them.</p>
+        </div>
+      </div>
     </div>
   </div>
 

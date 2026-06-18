@@ -78,8 +78,6 @@ macro-calorie-deficit-allocator
 bmr-katch-mcardle-calculator
 ovulation-fertility-window
 hydration-fluid-loss-calculator
-
-## TODO
 home-renovation-cost-estimator
 amazon-fba-profit-estimator
 solar-panel-roi-estimator
@@ -90,6 +88,8 @@ markdown-to-html-converter
 json-schema-validator
 variable-case-converter
 smart-log-cleaner
+
+## TODO
 delimiter-swapper
 text-column-extractor
 anagram-word-puzzle-finder
