@@ -1,0 +1,738 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import tools from '../../data/tools.json';
+
+const tool = tools.find(t => t.slug === 'pii-redactor')!;
+
+const PII_TYPES = [
+  { id: 'name',   label: 'Names',          token: 'USER' },
+  { id: 'email',  label: 'Email Addresses', token: 'EMAIL' },
+  { id: 'phone',  label: 'Phone Numbers',   token: 'PHONE' },
+  { id: 'ip',     label: 'IP Addresses',    token: 'IP' },
+  { id: 'card',   label: 'Credit Cards',    token: 'CARD' },
+];
+---
+
+<ToolLayout tool={tool}>
+
+  <div slot="tool">
+    <div class="pr-header">
+      <div>
+        <h2 class="font-display tc-heading">Enhanced PII Redactor &amp; Replacer</h2>
+        <p class="tc-subheading">Swap names, emails, phone numbers, IPs, and card numbers for consistent placeholders &mdash; before any of it reaches an LLM.</p>
+      </div>
+      <div class="pr-badge">
+        <svg viewBox="0 0 16 16" width="13" height="13" class="svg-icon" aria-hidden="true"><path fill="currentColor" d="M8 0 1.5 2.5v4.2C1.5 11 4.2 14.4 8 16c3.8-1.6 6.5-5 6.5-9.3V2.5L8 0Zm0 1.6 5 2v3.1c0 3.5-2.1 6.3-5 7.6-2.9-1.3-5-4.1-5-7.6V3.6l5-2Z"/><path fill="currentColor" d="M7.2 10.4 5 8.2l1-1 1.2 1.2L10.8 4.8l1 1z"/></svg>
+        100% Client-Side &mdash; Your data never leaves your browser
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="pr-controls">
+      <label class="pr-switch">
+        <input id="pr-synthetic" type="checkbox" />
+        <span class="pr-switch-track" aria-hidden="true"><span class="pr-switch-thumb"></span></span>
+        <span class="pr-switch-label">Use Realistic Synthetic Replacements</span>
+      </label>
+
+      <div class="pr-types">
+        <span class="tool-label pr-types-label">Detect</span>
+        <div class="pr-type-chips">
+          {PII_TYPES.map(t => (
+            <label class="pr-chip">
+              <input type="checkbox" class="pr-type-toggle" data-type={t.id} checked />
+              <span>{t.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Split-pane workspace -->
+    <div class="pr-panes">
+      <!-- Input -->
+      <div class="pr-pane">
+        <div class="pr-pane-head">
+          <span class="tool-label">Input</span>
+          <span class="pr-count" id="pr-in-meta">0 chars &middot; ~0 tokens</span>
+        </div>
+        <textarea id="pr-input" class="input-themed tool-textarea pr-textarea" autofocus
+          placeholder="Paste a log, email thread, or system prompt containing PII..."
+          spellcheck="false"></textarea>
+      </div>
+
+      <!-- Output -->
+      <div class="pr-pane">
+        <div class="pr-pane-head">
+          <span class="tool-label">Protected Output</span>
+          <span class="pr-count" id="pr-out-meta">0 chars &middot; ~0 tokens</span>
+        </div>
+        <textarea id="pr-output" class="input-themed tool-textarea pr-textarea pr-output" readonly
+          placeholder="Your protected text will appear here..."></textarea>
+      </div>
+    </div>
+
+    <!-- Token delta stats -->
+    <div class="pr-stats-row">
+      <div class="result-card pr-stat-card">
+        <div class="result-value" id="pr-stat-entities">0</div>
+        <div class="result-label">Entities Found</div>
+      </div>
+      <div class="result-card pr-stat-card">
+        <div class="result-value" id="pr-stat-instances">0</div>
+        <div class="result-label">Total Replacements</div>
+      </div>
+      <div class="result-card accent-blue pr-stat-card">
+        <div class="result-value" id="pr-stat-delta">0%</div>
+        <div class="result-label">Token Delta</div>
+      </div>
+    </div>
+
+    <div class="pr-actions">
+      <button id="pr-copy" class="btn-primary" type="button">Copy Protected Text</button>
+      <button id="pr-clear" class="btn-secondary" type="button">Clear All</button>
+    </div>
+
+    <!-- Dynamic mapping registry -->
+    <div class="pr-registry">
+      <div class="pr-registry-head">
+        <span class="pr-registry-title">Dynamic Mapping Registry</span>
+        <span class="pr-count" id="pr-registry-count">0 active mappings</span>
+      </div>
+      <div id="pr-registry-list" class="pr-registry-list">
+        <p class="pr-registry-empty" id="pr-registry-empty">No PII detected yet. Mappings will appear here as you type.</p>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-to-use">
+    <h2 class="font-display seo-h2">How to use the PII Redactor</h2>
+    <p class="seo-p">
+      Paste any text containing personal information into the input panel on the left &mdash; a support log, an email thread, a customer record, or a system prompt. The tool scans continuously as you type and writes a protected version into the output panel on the right, ready to copy into an LLM prompt or a shared document.
+    </p>
+    <p class="seo-p">
+      Every unique person, email, phone number, IP address, or card number is replaced with a consistent placeholder such as <code class="inline-code">[USER_1]</code> or <code class="inline-code">[EMAIL_1]</code>. If the same entity appears five times in your text, all five occurrences become the same placeholder, so an LLM reading the output can still follow who said what without ever seeing a real identity. Toggle <strong>Use Realistic Synthetic Replacements</strong> to swap real values for plausible fake ones instead of bracketed tokens, and use the category checkboxes to limit detection to only the PII types you care about.
+    </p>
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Sanitising support tickets for AI triage</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Strip customer names, emails, and phone numbers from tickets before pasting them into an LLM for summarisation or categorisation, while keeping every reference to the same customer consistent throughout the conversation.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Sharing logs with a third-party model</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Server and application logs often contain IP addresses and embedded contact details. Redact them in one pass before sending logs to an external API for debugging or anomaly detection.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Building anonymised training or demo data</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enable Synthetic Data Mode to turn a real transcript into a realistic-looking but entirely fictional one, useful for product demos, documentation examples, or sharing sample data with vendors.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Pre-flight checks before pasting into ChatGPT or Claude</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Run any prompt through the redactor first as a habit-forming privacy check, catching PII you might otherwise paste into a third-party chat interface by accident.</p>
+      </div>
+    </div>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: Detection, Substitution &amp; Synthetic Data</h2>
+
+    <h3 class="font-display seo-h3-sm">Pattern-Based Detection Engine</h3>
+    <p class="seo-p">
+      The tool runs a set of browser-native regular expressions over the input on every keystroke (debounced by roughly 200ms to keep typing smooth). Email addresses are matched against an RFC 5322-style pattern, IPv4 and IPv6 addresses use dedicated octet and hextet patterns, phone numbers match common international and local formats, and credit card numbers are matched against Visa, Mastercard, Amex, and Discover digit-length and prefix conventions. Name detection looks for capitalised word pairs in typical name position, which catches most plain-English names without needing a server-side NLP model.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Stateful Substitution Map</h3>
+    <p class="seo-p">
+      Instead of replacing every match with a generic <code class="inline-code">[REDACTED]</code> string, the engine keeps a substitution map in memory for the current session. The first time a unique value is seen it is assigned the next index for its category &mdash; the first email becomes <code class="inline-code">[EMAIL_1]</code>, the second becomes <code class="inline-code">[EMAIL_2]</code>, and so on. Every later occurrence of that exact value, anywhere in the text, is replaced with the same placeholder. This preserves the narrative structure of the original document so a downstream model can still reason about relationships between people, without ever seeing who they actually are.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Synthetic Data Mode</h3>
+    <p class="seo-p">
+      When <strong>Use Realistic Synthetic Replacements</strong> is enabled, the same substitution map is used, but instead of a bracketed token each unique entity is assigned a deterministic fake value &mdash; a realistic name, email, phone number, IP, or card number &mdash; generated from a small built-in name and domain bank combined with a seeded pseudo-random generator. The mapping stays one-to-one and consistent: every later instance of <code class="inline-code">john.doe@gmail.com</code> still becomes the same synthetic email throughout the document, even though it now reads as ordinary, harmless-looking text.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Live Token Auditing</h3>
+    <p class="seo-p">
+      Both panels show a live character count and an estimated token count, calculated with a lightweight heuristic of roughly one token per four characters &mdash; the same rule of thumb used for quick LLM context-budgeting. The Token Delta stat compares output tokens to input tokens, so you can see at a glance whether redaction meaningfully changed the size of the payload you are about to send.
+    </p>
+
+    <h3 class="font-display seo-h3-sm">Memory Hygiene</h3>
+    <p class="seo-p">
+      Clicking <strong>Clear All</strong> empties both text fields, resets the token counters to zero, and discards the in-memory substitution map entirely, so no trace of the previous session's identifiers remains in the page's JavaScript state.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      {[
+        { q: 'Is any of my text sent to a server?', a: 'No. Every regular expression match, every substitution, and the entire mapping registry run inside your browser tab. No network requests are made with your text, and nothing is logged or transmitted anywhere.' },
+        { q: 'Why does the same name always get the same placeholder?', a: 'This is the core design goal: an LLM reading your redacted text should still be able to follow which actor did what, even though it never sees a real identity. Replacing every occurrence of "John Doe" with a unique placeholder every time would destroy that narrative thread, so the tool keeps a consistent map for the whole session.' },
+        { q: 'What is Synthetic Data Mode?', a: 'Instead of structural placeholders like [USER_1], Synthetic Data Mode swaps each unique piece of PII for a realistic but entirely fake equivalent — a plausible name, email, phone number, or address. Consistency is preserved exactly the same way: one real entity always maps to the same fake one.' },
+        { q: 'Will it catch every name or phone number?', a: 'Pattern-based detection cannot achieve perfect recall — unusual name formats, informally written numbers, or context-only references may be missed. Always review the output before sharing it externally, especially for highly sensitive documents.' },
+        { q: 'What happens when I click Clear All?', a: 'The input and output fields are emptied, the token counters reset to zero, and the substitution map held in memory is discarded completely, so no identifiers from the previous session persist in the page.' },
+        { q: 'Can I choose which categories of PII to detect?', a: 'Yes. Use the category checkboxes above the editor to turn detection for names, emails, phone numbers, IP addresses, or credit card numbers on or off individually.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+             class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7">
+      <strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This tool uses pattern-based heuristics and cannot guarantee complete detection of every form of personal information. It is a helpful pre-flight check, not a substitute for a full data protection or compliance review of sensitive documents.
+    </div>
+  </div>
+
+</ToolLayout>
+
+<style>
+  /* -- Tool chrome (shared pattern with token-analyzer) ------- */
+  .pr-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1.1rem;
+  }
+  .tc-heading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+  .tc-subheading {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    max-width: 40rem;
+  }
+  .pr-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .pr-badge .svg-icon { color: #10B981; flex-shrink: 0; }
+
+  /* -- Controls row -------------------------------------------- */
+  .pr-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.875rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.875rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Switch */
+  .pr-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .pr-switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .pr-switch-track {
+    position: relative;
+    width: 2.25rem;
+    height: 1.25rem;
+    border-radius: 999px;
+    background: var(--bg-surface-3);
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .pr-switch-thumb {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 0.95rem;
+    height: 0.95rem;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    transition: transform 0.15s;
+  }
+  .pr-switch input:checked + .pr-switch-track {
+    background: #1D4ED8;
+    border-color: #1D4ED8;
+  }
+  :root.dark .pr-switch input:checked + .pr-switch-track { background: #3B82F6; border-color: #3B82F6; }
+  .pr-switch input:checked + .pr-switch-track .pr-switch-thumb {
+    transform: translateX(1rem);
+  }
+  .pr-switch input:focus-visible + .pr-switch-track {
+    box-shadow: 0 0 0 3px rgba(29,78,216,0.3);
+  }
+  .pr-switch-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* Type chips */
+  .pr-types {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+  }
+  .pr-types-label { margin-bottom: 0; }
+  .pr-type-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .pr-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--bg-surface);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .pr-chip input { accent-color: #1D4ED8; width: 0.8rem; height: 0.8rem; }
+  .pr-chip:has(input:checked) {
+    border-color: #1D4ED8;
+    color: var(--text-primary);
+    background: rgba(29,78,216,0.08);
+  }
+  :root.dark .pr-chip:has(input:checked) { border-color: #3B82F6; background: rgba(59,130,246,0.12); }
+
+  /* -- Split panes ----------------------------------------------- */
+  .pr-panes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 0.875rem;
+  }
+  @media (max-width: 720px) {
+    .pr-panes { grid-template-columns: 1fr; }
+  }
+  .pr-pane-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+  }
+  .pr-count {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: 'Fira Code', monospace;
+    white-space: nowrap;
+  }
+  .pr-textarea {
+    width: 100%;
+    min-height: 220px;
+    box-sizing: border-box;
+  }
+  .pr-output { color: var(--text-primary); }
+
+  /* -- Stats row --------------------------------------------------- */
+  .pr-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.625rem;
+    margin-bottom: 0.875rem;
+  }
+  @media (max-width: 540px) {
+    .pr-stats-row { grid-template-columns: 1fr; }
+  }
+  .pr-stat-card { padding: 0.75rem 1rem; }
+  .pr-stat-card .result-value { font-size: 1.25rem; }
+
+  /* -- Actions ------------------------------------------------------ */
+  .pr-actions {
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+
+  /* -- Mapping registry ----------------------------------------------- */
+  .pr-registry {
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+  .pr-registry-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.625rem;
+  }
+  .pr-registry-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .pr-registry-list {
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1.5px solid var(--border);
+    border-radius: 0.625rem;
+    background: var(--bg-surface-2);
+  }
+  .pr-registry-empty {
+    margin: 0;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .pr-registry-row {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.875rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .pr-registry-row:last-child { border-bottom: none; }
+  .pr-registry-token {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #1D4ED8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  :root.dark .pr-registry-token { color: #60A5FA; }
+  .pr-registry-arrow { color: var(--text-muted); flex-shrink: 0; font-size: 0.75rem; }
+  .pr-registry-value {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pr-registry-cat {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .pr-registry-list::-webkit-scrollbar { width: 6px; }
+  .pr-registry-list::-webkit-scrollbar-thumb { background: var(--bg-surface-3); border-radius: 3px; }
+
+  /* FAQ list gap */
+  .seo-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+</style>
+
+<script>
+// ============================================================
+// Enhanced PII Redactor & Replacer — fully client-side
+// ============================================================
+
+// -- DOM refs -------------------------------------------------
+const inputEl       = document.getElementById('pr-input') as HTMLTextAreaElement;
+const outputEl      = document.getElementById('pr-output') as HTMLTextAreaElement;
+const inMetaEl      = document.getElementById('pr-in-meta')!;
+const outMetaEl     = document.getElementById('pr-out-meta')!;
+const syntheticEl   = document.getElementById('pr-synthetic') as HTMLInputElement;
+const typeToggles   = document.querySelectorAll<HTMLInputElement>('.pr-type-toggle');
+const statEntities  = document.getElementById('pr-stat-entities')!;
+const statInstances = document.getElementById('pr-stat-instances')!;
+const statDelta     = document.getElementById('pr-stat-delta')!;
+const copyBtn       = document.getElementById('pr-copy') as HTMLButtonElement;
+const clearBtn      = document.getElementById('pr-clear') as HTMLButtonElement;
+const registryList  = document.getElementById('pr-registry-list')!;
+const registryEmpty = document.getElementById('pr-registry-empty')!;
+const registryCount = document.getElementById('pr-registry-count')!;
+
+// -- Detection patterns -----------------------------------------
+// Order matters: more specific patterns (email, ip, card) run before
+// the looser name pattern so we don't double-tag substrings.
+const PATTERNS: Record<string, RegExp> = {
+  email: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g,
+  ip:    /\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b|\b(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4}\b/g,
+  card:  /\b(?:4\d{3}|5[1-5]\d{2}|3[47]\d{2}|6011)[ -]?\d{4}[ -]?\d{4}[ -]?\d{1,4}\b/g,
+  phone: /\b(?:\+?\d{1,3}[ .-]?)?\(?\d{2,4}\)?[ .-]?\d{3,4}[ .-]?\d{3,4}\b/g,
+  name:  /\b[A-Z][a-z]+(?:\s[A-Z][a-z]+){1,2}\b/g,
+};
+
+const CATEGORY_LABEL: Record<string, string> = {
+  email: 'EMAIL', ip: 'IP', card: 'CARD', phone: 'PHONE', name: 'USER',
+};
+
+// Words that look like a capitalised pair but are not names (avoid noise)
+const NAME_STOPWORDS = new Set([
+  'Dear Sir', 'Best Regards', 'Kind Regards', 'Thank You', 'United States',
+  'New York', 'Los Angeles', 'San Francisco',
+]);
+
+// -- Synthetic data banks (deterministic, no external calls) ---
+const FIRST_NAMES = ['Alice','Brian','Carla','Derek','Elena','Felix','Grace','Hassan','Irene','Jacob','Karen','Leo','Maria','Noah','Olivia','Pavel','Quinn','Rosa','Sam','Tina'];
+const LAST_NAMES  = ['Smith','Johnson','Garcia','Brown','Davis','Miller','Wilson','Moore','Taylor','Clark','Lewis','Walker','Hall','Allen','Young','King','Wright','Scott','Green','Baker'];
+const DOMAINS     = ['example.net','mailbox.io','sample.org','testmail.com','inboxly.dev'];
+
+function seededRand(seed: number) {
+  let s = seed % 2147483647;
+  if (s <= 0) s += 2147483646;
+  return () => (s = (s * 16807) % 2147483647) / 2147483647;
+}
+function hashStr(str: string) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+function makeSynthetic(category: string, original: string): string {
+  const rnd = seededRand(hashStr(original) || 1);
+  switch (category) {
+    case 'name': {
+      const f = FIRST_NAMES[Math.floor(rnd() * FIRST_NAMES.length)];
+      const l = LAST_NAMES[Math.floor(rnd() * LAST_NAMES.length)];
+      return `${f} ${l}`;
+    }
+    case 'email': {
+      const f = FIRST_NAMES[Math.floor(rnd() * FIRST_NAMES.length)].toLowerCase();
+      const l = LAST_NAMES[Math.floor(rnd() * LAST_NAMES.length)].toLowerCase();
+      const d = DOMAINS[Math.floor(rnd() * DOMAINS.length)];
+      return `${f}.${l}@${d}`;
+    }
+    case 'phone': {
+      const n = () => Math.floor(rnd() * 9000 + 1000);
+      return `(${Math.floor(rnd()*800+200)}) ${n()}`;
+    }
+    case 'ip': {
+      const o = () => Math.floor(rnd() * 254 + 1);
+      return `10.${o()}.${o()}.${o()}`;
+    }
+    case 'card': {
+      const g = () => String(Math.floor(rnd() * 9000 + 1000));
+      return `4111 ${g()} ${g()} ${g()}`;
+    }
+    default:
+      return original;
+  }
+}
+
+// -- State --------------------------------------------------------
+// map: category -> Map(originalValue -> { index, placeholder, synthetic })
+type Entry = { index: number; placeholder: string; synthetic: string };
+let map: Record<string, Map<string, Entry>> = {};
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+function resetMap() {
+  map = { name: new Map(), email: new Map(), phone: new Map(), ip: new Map(), card: new Map() };
+}
+resetMap();
+
+function activeCategories(): string[] {
+  return Array.from(typeToggles).filter(t => t.checked).map(t => t.dataset.type!);
+}
+
+function estimateTokens(text: string): number {
+  return text.trim() ? Math.round(text.length / 4) : 0;
+}
+
+// -- Core redaction pass -------------------------------------------
+function redact(text: string): string {
+  if (!text) return '';
+  const categories = activeCategories();
+  // Collect all matches across enabled categories with position info,
+  // then resolve overlaps by earliest-start, longest-match priority.
+  type Match = { start: number; end: number; value: string; category: string };
+  let matches: Match[] = [];
+
+  for (const cat of categories) {
+    const re = PATTERNS[cat];
+    re.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+      const value = m[0];
+      if (cat === 'name' && NAME_STOPWORDS.has(value)) continue;
+      matches.push({ start: m.index, end: m.index + value.length, value, category: cat });
+      if (m.index === re.lastIndex) re.lastIndex++;
+    }
+  }
+
+  // Sort by start asc, then by length desc (prefer longer/more specific matches)
+  matches.sort((a, b) => a.start - b.start || (b.end - b.start) - (a.end - a.start));
+
+  // Remove overlaps: keep first (already specific-category-first ordering
+  // doesn't matter here since categories don't overlap in pattern shape,
+  // but a name could overlap inside an email/IP — drop ones inside a kept span)
+  const kept: Match[] = [];
+  let lastEnd = -1;
+  for (const m of matches) {
+    if (m.start >= lastEnd) {
+      kept.push(m);
+      lastEnd = m.end;
+    }
+  }
+
+  const useSynthetic = syntheticEl.checked;
+  let out = '';
+  let cursor = 0;
+  for (const m of kept) {
+    out += text.slice(cursor, m.start);
+    const catMap = map[m.category];
+    let entry = catMap.get(m.value);
+    if (!entry) {
+      const index = catMap.size + 1;
+      const placeholder = `[${CATEGORY_LABEL[m.category]}_${index}]`;
+      const synthetic = makeSynthetic(m.category, m.value);
+      entry = { index, placeholder, synthetic };
+      catMap.set(m.value, entry);
+    }
+    out += useSynthetic ? entry.synthetic : entry.placeholder;
+    cursor = m.end;
+  }
+  out += text.slice(cursor);
+  return out;
+}
+
+// -- Registry rendering ----------------------------------------------
+function renderRegistry() {
+  let totalEntries = 0;
+  let totalInstances = 0; // approximated as total unique entities for now, refined below
+  registryList.innerHTML = '';
+
+  const rows: { token: string; value: string; cat: string; index: number }[] = [];
+  for (const cat of Object.keys(map)) {
+    map[cat].forEach((entry, original) => {
+      rows.push({
+        token: syntheticEl.checked ? entry.synthetic : entry.placeholder,
+        value: original,
+        cat,
+        index: entry.index,
+      });
+      totalEntries++;
+    });
+  }
+
+  statEntities.textContent = String(totalEntries);
+
+  if (rows.length === 0) {
+    registryEmpty.style.display = '';
+    registryList.appendChild(registryEmpty);
+    registryCount.textContent = '0 active mappings';
+    return;
+  }
+
+  registryEmpty.style.display = 'none';
+  registryCount.textContent = `${rows.length} active mapping${rows.length === 1 ? '' : 's'}`;
+
+  rows.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'pr-registry-row';
+    row.innerHTML = `
+      <span class="pr-registry-token">${escapeHtml(r.token)}</span>
+      <span class="pr-registry-value" title="${escapeHtml(r.value)}">${escapeHtml(r.value)}</span>
+      <span class="pr-registry-cat">${escapeHtml(CATEGORY_LABEL[r.cat])}</span>
+    `;
+    registryList.appendChild(row);
+  });
+}
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// -- Main update ----------------------------------------------------
+function update() {
+  const text = inputEl.value;
+  const inChars = text.length;
+  const inTokens = estimateTokens(text);
+  inMetaEl.textContent = `${inChars.toLocaleString()} chars \u00b7 ~${inTokens.toLocaleString()} tokens`;
+
+  resetMap();
+  const protectedText = redact(text);
+  outputEl.value = protectedText;
+
+  const outChars = protectedText.length;
+  const outTokens = estimateTokens(protectedText);
+  outMetaEl.textContent = `${outChars.toLocaleString()} chars \u00b7 ~${outTokens.toLocaleString()} tokens`;
+
+  let totalInstances = 0;
+  for (const cat of Object.keys(map)) totalInstances += map[cat].size;
+  // Count actual replacement instances (occurrences), not just unique entities
+  let occurrences = 0;
+  for (const cat of activeCategories()) {
+    const re = PATTERNS[cat];
+    re.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+      if (cat === 'name' && NAME_STOPWORDS.has(m[0])) continue;
+      occurrences++;
+      if (m.index === re.lastIndex) re.lastIndex++;
+    }
+  }
+  statInstances.textContent = String(occurrences);
+
+  const delta = inTokens > 0 ? Math.round(((outTokens - inTokens) / inTokens) * 100) : 0;
+  statDelta.textContent = `${delta > 0 ? '+' : ''}${delta}%`;
+
+  renderRegistry();
+}
+
+function debouncedUpdate() {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(update, 200);
+}
+
+// -- Events -----------------------------------------------------------
+inputEl.addEventListener('input', debouncedUpdate);
+syntheticEl.addEventListener('change', update);
+typeToggles.forEach(t => t.addEventListener('change', update));
+
+copyBtn.addEventListener('click', () => {
+  navigator.clipboard.writeText(outputEl.value).then(() => {
+    copyBtn.textContent = '\u2713 Copied!';
+    copyBtn.classList.add('btn-success');
+    setTimeout(() => {
+      copyBtn.textContent = 'Copy Protected Text';
+      copyBtn.classList.remove('btn-success');
+    }, 2000);
+  });
+});
+
+clearBtn.addEventListener('click', () => {
+  inputEl.value = '';
+  outputEl.value = '';
+  resetMap();
+  statEntities.textContent = '0';
+  statInstances.textContent = '0';
+  statDelta.textContent = '0%';
+  inMetaEl.textContent = '0 chars \u00b7 ~0 tokens';
+  outMetaEl.textContent = '0 chars \u00b7 ~0 tokens';
+  renderRegistry();
+  inputEl.focus();
+});
+
+// -- Boot ---------------------------------------------------------------
+update();
+</script>
