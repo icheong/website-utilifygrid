@@ -1,4 +1,4 @@
----
+﻿---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import tools from '../../data/tools.json';
 const tool = tools.find(t => t.slug === 'pdf-sign')!;
@@ -74,60 +74,70 @@ const tool = tools.find(t => t.slug === 'pdf-sign')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Sign PDF tool</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 1:</strong> Drop a PDF file or click <strong>Browse File</strong> to load it into the editor.
+    <h2 class="font-display seo-h2">Sign PDF Overview</h2>
+    <p class="seo-p">
+      This PDF sign tool lets you create signatures by drawing, typing, or uploading an image, then place them anywhere on PDF pages — entirely within your browser. Built with <strong>pdf-lib</strong> (for embedding signatures and saving) and <strong>PDF.js</strong> (for rendering pages), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Signatures are saved in your browser’s localStorage for reuse across sessions, and each placement is independently draggable and resizable.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 2:</strong> Click <strong>Create Signature</strong> and choose how to make yours — <strong>Draw</strong> freehand, <strong>Type</strong> your name, or <strong>Upload</strong> an image. Toggle <strong>Include date</strong> to add a date element. Your signature is saved in the browser for reuse.
+    <p class="seo-p">
+      The tool supports three signature creation methods: <strong>Draw</strong> (freehand on a canvas with adjustable pen colour and size), <strong>Type</strong> (choose from 8 script fonts or Helvetica, with custom colour), and <strong>Upload</strong> (drag-and-drop or browse for PNG, JPG, GIF, or WebP images). An optional date element can be included alongside each signature. Placed elements are per-page with independent positioning and sizing.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Step 3:</strong> Click on the page to place your signature. Dates are placed as separate elements you can position independently. <strong>Drag</strong> to move, <strong>Resize</strong> button to adjust size, <strong>Double-click</strong> to remove. Click <strong>Save PDF</strong> when done.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Contract and agreement signing`, `Business teams sign contracts, NDAs, and agreements without printing, physically signing, and scanning. The draw tool creates a freehand signature that matches your wet ink, while the type tool provides a clean script font for formal documents. Signatures are placed at the signature line, dates are added as separate elements, and the signed PDF is downloaded ready for distribution.`],
+        [`Form completion and document approval`, `Administrative staff complete PDF forms that require signatures — expense reports, purchase orders, leave requests. The upload tool lets you use a scanned version of your actual signature, maintaining consistency with physically signed documents. Saved signatures in localStorage eliminate the need to recreate your signature for each document.`],
+        [`Multi-signer document routing`, `Legal and HR teams process documents requiring multiple signatures. Each signer’s signature is created and placed on different pages or different locations on the same page. The per-page storage system keeps signatures organized, and the clear page button lets you remove all placements on a specific page without affecting other pages.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Sign PDF works</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      Your signature is created in the browser and stored in localStorage for reuse across sessions. When you save, <strong>pdf-lib</strong> embeds the signature image and date text onto each page.
+    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Signing Process</h2>
+    <p class="seo-p">
+      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla’s PDF renderer) renders each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) embeds signature images and date text onto the PDF on save. An SVG overlay handles signature placement, dragging, and resizing. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
     </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. Create signature (draw / type / upload)
-2. Optionally add a date element
-3. Click on page to place signature + date
-4. Drag to reposition each independently
-5. On save, pdf-lib embeds images and text
-6. Signed PDF is downloaded
 
-Signatures saved in browser (localStorage).
-All client-side — no server upload.</pre>
+    <h3 class="font-display seo-h3-sm">Signature Creation Methods</h3>
+    <p class="seo-p-sm">
+      <strong>Draw:</strong> A 500×150 Canvas element captures freehand mouse/touch input. The pen colour (via color input) and stroke width (1-8px range slider) are configurable. The canvas uses a checkered transparency background to indicate the transparent areas of the signature. The signature is exported as a PNG data URL via <code class="inline-code">toDataURL('image/png')</code>.
+    </p>
+    <p class="seo-p-sm">
+      <strong>Type:</strong> The user types their name or initials, selects from 8 Google Fonts script families (Dancing Script, Great Vibes, Pacifico, Satisfy, Allura, Sacramento, Homemade Apple, Alex Brush) or Helvetica, and chooses a colour. The text is rendered onto a temporary Canvas at 48px font size and exported as a PNG data URL. A live preview updates in real time as the user types.
+    </p>
+    <p class="seo-p-sm">
+      <strong>Upload:</strong> Users drag-and-drop or browse for image files (PNG, JPG, GIF, WebP). The image is loaded via FileReader and displayed as a preview. The original image data is preserved as a data URL for embedding into the PDF.
+    </p>
+    <p class="seo-p-sm">
+      <strong>Placement and interaction:</strong> Clicking on the page places the active signature at the click position. An SVG overlay renders each placed signature as an <code class="inline-code">&lt;image&gt;</code> element with a dashed border and resize handle. Dragging moves the signature; the resize handle adjusts width/height proportionally. Double-clicking removes the element.
+    </p>
+    <p class="seo-p-none">
+      <strong>Save operation:</strong> When the user clicks “Save PDF”, pdf-lib loads the original document, converts each signature data URL to bytes, embeds it as a PNG or JPG image, and draws it at the stored coordinates using <code class="inline-code">drawImage()</code>. Date elements are drawn as text using <code class="inline-code">drawText()</code> with the Helvetica font. The signed PDF is serialised to bytes and offered as a download.
+    </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "Is my data uploaded?", "acceptedAnswer": { "@type": "Answer", "text": "No. Everything runs in your browser. Nothing leaves your device." } },
-        { "@type": "Question", "name": "Are my signatures saved?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Created signatures are saved in your browser's localStorage. You can load, reuse, or delete them from the Saved Signatures panel." } },
-        { "@type": "Question", "name": "Can I reposition elements?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Drag signatures and dates independently. Use the Resize button to adjust signature size. Double-click to remove any element." } },
-        { "@type": "Question", "name": "Is this legally binding?", "acceptedAnswer": { "@type": "Answer", "text": "This creates a visual signature for convenience. It is not a cryptographic or legally binding e-signature." } }
-      ]
-    }
-    </script>
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Is my data uploaded?', a: 'No. Everything runs in your browser. Nothing leaves your device.' },
-        { q: 'Are my signatures saved?', a: "Yes. Created signatures are saved in your browser's localStorage. You can load, reuse, or delete them from the Saved Signatures panel." },
-        { q: 'Can I reposition elements?', a: 'Yes. Drag signatures and dates independently. Use the Resize button to adjust signature size. Double-click to remove any element.' },
-        { q: 'Is this legally binding?', a: 'This creates a visual signature for convenience. It is not a cryptographic or legally binding e-signature.' },
+        { q: 'Is my data uploaded to a server?', a: 'No. Everything runs entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your files and signatures never leave your device — there is no server upload at any point.' },
+        { q: 'Are my signatures saved?', a: 'Yes. Created signatures are saved in your browser’s localStorage. You can load, reuse, or delete them from the Saved Signatures panel. Saved signatures persist across browser sessions.' },
+        { q: 'Can I reposition elements after placing them?', a: 'Yes. Drag signatures and dates independently to any position on the page. Use the Resize button to adjust signature size with locked aspect ratio. Double-click any element to remove it.' },
+        { q: 'Is this legally binding?', a: 'This creates a visual signature for convenience — it is equivalent to typing or drawing your name on a document. It is not a cryptographic or legally binding e-signature. For legally binding electronic signatures, use a dedicated e-signature service.' },
+        { q: 'What image formats are supported for upload?', a: 'The tool accepts PNG, JPG, GIF, and WebP image files. The image is embedded at its original quality into the PDF. For best results, use a transparent PNG with a clear signature on a white or transparent background.' },
+        { q: 'Can I sign multiple pages?', a: 'Yes. Use the Prev/Next buttons to navigate between pages. Each page stores its own independent set of signatures and dates. When you save, all placements across all pages are embedded into the output PDF.' },
+        { q: 'How do I change the signature size?', a: 'After placing a signature, click the Resize button in the signature slot panel. This opens a modal where you can enter exact width and height values with a locked aspect ratio option. You can also drag the resize handle on the placed signature for visual adjustment.' }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

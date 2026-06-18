@@ -7,8 +7,8 @@ const tool = tools.find(t => t.slug === 'pdf-delete-pages')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Delete Pages</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Click pages to select them for removal, then download the PDF without those pages.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Delete Pages</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Click pages to select them for removal, then download the PDF without those pages.</p>
 
     <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
       <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
@@ -19,11 +19,11 @@ const tool = tools.find(t => t.slug === 'pdf-delete-pages')!;
 
     <div id="workspace" style="display:none;margin-top:1.25rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
-          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        <p class="seo-p-sm" style="font-weight:600;">
+          <span id="doc-name"></span> — <span id="doc-pages" style="font-weight:400;"></span>
         </p>
         <div style="display:flex;gap:0.5rem;align-items:center;">
-          <span id="sel-count" style="font-size:0.78rem;color:var(--text-muted);">0 selected</span>
+          <span id="sel-count" class="seo-p-sm">0 selected</span>
           <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
         </div>
       </div>
@@ -47,65 +47,91 @@ const tool = tools.find(t => t.slug === 'pdf-delete-pages')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Delete Pages</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 1:</strong> Drop a PDF or click <strong>Browse File</strong>. All pages appear as thumbnails.
+    <h2 class="font-display seo-h2">Delete Pages Overview</h2>
+    <p class="seo-p">
+      This PDF delete pages tool lets you remove specific pages from a PDF document by clicking to select them — entirely within your browser. Built with <strong>pdf-lib</strong> (for page removal) and <strong>PDF.js</strong> (for thumbnail rendering), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are removing blank pages from a scan, stripping out confidential sections before sharing, or cleaning up a draft document, the deletion is performed client-side with full lossless quality preservation for the remaining pages.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 2:</strong> Click pages to select them for deletion (they get a red border). Use <strong>Select All</strong>, <strong>Select Odd</strong>, or <strong>Select Even</strong> for bulk selection.
+    <p class="seo-p">
+      Every page is rendered as a thumbnail with a click-to-select interface. Selected pages get a red border and badge for clear visual feedback. Bulk selection buttons (Select All, Deselect All, Select Odd, Select Even) speed up common deletion patterns. The delete operation copies only the unselected pages to a new PDF, producing a smaller file without the removed content.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Step 3:</strong> Click <strong>Delete Selected Pages</strong> to download the PDF without those pages.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Scan cleanup and blank page removal`, `When scanning physical documents, blank pages often appear between content pages due to double-sided scanning. The Select Even or Select Odd buttons quickly identify these blank pages for removal. A 50-page double-sided scan might produce 100 pages with 50 blank intermediates — this tool removes them in seconds with visual confirmation via thumbnails.`],
+        [`Confidential section removal before sharing`, `Legal and business teams frequently need to share PDFs with specific sections removed — for example, removing financial projections from a board deck before sharing with external partners, or stripping privileged pages from a litigation document before production. The click-to-select interface provides precise control over which pages are deleted, and the thumbnail preview ensures you remove exactly the right content.`],
+        [`Document size reduction`, `Large PDFs with unnecessary pages consume more storage and transfer bandwidth. A 200-page report might contain 30 pages of appendices that are only relevant to a specific audience. By selecting and deleting those appendix pages, you reduce the file size proportionally while maintaining the core content. The remaining pages are copied losslessly with no quality degradation.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Delete Pages works</h2>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. User drops a PDF file
-2. PDF.js renders page thumbnails
-3. User clicks pages to mark for deletion
-4. pdf-lib copies only the unselected pages
-5. New PDF is downloaded (without deleted pages)
+    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Delete Process</h2>
+    <p class="seo-p">
+      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla's PDF renderer) handles page thumbnail rendering by drawing each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual deletion by copying only the unselected pages from the source document to a new document. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+    </p>
 
-All client-side — no server upload.</pre>
+    <h3 class="font-display seo-h3-sm">Step-by-Step Delete Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. The file data is held in browser memory — no network requests are made. The file is validated as a PDF by checking the file type and attempting to parse it with PDF.js.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Thumbnail generation:</strong> PDF.js renders every page at 25% scale onto temporary Canvas elements, converting them to inline thumbnail cards. Each card displays a numbered badge and a click handler for selection. Selected pages show a red border and red badge for clear visual feedback.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Page selection:</strong> The user clicks pages to toggle their selection state. Bulk buttons provide shortcuts: "Select All" selects every page, "Deselect All" clears the selection, "Select Odd" selects odd-numbered pages, and "Select Even" selects even-numbered pages. The selection count updates in real time. The tool prevents deleting all pages (at least one must remain).
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Delete execution:</strong> When the user clicks "Delete Selected Pages", pdf-lib creates a new empty <code class="inline-code">PDFDocument</code>. It iterates through all page numbers, skipping the selected pages, and copies only the unselected pages using <code class="inline-code">copyPages()</code>. The resulting PDF contains only the pages that were not selected for deletion.
+    </p>
+    <p class="seo-p-none">
+      <strong>Feature preservation:</strong> The remaining pages are copied byte-for-byte from the source, preserving text, images, vectors, bookmarks, and annotations. Embedded fonts are kept without re-encoding. The deletion is a pure extraction operation — it removes pages without modifying the content of any remaining page.
+    </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is my file uploaded?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens in your browser. Your file never leaves your device." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I preview pages before deleting?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. All pages are shown as thumbnails so you can see exactly which pages you are selecting for removal." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does deleting pages reduce quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Remaining pages are copied losslessly. Text, images, and vectors are preserved byte-for-byte." }
-        }
-      ]
-    }
-    </script>
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Is my file uploaded?', a: 'No. All processing happens in your browser. Your file never leaves your device.' },
-        { q: 'Can I preview pages before deleting?', a: 'Yes. All pages are shown as thumbnails so you can see exactly which pages you are selecting for removal.' },
-        { q: 'Does deleting pages reduce quality?', a: 'No. Remaining pages are copied losslessly. Text, images, and vectors are preserved byte-for-byte.' },
+        {
+          q: "Is my file uploaded to a server?",
+          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device — there is no server upload at any point. This provides complete privacy for confidential documents."
+        },
+        {
+          q: "Can I preview pages before deleting?",
+          a: "Yes. All pages are shown as thumbnails so you can see exactly which pages you are selecting for removal. Selected pages get a red border and red badge number for clear visual feedback."
+        },
+        {
+          q: "Does deleting pages reduce quality?",
+          a: "No. Remaining pages are copied losslessly — text, vectors, images, and bookmarks are preserved byte-for-byte. There is no re-encoding, recompression, or rasterisation. The output PDF has exactly the same visual quality as the original for the remaining pages."
+        },
+        {
+          q: "Can I delete all pages from a PDF?",
+          a: "No. The tool prevents deleting all pages — at least one page must remain in the output PDF. If you need to completely replace a PDF, use the PDF edit or PDF enhance tools instead."
+        },
+        {
+          q: "How do the bulk selection buttons work?",
+          a: "Select All marks every page for deletion. Deselect All clears the selection. Select Odd marks all odd-numbered pages (1, 3, 5, etc.). Select Even marks all even-numbered pages (2, 4, 6, etc.). These are useful for removing blank pages from double-sided scans or selecting alternating content."
+        },
+        {
+          q: "Can I undo a deletion?",
+          a: "The delete operation produces a new PDF file — your original file is never modified. If you need to undo a deletion, simply re-upload the original PDF and select different pages. The tool does not maintain an undo stack within a session."
+        },
+        {
+          q: "What happens to bookmarks and annotations?",
+          a: "Bookmarks and annotations from the source PDF are preserved on the remaining pages where the source structure allows. However, because the delete operation creates a new PDF document, the bookmark hierarchy may need manual adjustment in a dedicated PDF editor if you require a unified table of contents."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

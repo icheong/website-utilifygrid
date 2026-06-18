@@ -45,8 +45,6 @@ density-converter
 specific-volume-converter
 moment-of-inertia-converter
 moment-of-force-converter
-
-## TODO
 pdf-merge
 pdf-split
 pdf-organize
@@ -58,8 +56,10 @@ pdf-alternate-merge
 pdf-n-up
 pdf-edit
 pdf-sign
-pdf-enhance
 qr-code
+
+## TODO
+pdf-enhance
 currency-converter
 htaccess-nginx-redirect-builder
 compression-inspector

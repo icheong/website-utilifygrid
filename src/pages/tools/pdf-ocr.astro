@@ -1,4 +1,4 @@
----
+﻿---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import tools from '../../data/tools.json';
 const tool = tools.find(t => t.slug === 'pdf-ocr')!;
@@ -7,8 +7,8 @@ const tool = tools.find(t => t.slug === 'pdf-ocr')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">OCR PDF</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Extract text from scanned PDFs using client-side OCR. Preview pages, run recognition, and download the extracted text.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">OCR PDF</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Extract text from scanned PDFs using client-side OCR. Preview pages, run recognition, and download the extracted text.</p>
 
     <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
       <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
@@ -19,8 +19,8 @@ const tool = tools.find(t => t.slug === 'pdf-ocr')!;
 
     <div id="workspace" style="display:none;margin-top:1.25rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
-        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
-          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        <p class="seo-p-sm" style="font-weight:600;">
+          <span id="doc-name"></span> — <span id="doc-pages" style="font-weight:400;"></span>
         </p>
         <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
       </div>
@@ -44,7 +44,6 @@ const tool = tools.find(t => t.slug === 'pdf-ocr')!;
         <button id="download-txt-btn" class="btn-secondary" type="button" style="font-size:0.75rem;display:none;">Download .txt</button>
       </div>
 
-      <!-- Progress -->
       <div id="progress-wrap" style="display:none;margin-bottom:1rem;">
         <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem;">
           <span id="progress-label" style="font-size:0.75rem;color:var(--text-secondary);">Processing…</span>
@@ -55,12 +54,10 @@ const tool = tools.find(t => t.slug === 'pdf-ocr')!;
         </div>
       </div>
 
-      <!-- Page thumbnails + OCR text -->
       <div id="ocr-results" style="display:flex;flex-direction:column;gap:1rem;"></div>
 
-      <!-- Full text output -->
       <div id="full-text-wrap" style="display:none;margin-top:1.25rem;">
-        <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Extracted Text</p>
+        <p class="tool-label" style="margin-bottom:0.5rem;">Extracted Text</p>
         <pre id="full-text" style="font-family:'Fira Code',monospace;font-size:0.82rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;"></pre>
       </div>
 
@@ -69,72 +66,91 @@ const tool = tools.find(t => t.slug === 'pdf-ocr')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use OCR PDF</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 1:</strong> Drop a scanned PDF or click <strong>Browse File</strong>. Page thumbnails appear.
+    <h2 class="font-display seo-h2">OCR PDF Overview</h2>
+    <p class="seo-p">
+      This OCR PDF tool extracts text from scanned documents and image-based PDFs using client-side optical character recognition — entirely within your browser. Built with <strong>Tesseract.js</strong> (Google’s Tesseract OCR engine compiled to WebAssembly) and <strong>PDF.js</strong> (for page rendering), the tool provides complete privacy and zero server latency. Whether you are digitising paper contracts, extracting text from scanned receipts, or making archived documents searchable, the OCR is performed client-side with no file uploads.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 2:</strong> Select the document language and click <strong>Run OCR</strong>. A progress bar shows recognition status.
+    <p class="seo-p">
+      The tool supports 11 languages (English, French, German, Spanish, Italian, Portuguese, Dutch, Japanese, Chinese Simplified/Traditional, and Korean), renders each page at 2x scale for optimal recognition accuracy, and displays results both per-page and as a concatenated full document. The extracted text is downloadable as a plain text file.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Step 3:</strong> Extracted text appears per page and as a full document. Click <strong>Download .txt</strong> to save.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Document digitisation and archival`, `Organisations with large archives of paper documents — legal filings, medical records, historical manuscripts — need to convert scanned images into searchable text. This tool processes scanned PDFs page by page, extracting text that can be indexed, searched, and repurposed. The client-side processing ensures sensitive documents never leave the organisation’s network.`],
+        [`Multi-language document processing`, `International businesses frequently handle documents in multiple languages — French contracts, German technical manuals, Japanese correspondence. The language selector lets you specify the document language for optimal recognition accuracy. Tesseract.js uses language-specific training data to recognise characters, ligatures, and common word patterns for each supported language.`],
+        [`Receipt and invoice data extraction`, `Accounting teams extract text from scanned receipts and invoices to populate spreadsheets or accounting software. The OCR tool processes batches of receipt PDFs, outputting plain text that can be parsed for vendor names, dates, amounts, and line items. The downloadable .txt format integrates easily with data processing pipelines and text analysis tools.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How OCR PDF works</h2>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. User drops a scanned PDF
-2. PDF.js renders each page to a Canvas
-3. Tesseract.js runs OCR on each page image
-4. Recognised text is displayed per page
-5. Full text is concatenated and downloadable
+    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and OCR Pipeline</h2>
+    <p class="seo-p">
+      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla’s PDF renderer) renders each page onto an HTML Canvas element at 2x scale (for optimal OCR accuracy), while <strong>Tesseract.js</strong> (Google’s Tesseract OCR engine compiled to WebAssembly) performs the actual character recognition on each page image. Both libraries execute entirely in the browser — no server round-trips occur at any stage.
+    </p>
 
-Tesseract.js runs entirely in the browser
-via WebAssembly — no server upload.</pre>
+    <h3 class="font-display seo-h3-sm">Step-by-Step OCR Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. PDF.js parses the document and extracts the page count. The file data is held in browser memory — no network requests are made.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Page rendering:</strong> For each page, PDF.js renders the content onto a Canvas element at 2x scale (approximately 144 DPI). Higher scale factors improve OCR accuracy by providing more pixel data to the recognition engine. The rendered canvas is passed directly to Tesseract.js as an image source.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. OCR recognition:</strong> Tesseract.js initialises the Tesseract OCR engine with the selected language training data (downloaded once from a CDN and cached in the browser). It processes each page image through three stages: image pre-processing (thresholding, noise removal), character segmentation (identifying individual characters), and character recognition (matching segments to known character patterns).
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Text extraction:</strong> The recognised text from each page is stored in an array and displayed in the UI. A progress bar tracks the OCR status across all pages. The full text is concatenated with page break markers and displayed in a scrollable pre element.
+    </p>
+    <p class="seo-p-none">
+      <strong>Output formats:</strong> The extracted text is available for copying from the UI or downloading as a plain text (.txt) file. Each page is separated by a page break marker for easy parsing. The tool does not create searchable PDFs — it outputs raw text only.
+    </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is my file uploaded for OCR?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Tesseract.js runs entirely in your browser via WebAssembly. Your PDF never leaves your device." }
-        },
-        {
-          "@type": "Question",
-          "name": "How accurate is the OCR?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Accuracy depends on scan quality, resolution, and language. Clean, high-resolution scans in English typically achieve 95%+ accuracy. Handwritten text or low-resolution scans may have lower accuracy." }
-        },
-        {
-          "@type": "Question",
-          "name": "What languages are supported?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The tool supports English, French, German, Spanish, Italian, Portuguese, Dutch, Japanese, Chinese (Simplified & Traditional), and Korean. Tesseract.js can load additional language packs on demand." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does OCR create a searchable PDF?",
-          "acceptedAnswer": { "@type": "Answer", "text": "This tool extracts text as plain text (.txt). To create a searchable PDF with text overlay, the extracted text would need to be positioned over the original images, which requires additional processing." }
-        }
-      ]
-    }
-    </script>
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Is my file uploaded for OCR?', a: 'No. Tesseract.js runs entirely in your browser via WebAssembly. Your PDF never leaves your device.' },
-        { q: 'How accurate is the OCR?', a: 'Accuracy depends on scan quality, resolution, and language. Clean, high-resolution scans in English typically achieve 95%+ accuracy. Handwritten text or low-resolution scans may have lower accuracy.' },
-        { q: 'What languages are supported?', a: 'The tool supports English, French, German, Spanish, Italian, Portuguese, Dutch, Japanese, Chinese (Simplified & Traditional), and Korean. Tesseract.js can load additional language packs on demand.' },
-        { q: 'Does OCR create a searchable PDF?', a: 'This tool extracts text as plain text (.txt). To create a searchable PDF with text overlay, the extracted text would need to be positioned over the original images, which requires additional processing.' },
+        {
+          q: "Is my file uploaded for OCR?",
+          a: "No. Tesseract.js runs entirely in your browser via WebAssembly. Your PDF never leaves your device — there is no server upload at any point. The OCR engine is downloaded once and cached locally for subsequent use."
+        },
+        {
+          q: "How accurate is the OCR?",
+          a: "Accuracy depends on scan quality, resolution, and language. Clean, high-resolution scans (300 DPI or higher) in English typically achieve 95%+ accuracy. Handwritten text, low-resolution scans, or documents with complex layouts may have lower accuracy. The tool renders pages at 2x scale to maximise recognition quality."
+        },
+        {
+          q: "What languages are supported?",
+          a: "The tool supports 11 languages: English, French, German, Spanish, Italian, Portuguese, Dutch, Japanese, Chinese (Simplified and Traditional), and Korean. Each language requires its own training data, which is downloaded from a CDN on first use and cached in the browser."
+        },
+        {
+          q: "Does OCR create a searchable PDF?",
+          a: "This tool extracts text as plain text (.txt format). To create a searchable PDF with text overlay, you would need to position the extracted text over the original images at the correct coordinates, which requires additional processing not included in this tool."
+        },
+        {
+          q: "How long does OCR take?",
+          a: "Processing time depends on the number of pages, page complexity, and your device’s processing power. A typical 10-page document takes 30-60 seconds. The progress bar shows the current page and overall percentage. Each page is processed sequentially to manage memory usage."
+        },
+        {
+          q: "Can I OCR password-protected PDFs?",
+          a: "This tool can process PDFs that open without a password. PDFs requiring a user password to open cannot be processed because PDF.js cannot render the pages for OCR without first decrypting the document."
+        },
+        {
+          q: "What text formatting is preserved?",
+          a: "The OCR output is plain text — formatting such as bold, italic, font sizes, and column layouts are not preserved. The tool extracts the raw character sequence from each page. For complex layouts with multiple columns, the text may flow across column boundaries. Use the per-page results to manually reorder text if needed."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
@@ -218,7 +234,7 @@ via WebAssembly — no server upload.</pre>
   ocrBtn.addEventListener('click', async () => {
     if (!pdfDoc) return;
     ocrBtn.setAttribute('disabled', '');
-    ocrBtn.textContent = 'Running…';
+    ocrBtn.textContent = 'Running\u2026';
     progressWrap.style.display = '';
     fullTextWrap.style.display = 'none';
     downloadTxtBtn.style.display = 'none';
@@ -249,7 +265,6 @@ via WebAssembly — no server upload.</pre>
     progressBar.style.width = '100%';
     progressLabel.textContent = 'Complete';
 
-    // Display results
     fullTextWrap.style.display = '';
     downloadTxtBtn.style.display = '';
     fullText.textContent = allText.join('\n\n--- Page Break ---\n\n');

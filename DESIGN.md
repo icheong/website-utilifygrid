@@ -109,9 +109,22 @@ All tool pages must use these standardised classes for form elements. Do not ove
 
 ## 7. Disclaimer
 
-- If a disclaimer is required, place it at the very end of the `faq` slot, after all Q&A items.
-- Use `<p class="seo-disclaimer">` (styled via CSS: smaller text, muted color, italic if desired).
+- **Placement rule:** If a disclaimer is required, it **must** be placed inside the `faq` slot, after the closing `</div>` of the FAQ list container, and before the closing `</div>` of the `faq` slot. It must **never** be placed in the `how-to-use` or `how-it-works` slots.
+- Use `<div class="seo-disclaimer">` with the standard inline styles: `margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7`.
+- The `seo-disclaimer` class must **not** be reused for other purposes (e.g., formula cards, info boxes). Use `seo-card-code` for formula displays or `surface-2 border-theme` for other content cards.
 - Must **not** be inside any `itemscope` for FAQPage.
+- Example structure inside the `faq` slot:
+  ```html
+  <div slot="faq">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <!-- FAQ items here -->
+    </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7">
+      <strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> ...
+    </div>
+  </div>
+  ```
 
 ## 8. AdSense Text Fixes (SEO Content Expansion)
 
@@ -165,14 +178,34 @@ Allowed inline attributes (only when necessary):
 - Code blocks (multi‑line): use `<pre><code class="language-xml">...</code></pre>` or the appropriate language class; rely on Prism or highlight.js styling (no inline styles).
 - Ensure code blocks are wrapped in a container with class `code-block` if needed for margins.
 
-## 13. Accessibility
+## 13. Astro JSX Encoding — Do NOT Use HTML Entities in JS Strings
+
+**Never use HTML entities (`&#8212;`, `&#176;`, `&#8594;`, `&#215;`, `&#8230;`, `&#8217;`, `&#8220;`, `&#8221;`, etc.) inside JavaScript string literals in Astro JSX.**
+
+HTML entities only decode inside HTML content. Inside `{...}` JS expressions (e.g., FAQ arrays, template literals, mapped data), they render as literal text like `&#8212;` instead of `—`.
+
+**Correct** (in JS strings):
+```js
+{ q: 'What is this?', a: 'A tool — it works.' }
+{ q: 'Angle?', a: '0° → 90° → 180° → 270°' }
+```
+
+**Wrong** (HTML entities in JS strings):
+```js
+{ q: 'What is this?', a: 'A tool &#8212; it works.' }
+{ q: 'Angle?', a: '0&#176; &#8594; 90&#176; &#8594; 180&#176; &#8594; 270&#176;' }
+```
+
+Use actual Unicode characters directly: `—` (em dash), `–` (en dash), `°` (degree), `→` (arrow), `×` (multiply), `…` (ellipsis), `'` (right single quote), `"` / `"` (double quotes).
+
+## 14. Accessibility
 
 - All form inputs must have associated `<label>` elements (either wrapping the input or using `for`/`id`).
 - Buttons must have discernible text (no icon‑only buttons without an accessible label).
 - Use `aria-label` where needed for custom controls.
 - Ensure sufficient color contrast (use the defined `--text-*` and `--bg-surface-*` variables which are tested for WCAG AA).
 
-## 14. Summary Checklist for Each Tool
+## 15. Summary Checklist for Each Tool
 
 - [ ] Uses `ToolLayout.astro` with all required slots.
 - [ ] No inline `style=` for visual properties (colors, fonts, spacing, borders).
@@ -180,8 +213,10 @@ Allowed inline attributes (only when necessary):
 - [ ] No `text-secondary` on SEO content paragraphs (`seo-p`, `seo-p-sm`, `seo-p-none`, `seo-card-body`, `seo-faq-a`).
 - [ ] Real‑world applications rendered as `seo-card-sm` flex‑column cards.
 - [ ] Deep‑dive headings use `seo-h3-sm`; code snippets use `<code class="inline-code">`.
-- [ ] FAQ follows FAQPage schema with `surface-2 border-theme seo-faq-card` on each item; FAQ H2 uses `seo-h2-faq`; disclaimer outside FAQ items.
+- [ ] FAQ follows FAQPage schema with `surface-2 border-theme seo-faq-card` on each item; FAQ H2 uses `seo-h2-faq`.
+- [ ] Disclaimer (if present) is inside the `faq` slot only — never in `how-to-use` or `how-it-works`. Uses `<div class="seo-disclaimer">` with standard inline styles.
 - [ ] No raw HTML tags (e.g., `<code style=...>`, `<strong>`, `<em>`) in description text.
+- [ ] **No HTML entities (`&#...;`) inside JS string literals** — use actual Unicode characters (see section 13).
 - [ ] All colors, spacing, fonts come from CSS classes or variables in `global.css`.
 - [ ] Builds successfully (`npm run build` passes).
 

@@ -24,24 +24,24 @@ const tool = tools.find(t => t.slug === 'qr-code')!;
         <!-- Left: controls -->
         <div>
           <div style="margin-bottom:1rem;">
-            <label style="display:block;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;" for="qr-text">Text or URL</label>
+            <label class="tool-label" for="qr-text">Text or URL</label>
             <textarea id="qr-text" rows="3" placeholder="Enter text or URL…"
-              class="input-themed" style="width:100%;font-family:'Fira Code',monospace;font-size:0.85rem;resize:vertical;">https://utilifygrid.com</textarea>
+              class="input-themed tool-textarea">https://utilifygrid.com</textarea>
           </div>
 
           <!-- Styling controls -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
             <div>
-              <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;" for="qr-fg">Dot Colour</label>
+              <label class="tool-label" for="qr-fg">Dot Colour</label>
               <div style="display:flex;gap:0.4rem;align-items:center;">
-                <input id="qr-fg" type="color" value="#000000" style="width:32px;height:32px;border:none;border-radius:4px;cursor:pointer;background:none;" />
+                <input id="qr-fg" type="color" value="#000000" class="color-picker" />
                 <input id="qr-fg-hex" type="text" value="#000000" class="input-themed" style="flex:1;font-family:'Fira Code',monospace;font-size:0.78rem;padding:0.35rem 0.5rem;" />
               </div>
             </div>
             <div>
-              <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;" for="qr-bg">Background</label>
+              <label class="tool-label" for="qr-bg">Background</label>
               <div style="display:flex;gap:0.4rem;align-items:center;">
-                <input id="qr-bg" type="color" value="#FFFFFF" style="width:32px;height:32px;border:none;border-radius:4px;cursor:pointer;background:none;" />
+                <input id="qr-bg" type="color" value="#FFFFFF" class="color-picker" />
                 <input id="qr-bg-hex" type="text" value="#FFFFFF" class="input-themed" style="flex:1;font-family:'Fira Code',monospace;font-size:0.78rem;padding:0.35rem 0.5rem;" />
               </div>
             </div>
@@ -49,8 +49,8 @@ const tool = tools.find(t => t.slug === 'qr-code')!;
 
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem;">
             <div>
-              <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;" for="qr-ecl">Error Correction</label>
-              <select id="qr-ecl" class="select-themed" style="width:100%;font-size:0.82rem;">
+              <label class="tool-label" for="qr-ecl">Error Correction</label>
+              <select id="qr-ecl" class="select-themed">
                 <option value="L">Low (7%)</option>
                 <option value="M" selected>Medium (15%)</option>
                 <option value="Q">Quartile (25%)</option>
@@ -58,8 +58,8 @@ const tool = tools.find(t => t.slug === 'qr-code')!;
               </select>
             </div>
             <div>
-              <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;" for="qr-size">Size (px)</label>
-              <input id="qr-size" type="number" value="300" min="100" max="1000" step="50" class="input-themed" style="width:100%;font-family:'Fira Code',monospace;font-size:0.82rem;" />
+              <label class="tool-label" for="qr-size">Size (px)</label>
+              <input id="qr-size" type="number" value="300" min="100" max="1000" step="50" class="input-themed" style="font-family:'Fira Code',monospace;font-size:0.82rem;" />
             </div>
           </div>
 
@@ -117,8 +117,8 @@ const tool = tools.find(t => t.slug === 'qr-code')!;
 
       <!-- Result -->
       <div id="scan-result" style="display:none;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1rem;">
-        <p style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Decoded Result</p>
-        <textarea id="scan-output" readonly rows="3" class="input-themed" style="width:100%;font-family:'Fira Code',monospace;font-size:0.85rem;resize:none;"></textarea>
+        <p class="tool-label">Decoded Result</p>
+        <textarea id="scan-output" readonly rows="3" class="input-themed tool-textarea"></textarea>
         <div style="display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;">
           <button id="scan-copy" class="btn-secondary" type="button" style="font-size:0.78rem;">Copy to Clipboard</button>
           <button id="scan-open" class="btn-primary" type="button" style="font-size:0.78rem;display:none;">Open URL</button>
@@ -129,76 +129,109 @@ const tool = tools.find(t => t.slug === 'qr-code')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the QR Code tool</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Generate tab:</strong> Enter text or a URL, customise dot/background colours, error correction level, and size. The QR code updates in real-time. Download as PNG or copy the image to your clipboard.
+    <h2 class="font-display seo-h2">QR Code Generator &amp; Scanner Overview</h2>
+    <p class="seo-p">
+      This QR code tool provides a complete, privacy-first solution for generating and decoding QR codes without any server dependency. Every operation — from encoding text into a QR matrix to decoding scanned images — runs entirely within your browser using modern vanilla JavaScript and standard browser APIs. No images, text, or metadata ever leave your device, and zero cookies or tracking scripts are involved. The 100% client-side architecture ensures zero server latency and complete data privacy for sensitive URLs, contact information, or proprietary text.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Scan tab:</strong> Drop an image file containing a QR code, or start your camera for live scanning. Decoded text appears instantly with a Copy button and an Open URL link if applicable.
+    <p class="seo-p">
+      The generator encodes your input using the qrcode library into a two-dimensional matrix of dark and light modules, then renders the result to an HTML5 Canvas with configurable dot and background colours, error correction levels, and output dimensions. The scanner reads QR codes from uploaded image files via an offscreen Canvas or from a live camera feed using the getUserMedia API and the jsQR decoding library. Both workflows are entirely synchronous within the browser, with no network round-trips required.
     </p>
-  </div>
 
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How QR Code Generator &amp; Scanner works</h2>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Generator:
-  1. Text input → qrcode library encodes to matrix
-  2. Matrix rendered to HTML5 Canvas with custom colours
-  3. Canvas exported as PNG blob for download/copy
-
-Scanner (Image):
-  1. File dropped → pixels read via offscreen Canvas
-  2. jsQR decodes the QR matrix from image data
-  3. Decoded string displayed in output
-
-Scanner (Camera):
-  1. getUserMedia opens webcam stream
-  2. requestAnimationFrame loop reads video frames
-  3. jsQR decodes each frame until QR found
-  4. Scanner pauses, result displayed
-
-All client-side — no server, no data leaves your device.</pre>
-  </div>
-
-  <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Does the scanner need camera permission?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. When you click 'Start Camera', the browser asks for camera permission. If denied, a clear error message is shown. You can still scan by dropping image files instead." }
-        },
-        {
-          "@type": "Question",
-          "name": "Is any data sent to a server?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. QR generation uses the qrcode library and scanning uses jsQR — both run entirely in your browser. No images or text leave your device." }
-        },
-        {
-          "@type": "Question",
-          "name": "What error correction levels mean?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Error correction adds redundancy to the QR code so it can be read even if partially obscured. Low (7%) uses less space; High (30%) allows the code to survive damage or overlay but creates a denser pattern." }
-        }
-      ]
-    }
-    </script>
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h3 class="seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div class="seo-card-grid">
       {[
-        { q: 'Does the scanner need camera permission?', a: "Yes. When you click 'Start Camera', the browser asks for camera permission. If denied, a clear error message is shown. You can still scan by dropping image files instead." },
-        { q: 'Is any data sent to a server?', a: 'No. QR generation uses the qrcode library and scanning uses jsQR — both run entirely in your browser. No images or text leave your device.' },
-        { q: 'What do error correction levels mean?', a: 'Error correction adds redundancy to the QR code so it can be read even if partially obscured. Low (7%) uses less space; High (30%) allows the code to survive damage or overlay but creates a denser pattern.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+        ['Marketing teams generating QR codes for print materials', 'A marketing designer preparing flyers, posters, or business cards can instantly generate QR codes linking to campaign landing pages, promotional URLs, or Wi-Fi credentials. The tool allows custom brand colours and adjustable error correction so the code remains scannable even when printed at small sizes or partially obscured by design elements.'],
+        ['Developers debugging QR-based authentication flows', 'Software engineers building two-factor authentication, QR-based login, or ticketing systems need to quickly generate and scan test QR codes during development. This tool eliminates the need for external services or API keys, enabling rapid iteration entirely offline.'],
+        ['Educators demonstrating QR encoding principles in classrooms', 'Teachers and lecturers can use this tool to visually demonstrate how QR error correction levels affect code density, how data capacity scales with version size, and how the Reed-Solomon algorithm enables partial damage recovery — all without requiring students to install software or create accounts.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
         </div>
       ))}
     </div>
+  </div>
+
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">Deep-Dive: QR Code Encoding &amp; Decoding Mechanics</h2>
+    <p class="seo-p">
+      A QR (Quick Response) code is a two-dimensional matrix barcode defined by the ISO/IEC 18004 standard. It encodes data using a grid of black and white modules arranged in a square pattern, with specific finder patterns, timing patterns, and alignment patterns that allow scanners to locate and orient the code regardless of rotation or angle. The encoding process involves several discrete stages, each of which this tool executes entirely within the browser.
+    </p>
+
+    <h3 class="seo-h3-sm">Generator Pipeline: Text to Rendered Matrix</h3>
+    <p class="seo-p-sm">
+      When you enter text or a URL, the qrcode library first analyzes the input to determine the optimal QR version (1 through 40, where higher versions hold more data) and the most efficient data encoding mode — numeric, alphanumeric, byte, or kanji. The input is then encoded into a binary data stream and protected with Reed-Solomon error correction, which appends calculated redundancy symbols. The error correction level you select directly controls how many symbols are added: <code class="inline-code">L</code> (7% recovery), <code class="inline-code">M</code> (15%), <code class="inline-code">Q</code> (25%), or <code class="inline-code">H</code> (30%).
+    </p>
+    <p class="seo-p-sm">
+      The resulting data stream is placed into the matrix according to a fixed placement pattern: data modules fill the matrix in a zigzag pattern from the bottom-right corner, while function patterns (finder, separator, timing, format information, and version information) occupy predetermined positions. Once the matrix is populated, a mask pattern is applied to均衡 the distribution of dark and light modules, improving scannability. The final matrix is then rendered to an HTML5 Canvas at your specified dimensions, using your chosen dot and background colours.
+    </p>
+
+    <h3 class="seo-h3-sm">Scanner Pipeline: Image to Decoded String</h3>
+    <p class="seo-p-sm">
+      <strong>Image upload:</strong> When you drop or select an image file, the tool draws it onto an offscreen Canvas element, extracting the raw RGBA pixel data via <code class="inline-code">getImageData()</code>. The jsQR library then analyzes this pixel array to locate the three finder patterns (the large squares in the corners), determine the code boundaries, sample the module grid, and apply the reverse mask to recover the original data stream. Reed-Solomon decoding corrects any minor damage or noise in the image, and the decoded text or URL is returned as a UTF-8 string.
+    </p>
+    <p class="seo-p-sm">
+      <strong>Camera scanning:</strong> Clicking "Start Camera" invokes <code class="inline-code">navigator.mediaDevices.getUserMedia()</code> with a preference for the rear-facing camera (<code class="inline-code">facingMode: 'environment'</code>). A <code class="inline-code">requestAnimationFrame</code> loop continuously reads video frames from the live stream, draws each frame to the offscreen Canvas, and passes the pixel data to jsQR. When a valid QR code is detected in any frame, the loop pauses, the camera stream is stopped, and the decoded result is displayed. This frame-by-frame approach ensures responsive scanning without blocking the main thread.
+    </p>
+
+    <h3 class="seo-h3-sm">Edge Cases and Technical Constraints</h3>
+    <p class="seo-p-sm">
+      The generator gracefully handles empty input (displaying a blank canvas), maximum-length data strings (up to the QR standard's capacity for the selected version and error level), and extremely small or large output sizes (clamped between 100px and 1000px). Floating-point colour values are handled as hex strings conforming to the CSS colour specification. The scanner tolerates moderate image distortion, partial occlusion (up to the selected error correction threshold), and non-square aspect ratios, though extremely skewed or low-resolution images may fail to decode.
+    </p>
+    <p class="seo-p-none">
+      All computation uses IEEE 754 double-precision arithmetic via standard JavaScript number types. No external servers, CDN APIs, or third-party analytics services are contacted at any point during generation or scanning.
+    </p>
+  </div>
+
+  <div slot="faq">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does the QR scanner need camera permission?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. When you click "Start Camera", the browser prompts for camera access via the getUserMedia API. If permission is denied, a clear error message is displayed and you can continue scanning by uploading image files instead. No camera data is transmitted off-device — all frame processing occurs locally in the browser.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is any data sent to a server?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. QR generation uses the qrcode library and scanning uses jsQR — both run entirely in your browser. No images, text, or metadata ever leave your device. There are no server-side API calls, no analytics trackers, and no cookies involved in any part of the process. Your data remains completely private.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What do error correction levels mean?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Error correction adds redundancy to the QR code using the Reed-Solomon algorithm, enabling the code to be read even if partially obscured or damaged. Low (7%) uses fewer modules and creates a less dense pattern, while High (30%) allocates more space to error correction data, producing a denser grid that can survive significant damage. Choose higher levels when the QR code will be printed small or placed in environments where it may be partially covered.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why does my scanned QR code show garbled text?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Garbled output typically occurs when the QR code contains binary data (such as encoded images or non-UTF-8 byte sequences) that the text decoder interprets literally. It can also happen if the source image is heavily compressed, low-resolution, or has significant motion blur. Try re-uploading a higher-resolution version of the image, or ensure the QR code was generated with text/URL encoding rather than a binary format. The scanner works best with standard alphanumeric, URL, and plain-text QR codes.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the maximum amount of text I can encode in a QR code?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The maximum data capacity depends on the QR version (1 through 40), the encoding mode, and the error correction level. At the highest capacity (Version 40, byte mode, error correction L), a QR code can hold up to 2,953 bytes of data. For typical URLs (50-200 characters), any version will suffice. The tool automatically selects the smallest version that fits your data, but very long text strings will produce denser codes that require more scanning precision and may need higher error correction to remain reliable.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="seo-disclaimer">
+      <strong>Disclaimer:</strong> This tool is provided for educational and practical purposes only. It does not constitute professional advice regarding data security, encryption, or authentication systems. QR codes are not encrypted by default — any data encoded in a QR code is readable by anyone with a scanner. For sensitive information, ensure you use appropriate encryption or access-control mechanisms before encoding data into a QR code.
+    </p>
   </div>
 
 </ToolLayout>
@@ -423,3 +456,25 @@ All client-side — no server, no data leaves your device.</pre>
   init().catch(console.error);
 })();
 </script>
+
+<style>
+  .color-picker {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: none;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+  }
+</style>

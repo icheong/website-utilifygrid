@@ -1,4 +1,4 @@
----
+﻿---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import tools from '../../data/tools.json';
 const tool = tools.find(t => t.slug === 'pdf-n-up')!;
@@ -7,8 +7,8 @@ const tool = tools.find(t => t.slug === 'pdf-n-up')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">N-Up PDF</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Layout multiple PDF pages onto a single sheet — 2-up, 4-up, 6-up, 8-up, or 9-up.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">N-Up PDF</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Layout multiple PDF pages onto a single sheet — 2-up, 4-up, 6-up, 8-up, or 9-up.</p>
 
     <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
       <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
@@ -19,15 +19,14 @@ const tool = tools.find(t => t.slug === 'pdf-n-up')!;
 
     <div id="workspace" style="display:none;margin-top:1.25rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
-        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
-          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        <p class="seo-p-sm" style="font-weight:600;">
+          <span id="doc-name"></span> — <span id="doc-pages" style="font-weight:400;"></span>
         </p>
         <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
       </div>
 
-      <!-- Layout selector -->
       <div style="margin-bottom:1rem;">
-        <p style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Layout</p>
+        <p class="tool-label" style="margin-bottom:0.5rem;">Layout</p>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
           <button class="btn-secondary layout-btn active" type="button" data-n="2" style="font-size:0.82rem;padding:0.5rem 1rem;">2-Up</button>
           <button class="btn-secondary layout-btn" type="button" data-n="4" style="font-size:0.82rem;padding:0.5rem 1rem;">4-Up</button>
@@ -37,7 +36,6 @@ const tool = tools.find(t => t.slug === 'pdf-n-up')!;
         </div>
       </div>
 
-      <!-- Visual preview of layout -->
       <div id="layout-preview" style="margin-bottom:1rem;"></div>
 
       <div style="text-align:center;">
@@ -48,74 +46,91 @@ const tool = tools.find(t => t.slug === 'pdf-n-up')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use N-Up PDF</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 1:</strong> Drop a PDF or click <strong>Browse File</strong>.
+    <h2 class="font-display seo-h2">N-Up PDF Overview</h2>
+    <p class="seo-p">
+      This N-Up PDF tool lays out multiple pages from a PDF document onto a single output sheet — entirely within your browser. Built with <strong>pdf-lib</strong> (for page composition) and <strong>PDF.js</strong> (for layout preview), both running via WebAssembly, the tool provides complete privacy and zero server latency. Choose from 2-Up (side by side), 4-Up (2×2 grid), 6-Up (2×3), 8-Up (2×4), or 9-Up (3×3) to print handouts, save paper, or create overview sheets.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 2:</strong> Choose a layout — <strong>2-Up</strong> (side by side), <strong>4-Up</strong> (2×2 grid), <strong>6-Up</strong> (2×3), <strong>8-Up</strong> (2×4), or <strong>9-Up</strong> (3×3). A visual preview shows how pages will be arranged.
+    <p class="seo-p">
+      The tool displays a visual grid preview showing how pages will be arranged on each output sheet, including the total number of sheets required. Each original page is scaled down proportionally and positioned in a grid cell on the output sheet. The output sheet retains the same dimensions as the original page, so the result prints cleanly on standard paper.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Step 3:</strong> Click <strong>Create N-Up PDF</strong> to download the result.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Handout and presentation printing`, `Trainers and educators create 2-up or 4-up handouts to save paper when distributing presentation slides. A 40-slide deck becomes a 10-page handout at 4-up, or a 20-page handout at 2-up. The visual preview lets you verify the layout before printing, and the output sheet matches standard paper dimensions for clean printing.`],
+        [`Document overview and proofreading`, `Editors and designers use 6-up or 9-up layouts to view an entire document at a glance. A 30-page report at 9-up produces 4 overview sheets, making it easy to spot layout inconsistencies, check page numbering, and verify visual flow across the entire document. This bird’s-eye view is invaluable for quality assurance before final printing.`],
+        [`Paper-efficient document review`, `Legal and business teams review large documents more efficiently by printing multiple pages per sheet. A 200-page contract at 4-up produces 50 sheets instead of 200, reducing paper costs and making it easier to navigate during meetings. The 8-up layout is particularly useful for dense text documents where readability at reduced size is acceptable.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How N-Up PDF works</h2>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">4-Up example (pages 1–8):
+    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Layout Algorithm</h2>
+    <p class="seo-p">
+      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla’s PDF renderer) generates the visual layout preview, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual page composition by embedding and drawing source pages onto output sheets at scaled positions. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+    </p>
 
-┌───────┬───────┐
-│   1   │   2   │
-├───────┼───────┤
-│   3   │   4   │
-└───────┴───────┘
-┌───────┬───────┐
-│   5   │   6   │
-├───────┼───────┤
-│   7   │   8   │
-└───────┴───────┘
-
-Each original page is scaled down and
-positioned on a larger output sheet.
-All client-side — no server upload.</pre>
+    <h3 class="font-display seo-h3-sm">The Layout Algorithm</h3>
+    <p class="seo-p-sm">
+      The layout is defined by a grid of <code class="inline-code">cols × rows</code> cells. For each output sheet, the tool embeds up to <code class="inline-code">cols × rows</code> source pages, scaling each to fit its grid cell. The cell dimensions are calculated as <code class="inline-code">cellW = pageWidth / cols</code> and <code class="inline-code">cellH = pageHeight / rows</code>. Each source page is drawn at its cell position using <code class="inline-code">drawPage()</code> with the calculated width and height.
+    </p>
+    <p class="seo-p-sm">
+      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code>. The tool extracts the page count and the dimensions of the first page (used as the output sheet size). The file data is held in browser memory — no network requests are made.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Layout preview:</strong> The tool generates a visual preview showing up to 3 output sheets as grid diagrams. Each cell displays its page number (or empty if no page exists for that position). The preview shows the grid dimensions, pages per sheet, and total sheet count. Switching layouts updates the preview in real time.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. N-Up processing:</strong> When the user clicks “Create N-Up PDF”, pdf-lib creates a new empty <code class="inline-code">PDFDocument</code>. For each output sheet, it adds a new page with the original page dimensions, then iterates through the grid cells. For each cell, it embeds the corresponding source page using <code class="inline-code">embedPage()</code> and draws it at the calculated position using <code class="inline-code">drawPage()</code> with the cell dimensions.
+    </p>
+    <p class="seo-p-none">
+      <strong>Quality preservation:</strong> Source pages are embedded using pdf-lib’s <code class="inline-code">embedPage()</code> method, which preserves the original content without re-encoding. Vector content (text, lines, shapes) remains sharp at any scale. Raster images are scaled by the PDF viewer at display time. The output sheet uses the same page dimensions as the source, ensuring clean printing on standard paper.
+    </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What does N-Up mean?",
-          "acceptedAnswer": { "@type": "Answer", "text": "N-Up means placing N original pages onto a single output sheet. 2-Up puts 2 pages side by side. 4-Up arranges 4 pages in a 2×2 grid. It's commonly used for printing handouts or saving paper." }
-        },
-        {
-          "@type": "Question",
-          "name": "Is my file uploaded?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens in your browser using pdf-lib. Your file never leaves your device." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does N-Up reduce quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Pages are scaled down geometrically — no re-encoding occurs. Vector content remains sharp. Raster images are scaled by the PDF viewer, same as zooming out." }
-        }
-      ]
-    }
-    </script>
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What does N-Up mean?', a: 'N-Up means placing N original pages onto a single output sheet. 2-Up puts 2 pages side by side. 4-Up arranges 4 pages in a 2×2 grid. It\'s commonly used for printing handouts or saving paper.' },
-        { q: 'Is my file uploaded?', a: 'No. All processing happens in your browser using pdf-lib. Your file never leaves your device.' },
-        { q: 'Does N-Up reduce quality?', a: 'Pages are scaled down geometrically — no re-encoding occurs. Vector content remains sharp. Raster images are scaled by the PDF viewer, same as zooming out.' },
+        {
+          q: "What does N-Up mean?",
+          a: "N-Up means placing N original pages onto a single output sheet. 2-Up puts 2 pages side by side. 4-Up arranges 4 pages in a 2×2 grid. 6-Up uses a 2×3 grid, 8-Up uses 2×4, and 9-Up uses a 3×3 grid. It is commonly used for printing handouts, saving paper, or creating document overviews."
+        },
+        {
+          q: "Is my file uploaded to a server?",
+          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device — there is no server upload at any point."
+        },
+        {
+          q: "Does N-Up reduce PDF quality?",
+          a: "Pages are scaled down geometrically — no re-encoding occurs. Vector content (text, lines, shapes) remains sharp at any scale because it is redrawn by the PDF viewer. Raster images are scaled by the PDF viewer at display time, same as zooming out. There is no quality loss from the N-Up operation itself."
+        },
+        {
+          q: "What output paper size is used?",
+          a: "The output sheet uses the same dimensions as the first page of the source PDF. If your source is letter size (612×792 points), the output is also letter size. If your source is A4, the output is A4. The tool does not change paper size — it only scales and positions pages within the existing dimensions."
+        },
+        {
+          q: "How are incomplete sheets handled?",
+          a: "If the total page count is not evenly divisible by the N-Up factor, the last sheet will have empty cells. For example, a 10-page document at 4-Up produces 3 sheets: the first two sheets have 4 pages each, and the third sheet has 2 pages with 2 empty cells."
+        },
+        {
+          q: "Can I create custom N-Up layouts like 3-Up or 5-Up?",
+          a: "The tool currently supports five predefined layouts: 2, 4, 6, 8, and 9. These cover the most common N-Up configurations. Custom layouts would require different grid calculations and are not currently available."
+        },
+        {
+          q: "Is the output suitable for double-sided printing?",
+          a: "The N-Up operation creates a single-sided layout. For double-sided printing, you would need to print the N-Up output and then flip the pages manually, or use a separate duplex printing configuration in your printer settings. The tool does not handle duplex layout logic."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
@@ -208,7 +223,7 @@ All client-side — no server upload.</pre>
   processBtn.addEventListener('click', async () => {
     if (!pdfBytes) return;
     processBtn.setAttribute('disabled', '');
-    processBtn.textContent = 'Processing…';
+    processBtn.textContent = 'Processing\u2026';
     try {
       const srcDoc = await PDFDocument.load(pdfBytes);
       const newDoc = await PDFDocument.create();
@@ -216,11 +231,9 @@ All client-side — no server upload.</pre>
       const perSheet = cols * rows;
       const srcPages = srcDoc.getPageIndices();
 
-      // Get first page dimensions for reference
       const firstPage = srcDoc.getPage(0);
       const { width: pw, height: ph } = firstPage.getSize();
 
-      // Output sheet size: same as original, but we'll draw scaled pages
       for (let sheetStart = 0; sheetStart < srcPages.length; sheetStart += perSheet) {
         const newPage = newDoc.addPage([pw, ph]);
         const sheetIndices = srcPages.slice(sheetStart, sheetStart + perSheet);
@@ -228,7 +241,6 @@ All client-side — no server upload.</pre>
         for (let i = 0; i < sheetIndices.length; i++) {
           const col = i % cols;
           const row = Math.floor(i / cols);
-          // For N-up, we flip row so page 1 is top-left
           const flippedRow = rows - 1 - row;
 
           const cellW = pw / cols;

@@ -1,4 +1,4 @@
----
+﻿---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import tools from '../../data/tools.json';
 const tool = tools.find(t => t.slug === 'pdf-rotate')!;
@@ -7,8 +7,8 @@ const tool = tools.find(t => t.slug === 'pdf-rotate')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Rotate PDF</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Change the orientation of specific or all pages. Click pages to cycle rotation, or use the controls to set a target angle.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Rotate PDF</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Change the orientation of specific or all pages. Click pages to cycle rotation, or use the controls to set a target angle.</p>
 
     <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
       <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
@@ -19,17 +19,16 @@ const tool = tools.find(t => t.slug === 'pdf-rotate')!;
 
     <div id="workspace" style="display:none;margin-top:1.25rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
-        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
-          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        <p class="seo-p-sm" style="font-weight:600;">
+          <span id="doc-name"></span> — <span id="doc-pages" style="font-weight:400;"></span>
         </p>
         <div style="display:flex;gap:0.5rem;align-items:center;">
           <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
         </div>
       </div>
 
-      <!-- Bulk controls -->
       <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
-        <span style="font-size:0.75rem;color:var(--text-secondary);font-weight:600;">Rotate all:</span>
+        <span class="tool-label">Rotate all:</span>
         <button class="btn-secondary bulk-rotate" type="button" data-angle="90" style="font-size:0.72rem;">↻ 90°</button>
         <button class="btn-secondary bulk-rotate" type="button" data-angle="180" style="font-size:0.72rem;">180°</button>
         <button class="btn-secondary bulk-rotate" type="button" data-angle="270" style="font-size:0.72rem;">↺ 270°</button>
@@ -46,66 +45,91 @@ const tool = tools.find(t => t.slug === 'pdf-rotate')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Rotate PDF</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 1:</strong> Drop a PDF or click <strong>Browse File</strong>. All pages appear as thumbnails.
+    <h2 class="font-display seo-h2">Rotate PDF Overview</h2>
+    <p class="seo-p">
+      This PDF rotate tool lets you change the orientation of specific pages or all pages in a PDF document — entirely within your browser. Built with <strong>pdf-lib</strong> (for rotation metadata) and <strong>PDF.js</strong> (for thumbnail rendering), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are fixing sideways scans, correcting upside-down pages from a mobile capture, or reorienting landscape pages in a portrait document, the rotation is applied as metadata without re-rendering or re-encoding page content.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 2:</strong> Click individual pages to cycle through 0° → 90° → 180° → 270°, or use the <strong>Rotate all</strong> buttons to set a target angle for every page at once.
+    <p class="seo-p">
+      Every page is rendered as a thumbnail with a click-to-cycle interface (0° → 90° → 180° → 270°). Rotated pages show a yellow badge with the current angle. Bulk rotation buttons let you set a target angle for every page at once. The rotation is metadata-only — pdf-lib modifies the page’s <code class="inline-code">/Rotate</code> entry without touching the underlying content stream, preserving perfect quality.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Step 3:</strong> Click <strong>Download Rotated PDF</strong> to save the result.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Scan orientation correction`, `When scanning documents with an auto-feed scanner, pages often come in sideways or upside-down depending on how they were placed in the feeder. A 20-page legal filing might have 5 pages rotated 90 degrees and 3 pages rotated 180 degrees. The click-to-cycle interface lets you fix each page individually, while the bulk Reset button restores all pages to 0 degrees if the entire document needs correction.`],
+        [`Mobile photo-to-PDF correction`, `Documents photographed with a smartphone often have inconsistent orientations — some pages are portrait, others landscape, and some are upside-down depending on the camera angle. The rotate tool lets you standardize every page to the correct orientation before sharing. The thumbnail preview shows the current rotation state with yellow badges, making it easy to identify which pages need adjustment.`],
+        [`Landscape content in portrait documents`, `Technical drawings, spreadsheets, and wide tables are often created in landscape orientation but embedded in portrait-oriented reports. The bulk rotate buttons let you quickly set all pages to 90 or 270 degrees for consistent landscape viewing. Individual page rotation is useful when only specific pages need reorientation while the rest remain in portrait.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Rotate PDF works</h2>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. User drops a PDF file
-2. PDF.js renders page thumbnails
-3. User clicks pages or uses bulk rotate
-4. pdf-lib applies rotation metadata to each page
-5. Rotated PDF is downloaded
+    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Rotation Mechanism</h2>
+    <p class="seo-p">
+      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla’s PDF renderer) handles page thumbnail rendering by drawing each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual rotation by modifying the page’s rotation metadata. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+    </p>
 
-Rotation is metadata-only — no re-rendering.
-All client-side — no server upload.</pre>
+    <h3 class="font-display seo-h3-sm">How PDF Rotation Works</h3>
+    <p class="seo-p-sm">
+      PDF pages have a <code class="inline-code">/Rotate</code> entry in their page dictionary that specifies the clockwise rotation angle in degrees. Valid values are 0, 90, 180, and 270. When a PDF viewer encounters this entry, it rotates the page content by the specified angle before displaying it. The underlying content stream is not modified — only the metadata entry changes.
+    </p>
+    <p class="seo-p-sm">
+      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. The file data is held in browser memory — no network requests are made. The file is validated as a PDF by checking the file type and attempting to parse it with PDF.js.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Thumbnail generation:</strong> PDF.js renders every page at 25% scale onto temporary Canvas elements, converting them to inline thumbnail cards. Each card displays a rotation badge (yellow when rotated, hidden when at 0°). The canvas renders the page in its current orientation as defined by the existing <code class="inline-code">/Rotate</code> value.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Rotation interface:</strong> Clicking a page cycles its rotation: 0° → 90° → 180° → 270° → 0°. The bulk buttons set all pages to a specific angle. The rotation state is tracked in an array that maps each page index to its target rotation angle. The thumbnail re-renders to show the visual effect of the rotation.
+    </p>
+    <p class="seo-p-none">
+      <strong>4. Download execution:</strong> When the user clicks “Download Rotated PDF”, pdf-lib loads the source document, copies all pages, and applies the target rotation to each page using <code class="inline-code">setRotation(degrees())</code>. The rotation is applied as a metadata change — the page content stream is not re-encoded. The resulting PDF downloads with all rotations applied.
+    </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is my file uploaded?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens in your browser. Your file never leaves your device." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does rotating reduce PDF quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Rotation is applied as metadata — pages are not re-rendered or re-encoded. Quality is perfectly preserved." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I rotate individual pages differently?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Click each page to cycle its rotation independently. You can set different angles for different pages before downloading." }
-        }
-      ]
-    }
-    </script>
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Is my file uploaded?', a: 'No. All processing happens in your browser. Your file never leaves your device.' },
-        { q: 'Does rotating reduce PDF quality?', a: 'No. Rotation is applied as metadata — pages are not re-rendered or re-encoded. Quality is perfectly preserved.' },
-        { q: 'Can I rotate individual pages differently?', a: 'Yes. Click each page to cycle its rotation independently. You can set different angles for different pages before downloading.' },
+        {
+          q: "Is my file uploaded to a server?",
+          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device — there is no server upload at any point. This provides complete privacy for confidential documents."
+        },
+        {
+          q: "Does rotating reduce PDF quality?",
+          a: "No. Rotation is applied as metadata — the /Rotate entry in the page dictionary is modified without touching the content stream. Pages are not re-rendered, re-encoded, or recompressed. Quality is perfectly preserved."
+        },
+        {
+          q: "Can I rotate individual pages differently?",
+          a: "Yes. Click each page to cycle its rotation independently through 0° → 90° → 180° → 270°. You can set different angles for different pages before downloading. The bulk buttons set all pages to the same angle."
+        },
+        {
+          q: "What rotation angles are supported?",
+          a: "The tool supports four rotation angles: 0° (no rotation), 90° (clockwise), 180° (upside-down), and 270° (counter-clockwise). These are the standard rotation values defined by the PDF specification. Intermediate angles like 45° are not supported by the PDF format."
+        },
+        {
+          q: "Does rotation change the page dimensions?",
+          a: "No. Rotation changes the viewing orientation but not the page dimensions. A page that is 612×792 points (letter size) remains 612×792 points regardless of its rotation angle. The PDF viewer handles the visual rotation at display time."
+        },
+        {
+          q: "Can I undo a rotation?",
+          a: "Yes. Click a rotated page to cycle through the angles until it returns to 0°, or use the Reset bulk button to set all pages to 0° simultaneously. The original file is never modified — you are always working with a fresh copy."
+        },
+        {
+          q: "What happens to existing rotation metadata?",
+          a: "The tool overwrites any existing rotation metadata with the target angle you specify. If a page was already rotated 90° and you click it once, it becomes 180° (adding 90° to the current value). The bulk buttons set all pages to the exact angle regardless of their current rotation."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
@@ -185,7 +209,7 @@ All client-side — no server upload.</pre>
 
       const rotBadge = document.createElement('div');
       rotBadge.style.cssText = `position:absolute;top:-6px;left:-6px;background:${rot !== 0 ? '#F59E0B' : 'var(--text-muted)'};color:#fff;font-size:0.55rem;font-weight:700;padding:0.1rem 0.35rem;border-radius:4px;z-index:2;`;
-      rotBadge.textContent = rot !== 0 ? rot + '°' : '';
+      rotBadge.textContent = rot !== 0 ? rot + '\u00B0' : '';
 
       const label = document.createElement('div');
       label.style.cssText = 'font-size:0.65rem;color:var(--text-muted);margin-top:0.2rem;';
@@ -207,7 +231,7 @@ All client-side — no server upload.</pre>
   downloadBtn.addEventListener('click', async () => {
     if (!rotations.length) return;
     downloadBtn.setAttribute('disabled', '');
-    downloadBtn.textContent = 'Building…';
+    downloadBtn.textContent = 'Building\u2026';
     try {
       const srcDoc = await PDFDocument.load(pdfBytes!);
       const newDoc = await PDFDocument.create();

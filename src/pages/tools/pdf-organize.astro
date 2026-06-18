@@ -7,8 +7,8 @@ const tool = tools.find(t => t.slug === 'pdf-organize')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Organize PDF</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Drag pages to reorder, click to duplicate or remove — visual workspace for your PDF.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Organize PDF</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Drag pages to reorder, click to duplicate or remove — visual workspace for your PDF.</p>
 
     <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
       <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
@@ -19,8 +19,8 @@ const tool = tools.find(t => t.slug === 'pdf-organize')!;
 
     <div id="workspace" style="display:none;margin-top:1.25rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
-          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        <p class="seo-p-sm" style="font-weight:600;">
+          <span id="doc-name"></span> — <span id="doc-pages" style="font-weight:400;"></span>
         </p>
         <div style="display:flex;gap:0.5rem;">
           <button id="undo-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;" disabled>Undo</button>
@@ -36,65 +36,91 @@ const tool = tools.find(t => t.slug === 'pdf-organize')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Organize PDF</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 1:</strong> Drop a PDF or click <strong>Browse File</strong>. All pages appear as thumbnails.
+    <h2 class="font-display seo-h2">Organize PDF Overview</h2>
+    <p class="seo-p">
+      This PDF organize tool gives you a visual drag-and-drop workspace to reorder, duplicate, and delete pages within a PDF document — entirely within your browser. Built with <strong>pdf-lib</strong> (for page manipulation) and <strong>PDF.js</strong> (for thumbnail rendering), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are rearranging chapters in a report, removing unwanted pages from a scan, or duplicating key pages for a presentation, the organize operation is performed client-side with full lossless quality preservation.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 2:</strong> <strong>Drag</strong> pages to reorder. Click <strong>⧉</strong> to duplicate a page. Click <strong>✕</strong> to delete a page. Use <strong>Undo</strong> to revert changes.
+    <p class="seo-p">
+      Every page is rendered as a thumbnail card with drag-and-drop reordering, inline duplicate and delete buttons, and an undo stack for reverting changes. The page count updates dynamically as you modify the document. The final download produces a new PDF with pages in your specified order, preserving all original content byte-for-byte.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Step 3:</strong> Click <strong>Download Organized PDF</strong> to save the result.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Report and document restructuring`, `Business teams frequently receive reports where sections are out of order — for example, a quarterly review with the appendix before the executive summary. The drag-and-drop interface lets you visually rearrange pages into the correct sequence without technical knowledge. The undo button provides safety for experimentation, and the page count updates in real time as you work.`],
+        [`Scan cleanup and page removal`, `When scanning physical documents, blank pages, upside-down scans, or duplicate captures are common. The delete button removes unwanted pages instantly, and the duplicate button lets you replicate key pages (e.g., a signature page that needs to appear in multiple sections). The thumbnail preview helps you identify which pages to keep or remove before committing to the download.`],
+        [`Presentation and handout assembly`, `Trainers and presenters assemble custom handouts by combining specific pages from multiple source PDFs. After merging source documents with the PDF merge tool, this organize tool lets you reorder the combined pages into the correct presentation sequence, remove irrelevant pages, and duplicate frequently referenced pages. The visual workspace makes it easy to see the final document flow before downloading.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Organize PDF works</h2>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. User drops a PDF file
-2. PDF.js renders page thumbnails
-3. User drags to reorder, duplicates, or deletes
-4. pdf-lib copies pages in the new order
-5. Organized PDF is downloaded
+    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Organize Process</h2>
+    <p class="seo-p">
+      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla's PDF renderer) handles page thumbnail rendering by drawing each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual reorganisation by copying page objects from the source document into a new document in the specified order. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+    </p>
 
-All client-side — no server upload.</pre>
+    <h3 class="font-display seo-h3-sm">Step-by-Step Organize Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. The file data is held in browser memory — no network requests are made. Each page is assigned a unique ID and an initial index mapping to the source document.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Thumbnail generation:</strong> PDF.js renders every page at 30% scale onto temporary Canvas elements, converting them to inline thumbnail cards. Each card displays a numbered badge, a drag handle, and duplicate/delete action buttons. The visual workspace provides instant feedback without uploading anything.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Drag-and-drop reordering:</strong> The page grid uses HTML5 Drag and Drop API. When a page card is dropped onto a new position, the internal items array is spliced and re-ordered. The grid re-renders to reflect the new sequence with updated page numbers. An undo stack (up to 50 levels) records each action for reverting.
+    </p>
+    <p class="seo-p-sm">
+      <strong>4. Duplicate and delete:</strong> The duplicate button inserts a copy of the page (with a new unique ID) immediately after the current position. The delete button removes the page from the items array. Both operations trigger a history snapshot for undo support. The page count label updates dynamically.
+    </p>
+    <p class="seo-p-none">
+      <strong>5. Download execution:</strong> When the user clicks "Download Organized PDF", pdf-lib creates a new empty <code class="inline-code">PDFDocument</code>. For each item in the items array, it copies the corresponding page from the source document using <code class="inline-code">copyPages()</code>, applies any rotation, and adds it to the new document. The merged PDF is serialised to bytes and offered as a download via a Blob URL.
+    </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is my file uploaded?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Everything runs in your browser using pdf-lib and PDF.js. Your file never leaves your device." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I undo changes?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Click the Undo button to revert the last action (reorder, duplicate, or delete). You can undo multiple times." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does organizing reduce quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Pages are copied losslessly. Text, images, and vectors are preserved byte-for-byte." }
-        }
-      ]
-    }
-    </script>
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Is my file uploaded?', a: 'No. Everything runs in your browser using pdf-lib and PDF.js. Your file never leaves your device.' },
-        { q: 'Can I undo changes?', a: 'Yes. Click the Undo button to revert the last action (reorder, duplicate, or delete). You can undo multiple times.' },
-        { q: 'Does organizing reduce quality?', a: 'No. Pages are copied losslessly. Text, images, and vectors are preserved byte-for-byte.' },
+        {
+          q: "Is my file uploaded to a server?",
+          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device — there is no server upload at any point. This provides complete privacy for confidential documents."
+        },
+        {
+          q: "Can I undo changes?",
+          a: "Yes. Click the Undo button to revert the last action (reorder, duplicate, or delete). The undo stack stores up to 50 levels of history, so you can undo multiple times to restore earlier states."
+        },
+        {
+          q: "Does organizing reduce PDF quality?",
+          a: "No. Pages are copied losslessly — text, vectors, images, and bookmarks are preserved byte-for-byte. There is no re-encoding, recompression, or rasterisation. The organized PDF has exactly the same visual quality as the original."
+        },
+        {
+          q: "Can I duplicate the same page multiple times?",
+          a: "Yes. Each click of the Duplicate button creates an independent copy of the page. You can duplicate a page as many times as needed — for example, to include a signature page in multiple sections of a document."
+        },
+        {
+          q: "Is there a limit to how many pages I can organize?",
+          a: "There is no artificial limit. You can organize PDFs with any number of pages. However, very large documents (hundreds of pages) may slow down thumbnail rendering because PDF.js must draw each page onto a Canvas element. Most devices handle 100-200 pages comfortably."
+        },
+        {
+          q: "Can I rotate pages while organizing?",
+          a: "The current interface focuses on reordering, duplicating, and deleting pages. Page rotation is applied during the download step if any rotation metadata exists in the source PDF. For dedicated rotation operations, use the separate Rotate PDF tool."
+        },
+        {
+          q: "What happens to bookmarks and annotations?",
+          a: "Bookmarks and annotations from the source PDF are preserved where the source structure allows. However, because the organize operation creates a new PDF document, the bookmark hierarchy may need manual adjustment in a dedicated PDF editor if you require a unified table of contents."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

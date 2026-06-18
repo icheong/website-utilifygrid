@@ -1,4 +1,4 @@
----
+﻿---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import tools from '../../data/tools.json';
 const tool = tools.find(t => t.slug === 'pdf-reverse-pages')!;
@@ -7,8 +7,8 @@ const tool = tools.find(t => t.slug === 'pdf-reverse-pages')!;
 <ToolLayout tool={tool}>
 
   <div slot="tool">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem;">Reverse Pages</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;">Instantly flip the page order of a PDF. Preview before and after, then download.</p>
+    <h2 class="font-display seo-h2" style="margin-bottom:0.25rem;">Reverse Pages</h2>
+    <p class="seo-p-sm" style="margin-bottom:1.25rem;">Instantly flip the page order of a PDF. Preview before and after, then download.</p>
 
     <div id="drop-zone" style="border:2px dashed var(--border);border-radius:0.875rem;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;background:var(--bg-surface);">
       <p style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.4rem;">Drop a PDF file here</p>
@@ -19,26 +19,22 @@ const tool = tools.find(t => t.slug === 'pdf-reverse-pages')!;
 
     <div id="workspace" style="display:none;margin-top:1.25rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-        <p style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
-          <span id="doc-name"></span> — <span id="doc-pages" style="color:var(--text-muted);font-weight:400;"></span>
+        <p class="seo-p-sm" style="font-weight:600;">
+          <span id="doc-name"></span> — <span id="doc-pages" style="font-weight:400;"></span>
         </p>
         <button id="reset-btn" class="btn-secondary" type="button" style="font-size:0.7rem;padding:0.25rem 0.6rem;">New File</button>
       </div>
 
-      <!-- Before / After comparison -->
       <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:start;margin-bottom:1.25rem;">
-        <!-- Before -->
         <div>
-          <p style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;text-align:center;">Original Order</p>
+          <p class="tool-label" style="margin-bottom:0.5rem;text-align:center;">Original Order</p>
           <div id="before-pages" style="display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;"></div>
         </div>
-        <!-- Arrow -->
         <div style="display:flex;align-items:center;justify-content:center;padding-top:2rem;">
           <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
             <path d="M4 12h28m0 0l-8-8m8 8l-8 8" stroke="var(--color-brand-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <!-- After -->
         <div>
           <p style="font-size:0.75rem;font-weight:600;color:#10B981;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;text-align:center;">Reversed Order</p>
           <div id="after-pages" style="display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;"></div>
@@ -53,65 +49,88 @@ const tool = tools.find(t => t.slug === 'pdf-reverse-pages')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Reverse Pages</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 1:</strong> Drop a PDF or click <strong>Browse File</strong>. Thumbnails appear showing the original page order.
+    <h2 class="font-display seo-h2">Reverse Pages Overview</h2>
+    <p class="seo-p">
+      This PDF reverse pages tool flips the page order of an entire PDF document — entirely within your browser. Built with <strong>pdf-lib</strong> (for page reordering) and <strong>PDF.js</strong> (for thumbnail rendering), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are reversing a back-to-front scanned document, creating a mirrored version for double-sided printing, or reordering pages for a specific workflow, the reversal is performed client-side with full lossless quality preservation.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      <strong>Step 2:</strong> The reversed order is shown on the right for comparison.
+    <p class="seo-p">
+      The tool displays a side-by-side before/after comparison: the original page order appears on the left, and the reversed order appears on the right with green-bordered thumbnails. This visual preview lets you confirm the exact reversal before downloading. The reversed PDF is created by copying pages from the source document in reverse index order — a pure metadata operation with zero quality loss.
     </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      <strong>Step 3:</strong> Click <strong>Reverse &amp; Download</strong> to save the reversed PDF.
-    </p>
+
+    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
+      {[
+        [`Back-to-front scan correction`, `When scanning a stack of double-sided documents with an auto-feed scanner, the pages often come out in reverse order — the last page appears first. A 20-page contract scanned back-to-front produces pages in reverse sequence. This tool reverses the entire document in one click, restoring the correct reading order. The before/after comparison lets you verify the reversal before downloading.`],
+        [`Double-sided printing preparation`, `For duplex printing, the page order depends on whether your printer flips on the long edge or short edge. Some workflows require reversing the page order before printing to achieve correct double-sided output. This tool creates a reversed version that can be printed directly, saving manual reordering time for multi-page documents.`],
+        [`Presentation and slideshow reversal`, `Presenters sometimes need to reverse slide order for specific delivery formats — for example, when a slide deck needs to be read from back to front in a handout format, or when preparing a reversed version for a specific audience. The visual comparison lets you confirm the exact page sequence before committing to the reversal.`]
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm">
+          <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How Reverse Pages works</h2>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1. User drops a PDF file
-2. PDF.js renders page thumbnails
-3. Before/After comparison shows the reversal
-4. pdf-lib copies pages in reverse order
-5. Reversed PDF is downloaded
+    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Reversal Process</h2>
+    <p class="seo-p">
+      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla’s PDF renderer) handles page thumbnail rendering by drawing each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual reversal by copying pages from the source document in reverse index order. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+    </p>
 
-All client-side — no server upload.</pre>
+    <h3 class="font-display seo-h3-sm">Step-by-Step Reversal Process</h3>
+    <p class="seo-p-sm">
+      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. The file data is held in browser memory — no network requests are made. The file is validated as a PDF by checking the file type and attempting to parse it with PDF.js.
+    </p>
+    <p class="seo-p-sm">
+      <strong>2. Thumbnail generation:</strong> PDF.js renders every page at 15-20% scale (depending on total page count) onto temporary Canvas elements. The original order thumbnails are displayed on the left with standard borders, and the reversed order thumbnails are displayed on the right with green borders. This provides a visual comparison of the reversal.
+    </p>
+    <p class="seo-p-sm">
+      <strong>3. Reversal execution:</strong> When the user clicks “Reverse &amp; Download”, pdf-lib creates a new empty <code class="inline-code">PDFDocument</code>. It generates a reversed index array (e.g., for 5 pages: [4, 3, 2, 1, 0]) and copies pages from the source document using this reversed index. The pages are added to the new document in the reversed order.
+    </p>
+    <p class="seo-p-none">
+      <strong>Feature preservation:</strong> The reversal copies page content objects byte-for-byte from the source, preserving visual fidelity. Text, images, vectors, bookmarks, and annotations are preserved. Embedded fonts are kept without re-encoding. The reversal is a pure reordering operation — it changes the page sequence without modifying any page content.
+    </p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is my file uploaded?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. All processing happens in your browser. Your file never leaves your device." }
-        },
-        {
-          "@type": "Question",
-          "name": "Does reversing reduce PDF quality?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Pages are copied losslessly in reverse order. Text, images, and vectors are preserved byte-for-byte." }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I reverse only some pages?",
-          "acceptedAnswer": { "@type": "Answer", "text": "This tool reverses all pages in the document. To reverse a subset, first extract the pages you want with the Split PDF tool, then reverse the extracted file." }
-        }
-      ]
-    }
-    </script>
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Is my file uploaded?', a: 'No. All processing happens in your browser. Your file never leaves your device.' },
-        { q: 'Does reversing reduce PDF quality?', a: 'No. Pages are copied losslessly in reverse order. Text, images, and vectors are preserved byte-for-byte.' },
-        { q: 'Can I reverse only some pages?', a: 'This tool reverses all pages in the document. To reverse a subset, first extract the pages you want with the Split PDF tool, then reverse the extracted file.' },
+        {
+          q: "Is my file uploaded to a server?",
+          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device — there is no server upload at any point. This provides complete privacy for confidential documents."
+        },
+        {
+          q: "Does reversing reduce PDF quality?",
+          a: "No. Pages are copied losslessly in reverse order — text, vectors, images, and bookmarks are preserved byte-for-byte. There is no re-encoding, recompression, or rasterisation. The reversed PDF has exactly the same visual quality as the original."
+        },
+        {
+          q: "Can I reverse only some pages?",
+          a: "This tool reverses all pages in the document. To reverse a subset, first extract the pages you want with the Split PDF tool, then reverse the extracted file using this tool."
+        },
+        {
+          q: "What does the before/after comparison show?",
+          a: "The left panel shows thumbnails in the original page order (1, 2, 3, ...) with standard borders. The right panel shows the same thumbnails in reversed order (N, N-1, ..., 2, 1) with green borders. This visual preview lets you confirm the exact reversal before downloading."
+        },
+        {
+          q: "Does reversal affect bookmarks?",
+          a: "Bookmarks from the source PDF are preserved but their page references may become invalid after reversal. The bookmark hierarchy is copied to the new document, but the linked page numbers may point to incorrect positions. You may need to manually adjust bookmarks in a dedicated PDF editor after reversal."
+        },
+        {
+          q: "Can I reverse a password-protected PDF?",
+          a: "This tool can reverse PDFs encrypted without a user password (they open freely but restrict editing). PDFs requiring a password to open cannot be processed because pdf-lib cannot decrypt them without the password."
+        },
+        {
+          q: "Is there a page count limit?",
+          a: "There is no artificial limit. You can reverse PDFs with any number of pages. For very large documents (hundreds of pages), the thumbnail rendering may take a few seconds because PDF.js must draw each page onto a Canvas element. The reversal operation itself is nearly instant regardless of page count."
+        }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
@@ -210,7 +229,7 @@ All client-side — no server upload.</pre>
 
   reverseBtn.addEventListener('click', async () => {
     reverseBtn.setAttribute('disabled', '');
-    reverseBtn.textContent = 'Reversing…';
+    reverseBtn.textContent = 'Reversing\u2026';
     try {
       const srcDoc = await PDFDocument.load(pdfBytes!);
       const newDoc = await PDFDocument.create();
