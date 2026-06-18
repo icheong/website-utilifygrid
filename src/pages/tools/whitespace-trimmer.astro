@@ -212,67 +212,79 @@ const tool = tools.find(t => t.slug === 'whitespace-trimmer')!;
 
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       HOW TO USE
-  ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Whitespace Trimmer</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Paste or type text into the left pane. The output updates in real time as you type — no button press needed. Toggle the operation switches to choose exactly which whitespace issues to fix: trailing spaces, blank lines, double spaces, full flattening, tab expansion, and more.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      The stats bar shows how many characters and lines were removed, and how many consecutive spaces were collapsed — useful for verifying the cleanup was as expected. Use <strong>← Use as input</strong> to pipe the output back in for a second pass, or click <strong>Copy</strong> to grab the result.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Common uses: cleaning up text copied from PDFs (which often add spurious line breaks mid-sentence), normalising log file whitespace before parsing, flattening SQL queries or JSON strings into single-line format, and stripping invisible characters from pasted content.
-    </p>
-  </div>
-
-  <!-- ══════════════════════════════════════════════
-       HOW IT WORKS
-  ══════════════════════════════════════════════ -->
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What each operation does</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Strip trailing spaces', 'Removes all space and tab characters at the end of each line using a /[\\t ]+$/ per-line regex. This is the most common invisible source of "files differ" noise in version control diffs.'],
-        ['Strip leading spaces', 'Removes all whitespace characters at the start of each line. Use this when you want to remove indentation entirely — for example, when reformatting indented SQL or code for a single-line string context.'],
-        ['Remove empty lines', 'Deletes every line that consists entirely of whitespace (or is truly empty). Applied after trailing-space stripping so that lines which contained only spaces are also caught.'],
-        ['Collapse multiple blank lines', 'Reduces any sequence of two or more consecutive blank lines down to exactly one. Preserves paragraph structure while removing excessive vertical gaps.'],
-        ['Double spaces → single', 'Replaces runs of two or more consecutive space characters within a line with a single space. Useful for cleaning up text from OCR software, PDF extraction, or word processors that insert non-breaking spaces.'],
-        ['Flatten to single line', 'Joins all lines into one continuous string using a single space as the separator. Ideal for creating single-line SQL queries, JSON strings, or CSS rules from multi-line formatted originals.'],
-        ['Tabs → spaces', 'Replaces each U+0009 tab character with 2, 4, or 8 spaces (configurable). Applied before trailing-space stripping so that tab-only lines are correctly caught by subsequent blank-line operations.'],
-        ['Trim start & end', 'Applies String.prototype.trim() to the entire text block — removes leading and trailing whitespace (including newlines) from the document as a whole, not just individual lines.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">How to Use the Whitespace Trimmer</h2>
+    <p class="seo-p">Paste or type text into the input pane and watch the cleaned output appear in real time. Toggle the operation switches on the board to choose exactly which whitespace issues to fix.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Your Text</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter any text with unwanted whitespace into the left input pane. You can also click <strong>Load sample</strong> to try the tool with example content.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Trim Mode</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose which operations to apply: strip leading or trailing spaces, collapse double spaces, remove empty lines, flatten to a single line, convert tabs to spaces, or trim the entire block start-to-end.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Options</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Configure additional behaviour such as tab width when converting tabs to spaces. The stats bar updates instantly to show how many characters, lines, and spaces were affected.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Clean Text</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click <strong>Copy</strong> to grab the trimmed result, or use <strong>Use as input</strong> to pipe the output back for a second pass of cleaning.</p>
+      </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       FAQ
-  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Whitespace Trimmer Works</h2>
+    <p class="seo-p">The trimmer applies a sequence of regular-expression passes to your text, each targeting a specific class of unwanted whitespace. Operations run in a fixed order so that later steps correctly catch whitespace exposed by earlier ones.</p>
+    <h3 class="font-display seo-h3-sm">Whitespace Detection</h3>
+    <p class="seo-p">Each line is scanned with the regex <code class="inline-code">/[ \t]+$/</code> for trailing spaces and <code class="inline-code">/^[ \t]+/</code> for leading spaces. Tab characters (<code class="inline-code">U+0009</code>) are matched separately and converted to a configurable number of spaces before line-level detection runs, ensuring tab-only lines are correctly identified as blank.</p>
+    <h3 class="font-display seo-h3-sm">Trimming Modes</h3>
+    <p class="seo-p"><strong>Trim start &amp; end</strong> calls <code class="inline-code">String.trim()</code> on the whole document to strip leading and trailing newlines. <strong>Collapse multiple blank lines</strong> replaces three or more consecutive newlines with exactly two, preserving one blank line between paragraphs. <strong>Double spaces to single</strong> matches runs of two or more space or tab characters within a line and reduces them to one. <strong>Flatten to single line</strong> joins every newline-separated segment with a space, producing one continuous string.</p>
+    <h3 class="font-display seo-h3-sm">Line Ending Normalization</h3>
+    <p class="seo-p">The tool operates on the line breaks your browser already normalised. Windows-style <code class="inline-code">CRLF</code>, classic Mac <code class="inline-code">CR</code>, and Unix <code class="inline-code">LF</code> endings are all handled transparently because the processing splits on <code class="inline-code">/\n/</code> after the platform converts them. No manual line-ending conversion is needed.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Does it handle non-breaking spaces (U+00A0)?', a: 'Yes. The double spaces → single operation targets any Unicode whitespace character within a run using a \\s+ match, which includes non-breaking spaces (U+00A0), en spaces, em spaces, and other Unicode space variants copied from web pages or word processors.' },
-        { q: 'Will flattening to a single line collapse paragraph breaks?', a: 'Yes — that is the intended behaviour of the "flatten to single line" operation. It joins every line with a space, effectively removing all newlines. If you want to preserve paragraph groupings, use "collapse multiple blank lines" instead to normalise spacing without flattening.' },
-        { q: 'Can I use this to clean up SQL queries?', a: 'Yes. A common workflow: paste a formatted multi-line SQL query → enable "strip trailing spaces", "remove empty lines", "double spaces → single", and "flatten to single line" → copy the output as a minified single-line string ready to embed in code.' },
-        { q: 'Does the real-time update affect performance for large texts?', a: 'The processing is synchronous JavaScript with O(n) string operations — it handles texts of several hundred kilobytes without noticeable lag. For files larger than ~1MB, consider pasting in sections or using a local editor plugin.' },
-        { q: 'What is the difference between "remove empty lines" and "collapse multiple blank lines"?', a: '"Remove empty lines" deletes every blank line, leaving no vertical separation between content blocks at all. "Collapse multiple blank lines" keeps one blank line wherever multiple appeared — it preserves paragraph structure while reducing excessive gaps. Use the former for data, the latter for prose.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between trim-all and collapse-blanks?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a"><strong>Trim all</strong> (trim start &amp; end) removes leading and trailing whitespace from the entire document as a whole. <strong>Collapse multiple blank lines</strong> works line-by-line, reducing any sequence of two or more consecutive blank lines down to exactly one while preserving paragraph separation. Use trim-all for data pipelines, collapse-blanks for prose.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does the tool handle tabs versus spaces?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Tabs and spaces are treated independently. The <strong>Tabs to spaces</strong> operation replaces each <code class="inline-code">U+0009</code> tab character with 2, 4, or 8 spaces (you choose the width). After conversion, the space-specific operations — trailing stripping, double-space collapsing — operate on the resulting spaces as normal.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does it support Unicode whitespace characters?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The double-space collapsing pass uses a <code class="inline-code">/s+/</code> style match that covers all Unicode whitespace, including non-breaking spaces (<code class="inline-code">U+00A0</code>), en spaces, em spaces, and ideographic spaces. These are common in text copied from web pages or word processors.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I use this to minify SQL or JSON strings?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Absolutely. Enable <strong>strip trailing spaces</strong>, <strong>remove empty lines</strong>, <strong>double spaces to single</strong>, and <strong>flatten to single line</strong>, then copy the output. This produces a minified single-line string ready to embed in code or use as a query.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does real-time processing affect performance with large texts?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The processing is synchronous O(n) JavaScript that handles texts up to several hundred kilobytes without noticeable delay. For files over approximately 1 MB, consider pasting in sections or using a local editor plugin for the best experience.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Will flattening collapse paragraph breaks?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The <strong>flatten to single line</strong> operation joins every line with a space, removing all newlines and paragraph breaks. If you want to keep paragraph groupings, use <strong>collapse multiple blank lines</strong> instead — it normalises excessive vertical spacing while preserving one blank line between paragraphs.</p>
+        </div>
+      </div>
     </div>
   </div>
 

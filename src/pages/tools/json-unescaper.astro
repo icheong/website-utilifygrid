@@ -142,57 +142,80 @@ const tool = tools.find(t => t.slug === 'json-unescaper')!;
 
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the JSON Un-escaper</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Paste your escaped JSON string into the input field — with or without surrounding double quotes — and click <strong>Un-escape &amp; Format JSON</strong>. The tool automatically detects how many layers of escaping have been applied and peels them back one by one, showing each intermediate stage in the pipeline display.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Use the <strong>sample ×1 / ×2 / ×3</strong> buttons to load a single, double, or triple-escaped JSON string and see the depth gauge animate through each layer. Toggle <strong>Auto-peel all layers</strong> to let the tool recursively unescape until a valid JSON object is reached, no matter how many times it was escaped.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      The <strong>Re-escape →</strong> button feeds the formatted output back in as input — useful for debugging tools that re-escape on each round-trip. Common sources of escaped JSON: API debug logs, database VARCHAR fields containing serialised JSON, stringified Redux state, webhook payloads logged as strings, and AI model outputs that wrap JSON in a string.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the JSON Un-escaper</h2>
+    <p class="seo-p">Paste your escaped JSON string into the input field and click Un-escape to strip every layer of backslash escaping in one click.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Escaped JSON</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter a JSON string containing escape sequences — with or without surrounding double quotes — into the input area. Use the sample buttons to load single, double, or triple-escaped examples.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Unescape Mode</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Toggle options like Strip outer quotes, Pretty print, and Auto-peel all layers to control how aggressively the tool resolves each escape pass.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Preview Output</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">View the unescaped JSON in real time with syntax highlighting. The pipeline display shows each intermediate layer as it is peeled back.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Clean JSON</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Copy the formatted, unescaped output to your clipboard with one click, or re-escape it for another round-trip.</p>
+      </div>
+    </div>
   </div>
 
   <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the un-escaping pipeline works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Outer Quote Stripping', 'Many tools serialise JSON twice, wrapping the entire JSON string in an extra pair of double quotes. The first step checks whether the input starts and ends with a double-quote character (after trimming whitespace) and, if so, removes them before proceeding. This is toggleable so it does not accidentally strip quotes that are part of the data.'],
-        ['Unescape Pass', 'Each unescape pass calls JSON.parse() on the current string. If the string is a valid JSON string token (i.e. the parsed result is itself a string), the tool replaces the input with that parsed value and runs another pass. If the parsed result is an object or array, the string has been fully resolved and the pipeline stops.'],
-        ['Layer Detection', 'The depth gauge counts how many JSON.parse() iterations were needed before an object or array was reached. A depth of 1 means a single \\\" escape layer; depth 2 means the JSON was stringified twice (each key and value has \\\\\" doubled backslashes); depth 3+ is common in webhook logs and event-sourcing systems that re-serialise each stage.'],
-        ['Syntax Highlighting', 'The formatted JSON is colourised using a tokeniser that walks the JSON string character by character using a small state machine — tracking whether the current position is inside a string, a key, a number, a boolean, or null. Keys are highlighted in teal, string values in amber, numbers in lavender, booleans/null in rose. No external library is used.'],
-        ['Pretty Printing', 'When enabled, the parsed JavaScript object is serialised back to a string using JSON.stringify(parsed, null, indent) where indent is 2 spaces, 4 spaces, or a tab character. This guarantees canonical key ordering within each object level and consistent indentation regardless of how the original JSON was spaced.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
-    </div>
+    <h2 class="font-display seo-h2">How the JSON Un-escaper Works</h2>
+    <p class="seo-p">The tool resolves every layer of backslash escaping in your input using sequential parse passes and character-by-character analysis.</p>
+    <h3 class="font-display seo-h3-sm">Escape Sequence Detection</h3>
+    <p class="seo-p">The input string is scanned for backslash sequences using a sequential parser that identifies standard JSON escape characters. It detects <code class="inline-code">\"</code> (escaped double quote), <code class="inline-code">\\</code> (escaped backslash), <code class="inline-code">\n</code> (newline), <code class="inline-code">\t</code> (tab), <code class="inline-code">\r</code> (carriage return), <code class="inline-code">\/</code> (forward slash), and <code class="inline-code">\b</code> / <code class="inline-code">\f</code> (backspace and form feed). Each detection pass peels one layer of escaping by calling <code class="inline-code">JSON.parse()</code> on the current string.</p>
+    <h3 class="font-display seo-h3-sm">Unicode and Entity Decoding</h3>
+    <p class="seo-p">The parser handles <code class="inline-code">\uXXXX</code> Unicode escape sequences natively through <code class="inline-code">JSON.parse()</code>, converting them to their actual characters — so <code class="inline-code">\u0041</code> becomes <code class="inline-code">A</code> and surrogate pairs like <code class="inline-code">\uD83D\uDE00</code> render as emoji. When the Auto-peel option is enabled, the tool recursively unwraps every JSON stringification layer until a non-string value is reached, regardless of depth.</p>
+    <h3 class="font-display seo-h3-sm">Validation and Error Handling</h3>
+    <p class="seo-p">After each unescape pass, the tool validates the result to determine if it is a complete JSON value or still a string needing another pass. If the input is malformed — such as mismatched brackets, unterminated strings, or invalid escape sequences — an error banner is displayed with the specific parse error and the layer at which it occurred.</p>
   </div>
 
   <!-- FAQ ─────────────────────────────────────── -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Why does my JSON have so many backslashes?', a: 'This happens when JSON is serialised multiple times. The first JSON.stringify() call turns { "key": "value" } into the string \'{"key":"value"}\'. A second stringify of that string produces \'"{\\\"key\\\":\\\"value\\\"}"\' — every inner quote gets backslash-escaped. This is common in logging pipelines, message queues, HTTP response bodies that wrap JSON in a JSON string, and ORM layers that auto-serialise objects.' },
-        { q: 'What is the difference between \" and \\\"?', a: 'In a JSON string, \\\" is the escaped form of a literal double-quote character. When you see {\\\"key\\\": \\\"value\\\"} in raw form, each \\\" is a single escaped quote. After one unescape pass this becomes {"key": "value"} — a valid JSON object. After two escape layers you see {\\\\\\"key\\\\\\": \\\\\\"value\\\\\\"} — four characters (backslash-backslash-backslash-quote) representing one escaped quote.' },
-        { q: 'Can it handle JSON wrapped in single quotes?', a: 'Standard JSON does not support single-quoted strings — only double quotes are valid per the RFC 8259 specification. However, some non-standard serialisers (older PHP, Python repr output) use single quotes. The tool attempts to detect single-quote-wrapped JSON and normalises it to double quotes before parsing, but this heuristic may fail on strings that contain apostrophes.' },
-        { q: 'What if my JSON has Unicode escape sequences (\\u0041)?', a: 'JSON.parse() natively handles all \\uXXXX Unicode escape sequences and converts them to their actual Unicode characters. So \\u0041 becomes A, \\u00e9 becomes é, and emoji represented as \\uD83D\\uDE00 (surrogate pairs) become 😀. The output displays the resolved characters, not the escape sequences.' },
-        { q: 'Why does the tool sometimes show multiple pipeline layers even for simple JSON?', a: 'If the tool is set to auto-peel, it continues unescaping as long as each pass produces a string rather than an object. Occasionally a legitimate JSON value is itself a JSON string (a field whose value is a serialised sub-document) — in this case the tool will peel into it. Disable Auto-peel and run single passes manually if you want precise control over each layer.' },
-        { q: 'Is my JSON data sent to a server?', a: 'No. All parsing is done using the browser\'s built-in JSON.parse() function and the Clipboard API. Your JSON never leaves your device. There are no API calls, no analytics on content, and no server-side processing.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What escape sequences does the JSON Un-escaper support?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool handles all standard JSON escape sequences: <code class="inline-code">\"</code> (double quote), <code class="inline-code">\\</code> (backslash), <code class="inline-code">\n</code> (newline), <code class="inline-code">\t</code> (tab), <code class="inline-code">\r</code> (carriage return), <code class="inline-code">\/</code> (forward slash), <code class="inline-code">\b</code> (backspace), <code class="inline-code">\f</code> (form feed), and <code class="inline-code">\uXXXX</code> Unicode escape sequences. Non-standard escapes may cause a parse error.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does the tool handle double-escaped or triple-escaped strings?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Each escape layer wraps the previous output in another round of <code class="inline-code">JSON.stringify()</code>. The tool peels one layer per pass by calling <code class="inline-code">JSON.parse()</code>. When Auto-peel is enabled, it recursively unwraps every layer until it reaches a non-string JSON value like an object or array.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How is this different from just calling JSON.parse?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A single <code class="inline-code">JSON.parse()</code> call only removes one escape layer. If the JSON was stringified twice, one parse pass produces another string rather than an object. This tool runs multiple passes automatically, displays each intermediate step in a pipeline, and includes pretty printing and syntax highlighting — things a raw parse call does not provide.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the Strip outer quotes option?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Many serialisation tools wrap the entire JSON string in an extra pair of double quotes before escaping the inner content. When enabled, this option detects and removes that outermost quote pair before the first unescape pass begins, so the tool does not waste a layer resolving quotes that are not part of the data.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can the tool fix malformed or invalid escaped JSON?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool validates the input at each unescape pass. If the string contains mismatched brackets, unterminated strings, or invalid escape sequences, it stops and displays the specific parse error along with the layer number where the failure occurred. It does not attempt to auto-correct invalid JSON.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is my JSON data sent to a server?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. All parsing is performed entirely in the browser using the built-in <code class="inline-code">JSON.parse()</code> function and the Clipboard API. Your JSON data never leaves your device, and no server-side processing or analytics are involved.</p>
+        </div>
+      </div>
     </div>
   </div>
 

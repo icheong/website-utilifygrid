@@ -117,7 +117,7 @@ const tool = tools.find(t => t.slug === 'slug-generator')!;
         <!-- char count -->
         <div style="display:flex; justify-content:space-between; margin-top:0.4rem;">
           <span id="slug-char-count" style="font-size:0.68rem; font-family:'Fira Code',monospace; color:var(--text-muted);"></span>
-          <span id="slug-warn" style="font-size:0.68rem; color:#F59E0B; display:none;">⚠ Over 60 chars — consider enabling truncation</span>
+          <span id="slug-warn" style="font-size:0.68rem; color:#F59E0B; display:none;">Over 60 chars — consider enabling truncation</span>
         </div>
       </div>
 
@@ -132,7 +132,7 @@ const tool = tools.find(t => t.slug === 'slug-generator')!;
             rows="5"
             style="box-sizing:border-box; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.5rem; padding:0.75rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:var(--text-primary); line-height:1.65; outline:none; resize:vertical; transition:border-color 0.15s;"
             onfocus="this.style.borderColor='#DC2626';" onblur="this.style.borderColor='var(--border)';"></textarea>
-          <textarea id="bulk-output" readonly placeholder="slugs appear here…"
+          <textarea id="bulk-output" readonly placeholder="slugs appear here..."
             rows="5"
             style="box-sizing:border-box; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.5rem; padding:0.75rem; font-family:'Fira Code',monospace; font-size:0.78rem; color:#DC2626; line-height:1.65; outline:none; resize:vertical; cursor:default;"></textarea>
         </div>
@@ -146,60 +146,84 @@ const tool = tools.find(t => t.slug === 'slug-generator')!;
        HOW TO USE
   ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Slug Generator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Type or paste a page title in the input field — the slug updates in real time. Choose your preferred word separator (<code style="font-family:'Fira Code',monospace; font-size:0.85em;">-</code>, <code style="font-family:'Fira Code',monospace; font-size:0.85em;">_</code>, or <code style="font-family:'Fira Code',monospace; font-size:0.85em;">.</code>), output case, and toggle options like accent stripping, stop word removal, and 60-character truncation. The <strong>transformation pipeline</strong> shows each processing step and the intermediate result after each one.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Use <strong>Bulk Mode</strong> at the bottom to process an entire list of titles at once — paste one title per line on the left, and all corresponding slugs appear on the right. Click <strong>Copy all</strong> to grab the full list.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Common uses: generating URL slugs for blog posts and CMS articles, creating file or folder names from titles, building clean anchor IDs from heading text, and normalising product names for e-commerce URLs.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Slug Generator</h2>
+    <p class="seo-p">Type or paste a page title into the input field and watch the URL slug update in real time. Adjust separators, casing, and options to fine-tune the output.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Your Title</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Paste any heading, article title, or phrase into the main input field. The generator starts transforming it immediately.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Configure Slug</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose a separator (hyphen, underscore, or period), set the output case, and toggle options like accent stripping, stop word removal, and 60-character truncation.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Preview Slug</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See the generated URL slug appear instantly below the input. The transformation pipeline shows each processing step and the intermediate result.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Slug</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button to grab the slug for use in URLs, file paths, or anchor IDs. Use Bulk Mode to process multiple titles at once.</p>
+      </div>
+    </div>
   </div>
 
   <!-- ══════════════════════════════════════════════
        HOW IT WORKS
   ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How slugs are generated</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Unicode Normalisation & Accent Stripping', 'When "Strip accents" is enabled, the title is first normalised to Unicode NFD form (decomposing combined characters like é into e + ́). The combining diacritic marks are then stripped using a regex against the Mn Unicode category. This converts café → cafe, Müller → Muller, naïve → naive, ñoño → nono.'],
-        ['Stop Word Removal', 'A curated list of 40 common English stop words (a, an, the, and, or, but, in, on, at, to, for, of, with, by, from, …) is removed as whole-word matches after lowercasing. This keeps slugs concise and semantically meaningful: "A Guide to the Best Practices" → "guide-best-practices".'],
-        ['Character Sanitisation', 'All characters that are not alphanumeric, spaces, or the chosen separator character are stripped. Ampersands (&) are converted to "and". Smart quotes and em/en dashes are normalised to their ASCII equivalents before stripping.'],
-        ['Separator Normalisation', 'Spaces and runs of multiple separators are collapsed into a single separator. Leading and trailing separators are removed. This ensures idempotent output: running the slug through the generator twice produces the same result.'],
-        ['Truncation', 'When the 60-character option is enabled, the slug is cut at 60 characters, then trimmed back to the last complete word (last separator boundary) to avoid cutting mid-word. This keeps slugs within common CMS and SEO URL length recommendations.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
-    </div>
+    <h2 class="font-display seo-h2">How the Slug Generator Works</h2>
+    <p class="seo-p">The tool runs your title through a multi-step transformation pipeline. Each step modifies the text incrementally, and you can see every intermediate result in the pipeline display.</p>
+    <h3 class="font-display seo-h3-sm">Text Normalization</h3>
+    <p class="seo-p">Your input is first normalized to Unicode NFD form, decomposing combined characters like <code class="inline-code">e</code> into separate base letters and diacritics. Combining marks are then stripped, converting accented characters to their ASCII equivalents. Ampersands are replaced with <code class="inline-code">and</code>, and smart quotes or em dashes are normalized to plain ASCII before any further processing.</p>
+    <h3 class="font-display seo-h3-sm">Stopword Filtering</h3>
+    <p class="seo-p">After lowercasing, common English stop words such as <code class="inline-code">the</code>, <code class="inline-code">and</code>, and <code class="inline-code">a</code> are removed as whole-word matches. This keeps slugs concise and focused on meaningful keywords. For example, "A Guide to the Best Practices" becomes "guide-best-practices". The toggle lets you disable this when stop words are part of a brand name or essential meaning.</p>
+    <h3 class="font-display seo-h3-sm">Separator &amp; Truncation</h3>
+    <p class="seo-p">Remaining spaces are replaced with your chosen separator character — hyphen, underscore, or period. Runs of multiple separators are collapsed into one, and leading or trailing separators are trimmed. When the 60-character limit is enabled, the slug is cut at the nearest word boundary to avoid breaking mid-word, keeping URLs within common CMS and SEO length recommendations.</p>
   </div>
 
   <!-- ══════════════════════════════════════════════
        FAQ
   ══════════════════════════════════════════════ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is a URL slug?', a: 'A slug is the human-readable, URL-safe portion of a web address that identifies a specific page. For example, in https://example.com/blog/getting-started-with-python, the slug is "getting-started-with-python". Good slugs are lowercase, use hyphens as word separators, contain no special characters, and are concise enough to be memorable and shareable.' },
-        { q: 'Should I use hyphens or underscores?', a: 'Hyphens are strongly preferred for SEO. Google\'s documentation historically treated underscores as part of words (making "my_post" read as "mypost") while treating hyphens as word separators ("my-post" reads as two words "my" and "post"). Both are valid URL characters, but hyphens produce better search engine keyword matching and are standard across most major CMS platforms (WordPress, Ghost, Webflow).' },
-        { q: 'How long should a slug be?', a: 'Most SEO guidance recommends keeping slugs under 60–75 characters. Very long slugs dilute keyword relevance and get truncated in browser address bars and social share previews. Removing stop words naturally shortens slugs while preserving their meaning. The 60-character truncation option cuts at the nearest word boundary to avoid awkward breaks.' },
-        { q: 'Does it handle non-Latin scripts?', a: 'The accent stripping step handles Latin-script diacritics (accented French, German umlauts, Spanish tildes, etc.). Non-Latin scripts (Chinese, Arabic, Cyrillic, Japanese) do not have direct ASCII transliterations built in — characters with no ASCII equivalent are stripped, which may result in an empty or very short slug. For non-Latin content, consider a dedicated transliteration library.' },
-        { q: 'What are stop words and should I always remove them?', a: 'Stop words are common words with little individual semantic value: the, a, an, and, of, in, for, etc. Removing them produces shorter slugs that focus on meaningful keywords. However, for some titles the stop word is essential to the meaning or brand — "The New Yorker" should not become "new-yorker" if "The" is part of the official name. Use the toggle to decide per use case.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does the tool handle non-ASCII characters?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The accent stripping step decomposes Latin diacritics (e.g. e, u, n) into their base letters and removes the combining marks. This converts cafe to cafe, Muller to Muller, and nino to nono. Non-Latin scripts like Chinese, Arabic, or Cyrillic have no built-in ASCII transliteration, so characters without equivalents are stripped entirely.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Are hyphens better than underscores for SEO?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Search engines like Google treat hyphens as word separators, so "my-post" is read as two distinct words. Underscores are treated as joiners, meaning "my_post" reads as a single word "mypost". Hyphens produce better keyword matching and are the standard across major CMS platforms.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the recommended maximum slug length?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Most SEO guidance recommends keeping slugs under 60 to 75 characters. Very long slugs dilute keyword relevance and get truncated in browser address bars and social share previews. The built-in 60-character truncation option cuts at the nearest word boundary to avoid awkward breaks.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Should I always remove stop words from slugs?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Removing stop words produces shorter, more keyword-focused slugs. However, some titles rely on stop words for meaning or branding — "The New Yorker" should not become "new-yorker" if "The" is part of the official name. Use the toggle to decide on a case-by-case basis.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I use this tool to generate slugs in bulk?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The Bulk Mode at the bottom of the tool lets you paste one title per line on the left side, and all corresponding slugs appear on the right. Click "Copy all" to grab every generated slug at once for use in a spreadsheet, CMS, or deployment script.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens if the same title is slugified twice?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The generator is idempotent — running the same title through it multiple times always produces the same slug. Duplicate separators are collapsed, leading and trailing separators are trimmed, and all normalization steps are deterministic. This makes it safe to re-generate slugs without breaking existing URLs.</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -325,7 +349,7 @@ const tool = tools.find(t => t.slug === 'slug-generator')!;
       row.innerHTML = `
         <span style="font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:${step.changed ? '#DC2626' : 'var(--text-muted)'}; min-width:9rem; flex-shrink:0;">${step.label}</span>
         <span style="font-family:'Fira Code',monospace; font-size:0.72rem; color:${step.changed ? 'var(--text-primary)' : 'var(--text-muted)'}; word-break:break-all;">${escHtml(step.value) || '<span style="color:var(--text-muted); font-style:italic;">empty</span>'}</span>
-        ${step.changed ? '<span style="margin-left:auto; font-size:0.6rem; color:#DC2626; flex-shrink:0; font-weight:700;">✦</span>' : ''}
+        ${step.changed ? '<span style="margin-left:auto; font-size:0.6rem; color:#DC2626; flex-shrink:0; font-weight:700;">*</span>' : ''}
       `;
       pipelineEl.appendChild(row);
     });
@@ -426,7 +450,7 @@ const tool = tools.find(t => t.slug === 'slug-generator')!;
     if (!slug) return;
     navigator.clipboard.writeText(slug).then(() => {
       const lbl = document.getElementById('copy-slug-label')!;
-      lbl.textContent = '✓ Copied!';
+      lbl.textContent = 'Copied!';
       setTimeout(() => { lbl.textContent = 'Copy'; }, 2000);
     });
   });
@@ -436,7 +460,7 @@ const tool = tools.find(t => t.slug === 'slug-generator')!;
     if (!bulkOutput.value) return;
     navigator.clipboard.writeText(bulkOutput.value).then(() => {
       const btn = document.getElementById('btn-copy-bulk')!;
-      btn.textContent = '✓ Copied!';
+      btn.textContent = 'Copied!';
       setTimeout(() => { btn.textContent = 'Copy all'; }, 2000);
     });
   });

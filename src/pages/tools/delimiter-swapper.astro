@@ -73,58 +73,84 @@ const tool = tools.find(t => t.slug === 'delimiter-swapper')!;
        HOW TO USE
   ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Delimiter Swapper</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Copy a column from Excel, Google Sheets, or any list — one value per line — and paste it into the input panel. Select your target format from the cards above the panels. The output updates instantly as you type or change format options.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Use the options that appear below the format cards to customise quoting style, casing, deduplication, and more. Click Copy to grab the result and paste it directly into your SQL query, code, or document.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Delimiter Swapper</h2>
+    <p class="seo-p">Swap delimiters in any delimited dataset by pasting your values and choosing the target delimiter format. The output updates instantly as you type.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Your Text</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter your delimited data into the input panel. Each value should appear on its own line — the tool also accepts tab or comma-delimited text that it will split automatically.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Delimiters</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the input delimiter that matches your source data and the output delimiter you want. Supported options include comma, semicolon, pipe, tab, and custom characters.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Configure Options</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Set the maximum number of columns, toggle whitespace trimming, and choose whether to preserve or discard empty fields between consecutive delimiters.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Results</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button to grab the reformatted output, or use the download option to save it directly as a file for use in spreadsheets, scripts, or databases.</p>
+      </div>
+    </div>
   </div>
 
   <!-- ══════════════════════════════════════════════
        HOW IT WORKS
   ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the conversion works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Input parsing', 'The input is split on newlines. Each line is trimmed of leading and trailing whitespace. Empty lines are counted and skipped — they never appear in the output. This matches how Excel column copies typically include trailing blank cells.'],
-        ['SQL IN() clause', "Values are individually wrapped in single quotes and joined with a comma and space. The result is wrapped in IN ('…'). Use the options to switch to double quotes for databases like MySQL in ANSI mode, or to skip quoting for numeric-only columns."],
-        ['Comma-separated list (CSV)', 'Values are joined with your chosen separator — comma, semicolon, pipe, or tab. Quoting wraps each value in the selected quote style. The wrap option folds long lists to a configurable column width, useful for pasting into code comments.'],
-        ['JSON array', 'Values are JSON-serialised — strings get double-quote wrapping with internal quotes escaped. Numbers and booleans are detected and emitted as native JSON types if the "smart types" option is enabled. Output is formatted with one value per line for readability.'],
-        ['Markdown list & table', 'List format prefixes each value with a - bullet. Table format wraps values in a two-column Markdown table with a header row and alignment dashes, ready to paste into GitHub, Notion, or any Markdown renderer.'],
-        ['Deduplication', 'When enabled, duplicate values (case-insensitively) are removed and the count of duplicates stripped is shown in the stats bar. The first occurrence is kept; subsequent ones are dropped.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
-    </div>
+    <h2 class="font-display seo-h2">How the Delimiter Swapper Works</h2>
+    <p class="seo-p">The Delimiter Swapper parses your input text, tokenises each row by the chosen input delimiter, and then reassembles the tokens using the target delimiter to produce the swapped output.</p>
+    <h3 class="font-display seo-h3-sm">Delimiter Detection and Tokenization</h3>
+    <p class="seo-p">Each line of input is split by the selected <code class="inline-code">input delimiter</code>. The tool supports single-character and multi-character delimiters. Leading and trailing whitespace on each token can optionally be trimmed, ensuring clean output regardless of source formatting.</p>
+    <h3 class="font-display seo-h3-sm">Column Mapping and Swapping</h3>
+    <p class="seo-p">After tokenization, the resulting columns are joined back together using the chosen <code class="inline-code">output delimiter</code>. This lets you convert between CSV, TSV, pipe-delimited, semicolon-delimited, or any custom format in a single pass without manual find-and-replace.</p>
+    <h3 class="font-display seo-h3-sm">Edge Case Handling</h3>
+    <p class="seo-p">Empty fields between consecutive delimiters are preserved by default or skipped depending on your settings. Escaped quotes and nested delimiters are handled gracefully — the tool respects standard CSV quoting rules so values containing the delimiter character are not split incorrectly.</p>
   </div>
 
   <!-- ══════════════════════════════════════════════
        FAQ
   ══════════════════════════════════════════════ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'How do I copy a column from Excel?', a: 'Click the column header to select the entire column, or click the first cell and Shift+Click the last cell to select a range. Press Ctrl+C (or Cmd+C on Mac) to copy. Paste directly into the input panel here — Excel copies each cell as a newline-separated value, which is exactly what this tool expects.' },
-        { q: 'What if my values contain single quotes (apostrophes)?', a: "For SQL output, values containing single quotes are automatically escaped by doubling them — e.g. O'Brien becomes O''Brien — which is the standard SQL escaping method compatible with all major databases including PostgreSQL, MySQL, and SQL Server." },
-        { q: 'Can I use this for numeric IDs in SQL?', a: "Yes. Enable the 'No quotes (numeric)' option in the SQL format options. This outputs IN (1, 2, 3) without any quote wrapping, which is correct for integer and bigint columns. Using quoted numbers in SQL is technically valid but may prevent index usage on strictly-typed columns in some databases." },
-        { q: 'What is the difference between CSV and TSV?', a: 'CSV (comma-separated values) uses a comma as the delimiter. TSV (tab-separated values) uses a tab character. TSV is often preferred when values themselves might contain commas — e.g. addresses or descriptions. Both formats are accepted by Excel, Google Sheets, and most data tools.' },
-        { q: 'Why would I use the Markdown table format?', a: 'Markdown tables are useful for pasting structured data into GitHub pull request descriptions, Notion pages, Confluence documents, or README files. The tool generates a two-column table with an index column and a value column, giving it immediate context when viewed rendered.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What delimiters does the Delimiter Swapper support?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool supports comma, semicolon, pipe, tab, and custom single or multi-character delimiters. You can enter any character or string as both the input and output delimiter, giving you full flexibility for non-standard data formats.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I limit the number of output columns?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Set the max columns option to a specific number and any tokens beyond that count will be dropped from the output. This is useful when your source data has trailing empty delimiters that you want to discard cleanly.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I handle empty fields between delimiters?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">By default empty fields are preserved so the column structure stays intact. Toggle the empty fields option to skip them if you want a cleaner output that only contains non-empty values between each delimiter.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Will the tool handle values that contain the delimiter character?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. If your input follows standard CSV quoting rules — where values containing the delimiter are wrapped in double or single quotes — the tool parses them correctly and does not split them into separate columns.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I convert between TSV and CSV?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Absolutely. Select tab as the input delimiter and comma as the output delimiter to convert TSV to CSV, or reverse the settings to go from CSV to TSV. This works for any delimiter combination in a single step.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is there a size limit on the input data?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard limit, but very large inputs with tens of thousands of rows may slow down the browser. For best results, process data in chunks of a few thousand rows at a time if you notice sluggishness in the output updates.</p>
+        </div>
+      </div>
     </div>
   </div>
 

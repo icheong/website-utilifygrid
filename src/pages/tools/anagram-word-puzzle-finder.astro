@@ -135,83 +135,79 @@ const tool = tools.find(t => t.slug === 'anagram-word-puzzle-finder')!;
 
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       HOW TO USE
-  ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Anagram &amp; Word Puzzle Finder</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Type your available letters into the input field — spaces between letters are fine and are ignored. Each letter becomes a tile. Choose a mode: <strong>Anagram (exact)</strong> finds words that use all your letters exactly once each. <strong>Sub-words</strong> finds every valid word that can be formed from any subset of your letters, which is ideal for games like Scrabble, Words with Friends, or Wordle where you don't have to use every tile.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Drag the <strong>Min Word Length</strong> slider to filter out very short words. Results are grouped by word length — click a length tab to jump straight to words of that size. Use the sort control to order results alphabetically, longest first, or shortest first.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      The word list is fetched from an open-source English dictionary on first use and cached locally for the session — subsequent searches are instant. No data leaves your browser.
-    </p>
-  </div>
-
-  <!-- ══════════════════════════════════════════════
-       HOW IT WORKS
-  ══════════════════════════════════════════════ -->
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Word list source', 'The dictionary is loaded from the SCOWL (Spell Checker Oriented Word Lists) project via the dwyl/english-words repository on GitHub — a curated 370,000+ word list used by real spell checkers. It is fetched as a plain text file once per session over HTTPS and stored in memory. No words are bundled into the page.'],
-        ['Anagram matching', 'For exact anagram mode, each candidate word\'s letter frequency map is compared against the input letter frequency map. A word matches only if its frequency map is identical — every letter used, every letter accounted for. This handles duplicate letters correctly: "aab" matches "aba" and "baa" but not "ab".'],
-        ['Sub-word matching', 'For sub-word mode, the algorithm checks that every letter in the candidate word appears in the input with at least the required frequency. If the input contains two A\'s, only words needing at most two A\'s are returned. Words can be shorter than the input — this is the core Scrabble/crossword use case.'],
-        ['Performance', 'On first search, the tool builds a frequency-map index over the entire dictionary (~370k words) in a single pass and caches it. Subsequent searches scan the index in under 10ms even on mobile. The minimum length filter is applied during the scan to reduce allocations. Results are grouped by length using a Map, then sorted after collection.'],
-        ['Filtering', 'Words are filtered to only include entries that contain alphabetic characters (no hyphens, apostrophes, or numbers). All comparisons are case-insensitive; results are displayed in lowercase.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">How to Use the Anagram &amp; Word Puzzle Finder</h2>
+    <p class="seo-p">Enter your scrambled letters and instantly discover every valid word you can form. This tool works entirely in your browser — no data is sent anywhere.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Letters</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Type or paste your scrambled letters into the input field. Spaces and duplicates are handled automatically — each unique character becomes one tile.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Word Length</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Drag the minimum length slider to filter out short words. In Anagram mode every result uses all your letters; in Sub-words mode results can be any length up to your input.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Dictionary</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">The tool fetches a comprehensive English word list (SCOWL, 370k+ words) on first use. Switch between Anagram and Sub-words mode to match different game scenarios.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">View Results</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See all valid anagrams sorted by length and frequency. Use length tabs to jump to specific word sizes, or copy the entire list with one click.</p>
+      </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       FAQ
-  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Anagram &amp; Word Puzzle Finder Works</h2>
+    <p class="seo-p">Under the hood, the tool converts letters into frequency maps and compares them against a pre-indexed dictionary for near-instant matching.</p>
+    <h3 class="font-display seo-h3-sm">Letter Frequency Mapping</h3>
+    <p class="seo-p">When you enter letters, each unique character is counted to build a <code class="inline-code">frequency map</code>. For example, entering "aab" produces a map where A has a count of 2 and B has a count of 1. Every dictionary word receives the same treatment. In Anagram mode the tool checks for an exact match — same characters, same counts. In Sub-words mode it verifies that every character in the candidate word appears in your input with at least the required frequency.</p>
+    <h3 class="font-display seo-h3-sm">Dictionary Lookup Algorithm</h3>
+    <p class="seo-p">The word list is loaded from the SCOWL project (370,000+ words) and stored as a <code class="inline-code">Set</code> in memory. On first search the tool builds a frequency-map index over the entire dictionary in a single pass, then caches it. Subsequent searches scan the index in under 10 ms. A minimum-length filter is applied during the scan to skip short words early, reducing unnecessary comparisons.</p>
+    <h3 class="font-display seo-h3-sm">Scoring &amp; Ranking</h3>
+    <p class="seo-p">After matching, results are grouped by word length using a <code class="inline-code">Map</code>. Within each group words are sorted alphabetically by default. You can reorder results using the sort control — longest first, shortest first, or A to Z. Length tabs let you jump directly to words of a specific size, making it easy to find high-value longer words for games like Scrabble.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        {
-          q: 'What is the difference between Anagram and Sub-words mode?',
-          a: 'Anagram mode returns only words that use every one of your input letters exactly once — a perfect rearrangement. Sub-words mode returns all valid words that can be spelled using any combination of your letters (each used at most as many times as it appears in your input). Sub-words mode is much more useful for tile-based word games where you pick from a rack.'
-        },
-        {
-          q: 'Where does the word list come from?',
-          a: 'The word list is the SCOWL English dictionary maintained in the dwyl/english-words GitHub repository. It contains over 370,000 words sourced from multiple public-domain spell-check word lists, filtered to remove proper nouns and non-alphabetic entries. It is fetched live from GitHub\'s raw content CDN — nothing is bundled into the page.'
-        },
-        {
-          q: 'Does it work for Scrabble, Wordle, or other word games?',
-          a: 'Sub-words mode is ideal for Scrabble, Words with Friends, and similar tile games — enter your rack letters and see every word you can play. For Wordle or Spelling Bee, use it to explore what words fit your known letters. Note that game-specific word lists (Scrabble TWL, Wordle\'s accepted list) differ from the general English dictionary used here; some results may not be accepted by a specific game.'
-        },
-        {
-          q: 'Can I use repeated letters?',
-          a: 'Yes. If you enter "aab", the tool understands you have two A\'s and one B. It will find words like "aba" and "baa" in anagram mode. In sub-word mode it will find any word that needs at most two A\'s and one B. Just type or paste your letters naturally.'
-        },
-        {
-          q: 'Why does the first search take longer?',
-          a: 'On first use, the tool fetches the word list file (~1.8MB) and builds an in-memory frequency-map index. This takes 1–3 seconds on a typical connection. After that, all searches within the session use the cached index and complete in milliseconds.'
-        },
-        {
-          q: 'Is there a letter limit?',
-          a: 'The input accepts up to 20 letters. In sub-word mode with many letters, result counts can be very large (thousands of words). The minimum length filter is the most effective way to narrow results — raising it to 5 or 6 letters makes the output much more manageable for word game use.'
-        },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do blank tiles or wildcards work?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool treats each letter you enter as a single concrete tile. If you have a blank tile in your game, substitute it with any letter that would help form a word — for example, if you want to test whether a blank could be an S, just add an S to your input. The tool will show all valid words using those letters.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the maximum number of letters I can enter?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The input field accepts up to 20 letters. This covers every standard Scrabble rack and most practical word-game scenarios. In Sub-words mode with many letters the result count can be large — use the minimum length filter to narrow results quickly.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Which languages and dictionaries are supported?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Currently the tool uses the SCOWL English dictionary via the dwyl/english-words repository, containing over 370,000 words. It is designed for English-language word games. The word list excludes proper nouns, hyphens, and apostrophes to focus on standard dictionary words.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does the scoring system work?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Results are ranked by word length — longer words appear first when you select the "Longest first" sort option. Within each length group words are sorted alphabetically. This makes it easy to spot high-value plays in tile-based games where longer words score more points.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does it work offline?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The word list must be fetched from GitHub the first time you use the tool during a session. Once loaded it is cached in memory, so all subsequent searches in that session run instantly without any network requests. Closing the tab clears the cache.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is my input data sent to a server?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. The entire search runs in your browser using JavaScript. The only network request is the initial word-list fetch from a public GitHub repository. No letters, results, or personal data are ever transmitted to any server.</p>
+        </div>
+      </div>
     </div>
   </div>
 

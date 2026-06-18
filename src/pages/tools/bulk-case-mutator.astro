@@ -107,55 +107,80 @@ const tool = tools.find(t => t.slug === 'bulk-case-mutator')!;
 
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Bulk Case Mutator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Paste one or more identifiers into the input — one per line. The tool detects the existing format automatically (camelCase, snake_case, kebab-case, PascalCase, etc.) and outputs all enabled case variants in real time. Click any row in the specimen grid to copy that row's values to your clipboard.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Use the toggle chips to show or hide specific case formats. The <strong>Copy all</strong> buttons in the footer let you copy all converted lines for a single format at once — useful when you need to paste a full column of snake_case constants or kebab-case class names into another file.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Common uses: converting a list of database column names (snake_case) to TypeScript interface keys (camelCase), generating CSS custom property names (kebab-case) from JavaScript variable names, and bulk-renaming identifiers when refactoring across languages or conventions.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Bulk Case Mutator</h2>
+    <p class="seo-p">Paste one or more identifiers into the input area and instantly see every case variant side by side. The tool detects the original format automatically and renders all enabled conversions in real time.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Text</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter identifiers with any original casing — camelCase, snake_case, kebab-case, PascalCase, or mixed formats. Each line is processed independently.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Case</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Toggle the format chips to show or hide UPPERCASE, lowercase, Title Case, Sentence case, camelCase, snake_case, PascalCase, SCREAMING_SNAKE, and kebab-case outputs.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Options</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Acronyms like HTTP and URL are preserved as single uppercase tokens. Hyphens and underscores are recognized as word boundaries. Small words such as a, an, and, the are lowercased in Title Case output.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click any row in the specimen grid to copy that format's values to your clipboard. Use the footer buttons to copy all lines for a single format at once.</p>
+      </div>
+    </div>
   </div>
 
   <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How case conversion works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Input Tokenisation', 'Every identifier is first split into its component words regardless of original format. The splitter handles: camelCase and PascalCase (split on uppercase letter boundaries), snake_case and SCREAMING_SNAKE (split on underscores), kebab-case and dot.case (split on - and .), mixed formats, and plain space-separated words. Numbers adjacent to letters are preserved as separate tokens (e.g. rgb2hex → ["rgb","2","hex"]).'],
-        ['Format Detection', 'After tokenisation, the original format is inferred from structural patterns: all-uppercase with underscores → SCREAMING_SNAKE, all-lowercase with hyphens → kebab-case, first char uppercase with no separators → PascalCase, etc. This is displayed as a small badge on the input identifier row for reference — not required for conversion.'],
-        ['Case Application', 'Each token list is reassembled into the target format: camelCase (first token lowercase, rest title-cased, joined without separator), PascalCase (all tokens title-cased, joined), snake_case (all lowercase, joined with _), SCREAMING_SNAKE (all uppercase, joined with _), kebab-case (all lowercase, joined with -), Title Case (all tokens title-cased, joined with space), UPPER (all tokens uppercase, space-joined), lower (all tokens lowercase, space-joined).'],
-        ['Bulk Processing', 'All lines are processed in parallel — each line through the same tokenise → reassemble pipeline. Empty lines are preserved as empty strings to maintain the original line structure. This means a 200-line list of database column names converts to all 8 formats simultaneously without any per-format button press.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
-    </div>
+    <h2 class="font-display seo-h2">How the Bulk Case Mutator Works</h2>
+    <p class="seo-p">The tool splits each input identifier into individual word tokens, then reassembles those tokens into every enabled target format. The process is fully Unicode-aware and handles the most common programming naming conventions.</p>
+    <h3 class="font-display seo-h3-sm">Character Case Transformation</h3>
+    <p class="seo-p">Each token is converted using Unicode-aware case mapping. Characters like <code class="inline-code">é</code> or <code class="inline-code">ñ</code> are lowercased and uppercased correctly using the browser's built-in <code class="inline-code">toLocaleLowerCase</code> and <code class="inline-code">toLocaleUpperCase</code> methods. This means identifiers containing non-ASCII characters are handled reliably across locales.</p>
+    <h3 class="font-display seo-h3-sm">Title Case Rules</h3>
+    <p class="seo-p">When generating Title Case output, the first and last words are always capitalized regardless of their part of speech. Articles (a, an, the), short prepositions (of, in, on, at, to, for, by), and coordinating conjunctions (and, or, but, nor, yet, so) remain lowercase unless they appear at the start or end of the identifier. All other words receive initial capitalization.</p>
+    <h3 class="font-display seo-h3-sm">Programmatic Cases</h3>
+    <p class="seo-p">camelCase is formed by lowering the first token and title-casing the rest, then concatenating without separators. PascalCase title-cases every token and joins them directly. snake_case and SCREAMING_SNAKE join tokens with underscores — lowercase and uppercase respectively. kebab-case joins lowercase tokens with hyphens. The tokenizer splits on uppercase boundaries, underscores, hyphens, and dots, so identifiers like <code class="inline-code">parseHTTPSResponse</code> or <code class="inline-code">fetch_api_data</code> are parsed correctly into their component words.</p>
   </div>
 
   <!-- FAQ ─────────────────────────────────────── -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What input formats does it understand?', a: 'The tokeniser handles camelCase, PascalCase, snake_case, SCREAMING_SNAKE_CASE, kebab-case, dot.case, space-separated words, and mixed formats. It correctly splits consecutive capitals (e.g. parseHTTPSResponse → ["parse","HTTPS","Response"]) by detecting transitions from a run of capitals back to lowercase.' },
-        { q: 'Does it handle numbers and acronyms?', a: 'Numbers within identifiers are treated as their own tokens: rgb2hex tokenises to ["rgb","2","hex"], yielding rgb2Hex (camel), Rgb2Hex (Pascal), rgb_2_hex (snake). Acronyms in all-caps (HTTP, URL, API) are preserved as single uppercase tokens — in PascalCase they remain uppercased as a block: parseHTTPSRequest → ParseHTTPSRequest.' },
-        { q: 'Can I convert between more than two formats in one pass?', a: 'Yes — all enabled formats are shown simultaneously. You do not need to re-run or change any setting to see camelCase and snake_case and kebab-case at the same time. Toggle off any formats you do not need to reduce visual noise.' },
-        { q: 'What is SCREAMING_SNAKE_CASE used for?', a: 'SCREAMING_SNAKE_CASE (all uppercase with underscores) is the conventional format for constants in many languages: Python constants (MAX_RETRY_COUNT), C/C++ macros (#define MAX_BUFFER_SIZE 1024), Java/Kotlin static final fields, and environment variable names (DATABASE_CONNECTION_STRING).' },
-        { q: 'What is the difference between Title Case and PascalCase?', a: 'PascalCase removes all word separators and joins tokens directly (getUserProfile → GetUserProfile). Title Case keeps the words as separate tokens joined by spaces (getUserProfile → Get User Profile). Title Case is for human-readable display; PascalCase is for code identifiers like class names and constructor functions.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does Title Case handle small words like a, an, and, the?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Short articles, prepositions, and coordinating conjunctions are kept lowercase in Title Case output. The first and last words are always capitalized regardless. For example, "a tale of two cities" becomes "A Tale of Two Cities" — the word "of" stays lowercase because it sits in the middle of the phrase.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does the tool support Unicode and non-English characters?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Case conversion uses the browser's Unicode-aware case mapping, so characters like é, ñ, ü, and Cyrillic or Greek letters are transformed correctly. Identifiers containing non-ASCII characters will produce accurate outputs in every enabled format.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between Sentence case and Title Case?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Sentence case capitalizes only the first letter of the first word, treating the input as a single sentence. Title Case capitalizes the first letter of every significant word. For identifiers, Sentence case is less common but useful when generating human-readable labels from code-style names.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How are acronyms like HTTP, URL, and API handled?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tokenizer detects runs of consecutive uppercase letters and preserves them as a single token. In PascalCase, an acronym remains fully uppercase within the word: parseHTTPSResponse becomes ParseHTTPSRequest. In camelCase, the first token is lowered but acronyms in later positions stay uppercase.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I paste multiple identifiers at once?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Each line in the input is treated as a separate identifier. All lines are processed in parallel and every enabled case format shows the full list. You can paste hundreds of lines and see them all converted simultaneously.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens with numbers and special characters in identifiers?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Numbers adjacent to letters are treated as separate tokens. For example, rgb2hex tokenizes to rgb, 2, hex. Underscores and hyphens are recognized as word delimiters and are not included in the output tokens. Special characters outside common word boundaries are stripped during tokenization.</p>
+        </div>
+      </div>
     </div>
   </div>
 

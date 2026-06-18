@@ -180,83 +180,77 @@ carol,35,manager,berlin"
 
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       HOW TO USE
-  ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Text Column Extractor</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Paste any delimited text into the input box — CSV exports, TSV files, server log lines, pipe-separated data, or any structured text where columns are separated by a consistent character. Select the delimiter that matches your data using the quick-pick buttons, or choose <strong>custom</strong> to type any delimiter string.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Set the <strong>Column Number</strong> to the position you want to extract — column 1 is the first field. Negative numbers count from the end: <code style="font-family:'Fira Code',monospace; font-size:0.85rem;">-1</code> extracts the last column regardless of how many columns each row has. The column preview grid highlights your target column in context so you can confirm the selection before copying.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Use the <strong>options row</strong> to trim surrounding whitespace, deduplicate the output, skip blank values, or skip a header row. Output can be copied to clipboard or downloaded as <code style="font-family:'Fira Code',monospace; font-size:0.85rem;">.txt</code> (one value per line) or <code style="font-family:'Fira Code',monospace; font-size:0.85rem;">.csv</code>.
-    </p>
-  </div>
-
-  <!-- ══════════════════════════════════════════════
-       HOW IT WORKS
-  ══════════════════════════════════════════════ -->
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Splitting logic', 'Each line is split using JavaScript\'s String.prototype.split() with the chosen delimiter. For multi-character custom delimiters this produces correct results. Tab-delimited files (TSV) are handled by selecting the tab delimiter button, which passes a literal tab character (\\t).'],
-        ['Column indexing', 'Column numbers are 1-indexed to match spreadsheet conventions. Internally, column N maps to array index N−1. Negative values are resolved as array.length + N, so −1 always gives the last element regardless of row width. Rows with fewer columns than the requested index are silently skipped and counted in the "missing" tally.'],
-        ['Trim & dedup', 'Trim removes leading and trailing whitespace from each extracted value using String.prototype.trim(). Deduplication preserves first-occurrence order using a Set. Both operations apply after extraction, so they never affect which rows are considered.'],
-        ['CSV quoting', 'For simple delimited text the tool uses a fast direct split. It does not implement full RFC 4180 quoted-field parsing (e.g. fields containing the delimiter wrapped in quotes). For CSV with quoted fields containing commas, consider pre-processing with a dedicated CSV parser first.'],
-        ['Download formats', '.txt outputs one value per line with a trailing newline — safe to pipe into any Unix tool. .csv wraps each value in double quotes and joins with commas on a single line, suitable for pasting into spreadsheet applications.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">How to Use the Text Column Extractor</h2>
+    <p class="seo-p">Paste any delimited text, pick a delimiter and column number, then copy or download the extracted column instantly.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Your Data</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter CSV, TSV, space-delimited, or any pipe-separated text into the input area. The tool detects the structure and shows a column preview grid so you can confirm the layout before extracting.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Column</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Set the Column Number to the position you want to extract — column 1 is the first field. Negative numbers count from the end, so <code class="inline-code">-1</code> always grabs the last column regardless of row width.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Delimiter</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the character that separates your columns — comma, tab, pipe, semicolon, or space. The <strong>custom</strong> option lets you type any delimiter string, including multi-character separators like <code class="inline-code"> :: </code>.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Extracted Data</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Copy the result to your clipboard or download it as a <code class="inline-code">.txt</code> file (one value per line) or a <code class="inline-code">.csv</code> file ready for spreadsheet applications.</p>
+      </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       FAQ
-  ══════════════════════════════════════════════ -->
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Text Column Extractor Works</h2>
+    <p class="seo-p">The Text Column Extractor processes delimited text line by line, splitting each row into individual fields and isolating the one you specified. Everything runs in your browser — no data ever leaves your device.</p>
+    <h3 class="font-display seo-h3-sm">Column Parsing Engine</h3>
+    <p class="seo-p">Each line is split using the chosen delimiter. Column numbers are 1-indexed to match spreadsheet conventions: column <code class="inline-code">N</code> maps to array index <code class="inline-code">N-1</code>. Negative values resolve as <code class="inline-code">array.length + N</code>, so <code class="inline-code">-1</code> always gives the last element. Rows with fewer columns than the requested index are silently skipped and counted in the output stats.</p>
+    <h3 class="font-display seo-h3-sm">Extraction &amp; Output</h3>
+    <p class="seo-p">After the target column is isolated from every row, optional transformations apply: <code class="inline-code">trim</code> removes surrounding whitespace, <code class="inline-code">dedup</code> removes duplicates while preserving order, and <code class="inline-code">skip empty</code> filters out blank values. The final result is displayed in the output pane and can be copied or downloaded as a <code class="inline-code">.txt</code> or <code class="inline-code">.csv</code> file.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        {
-          q: 'What delimiters are supported?',
-          a: 'Comma, tab, pipe (|), semicolon, and space are available as one-click options. The custom field accepts any string, including multi-character sequences like " :: " or " -> ". The only constraint is that the delimiter must be consistent across all rows in your input.'
-        },
-        {
-          q: 'Can I extract a column from the end of each row?',
-          a: 'Yes. Enter a negative column number: −1 gives the last column, −2 gives the second-to-last, and so on. This is particularly useful for log lines where a field at the end always means the same thing regardless of how many optional fields appear before it.'
-        },
-        {
-          q: 'What happens when rows have different numbers of columns?',
-          a: 'Rows that are too short to contain the requested column are skipped rather than causing an error. The output stats show how many rows were processed versus how many were skipped due to missing columns, so you can spot malformed data at a glance.'
-        },
-        {
-          q: 'Does it handle CSV files with quoted fields?',
-          a: 'Not fully. The tool uses a simple split and does not implement RFC 4180 quoted-field parsing. If your CSV contains fields that include the delimiter character wrapped in double quotes (e.g. "Smith, John"), those fields will be split incorrectly. For those cases, open the file in a spreadsheet first and copy a single column.'
-        },
-        {
-          q: 'How do I extract multiple columns at once?',
-          a: 'Run the extraction once per column and use the download buttons to save each result. For complex multi-column extraction from large files, a command-line tool like awk or cut is more appropriate: awk -F, \'{print $2}\' file.csv extracts column 2 from a comma-delimited file.'
-        },
-        {
-          q: 'Is there a row or size limit?',
-          a: 'No hard limit is enforced — the tool processes whatever you paste entirely in your browser. In practice, very large inputs (tens of thousands of rows) will work but may cause a brief processing pause. All computation is local; no data is sent to any server.'
-        },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I handle multi-line fields in my data?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Each line is treated as a separate row. If a field spans multiple lines (for example a quoted CSV field with embedded newlines), the tool will split it into multiple rows, which can throw off the column alignment. In those cases, pre-process the file to join multi-line fields before pasting.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does it support quoted CSV fields containing the delimiter?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Not fully. The tool uses a simple <code class="inline-code">split()</code> and does not implement RFC 4180 quoted-field parsing. Fields like <code class="inline-code">"Smith, John"</code> will be split at the comma inside the quotes. For CSV with quoted fields, open the file in a spreadsheet application and copy the single column you need.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I extract from fixed-width formatted data?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Fixed-width files use character positions rather than delimiters, so the standard delimiter modes will not work. However, you can use the space or custom delimiter option if the columns happen to be separated by consistent spacing. For strict fixed-width data, a dedicated parser or a quick script with <code class="inline-code">substr()</code> is recommended.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What does a negative column number do?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Negative numbers count from the end of each row. Column <code class="inline-code">-1</code> gives the last field, <code class="inline-code">-2</code> gives the second-to-last, and so on. This is useful for log lines where the important field is always at the end, regardless of how many optional fields appear before it.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is there a maximum row or file size limit?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard limit. The tool processes everything you paste entirely in the browser. Very large inputs with tens of thousands of rows will work but may cause a brief pause while processing. No data is ever sent to a server.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I extract multiple columns at once?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">This tool extracts one column at a time. Run the extraction once per column and use the download button to save each result separately. For bulk multi-column extraction from large files, tools like <code class="inline-code">awk</code> or <code class="inline-code">cut</code> are more efficient.</p>
+        </div>
+      </div>
     </div>
   </div>
 

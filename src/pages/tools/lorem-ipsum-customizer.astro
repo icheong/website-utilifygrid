@@ -173,55 +173,78 @@ const tool = tools.find(t => t.slug === 'lorem-ipsum-customizer')!;
 
   <!-- HOW TO USE -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the Lorem Ipsum Generator</h2>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
-      Select your unit type — <strong>Paragraphs</strong>, <strong>Sentences</strong>, <strong>Words</strong>, <strong>Characters</strong>, <strong>Bytes</strong>, or <strong>List items</strong> — then set the amount and click Generate. The output stat bar shows exact counts across all units so you always know what you produced.
-    </p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
-      Choose a <strong>text variant</strong> for flavour: Classic Latin, Cicero's original De Finibus text, Corporate Buzzword, Pirate Speak, Hipster Ipsum, Tech/Startup, Legal boilerplate, Medieval fantasy, or Emoji. The <strong>output format</strong> wraps the generated text in HTML tags, Markdown, JSON arrays, CSV rows, or SQL INSERT values — ready to paste directly into your project.
-    </p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">
-      Enable <strong>Render HTML preview</strong> to see the output typeset as a formatted page above the raw code. Use <strong>Copy</strong> to grab the raw text, <strong>↓ .txt</strong> to download a file, or <strong>↺ Regenerate</strong> to reshuffle with the same settings.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Lorem Ipsum Customizer</h2>
+    <p class="seo-p">Generate placeholder text in seconds with full control over unit type, length, variant, and output format.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Paragraph Count</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose how many paragraphs to generate using the slider or type an exact number. You can switch between paragraphs, sentences, words, characters, bytes, and list items.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Configure Length</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Set the sentence length to Short, Medium, Long, or Mixed to control how many words appear per sentence. This gives you fine-grained control over text density and reading complexity.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Style</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select from Classic Latin, Cicero, Corporate Buzzword, Pirate Speak, Hipster, Tech, Legal, Medieval, or Emoji. Each variant pulls from a curated vocabulary that matches its tone and register.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Output</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Once generated, copy the text to your clipboard, download it as a .txt file, or use Regenerate to reshuffle with the same settings. Choose from 12 output formats including HTML, Markdown, JSON, CSV, and SQL.</p>
+      </div>
+    </div>
   </div>
 
   <!-- HOW IT WORKS -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How it works</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;">
-      {[
-        ['Word pools per variant','Each variant has its own word pool — a curated vocabulary list of 80–200 words authentic to that register. Classic Lorem Ipsum uses the traditional Ciceronian Latin word set. Hipster uses artisanal/Brooklyn vocabulary. Tech/Startup uses genuine startup jargon. Sentences are assembled by sampling words at random with the configured length distribution.'],
-        ['Unit-precise generation','For paragraphs and sentences, the generator assembles content in discrete units. For words and characters, it generates text in a loop and truncates to the exact count requested. For bytes, it encodes as UTF-8 and truncates at the byte boundary (avoiding multi-byte character splits). List items generate one sentence per item.'],
-        ['Format wrapping','Format wrapping is applied as a post-processing step after generation. HTML formats wrap each paragraph in the appropriate tag pair. JSON array emits a valid JSON array of strings (one element per paragraph or sentence). CSV emits each unit as a quoted comma-separated row. SQL emits INSERT INTO lorem_ipsum (id, content) VALUES (...) statements numbered from 1.'],
-        ['"Start with Lorem ipsum…" option','When enabled, the first sentence of the first paragraph is always the canonical opening "Lorem ipsum dolor sit amet, consectetur adipiscing elit…" — the standard expected by most design tools. This only applies to the Classic variant; other variants use their own authentic opening phrase.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
-        </div>
-      ))}
-    </div>
+    <h2 class="font-display seo-h2">How the Lorem Ipsum Customizer Works</h2>
+    <p class="seo-p">The tool generates placeholder text by sampling words from curated vocabularies and assembling them into natural-looking sentences with configurable structure.</p>
+    <h3 class="font-display seo-h3-sm">Text Generation Algorithm</h3>
+    <p class="seo-p">Each text variant maintains its own word pool — a curated list of 80 to 200 words authentic to that register. The algorithm picks words at random from the <code class="inline-code">pool</code> and assembles them into sentences whose length is determined by the selected <code class="inline-code">sentLengthKey</code> range. Sentences are grouped into paragraphs of three to seven, and a percentage of sentences open with a themed phrase from the variant's <code class="inline-code">sentenceOpeners</code> array for natural flow. The optional "Start with Lorem ipsum" toggle prepends the variant's canonical opening sentence to the first paragraph.</p>
+    <h3 class="font-display seo-h3-sm">Customization Options</h3>
+    <p class="seo-p">The <code class="inline-code">unit</code> setting controls how output is structured: paragraphs and sentences generate discrete blocks, words and characters generate in a loop and truncate to the exact count, bytes encode as UTF-8 and truncate at the byte boundary to avoid splitting multi-byte characters, and list items produce one sentence per item. After generation, the <code class="inline-code">formatOutput</code> post-processor wraps the text in the selected output format — whether plain text, HTML tags, Markdown, JSON arrays, CSV rows, or SQL INSERT statements — producing production-ready output you can paste directly into your project.</p>
   </div>
 
   <!-- FAQ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q:'What is Lorem Ipsum and where does it come from?', a:'Lorem ipsum is derived from Cicero\'s philosophical work "De Finibus Bonorum et Malorum" (45 BC), specifically from sections 1.10.32 and 1.10.33. The standard passage beginning "Lorem ipsum dolor sit amet…" has been used as typesetter dummy text since the 1500s. Richard McClintock, a Latin scholar, identified the source in 1994. The text is scrambled and sometimes missing words, making it clearly non-readable while still looking like natural language from a distance.' },
-        { q:'Why use Lorem Ipsum instead of real text?', a:'Placeholder text prevents readers from being distracted by the content when evaluating a layout or design. Real text draws attention to meaning; Lorem Ipsum lets viewers focus on typeface, spacing, visual hierarchy, and composition. It also prevents stakeholders from quoting or fixating on draft copy before it is ready.' },
-        { q:'What output formats are available?', a:'Plain text, HTML with <p>, <div>, or <li> tags, HTML with <h2> headings + body paragraphs, Markdown paragraphs, Markdown unordered list, Markdown ## headings + body, JSON array of strings, JSON array of objects (with id and content fields), CSV rows, and SQL INSERT statements. All formats are production-ready and can be pasted directly into code.' },
-        { q:'What is the Bytes unit type for?', a:'The Bytes option generates text truncated to an exact byte count when UTF-8 encoded. This is useful for testing database field limits, API payload sizes, network packet boundaries, or UI components with byte-based character limits. The truncation avoids splitting multi-byte characters (e.g. accented Latin characters) mid-codepoint.' },
-        { q:'Are the non-Latin variants linguistically accurate?', a:'The Pirate, Hipster, Corporate, and other variants use authentic vocabulary and phrasing conventions drawn from those registers — they are not random words. Corporate Buzzword uses real management consultant language; Hipster uses genuine Brooklyn/artisanal vocabulary; Tech/Startup uses real startup jargon. Medieval uses archaic English constructions. They are designed to be immediately recognisable as their register for design mockup communication.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between Classic Lorem Ipsum and Cicero?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Classic Lorem Ipsum is a scrambled version of Cicero's "De Finibus" with missing and rearranged words, making it look like Latin without being readable. The Cicero variant uses the original, unscrambled Latin text for a more authentic and complete passage. Both serve as placeholder text, but Cicero is truer to the source material.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How can I prevent word repetition in the generated text?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Each variant's word pool contains 80 to 200 unique words, and sentences are assembled by randomly sampling from that pool. The more text you generate, the more likely words will repeat. To reduce repetition, choose a longer sentence length like Mixed or Long, which gives each sentence more variety in word selection across a wider range.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What are the best use cases for Lorem Ipsum text?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Lorem Ipsum is ideal for design mockups, wireframes, website templates, and layout testing where you need realistic-looking text without meaningful content distracting from the visual design. It is also useful for testing database field limits, API payload sizes, and UI components that display dynamic text.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why use this tool instead of a simple Lorem Ipsum generator?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">This customizer goes beyond basic paragraph generation by offering multiple unit types (words, characters, bytes, list items), 12 production-ready output formats (HTML, Markdown, JSON, CSV, SQL), 9 themed text variants, and precise sentence length control. It is a single tool that replaces multiple specialized generators.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What does the Bytes unit type do?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The Bytes option generates text and truncates it to an exact byte count when UTF-8 encoded. This is useful for testing database field limits, API payload sizes, or any system where the byte length matters more than the character count. The truncation avoids splitting multi-byte characters mid-codepoint to prevent encoding errors.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I use the generated text in commercial projects?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. All generated text is procedurally created by the tool and is not copyrighted material. The Classic and Cicero variants are derived from a public domain text written in 45 BC, and all other variants are original vocabulary lists. You can freely use the output in any project, commercial or otherwise.</p>
+        </div>
+      </div>
     </div>
   </div>
 

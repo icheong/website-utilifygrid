@@ -153,55 +153,80 @@ const tool = tools.find(t => t.slug === 'duplicate-line-remover')!;
 
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Duplicate Line Remover</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Paste your list into the left panel — the tool processes it in real time. The middle panel shows the cleaned output; the right panel shows a <strong>diff view</strong> of every line that was removed (duplicates shown in red, blank lines in amber), so you can verify the cleanup before copying.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Use the sort buttons to alphabetise A→Z or Z→A, sort by line length, or preserve the original order. Toggle individual operations on or off — remove duplicates, trim whitespace, remove blank lines, case-insensitive deduplication, and line numbering. The stats bar updates live to show how many duplicates and blanks were removed.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click <strong>Use output as input</strong> to feed the result back in for a second pass — useful for verifying idempotency (running twice should produce the same result). Common uses: deduplicating CSV exports, cleaning email lists, sorting dependency names, alphabetising glossary entries, and normalising tag or keyword lists.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Duplicate Line Remover</h2>
+    <p class="seo-p">Paste any list with duplicates into the tool and get a clean, deduplicated version instantly. Sort, trim, and control exactly how duplicates are handled.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Your Text</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter any text containing duplicate lines into the input panel. The tool processes it in real time as you type or paste.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Dedup Mode</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Toggle between exact match, case-insensitive comparison, or whitespace-trimmed comparison to control how the tool identifies duplicates.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Options</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose whether to preserve original order, keep only the first or last occurrence, and remove blank lines. Enable line numbering for ranked lists.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Clean Text</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Copy the deduplicated output to your clipboard or use the diff panel to review exactly which lines were removed before finalizing.</p>
+      </div>
+    </div>
   </div>
 
   <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How deduplication and sorting work</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Processing Pipeline', 'Operations are applied in a fixed order: (1) split into lines, (2) optionally trim each line\'s leading and trailing whitespace, (3) optionally remove blank lines, (4) optionally deduplicate using a Set (preserving first-occurrence order or discarding order for sort), (5) optionally sort, (6) optionally prepend line numbers. This ordering ensures blank-only lines (which become empty strings after trimming) are caught by the blank-line filter before deduplication.'],
-        ['Deduplication with Set', 'Duplicate detection uses a JavaScript Set, which gives O(1) average lookup per line. First-occurrence order is preserved by default: if "apple" appears on lines 3, 7, and 12, the line-3 occurrence is kept and the others are removed. With case-insensitive mode enabled, all lines are lowercased for comparison only — the original casing of the kept line is preserved in the output.'],
-        ['Sort Algorithms', 'A→Z and Z→A use the locale-aware Array.sort() with localeCompare, which handles accented characters (é < f, not after z) correctly for European languages. Length sorts are secondary-stable: lines of equal length retain their relative order. All sorts happen after deduplication.'],
-        ['Diff View', 'The removed-lines panel tracks every line that was discarded and why: duplicate lines are shown with a red ✕ prefix and the duplicate count (×N), blank lines with an amber ∅ symbol. This makes the tool auditable — you can confirm that nothing important was accidentally removed before using the output.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
-    </div>
+    <h2 class="font-display seo-h2">How the Duplicate Line Remover Works</h2>
+    <p class="seo-p">The tool processes text through a multi-stage pipeline that splits, normalizes, filters, and deduplicates lines before optionally sorting the result.</p>
+    <h3 class="font-display seo-h3-sm">Line Comparison Modes</h3>
+    <p class="seo-p">Exact matching compares each line character-for-character, so "Apple" and "apple" are treated as different lines. Case-insensitive mode lowercases both lines before comparison, making "Apple" and "apple" duplicates while preserving the original casing of the kept line. Trimmed mode strips leading and trailing <code class="inline-code">whitespace</code> before comparing, so indented and non-indented versions of the same text are recognized as duplicates.</p>
+    <h3 class="font-display seo-h3-sm">Order Preservation</h3>
+    <p class="seo-p">The tool uses a <code class="inline-code">Set</code> data structure for O(1) average-time duplicate detection. When the first-occurrence rule is active, the earliest line is always kept, producing stable, predictable output. When a sort mode is selected, order preservation is relaxed and the sorted result determines which occurrence survives deduplication.</p>
+    <h3 class="font-display seo-h3-sm">Blank Line Handling</h3>
+    <p class="seo-p">Blank lines are treated as a special category separate from duplicates. When the blank-line filter is enabled, empty lines and whitespace-only lines are stripped before deduplication runs. This prevents multiple blank lines from appearing in the output and ensures the duplicate filter only operates on meaningful content.</p>
   </div>
 
   <!-- FAQ ─────────────────────────────────────── -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Does case-insensitive mode change the output casing?', a: 'No. Case-insensitive mode only affects how duplicates are detected — "Apple", "apple", and "APPLE" are treated as the same line and only the first occurrence is kept. The kept line retains its original casing exactly as it appeared in the input. The output is not lowercased.' },
-        { q: 'How does it handle lines that differ only in whitespace?', a: 'With "Trim whitespace" enabled, lines are trimmed before comparison. This means "  apple  " and "apple" are considered duplicates — only the first trimmed occurrence is kept (with whitespace removed). With trimming disabled, they are treated as distinct lines.' },
-        { q: 'Can I use this on comma-separated values or JSON arrays?', a: 'The tool operates line-by-line only — it does not parse CSV structure or JSON syntax. For a comma-separated list, paste it one item per line first (using the Delimiter Swapper tool), process it here, then re-join. For JSON arrays, paste the values without the bracket/comma framing.' },
-        { q: 'What does "Number lines" do?', a: 'Prepends a sequential 1-based line number and a tab character to each output line: "1\tapple", "2\tbanana", etc. This is useful when the line order matters (e.g. ranked lists, priority queues) and you want a stable numbered reference in the output.' },
-        { q: 'Is there a limit on how many lines I can process?', a: 'No hard limit. The processing is O(n) with a Set lookup for deduplication and O(n log n) for sorting. Lists of tens of thousands of lines process in milliseconds. Very large pastes (millions of lines) may cause the browser tab to pause briefly but will not crash or corrupt data.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How are whitespace-only differences handled?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">With trim mode enabled, leading and trailing whitespace is stripped before comparison, so "  hello  " and "hello" are treated as duplicates. The first occurrence is kept in its trimmed form. With trim mode off, whitespace differences make lines unique and both are preserved.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I keep a count of how many duplicates were removed?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The diff panel on the right shows every removed line with a red cross marker and a count multiplier (for example, x3 means three copies were removed). The stats bar above the panels also displays the total number of duplicates and blank lines removed.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is there a maximum input size?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard limit. Deduplication runs in O(n) time using a Set, and sorting adds O(n log n). Lists of tens of thousands of lines process in milliseconds. Very large pastes with millions of lines may briefly pause the browser tab but will not crash or lose data.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens to the first occurrence when duplicates are removed?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The first occurrence is always preserved in the output, with its original content and casing intact. Subsequent identical lines are removed. This applies regardless of sort mode, ensuring the output is deterministic and auditable.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I use the tool for CSV or JSON data?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool operates line-by-line and does not parse structured formats. For CSV data, split values into one-per-line format first using a delimiter tool, process here, then rejoin. For JSON arrays, paste each value on its own line without brackets or commas.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does case-insensitive deduplication change the output text?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. Case-insensitive mode only affects duplicate detection. If "Apple" appears first and "apple" appears later, the output keeps "Apple" exactly as it was typed. The output text is never modified beyond optional whitespace trimming.</p>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -88,8 +88,6 @@ markdown-to-html-converter
 json-schema-validator
 variable-case-converter
 smart-log-cleaner
-
-## TODO
 delimiter-swapper
 text-column-extractor
 anagram-word-puzzle-finder
@@ -100,6 +98,8 @@ slug-generator
 bulk-case-mutator
 duplicate-line-remover
 json-unescaper
+
+## TODO
 kaprekar-constant-calculator
 torque-converter
 fuel-efficiency-mass-converter

@@ -159,78 +159,82 @@ Team Alpha
        HOW TO USE
   ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the List Randomizer</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Type or paste your list into the text area — one item per line. Use the <strong>Shuffle All</strong> mode to randomize the entire order, or switch to <strong>Draw Winner</strong> to pick a single random item from the hat. Click the action button to run it.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Use the <em>Quick fill</em> chips to instantly load common lists (days of the week, months, numbers 1–10, etc.) as a starting point. Hit <strong>Again</strong> to re-run the randomization without clearing your list, or <strong>Copy Result</strong> to copy the shuffled output to your clipboard.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Ideal for: team standups (random speaker order), raffle draws, random queue assignment, picking a restaurant, shuffling a playlist or reading list, and anything else where impartial randomness is needed.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the List Randomizer</h2>
+    <p class="seo-p">Type or paste your list into the text area and click the action button to shuffle or draw a random item instantly.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter List Items</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Paste or type one item per line in the text area. Use the Quick fill chips to load common presets like days, months, or numbers as a starting point.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Random Count</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Switch between Shuffle All mode to randomize the full order or Draw Winner mode to pick a single random item from the list.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Options</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enable or disable duplicate entries by adding or removing repeated lines. Sort the output by toggling the shuffle direction on subsequent runs.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Results</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click Copy Result to save the shuffled list or winner to your clipboard. Use Again to re-run without clearing your input.</p>
+      </div>
+    </div>
   </div>
 
   <!-- ══════════════════════════════════════════════
        HOW IT WORKS
   ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the randomization works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Fisher-Yates Shuffle', 'The list is shuffled using the Fisher-Yates (Knuth) algorithm — the gold standard for unbiased in-place shuffles. It iterates from the last element down, swapping each position with a randomly chosen position at or before it. Every permutation of the list is equally likely.'],
-        ['Cryptographic Randomness', 'Random indices are generated using window.crypto.getRandomValues() rather than Math.random(). This draws from the OS-level CSPRNG, ensuring the results are not predictable or repeatable — unlike seeded pseudo-random generators.'],
-        ['Draw Winner Mode', 'In Draw mode, a single index is selected uniformly at random from the full list using the same cryptographic source. Each item has exactly 1/N probability of being chosen, regardless of its position in the original list.'],
-        ['No Server, No Tracking', 'Your list never leaves your browser. There are no API calls, no logging, and no analytics on the content you enter. The entire operation runs in client-side JavaScript.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
-    </div>
+    <h2 class="font-display seo-h2">How the List Randomizer Works</h2>
+    <p class="seo-p">The tool shuffles your list using a cryptographically secure algorithm that runs entirely in your browser.</p>
+    <h3 class="font-display seo-h3-sm">Fisher-Yates Shuffle Algorithm</h3>
+    <p class="seo-p">The list is shuffled using the <code class="inline-code">Fisher-Yates</code> algorithm, also known as the Knuth shuffle. It iterates backward through the array and swaps each element with a randomly selected element at or before its position. This guarantees that every possible permutation of the list is equally likely, producing an unbiased result with O(n) time complexity.</p>
+    <h3 class="font-display seo-h3-sm">Selection Modes</h3>
+    <p class="seo-p">In <code class="inline-code">Shuffle All</code> mode, every item in the list is reordered — no items are removed. In <code class="inline-code">Draw Winner</code> mode, a single item is selected uniformly at random with equal probability for each entry. Both modes use the browser's <code class="inline-code">crypto.getRandomValues()</code> API instead of Math.random(), ensuring the output is unpredictable and not reproducible.</p>
   </div>
 
   <!-- ══════════════════════════════════════════════
        FAQ
   ══════════════════════════════════════════════ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        {
-          q: 'Is the shuffle truly random and unbiased?',
-          a: 'Yes. The tool uses the Fisher-Yates shuffle algorithm combined with window.crypto.getRandomValues() — the same cryptographic random source browsers use for TLS. Every possible ordering of your list is equally likely. By contrast, naive sort-based shuffles (arr.sort(() => Math.random() - 0.5)) produce biased results where some permutations appear more frequently than others.'
-        },
-        {
-          q: 'How many items can I randomize?',
-          a: 'There is no hard limit — the tool handles hundreds or thousands of lines without issue. Practical limits are your browser\'s memory and how readable the output is. For very large lists, the Copy Result button lets you paste the full shuffled output elsewhere.'
-        },
-        {
-          q: 'Can I use this for a raffle or prize draw?',
-          a: 'Yes. Draw Winner mode selects one item at random with equal probability. For a fully transparent raffle, you may want to screen-record the draw so all participants can verify the result. For high-stakes draws, consider a purpose-built raffle platform that provides a verifiable audit trail.'
-        },
-        {
-          q: 'Does it remove duplicate entries?',
-          a: 'No — the tool respects your list as entered, including duplicates. If you enter "Alice" twice, she has twice the probability of being drawn as winner. Remove duplicates manually in the text area before drawing if you want each person represented once.'
-        },
-        {
-          q: 'Are blank lines included in the shuffle?',
-          a: 'No. The tool automatically strips blank lines before shuffling, so extra whitespace between entries does not create empty slots in the result.'
-        },
-        {
-          q: 'Can I shuffle the same list multiple times?',
-          a: 'Yes — click the Again button to re-shuffle or re-draw without clearing the input. Each run is fully independent; previous results have no effect on subsequent draws.'
-        },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is the shuffle truly random and unbiased?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The tool uses the Fisher-Yates shuffle algorithm combined with the browser's crypto.getRandomValues() API, which draws from the operating system's cryptographically secure random number generator. Every possible ordering of your list is equally likely, unlike naive sort-based shuffles that produce biased results.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I seed the random number generator?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. The tool uses the browser's cryptographic random source which does not support seeding. This is by design — seeded generators can produce predictable sequences, while cryptographic randomness ensures each shuffle is independent and unpredictable.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the maximum list size I can randomize?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard limit. The tool handles hundreds or thousands of items without issue. Practical limits depend on your browser's memory and how readable the output remains. For very large lists, use the Copy Result button to export the shuffled output elsewhere.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does the tool remove duplicate entries?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. The tool respects your list exactly as entered, including duplicates. If you enter the same item twice, it has twice the probability of being drawn. Remove duplicate lines manually in the text area before randomizing if you need each entry represented only once.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Are blank lines included in the shuffle?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. Blank lines are automatically stripped before shuffling, so extra whitespace between entries does not create empty slots in the result. Only non-empty lines are considered as items.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I use this for a raffle or prize draw?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Draw Winner mode selects one item at random with equal probability, making it suitable for casual raffles. For fully transparent draws, screen-record the process so participants can verify the result. For high-stakes draws, consider a dedicated raffle platform with a verifiable audit trail.</p>
+        </div>
+      </div>
     </div>
   </div>
 
