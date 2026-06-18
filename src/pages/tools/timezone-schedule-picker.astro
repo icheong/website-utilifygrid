@@ -108,31 +108,39 @@ const tool = tools.find(t => t.slug === 'timezone-schedule-picker')!;
 
   <!-- HOW TO USE -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the Timezone Meeting Planner</h2>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
-      Add the timezones of every participant using the <strong>Add timezone</strong> dropdown — your local timezone is added automatically on load. Each zone appears as a horizontal row showing the full 24-hour day with working hours highlighted in green.
+    <h2 class="font-display seo-h2">How to use the Cross-Timezone Meeting Planner</h2>
+    <p class="seo-p">
+      Add the timezones of every participant using the Add timezone dropdown. Your local timezone is added automatically. Each zone appears as a horizontal row showing the full 24-hour day with working hours highlighted. Drag the yellow meeting window to slide the proposed time. When the window sits inside working hours on every row simultaneously, it turns gold.
     </p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
-      The <strong>yellow meeting window</strong> represents your chosen duration. Drag it left or right across the timeline to slide the proposed meeting time. When the window sits inside working hours on every row simultaneously it turns into the <strong>golden window</strong> — that's your ideal slot. The meeting summary below the grid shows the exact local time for each timezone as you drag.
-    </p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">
-      Adjust the date, duration, and working-hours range at the top. Remove a timezone by clicking the × on its row label. The planner correctly accounts for DST transitions on the selected date.
-    </p>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Remote team scheduling</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Find meeting times that fall within working hours for team members across New York, London, Sydney, and Tokyo without manual timezone math.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Client call coordination</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Identify the golden window when both your team and an international client are available, accounting for DST transitions on the exact meeting date.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Distributed event planning</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Plan webinars or live streams that reach the maximum global audience by finding the overlap between working hours across target regions.</p>
+      </div>
+    </div>
   </div>
 
   <!-- HOW IT WORKS -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How it works</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+    <h2 class="font-display seo-h2">How it works</h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:0.5rem;">
       {[
-        ['DST-aware timezone offsets','The tool uses the Intl.DateTimeFormat API with each IANA timezone identifier and the selected date to resolve the actual UTC offset in effect on that day — accounting for Daylight Saving Time transitions. This means if your meeting is on a date where one region has already switched clocks and another has not, the offsets are still correct.'],
-        ['24-hour timeline rendering','Each row renders a 1440-minute (24-hour) timeline as a proportional CSS grid. Working-hour bands are positioned as percentage-width absolutely-placed overlays. The meeting window is positioned by tracking its left-offset as a fraction of the row width and converting that pixel position back to a UTC minute value, which is then localised per row.'],
-        ['The golden window','At each drag position the tool checks whether the meeting start and end times (in each zone\'s local time) fall entirely within the configured working-hour window. If all active zones pass the check, the overlay turns gold and the summary panel shows a ✓ for every row — making the ideal slot immediately obvious.'],
-        ['Drag interaction','Drag uses pointermove events (works on both mouse and touch) on the timeline container. The window snaps to 15-minute increments for clean time values. The position is clamped so the block never overflows the 24-hour boundary.'],
+        ['DST-aware timezone offsets','The tool uses the <code class="inline-code">Intl.DateTimeFormat</code> API with each IANA timezone identifier and the selected date to resolve the actual UTC offset in effect on that day, accounting for Daylight Saving Time transitions.'],
+        ['24-hour timeline rendering','Each row renders a 1440-minute timeline as a proportional CSS grid. Working-hour bands are positioned as percentage-width overlays. The meeting window position is converted back to a UTC minute value and localised per row.'],
+        ['The golden window','At each drag position the tool checks whether the meeting start and end times fall entirely within the configured working hours for every active zone. If all zones pass, the overlay turns gold.'],
+        ['Drag interaction','Drag uses pointermove events (works on mouse and touch). The window snaps to 15-minute increments for clean time values and is clamped to the 24-hour boundary.'],
       ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
+        <div>
+          <h3 class="font-display seo-h3-sm">{label}</h3>
+          <p class="seo-p" style="margin-top:0.25rem;" set:html={desc} />
         </div>
       ))}
     </div>
@@ -140,20 +148,18 @@ const tool = tools.find(t => t.slug === 'timezone-schedule-picker')!;
 
   <!-- FAQ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q:'Does it handle Daylight Saving Time correctly?', a:'Yes. The tool uses the Intl.DateTimeFormat API with the selected date and each IANA timezone identifier, so the UTC offset used is the one actually in effect on that specific day — including DST transitions. Changing the date to a day when clocks change will immediately update all offsets.' },
-        { q:'How do I find the right timezone identifier?', a:'The Add timezone dropdown lists IANA timezone names in a human-readable format (e.g. "New York (America/New_York)"). They are the same identifiers used by operating systems and databases worldwide. If you need a city not in the list, pick the closest major city in the same timezone region.' },
-        { q:'What does the golden window mean?', a:'The meeting window turns gold when every active timezone row shows the proposed time falling within the configured working hours (default 09:00–18:00). It is the single visual cue that tells you "this slot works for everyone" — you do not need to read individual rows.' },
-        { q:'Can I change what counts as working hours?', a:'Yes. The "Working hours" fields in the controls bar let you set a start and end hour (0–24). Each row applies the same working-hour window in that timezone\'s local time, so 09:00–18:00 means 9am to 6pm wherever that person is located.' },
-        { q:'Is there a limit on how many timezones I can add?', a:'There is no hard limit, but the grid becomes difficult to read beyond 8–10 rows. The tool is designed for the typical meeting scenario of 3–6 participants across different regions. Duplicate timezones are silently ignored to keep the view clean.' },
+        { q:'Does it handle Daylight Saving Time correctly?', a:'Yes. The Intl.DateTimeFormat API with the selected date resolves the correct UTC offset for each timezone on that specific day, including DST transitions.' },
+        { q:'How do I find the right timezone identifier?', a:'The dropdown lists IANA timezone names in human-readable format. They are the same identifiers used by operating systems and databases worldwide.' },
+        { q:'What does the golden window mean?', a:'The meeting window turns gold when every active timezone shows the proposed time within configured working hours. It is the single visual cue that this slot works for everyone.' },
+        { q:'Can I change working hours?', a:'Yes. The Working hours fields let you set start and end hours (0-24). Each row applies the same window in that timezone\'s local time.' },
       ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface);border:1.5px solid var(--border);border-radius:0.875rem;padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem;font-weight:600;color:var(--text-primary);margin:0 0 0.5rem;">{item.q}</h3>
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}

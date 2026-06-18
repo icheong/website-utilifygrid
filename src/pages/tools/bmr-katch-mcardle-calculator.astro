@@ -63,39 +63,54 @@ const tool = tools.find(t => t.slug === 'bmr-katch-mcardle-calculator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this calculator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your total body weight in kilograms and your body fat percentage. If you don't know your body fat %, a DEXA scan or body composition scale can measure it. Reasonable estimates: lean athletic male ~10–15%, average male ~20–25%, lean athletic female ~18–25%, average female ~28–35%.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Select your activity level that best matches your weekly exercise and daily movement. Your TDEE (Total Daily Energy Expenditure) is the calorie intake needed to maintain your current weight.</p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">The Katch-McArdle formula</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Unlike Harris-Benedict or Mifflin-St Jeor, the Katch-McArdle formula uses <strong>Lean Body Mass</strong> directly, making it more accurate for muscular athletes or those with higher body fat percentages.</p>
-    <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:var(--text-primary); line-height:1.8;">
-      LBM = Total Weight × (1 − Body Fat% / 100)<br/>
-      BMR = 370 + (21.6 × LBM in kg)<br/>
-      TDEE = BMR × Activity Multiplier
+    <h2 class="font-display seo-h2">How to use the BMR & TDEE Calculator (Katch-McArdle)</h2>
+    <p class="seo-p">Enter your total body weight in kilograms and body fat percentage. If you don't know your body fat percentage, a DEXA scan or body composition scale can measure it. Select your activity level that best matches your weekly exercise.</p>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Calorie target setting</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Calculate your precise TDEE to establish the exact calorie intake needed to maintain, lose, or gain weight based on your individual body composition.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Cut vs bulk planning</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Determine your maintenance calories, then subtract for a deficit or add for a surplus to create a evidence-based nutrition plan for your goals.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Athlete baseline assessment</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Establish an accurate BMR baseline for athletes or muscular individuals where lean body mass makes the Katch-McArdle formula more accurate than height-based estimates.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">The Katch-McArdle formula</h2>
+    <h3 class="font-display seo-h3-sm">Why Katch-McArdle?</h3>
+    <p class="seo-p">Unlike Harris-Benedict or Mifflin-St Jeor, the Katch-McArdle formula uses <code class="inline-code">Lean Body Mass</code> directly, making it more accurate for muscular athletes or those with higher body fat percentages.</p>
+    <h3 class="font-display seo-h3-sm">Lean Body Mass</h3>
+    <p class="seo-p"><code class="inline-code">LBM = Total Weight × (1 − Body Fat% / 100)</code> — This is the portion of your body mass that is not fat tissue.</p>
+    <h3 class="font-display seo-h3-sm">BMR calculation</h3>
+    <p class="seo-p"><code class="inline-code">BMR = 370 + (21.6 × LBM in kg)</code> — This is the calories your body burns at complete rest to keep organs functioning.</p>
+    <h3 class="font-display seo-h3-sm">TDEE calculation</h3>
+    <p class="seo-p"><code class="inline-code">TDEE = BMR × Activity Multiplier</code> — Sedentary is 1.2, lightly active is 1.375, moderately active is 1.55, very active is 1.725, extra active is 1.9.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'How accurate is the Katch-McArdle formula?', a: 'Katch-McArdle is generally considered the most accurate BMR formula when you know your body fat percentage, with studies showing it is within 5–8% of measured RMR for most individuals. The main source of error is inaccurate body fat measurement, not the formula itself.' },
-        { q: 'What is the difference between BMR and TDEE?', a: 'BMR (Basal Metabolic Rate) is the calories your body burns at complete rest — just to keep organs functioning. TDEE (Total Daily Energy Expenditure) adds the calories burned through all daily activity, including exercise, walking, and non-exercise activity thermogenesis (NEAT).' },
-        { q: 'Which activity multiplier should I choose?', a: 'Most people significantly overestimate their activity level. "Moderately active" (1.55×) applies to someone doing genuine 45–60 minute workouts 4–5 times per week. If your job is mostly sitting, choose "lightly active" (1.375×) even if you train 3 days per week.' },
-        { q: 'Why is my BMR different from other calculators?', a: 'Other calculators (Mifflin-St Jeor, Harris-Benedict) estimate lean mass from height, weight, age, and sex. Katch-McArdle uses measured body fat directly, so it will differ from estimates. If your body composition is unusual (very muscular or high body fat), Katch-McArdle tends to be more accurate.' },
+        { q: 'How accurate is the Katch-McArdle formula?', a: 'It is generally considered the most accurate BMR formula when you know your body fat percentage, within 5-8% of measured RMR for most individuals. The main source of error is inaccurate body fat measurement.' },
+        { q: 'What is the difference between BMR and TDEE?', a: 'BMR is the calories your body burns at complete rest. TDEE adds calories burned through all daily activity, including exercise and non-exercise activity thermogenesis.' },
+        { q: 'Which activity multiplier should I choose?', a: 'Most people overestimate their activity level. Moderately active (1.55x) applies to genuine 45-60 minute workouts 4-5 times per week. If your job is mostly sitting, choose lightly active.' },
+        { q: 'Why is my BMR different from other calculators?', a: 'Other calculators estimate lean mass from height, weight, age, and sex. Katch-McArdle uses measured body fat directly, so it will differ. It tends to be more accurate for unusual body compositions.' },
       ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
     </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7"><strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This calculator provides general educational estimates only. BMR and TDEE values are approximations. Consult a healthcare professional or registered dietitian before making significant changes to your diet or exercise routine.</div>
   </div>
 
 </ToolLayout>

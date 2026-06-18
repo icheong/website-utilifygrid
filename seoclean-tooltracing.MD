@@ -68,8 +68,6 @@ prompt-safety-stress-tester
 ai-brand-voice-gauge
 markdown-sanitizer
 html-to-markdown
-
-## TODO
 plagiarism-compare-checker
 timezone-schedule-picker
 htaccess-nginx-redirect-builder
@@ -80,6 +78,8 @@ macro-calorie-deficit-allocator
 bmr-katch-mcardle-calculator
 ovulation-fertility-window
 hydration-fluid-loss-calculator
+
+## TODO
 home-renovation-cost-estimator
 amazon-fba-profit-estimator
 solar-panel-roi-estimator

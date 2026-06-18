@@ -62,45 +62,65 @@ const tool = tools.find(t => t.slug === 'meta-tag-og-previewer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Meta Tag Previewer</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Fill in the fields above and watch the Google search snippet and Twitter card preview update live. Once you are happy with how the page will appear when shared, copy the generated HTML and paste it inside the <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">&lt;head&gt;</code> of your page.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">The OG image should be 1200×630 pixels for best results across platforms. Use an absolute URL including <code style="background:var(--bg-surface-2); padding:0.1rem 0.3rem; border-radius:0.25rem;">https://</code>.</p>
+    <h2 class="font-display seo-h2">How to use the Meta Tag &amp; Social Card Previewer</h2>
+    <p class="seo-p">Fill in the fields and watch the Google search snippet and Twitter card preview update live. Once you are happy with how the page will appear when shared, copy the generated HTML and paste it inside the head of your page.</p>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">SEO snippet optimisation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Craft title and description tags that fit within Google's display limits, ensuring your search result looks professional and entices clicks.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Social media preview control</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Preview exactly how your page will appear when shared on Facebook, Twitter, and LinkedIn before publishing, preventing embarrassing truncated or missing previews.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">New page setup</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">When launching a new page, generate the complete set of meta tags including OG, Twitter, and canonical tags in one step instead of writing each manually.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">What tags are generated</h2>
+    <h2 class="font-display seo-h2">What tags are generated</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Standard Meta Tags', '<title> and <meta name="description"> for search engines. These are the primary signals Google uses for search snippets.'],
-        ['Open Graph (OG)', 'og:title, og:description, og:url, og:image, og:site_name, og:type. Used by Facebook, LinkedIn, Slack, and most social platforms when generating link previews.'],
-        ['Twitter Card', 'twitter:card, twitter:title, twitter:description, twitter:image. Allows Twitter/X to display rich media cards when your link is shared.'],
-        ['Canonical URL', 'rel="canonical" tells search engines which URL is the authoritative version of the page, preventing duplicate content issues.'],
-      ].map(([label, desc]) => (
-        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+      <div class="border-theme surface-2 seo-card-sm">
+        <h3 class="font-display seo-h3-sm">Standard meta tags</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Title and meta description tags for search engines. These are the primary signals Google uses for search snippets. The tool shows a live preview of how they will appear in results.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <h3 class="font-display seo-h3-sm">Open Graph (OG)</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0"><code class="inline-code">og:title</code>, <code class="inline-code">og:description</code>, <code class="inline-code">og:url</code>, <code class="inline-code">og:image</code>, <code class="inline-code">og:site_name</code>, <code class="inline-code">og:type</code>. Used by Facebook, LinkedIn, Slack, and most social platforms when generating link previews.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <h3 class="font-display seo-h3-sm">Twitter Card</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0"><code class="inline-code">twitter:card</code>, <code class="inline-code">twitter:title</code>, <code class="inline-code">twitter:description</code>, <code class="inline-code">twitter:image</code>. Allows Twitter/X to display rich media cards when your link is shared.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <h3 class="font-display seo-h3-sm">Canonical URL</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0"><code class="inline-code">rel=canonical</code> tells search engines which URL is the authoritative version of the page, preventing duplicate content issues across www and non-www or HTTP and HTTPS variants.</p>
+      </div>
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'How long should a meta description be?', a: 'Google displays up to about 155–160 characters on desktop. Aim for 120–155 characters to ensure it displays fully on both desktop and mobile. Include your primary keyword naturally and write it as a human-readable summary, not a keyword list.' },
-        { q: 'What size should my OG image be?', a: '1200×630 pixels is the standard recommended size for Open Graph images. This ratio (1.91:1) ensures correct display on Facebook, Twitter, and LinkedIn. Images smaller than 300×200 pixels may not display as rich cards.' },
-        { q: 'Do I need both OG and Twitter tags?', a: 'Twitter will fall back to OG tags if Twitter-specific tags are absent, but explicitly setting twitter:card ensures consistent rendering. Adding both takes only a few lines and guarantees correct display across platforms.' },
-        { q: 'Why isn\'t my social card updating after I changed the tags?', a: 'Social platforms aggressively cache link previews. To force a refresh: Facebook has a Sharing Debugger tool at developers.facebook.com/tools/debug; Twitter has a Card Validator at cards-dev.twitter.com/validator; LinkedIn has a Post Inspector at linkedin.com/post-inspector.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How long should a meta description be?</h3>
+        <p itemprop="text" class="seo-faq-a">Google displays up to about 155-160 characters on desktop. Aim for 120-155 characters to ensure full display on both desktop and mobile. Include your primary keyword naturally.</p>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What size should my OG image be?</h3>
+        <p itemprop="text" class="seo-faq-a">1200x630 pixels is the standard. This ratio ensures correct display on Facebook, Twitter, and LinkedIn. Images smaller than 300x200 pixels may not display as rich cards.</p>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Do I need both OG and Twitter tags?</h3>
+        <p itemprop="text" class="seo-faq-a">Twitter falls back to OG tags if Twitter-specific tags are absent, but explicitly setting twitter:card ensures consistent rendering. Adding both guarantees correct display across platforms.</p>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why isn't my social card updating?</h3>
+        <p itemprop="text" class="seo-faq-a">Social platforms aggressively cache link previews. Use Facebook's Sharing Debugger, Twitter's Card Validator, and LinkedIn's Post Inspector to force a refresh.</p>
+      </div>
     </div>
   </div>
 

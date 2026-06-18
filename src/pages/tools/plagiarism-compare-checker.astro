@@ -12,7 +12,7 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
   ══════════════════════════════════════════════ -->
   <div slot="tool">
 
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">
+    <h2 class="font-display" style="font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.25rem;">
       Text Diff &amp; Plagiarism Compare Checker
     </h2>
     <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.5rem;">
@@ -32,8 +32,9 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
           <span id="count-a" style="font-size:0.68rem; color:var(--text-muted); font-family:'Fira Code',monospace;">0 sentences</span>
         </div>
         <textarea id="doc-a"
-          placeholder="Paste original document here…"
-          style="width:100%; height:200px; padding:0.75rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; font-size:0.82rem; color:var(--text-primary); resize:vertical; outline:none; line-height:1.65; box-sizing:border-box; transition:border-color 0.15s; font-family:'Source Serif 4',Georgia,serif;"
+          placeholder="Paste original document here..."
+          class="input-themed tool-textarea"
+          style="width:100%; height:200px; border-radius:0.75rem; resize:vertical; outline:none; transition:border-color 0.15s;"
           spellcheck="false"
         ></textarea>
       </div>
@@ -48,8 +49,9 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
           <span id="count-b" style="font-size:0.68rem; color:var(--text-muted); font-family:'Fira Code',monospace;">0 sentences</span>
         </div>
         <textarea id="doc-b"
-          placeholder="Paste comparison document here…"
-          style="width:100%; height:200px; padding:0.75rem; background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; font-size:0.82rem; color:var(--text-primary); resize:vertical; outline:none; line-height:1.65; box-sizing:border-box; transition:border-color 0.15s; font-family:'Source Serif 4',Georgia,serif;"
+          placeholder="Paste comparison document here..."
+          class="input-themed tool-textarea"
+          style="width:100%; height:200px; border-radius:0.75rem; resize:vertical; outline:none; transition:border-color 0.15s;"
           spellcheck="false"
         ></textarea>
       </div>
@@ -87,7 +89,8 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
 
     <!-- ── Compare button ── -->
     <button id="btn-compare"
-      style="width:100%; padding:0.75rem 1.5rem; background:#1E3A8A; color:#fff; border:none; border-radius:0.625rem; font-family:'Sora',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; transition:background 0.15s, transform 0.1s; display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:1.25rem;"
+      class="btn-primary"
+      style="width:100%; padding:0.75rem 1.5rem; background:#1E3A8A; color:#fff; border:none; border-radius:0.625rem; font-size:0.95rem; font-weight:700; cursor:pointer; transition:background 0.15s, transform 0.1s; display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:1.25rem;"
       onmouseover="this.style.background='#1D4ED8';"
       onmouseout="this.style.background='#1E3A8A';"
       onmousedown="this.style.transform='scale(0.98)';"
@@ -119,19 +122,19 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
     <!-- ── Summary cards ── -->
     <div id="summary-cards" style="display:none; grid-template-columns:repeat(4,1fr); gap:0.625rem; margin-bottom:1.25rem;">
       <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.75rem; text-align:center;">
-        <div id="stat-similarity" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:800; color:#DC2626;">—</div>
+        <div id="stat-similarity" class="font-display" style="font-size:1.5rem; font-weight:800; color:#DC2626;">—</div>
         <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem;">Similarity</div>
       </div>
       <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.75rem; text-align:center;">
-        <div id="stat-exact" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:800; color:#DC2626;">—</div>
+        <div id="stat-exact" class="font-display" style="font-size:1.5rem; font-weight:800; color:#DC2626;">—</div>
         <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem;">Exact matches</div>
       </div>
       <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.75rem; text-align:center;">
-        <div id="stat-near" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:800; color:#D97706;">—</div>
+        <div id="stat-near" class="font-display" style="font-size:1.5rem; font-weight:800; color:#D97706;">—</div>
         <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem;">Near-matches</div>
       </div>
       <div style="background:var(--bg-surface-2); border:1.5px solid var(--border); border-radius:0.75rem; padding:0.75rem; text-align:center;">
-        <div id="stat-unique" style="font-family:'Sora',sans-serif; font-size:1.5rem; font-weight:800; color:#059669;">—</div>
+        <div id="stat-unique" class="font-display" style="font-size:1.5rem; font-weight:800; color:#059669;">—</div>
         <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:0.15rem;">Unique sentences</div>
       </div>
     </div>
@@ -170,36 +173,46 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
        HOW TO USE
   ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this tool</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Paste the original document into the <strong>Document A</strong> box and the comparison text into <strong>Document B</strong>, then click <strong>Compare Documents</strong>. Results appear as a sentence-by-sentence side-by-side view. Each sentence is classified as an exact match (highlighted red), a near-match (amber), or unique (green).
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      For near-matches, the tool highlights the specific words that differ between the two versions so you can see at a glance whether a sentence has been lightly paraphrased, had synonyms swapped, or had punctuation changed. Connector lines between the two panels show which sentences are paired.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Adjust the <strong>near-match threshold</strong> to control sensitivity — 70% means sentences sharing at least 70% word similarity are flagged as near-matches. Enable <strong>ignore stop words</strong> to focus on content words only, which surfaces paraphrasing that swaps articles and prepositions while keeping core meaning the same.
-    </p>
+    <h2 class="font-display seo-h2">How to use the Text Diff &amp; Plagiarism Compare Checker</h2>
+    <p class="seo-p">Paste the original document into Document A and the comparison text into Document B, then click Compare Documents. Results appear as a sentence-by-sentence side-by-side view. Each sentence is classified as an exact match (red), a near-match (amber), or unique (green).</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-top:0.75rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Academic source verification</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Compare a student submission against source material to identify lightly paraphrased passages that swap synonyms or reorder sentences while preserving the original structure.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Content originality audit</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Before publishing AI-generated or collaboratively written articles, run them through the checker to catch unintentional duplication across drafts or versions.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Legal document comparison</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Diff two versions of a contract or compliance document to pinpoint exactly which clauses, terms, or provisions have been modified between revisions.</p>
+      </div>
+    </div>
   </div>
 
   <!-- ══════════════════════════════════════════════
        HOW IT WORKS
   ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How the comparison works</h2>
+    <h2 class="font-display seo-h2">How the comparison works</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Sentence segmentation', 'Each document is split into sentences using a regex that breaks on terminal punctuation (. ! ?) followed by whitespace and an uppercase letter, or end-of-string. Abbreviations like "Dr." and "e.g." are handled with a common exception list to avoid false splits. Each sentence is then normalised according to the active options (case folding, punctuation stripping, stop-word removal) for comparison purposes — the original text is retained for display.'],
-        ['Similarity scoring (Jaccard index)', 'Each sentence pair is scored using the Jaccard similarity coefficient over word sets: |intersection| / |union|. This measures how much vocabulary the two sentences share regardless of word order. A score of 1.0 means every unique word is shared; 0.0 means no words in common. The Jaccard method is lightweight, language-agnostic, and robust against word reordering.'],
-        ['Matching algorithm', 'To find the best global matching rather than just local pairs, the tool builds a similarity matrix for all A×B sentence pairs, then greedily assigns matches starting from the highest-scoring pair, removing both sentences from the pool once matched. This prevents one sentence from being the "best match" for multiple opposing sentences.'],
-        ['Word-level diff for near-matches', 'For near-match pairs, a word-level diff is computed using the longest common subsequence (LCS) algorithm. Words present in one sentence but absent from the other are highlighted in amber, giving a precise view of what was altered, added, or removed.'],
-        ['Similarity score', 'The headline similarity percentage is calculated as the proportion of Document A sentences that have at least one match (exact or near) in Document B, weighted by the average match score across those pairs. Unique sentences in both documents contribute 0 to the score.'],
-      ].map(([label, desc]) => (
-        <div class="result-card">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+      <div>
+        <h3 class="font-display seo-h3-sm">Sentence segmentation</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Each document is split into sentences using a regex that breaks on terminal punctuation followed by whitespace and an uppercase letter. Abbreviations like <code class="inline-code">Dr.</code> and <code class="inline-code">e.g.</code> are handled with a common exception list to avoid false splits.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Similarity scoring (Jaccard index)</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Each sentence pair is scored using the Jaccard similarity coefficient over word sets: intersection divided by union. A score of <code class="inline-code">1.0</code> means every unique word is shared; <code class="inline-code">0.0</code> means no words in common.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Matching algorithm</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">The tool builds a similarity matrix for all A x B sentence pairs, then greedily assigns matches starting from the highest-scoring pair. This prevents one sentence from matching multiple opposing sentences.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Word-level diff</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">For near-match pairs, a word-level diff is computed using the longest common subsequence algorithm. Words present in one sentence but absent from the other are highlighted, giving a precise view of what was altered.</p>
+      </div>
     </div>
   </div>
 
@@ -207,40 +220,30 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
        FAQ
   ══════════════════════════════════════════════ -->
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
           q: 'Is this tool suitable for detecting academic plagiarism?',
-          a: 'It is effective for direct copying and light paraphrasing — sentence transpositions, synonym swaps, and punctuation changes. However, it compares only the two documents you paste; it does not search the internet or any database. For institutional academic integrity checking against the web, purpose-built services like Turnitin or iThenticate are more appropriate. This tool is best for comparing a student submission against a source document you already have.'
+          a: 'It is effective for direct copying and light paraphrasing but compares only the two documents you paste. It does not search the internet. For institutional checking against the web, purpose-built services like Turnitin are more appropriate.'
         },
         {
-          q: 'What does the similarity percentage mean exactly?',
-          a: 'It reflects how many of Document A\'s sentences have a matching counterpart in Document B (by the Jaccard word-overlap method), weighted by the strength of each match. A 100% score means every sentence in Document A has an exact duplicate somewhere in Document B. A 0% score means no sentence shares any vocabulary with any sentence in the other document (which is rare in practice for same-language text).'
+          q: 'What does the similarity percentage mean?',
+          a: 'It reflects how many of Document A\'s sentences have a matching counterpart in Document B, weighted by match strength. A 100% score means every sentence has an exact duplicate somewhere in Document B.'
         },
         {
-          q: 'Why might a sentence I think is similar not be flagged?',
-          a: 'The Jaccard method measures shared vocabulary, not meaning. If two sentences convey the same idea using completely different words (full paraphrase), they will score near 0. Lowering the near-match threshold helps with partial paraphrase, but deep semantic similarity requires embedding-based models. For best results, enable "ignore stop words" so matching focuses on content words rather than function words like "the", "a", "is".'
-        },
-        {
-          q: 'What are stop words and when should I enable that option?',
-          a: 'Stop words are high-frequency function words (the, a, is, in, of, and, etc.) that carry little semantic content. Excluding them from the similarity calculation makes the comparison focus on nouns, verbs, and adjectives — the words that actually convey meaning. Enable this option when comparing academic or professional writing where paraphrasing often replaces content words while keeping the same sentence structure.'
+          q: 'Why might a similar sentence not be flagged?',
+          a: 'The Jaccard method measures shared vocabulary, not meaning. Two sentences conveying the same idea with completely different words will score near 0. Enable ignore stop words to focus on content words.'
         },
         {
           q: 'Does this tool send my text to a server?',
-          a: 'No. All comparison logic runs entirely in your browser using JavaScript. Neither document ever leaves your device. This makes it safe to use with confidential manuscripts, legal documents, or student submissions — no data is transmitted, logged, or stored.'
-        },
-        {
-          q: 'Is there a word or document length limit?',
-          a: 'There is no hard limit. The comparison scales quadratically with the number of sentences (each sentence in A is compared to each in B), so very long documents with hundreds of sentences may take a second or two to process. For documents under 100 sentences each, comparison is near-instantaneous.'
+          a: 'No. All comparison logic runs entirely in your browser. Neither document ever leaves your device, making it safe for confidential manuscripts, legal documents, or student submissions.'
         },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+          class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
+          <p itemprop="text" class="seo-faq-a">{item.a}</p>
         </div>
       ))}
     </div>
@@ -541,14 +544,14 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
       `;
 
       row.innerHTML = `
-        <div style="padding:0.6rem 0.75rem; background:${bgA}; border:1px solid ${borderColor}; border-right:none; border-radius:0.5rem 0 0 0.5rem; font-size:0.82rem; line-height:1.65; color:${m.ai !== -1 ? 'var(--text-primary)' : 'transparent'}; font-family:'Source Serif 4',Georgia,serif; min-height:2.5rem;">
+        <div style="padding:0.6rem 0.75rem; background:${bgA}; border:1px solid ${borderColor}; border-right:none; border-radius:0.5rem 0 0 0.5rem; font-size:0.82rem; line-height:1.65; color:${m.ai !== -1 ? 'var(--text-primary)' : 'transparent'}; min-height:2.5rem;">
           ${m.ai !== -1 ? cellAHtml : ''}
         </div>
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:${isUnique ? 'var(--bg-surface-2)' : bgA}; border-top:1px solid ${borderColor}; border-bottom:1px solid ${borderColor}; gap:0.15rem;">
           <span title="${typeTip}" style="font-size:0.75rem; font-weight:800; color:${connColor}; line-height:1;">${typeBadge}</span>
           ${badgeHtml}
         </div>
-        <div style="padding:0.6rem 0.75rem; background:${bgB}; border:1px solid ${borderColor}; border-left:none; border-radius:0 0.5rem 0.5rem 0; font-size:0.82rem; line-height:1.65; color:${m.bi !== -1 ? 'var(--text-primary)' : 'transparent'}; font-family:'Source Serif 4',Georgia,serif; min-height:2.5rem;">
+        <div style="padding:0.6rem 0.75rem; background:${bgB}; border:1px solid ${borderColor}; border-left:none; border-radius:0 0.5rem 0.5rem 0; font-size:0.82rem; line-height:1.65; color:${m.bi !== -1 ? 'var(--text-primary)' : 'transparent'}; min-height:2.5rem;">
           ${m.bi !== -1 ? cellBHtml : ''}
         </div>
       `;

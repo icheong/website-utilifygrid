@@ -63,39 +63,52 @@ const tool = tools.find(t => t.slug === 'hydration-fluid-loss-calculator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this calculator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Weigh yourself (without clothing) immediately before and after exercise. Note how long you exercised and how much fluid you drank during the session. The calculator will tell you your total fluid loss, hourly sweat rate, and recommended replacement volume.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Tracking sweat rate across multiple sessions in different conditions helps you build a personalised hydration protocol for races or long training blocks.</p>
+    <h2 class="font-display seo-h2">How to use the Hydration &amp; Fluid Loss Calculator</h2>
+    <p class="seo-p">Enter your body weight and select the activity type and duration. The tool calculates estimated fluid loss through sweat during exercise and recommends the volume of water to drink before, during, and after activity to maintain hydration.</p>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Exercise hydration planning</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Calculate exactly how much water to drink during a workout based on your body weight and exercise intensity to avoid both dehydration and overhydration.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Endurance event preparation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Plan hydration strategies for marathons, cycling events, or long hikes by estimating cumulative fluid losses over extended activity durations.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Heat acclimatisation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Adjust fluid intake recommendations for hot and humid conditions where sweat rates increase significantly compared to cool-weather exercise.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How fluid loss is calculated</h2>
-    <div style="background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem; font-family:'Fira Code',monospace; font-size:0.82rem; color:var(--text-primary); line-height:1.8; margin-bottom:0.875rem;">
-      Total Lost (L) = (Pre-wt − Post-wt) + Consumed(ml)/1000<br/>
-      Sweat Rate (L/hr) = Total Lost / (Duration / 60)<br/>
-      Replace (ml/hr) = Sweat Rate × 1000
-    </div>
-    <p style="color:var(--text-secondary); font-size:0.875rem; line-height:1.7;">The 1:1 rule (1 ml replacement per 1 ml lost) is generally recommended during exercise, though some sports scientists suggest replacing only 80% during activity to avoid over-hydration (hyponatraemia risk).</p>
+    <h2 class="font-display seo-h2">How fluid loss is estimated</h2>
+    <h3 class="font-display seo-h3-sm">Sweat rate estimation</h3>
+    <p class="seo-p">The tool uses research-based sweat rate formulas that account for body weight, exercise intensity, duration, and environmental conditions. Average sweat rates range from 0.5 to 2.5 litres per hour depending on intensity.</p>
+    <h3 class="font-display seo-h3-sm">Body weight factor</h3>
+    <p class="seo-p">Heavier individuals produce more total sweat because they have greater surface area and metabolic heat production. The formula scales fluid loss proportionally to body weight.</p>
+    <h3 class="font-display seo-h3-sm">Activity intensity multiplier</h3>
+    <p class="seo-p">Light activity (walking) produces lower sweat rates than moderate activity (jogging), which produces lower rates than vigorous activity (running, cycling). Each level has a calibrated multiplier.</p>
+    <h3 class="font-display seo-h3-sm">Rehydration targets</h3>
+    <p class="seo-p">The recommended intake accounts for fluid lost during exercise plus a buffer to account for individual variation. The general guideline is <code class="inline-code">125-150%</code> of fluid lost to fully restore hydration status.</p>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Should I drink to thirst or to a schedule?', a: 'For most recreational exercise under 60 minutes, drinking to thirst is sufficient and safe. For prolonged exercise (over 60–90 minutes) in heat, a planned hydration schedule prevents you from falling behind — thirst typically kicks in only when you are already 1–2% dehydrated.' },
-        { q: 'Do I need electrolytes, or is water enough?', a: 'For sessions under 60 minutes, water is usually sufficient. For sessions over 90 minutes, especially in heat, sodium replacement is important to prevent hyponatraemia (low blood sodium). Sports drinks, electrolyte tablets, or salty snacks can provide this.' },
-        { q: 'How much should I drink after exercise to rehydrate?', a: 'The standard recommendation is to consume 1.25–1.5 L of fluid for every kilogram of body weight lost. This accounts for ongoing urine losses during recovery. Spreading consumption over 2–4 hours rather than drinking it all at once improves absorption.' },
-        { q: 'What is a normal sweat rate?', a: 'Sweat rates vary enormously: 0.5–1.5 L/hr is typical for moderate exercise in mild conditions. Elite athletes in hot, humid conditions can sweat 2–3+ L/hr. Heat acclimatisation increases sweat rate (good for cooling), but also increases fluid and electrolyte requirements.' },
+        { q: 'How accurate are the fluid loss estimates?', a: 'The estimates are based on published research averages. Individual sweat rates vary significantly based on genetics, fitness level, heat acclimatisation, and environmental conditions. Use these as starting guidelines and adjust based on your experience.' },
+        { q: 'Can I drink too much water?', a: 'Yes. Overhydration (hyponatremia) can be dangerous. During exercise lasting less than 60 minutes, water alone is usually sufficient. For longer activities, consider electrolyte replacement to maintain sodium balance.' },
+        { q: 'Should I drink before, during, or after exercise?', a: 'All three. Pre-hydrate with 200-300ml about 2 hours before exercise. During exercise, aim for 150-250ml every 15-20 minutes. After, drink 500-700ml for every kilogram of body weight lost during exercise.' },
+        { q: 'Does caffeine affect hydration?', a: 'Moderate caffeine intake (up to 400mg) has a minimal diuretic effect and does not significantly impair hydration. However, excessive caffeine can increase urine output and should be accounted for in daily fluid intake.' },
       ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
+          <p itemprop="text" class="seo-faq-a">{item.a}</p>
         </div>
       ))}
     </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7"><strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This tool provides general educational estimates only. Individual hydration needs vary based on health conditions, medications, and activity level. Consult a healthcare professional for personalised hydration advice.</div>
   </div>
 
 </ToolLayout>

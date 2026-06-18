@@ -60,46 +60,64 @@ const tool = tools.find(t => t.slug === 'macro-calorie-deficit-allocator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use this tool</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Enter your target daily calorie intake and your body weight. Select your goal: Cut (calorie deficit for fat loss), Maintain, or Bulk (calorie surplus for muscle gain). The macro distribution updates instantly.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">Protein is allocated first based on body weight (a standard recommendation for muscle preservation), then remaining calories are split between carbohydrates and fat according to goal-specific ratios.</p>
+    <h2 class="font-display seo-h2">How to use the Macro Nutrient Allocator</h2>
+    <p class="seo-p">Enter your target daily calorie intake and body weight. Select your goal: Cut (calorie deficit), Maintain, or Bulk (calorie surplus). The macro distribution updates instantly with protein allocated first based on body weight, then remaining calories split between carbohydrates and fat.</p>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1rem;">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Diet planning</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Convert a daily calorie target into specific gram targets for protein, carbohydrates, and fat, giving you a concrete meal plan framework.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Goal-based adjustments</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Compare how macro ratios shift between cutting, maintaining, and bulking to understand the nutritional strategy behind each phase.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Tracking app calibration</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Generate macro targets to enter into MyFitnessPal, Cronometer, or other tracking apps, ensuring your daily targets align with evidence-based recommendations.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How macros are calculated</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;">
-      {[
-        ['Protein', 'Cut: 2.2g per kg bodyweight. Maintain: 1.8g/kg. Bulk: 2.0g/kg. Each gram of protein provides 4 kcal.'],
-        ['Carbohydrates', 'Cut: 30% of remaining calories. Maintain: 50%. Bulk: 55%. Each gram provides 4 kcal. Higher carbs support workout performance.'],
-        ['Fat', 'Fills remaining calorie allocation. Each gram provides 9 kcal. Fat is kept at a minimum of 20% of total calories for hormonal health.'],
-        ['Caloric Density', '1g Protein = 4 kcal. 1g Carbohydrate = 4 kcal. 1g Fat = 9 kcal. These are the standard values used by all major dietary tracking applications.'],
-      ].map(([label, desc]) => (
-        <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6; margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">How macros are calculated</h2>
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
+      <div>
+        <h3 class="font-display seo-h3-sm">Protein allocation</h3>
+        <p class="seo-p">Cut: <code class="inline-code">2.2g</code> per kg bodyweight. Maintain: <code class="inline-code">1.8g/kg</code>. Bulk: <code class="inline-code">2.0g/kg</code>. Each gram of protein provides <code class="inline-code">4 kcal</code>. Protein is allocated first because it is the most critical macronutrient for muscle preservation.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Carbohydrate allocation</h3>
+        <p class="seo-p">Cut: <code class="inline-code">30%</code> of remaining calories. Maintain: <code class="inline-code">50%</code>. Bulk: <code class="inline-code">55%</code>. Each gram provides <code class="inline-code">4 kcal</code>. Higher carbs support workout performance and recovery during surplus phases.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Fat allocation</h3>
+        <p class="seo-p">Fills remaining calorie allocation. Each gram provides <code class="inline-code">9 kcal</code>. Fat is kept at a minimum of <code class="inline-code">20%</code> of total calories for hormonal health and fat-soluble vitamin absorption.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Caloric density</h3>
+        <p class="seo-p">1g Protein equals <code class="inline-code">4 kcal</code>. 1g Carbohydrate equals <code class="inline-code">4 kcal</code>. 1g Fat equals <code class="inline-code">9 kcal</code>. These are the standard Atwater values used by all major dietary tracking applications.</p>
+      </div>
     </div>
   </div>
 
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently asked questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'How do I know my daily calorie target?', a: 'Calculate your Total Daily Energy Expenditure (TDEE) using the BMR Katch-McArdle Calculator tool. Your TDEE is your maintenance calories. Subtract 300–500 kcal for a cut; add 200–300 kcal for a lean bulk.' },
-        { q: 'How much protein do I actually need?', a: 'For general health, 0.8g/kg is the minimum RDA. For athletes and those resistance training, 1.6–2.2g/kg is recommended to support muscle protein synthesis. Going above 2.2g/kg shows diminishing returns for most people.' },
-        { q: 'Are carbs or fats more important?', a: 'Both serve essential functions. Carbohydrates are the preferred fuel for high-intensity exercise and brain function. Fats are critical for hormone production, fat-soluble vitamin absorption, and cell membrane integrity. Neither should be eliminated; optimal ratios depend on your goal and activity type.' },
-        { q: 'Should I use net carbs or total carbs?', a: 'Net carbs (total carbs minus dietary fibre) are used by those following a ketogenic or low-carb diet, as fibre has minimal impact on blood sugar. For general fitness goals, tracking total carbohydrates is standard practice.' },
+        { q: 'How do I know my daily calorie target?', a: 'Calculate your Total Daily Energy Expenditure (TDEE) using a BMR calculator. Your TDEE is your maintenance calories. Subtract 300-500 kcal for a cut; add 200-300 kcal for a lean bulk.' },
+        { q: 'How much protein do I actually need?', a: 'For general health, 0.8g/kg is the minimum RDA. For athletes, 1.6-2.2g/kg supports muscle protein synthesis. Going above 2.2g/kg shows diminishing returns.' },
+        { q: 'Are carbs or fats more important?', a: 'Both serve essential functions. Carbs are the preferred fuel for high-intensity exercise. Fats are critical for hormone production and cell membrane integrity. Neither should be eliminated.' },
+        { q: 'Should I use net carbs or total carbs?', a: 'Net carbs (total minus fibre) are used for ketogenic diets. For general fitness goals, tracking total carbohydrates is standard practice.' },
       ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>
       ))}
     </div>
+    <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7"><strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This tool provides general educational estimates only. Consult a registered dietitian or healthcare professional before making significant changes to your diet or nutrition plan.</div>
   </div>
 
 </ToolLayout>
