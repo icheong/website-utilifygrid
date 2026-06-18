@@ -98,8 +98,6 @@ slug-generator
 bulk-case-mutator
 duplicate-line-remover
 json-unescaper
-
-## TODO
 kaprekar-constant-calculator
 torque-converter
 fuel-efficiency-mass-converter
@@ -110,6 +108,8 @@ thermal-resistance-converter
 thermal-conductivity-converter
 specific-heat-capacity-converter
 heat-density-converter
+
+## TODO
 heat-flux-density-converter
 heat-transfer-coefficient-converter
 convert-to-pdf

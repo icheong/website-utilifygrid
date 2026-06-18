@@ -30,73 +30,78 @@ const tool = tools.find(t => t.slug === 'thermal-expansion-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Thermal Expansion Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other thermal expansion coefficient units update instantly — no buttons to click.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      This converter handles the <strong>coefficient of linear thermal expansion</strong>, which measures how much a material expands per degree of temperature change. Commonly used in engineering, materials science, and construction.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Thermal Expansion Converter</h2>
+    <p class="seo-p">Convert any thermal expansion coefficient between Kelvin, Celsius, Fahrenheit, and Rankine scales instantly.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Expansion Type</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose between linear, area, or volumetric thermal expansion depending on your application. Each type uses a different coefficient but shares the same unit conversion logic.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Coefficient Value</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Input the thermal expansion coefficient in its current unit. The value updates in real time as you type.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Unit</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Pick the source unit from the dropdown. The converter will display equivalent values in all other supported scales.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">View Results</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See the converted coefficient in all units displayed below the input. Click any Copy button to save a value to your clipboard.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How thermal expansion conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions go through <strong>per Kelvin (1/K)</strong> as the base unit. Since the Celsius and Kelvin scales have the same degree size, 1/°C = 1/K. The Fahrenheit and Rankine scales use a factor of 1.8:
-    </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 1/°C = 1 1/K     (exact — same degree size)
-1 1/°F = 1.8 1/K   (because °F intervals are 5/9 of K intervals)
-1 1/°R = 1.8 1/K   (Rankine has same degree size as Fahrenheit)
-
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      The coefficient of linear thermal expansion (α) describes fractional change in length per degree of temperature change. For example, steel has α ≈ 12 × 10⁻⁶ 1/K, meaning a 1-meter steel bar expands by 0.012 mm for each 1°C temperature increase. All calculations run in your browser.
-    </p>
+    <h2 class="font-display seo-h2">How the Thermal Expansion Converter Works</h2>
+    <p class="seo-p">This tool converts thermal expansion coefficients between four temperature scales using a simple unit-factor method. All calculations happen locally in your browser.</p>
+    <h3 class="font-display seo-h3-sm">Types of Thermal Expansion</h3>
+    <p class="seo-p">Thermal expansion describes how materials change size with temperature. The <code class="inline-code">linear expansion coefficient (α)</code> measures fractional change in length per degree. The <code class="inline-code">area expansion coefficient (β)</code> is roughly 2α and applies to surfaces. The <code class="inline-code">volumetric expansion coefficient (γ)</code> is roughly 3α and applies to three-dimensional bodies. For isotropic materials, β = 2α and γ = 3α.</p>
+    <h3 class="font-display seo-h3-sm">Unit Systems</h3>
+    <p class="seo-p">The Celsius and Kelvin scales share the same degree size, so <code class="inline-code">1/°C = 1/K</code> exactly. Fahrenheit and Rankine degrees are smaller by a factor of 5/9, which means <code class="inline-code">1/°F = 1.8 × 1/K</code>. The converter multiplies by the ratio of source-to-target factors to produce the result.</p>
+    <h3 class="font-display seo-h3-sm">Material Reference Values</h3>
+    <p class="seo-p">Typical linear expansion coefficients: aluminum <code class="inline-code">≈ 23 × 10⁻⁶ 1/K</code>, steel <code class="inline-code">≈ 12 × 10⁻⁶ 1/K</code>, copper <code class="inline-code">≈ 17 × 10⁻⁶ 1/K</code>, concrete <code class="inline-code">≈ 12 × 10⁻⁶ 1/K</code>, and common plastics <code class="inline-code">50–200 × 10⁻⁶ 1/K</code>. Materials like Invar have extremely low CTE values for precision applications.</p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is the coefficient of thermal expansion?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The coefficient of thermal expansion (CTE) measures how much a material expands or contracts per degree of temperature change. It is expressed as a fractional change in length per degree (e.g., 1/K or 1/°C). Different materials have different CTEs, which is critical in engineering design for structures exposed to temperature variations." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why is 1/°C equal to 1/K?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The Celsius and Kelvin scales have the same degree size — they differ only in their zero point. Since thermal expansion is about the *change* in temperature (not absolute temperature), the scale offset doesn't matter. A 1°C change equals a 1 K change, so 1/°C = 1/K." }
-        },
-        {
-          "@type": "Question",
-          "name": "Which materials have the highest thermal expansion?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Metals like aluminum (α ≈ 23 × 10⁻⁶ 1/K) and copper (α ≈ 17 × 10⁻⁶ 1/K) expand more than steel (α ≈ 12 × 10⁻⁶ 1/K). Plastics can have even higher CTEs (50-200 × 10⁻⁶ 1/K). Invar and some ceramics have very low CTEs, making them useful in precision instruments." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is the coefficient of thermal expansion?', a: 'The coefficient of thermal expansion (CTE) measures how much a material expands or contracts per degree of temperature change. It is expressed as a fractional change in length per degree (e.g., 1/K or 1/°C). Different materials have different CTEs, which is critical in engineering design for structures exposed to temperature variations.' },
-        { q: 'Why is 1/°C equal to 1/K?', a: 'The Celsius and Kelvin scales have the same degree size — they differ only in their zero point. Since thermal expansion is about the *change* in temperature (not absolute temperature), the scale offset doesn\'t matter. A 1°C change equals a 1 K change, so 1/°C = 1/K.' },
-        { q: 'Which materials have the highest thermal expansion?', a: 'Metals like aluminum (α ≈ 23 × 10⁻⁶ 1/K) and copper (α ≈ 17 × 10⁻⁶ 1/K) expand more than steel (α ≈ 12 × 10⁻⁶ 1/K). Plastics can have even higher CTEs (50-200 × 10⁻⁶ 1/K). Invar and some ceramics have very low CTEs, making them useful in precision instruments.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between linear and volumetric thermal expansion?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Linear expansion (α) measures the fractional change in length per degree, while volumetric expansion (γ) measures the fractional change in volume per degree. For isotropic materials, γ is approximately three times α. Use linear for rods or beams, and volumetric for liquids, gases, or three-dimensional solids.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the typical thermal expansion coefficient of steel?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The linear coefficient for most structural steels is approximately 12 × 10⁻⁶ per Kelvin (12 µm/m·°C). This means a 1-meter steel bar expands by about 0.012 mm for each degree Celsius temperature increase.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why is 1/°C equal to 1/K?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The Celsius and Kelvin scales have identical degree sizes — they differ only in their zero points. Since thermal expansion is about the change in temperature rather than absolute temperature, the offset is irrelevant. A 1°C change equals a 1 K change, so 1/°C = 1/K.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does temperature range affect thermal expansion?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The coefficient of thermal expansion is not perfectly constant — it can vary with temperature. Most published values are averages over a common range (e.g., 20–100°C). For precise engineering over wide temperature ranges, temperature-dependent CTE data should be used.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Which materials have the highest thermal expansion?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Polymers and plastics typically have the highest CTEs, ranging from 50 to 200 × 10⁻⁶ 1/K. Among metals, aluminum (≈ 23 × 10⁻⁶ 1/K) and copper (≈ 17 × 10⁻⁶ 1/K) expand more than steel. Ceramics and Invar alloys have very low expansion for precision applications.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why does thermal expansion matter in engineering?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Uncontrolled thermal expansion can cause structural stress, warping, or failure in bridges, rails, pipes, and electronic assemblies. Engineers account for expansion using joints, expansion loops, or materials with low CTE to prevent damage from temperature changes.</p>
+        </div>
+      </div>
     </div>
   </div>
 

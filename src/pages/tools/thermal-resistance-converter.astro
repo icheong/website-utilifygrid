@@ -30,73 +30,78 @@ const tool = tools.find(t => t.slug === 'thermal-resistance-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Thermal Resistance Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other thermal resistance units update instantly — no buttons to click.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      This converter handles <strong>thermal resistance</strong> units, which measure a material's resistance to heat flow. It is commonly used in building insulation (R-value) and electronics thermal management.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Thermal Resistance Converter</h2>
+    <p class="seo-p">Enter a thermal resistance value, pick its source unit, and instantly see the equivalent in all supported units.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter R-Value</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Input the thermal resistance value in the text field and select the source unit from the dropdown menu.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Unit</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the thermal resistance unit you want to convert to, such as K/W, °C/W, or R-value.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">View All Results</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See the converted value displayed in all supported units simultaneously, updated in real time.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button next to any result to copy the converted value to your clipboard for use in documents or calculations.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How thermal resistance conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions go through <strong>Kelvin per Watt (K/W)</strong> as the base unit. Since °C and K have the same degree size, K/W = °C/W. Imperial units use the BTU and Fahrenheit scales:
-    </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 °C/W    = 1 K/W          (exact — same degree size)
-1 °F·h/BTU = 0.527528 K/W
-1 R-value  = 0.176110 K/W   (°F·ft²·h/BTU)
-
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Thermal resistance (R) is the inverse of thermal conductance. In building insulation, the R-value measures how well a material resists heat flow — higher R-values mean better insulation. The imperial R-value (°F·ft²·h/BTU) is the standard unit in the US construction industry. All calculations run in your browser.
-    </p>
+    <h2 class="font-display seo-h2">How the Thermal Resistance Converter Works</h2>
+    <p class="seo-p">The converter translates thermal resistance values between different unit systems using standardized conversion factors, all computed instantly in your browser.</p>
+    <h3 class="font-display seo-h3-sm">Thermal Resistance Units</h3>
+    <p class="seo-p">Thermal resistance is measured in several units depending on the system. The SI unit is <code class="inline-code">m²K/W</code> (square meter kelvin per watt). In the US, the <code class="inline-code">R-value</code> expressed as <code class="inline-code">ft²·°F·h/BTU</code> is standard for building insulation. Other units include <code class="inline-code">K/W</code> and <code class="inline-code">°C/W</code> for component-level thermal management, plus <code class="inline-code">clo</code> (used for clothing insulation) and <code class="inline-code">tog</code> (used for bedding warmth ratings).</p>
+    <h3 class="font-display seo-h3-sm">Conversion Between Unit Systems</h3>
+    <p class="seo-p">All conversions route through <code class="inline-code">K/W</code> as the base unit. Since Kelvin and Celsius share the same degree size, <code class="inline-code">1 K/W = 1 °C/W</code> exactly. Imperial units use different temperature and energy scales: <code class="inline-code">1 °F·h/BTU = 0.527528 K/W</code> and <code class="inline-code">1 R-value (ft²·°F·h/BTU) = 0.176110 K/W</code>. The converter multiplies the input by its source factor and divides by the target factor.</p>
+    <h3 class="font-display seo-h3-sm">Relationship to Thermal Conductivity</h3>
+    <p class="seo-p">Thermal resistance <code class="inline-code">R</code> is related to thermal conductivity <code class="inline-code">k</code> by the formula <code class="inline-code">R = thickness / k</code>. A material with lower conductivity or greater thickness produces a higher R-value, meaning better insulation. This relationship lets you derive R-value from material properties or calculate required thickness for a target insulation level.</p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is thermal resistance?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Thermal resistance measures a material's ability to resist heat flow. It is defined as the temperature difference across a material divided by the heat flow rate (R = ΔT / Q). Higher thermal resistance means better insulation. In building construction, the R-value is the standard measure of insulation effectiveness." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is an R-value?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The R-value is an imperial measure of thermal resistance used primarily in building insulation in the United States. It is expressed in °F·ft²·h/BTU. A higher R-value indicates better insulating properties. For example, typical wall insulation has an R-value of R-13 to R-21, while roof insulation may be R-30 to R-60." }
-        },
-        {
-          "@type": "Question",
-          "name": "How do K/W and °C/W relate?",
-          "acceptedAnswer": { "@type": "Answer", "text": "K/W and °C/W are numerically identical because the Kelvin and Celsius scales have the same degree size — they differ only in their zero point. Since thermal resistance involves temperature *differences* (not absolute temperatures), 1 K/W = 1 °C/W exactly." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is thermal resistance?', a: 'Thermal resistance measures a material\'s ability to resist heat flow. It is defined as the temperature difference across a material divided by the heat flow rate (R = ΔT / Q). Higher thermal resistance means better insulation. In building construction, the R-value is the standard measure of insulation effectiveness.' },
-        { q: 'What is an R-value?', a: 'The R-value is an imperial measure of thermal resistance used primarily in building insulation in the United States. It is expressed in °F·ft²·h/BTU. A higher R-value indicates better insulating properties. For example, typical wall insulation has an R-value of R-13 to R-21, while roof insulation may be R-30 to R-60.' },
-        { q: 'How do K/W and °C/W relate?', a: 'K/W and °C/W are numerically identical because the Kelvin and Celsius scales have the same degree size — they differ only in their zero point. Since thermal resistance involves temperature *differences* (not absolute temperatures), 1 K/W = 1 °C/W exactly.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is thermal resistance (R-value)?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Thermal resistance measures a material's ability to resist heat flow. It is defined as the temperature difference across a material divided by the heat transfer rate. Higher thermal resistance means better insulation performance in building envelopes and thermal systems.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between R-value and U-value?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">R-value measures thermal resistance (how well a material blocks heat), while U-value measures thermal transmittance (how much heat passes through). They are inverses of each other: U = 1/R. A high R-value means good insulation, whereas a low U-value indicates the same.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What are typical R-values for wall insulation?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Typical residential wall insulation ranges from R-13 to R-21 depending on climate zone and wall construction. Roof and attic insulation generally requires higher values, often R-30 to R-60, to prevent heat loss in colder regions.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between clo and tog?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Both clo and tog measure thermal insulation but for different applications. Clo is used for clothing insulation where 1 clo = 0.155 m²K/W. Tog is used for bedding and quilts where 1 tog = 0.1 m²K/W. Higher values in either scale indicate warmer insulation.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I convert between SI and Imperial R-value units?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">To convert from SI (m²K/W) to Imperial R-value (ft²·°F·h/BTU), multiply by 5.678. To convert in the opposite direction, divide by 5.678. This converter handles these conversions automatically when you select the source and target units.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why is thermal resistance important for energy efficiency?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Higher thermal resistance reduces heat transfer through walls, roofs, and floors, lowering heating and cooling energy demands. Proper insulation with adequate R-values helps maintain indoor comfort while minimizing energy consumption and utility costs.</p>
+        </div>
+      </div>
     </div>
   </div>
 

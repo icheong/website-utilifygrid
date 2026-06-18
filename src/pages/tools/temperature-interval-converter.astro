@@ -30,74 +30,78 @@ const tool = tools.find(t => t.slug === 'temperature-interval-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Temperature Interval Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other temperature interval units update instantly — no buttons to click.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      This converter handles <strong>temperature intervals</strong> (differences), not absolute temperatures. A temperature <em>difference</em> of 1°C equals 1 K, but 1°F equals 5/9 K. This is different from converting between absolute temperature scales.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Temperature Interval Converter</h2>
+    <p class="seo-p">This converter transforms temperature differences (deltas) between Celsius, Fahrenheit, Kelvin, and Rankine scales in real time.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Temperature Difference</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Input the delta temperature value and select the source unit from the dropdown menu. The converter accepts any positive or negative number.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Unit</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the temperature difference unit you want to convert from. Available options include Kelvin, Celsius degree, Fahrenheit degree, and Rankine.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">View All Results</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See the delta value converted into every other temperature interval unit instantly. Results update as you type or change the source unit.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click any Copy button to copy that unit's converted value to your clipboard for easy pasting into documents, code, or messages.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How temperature interval conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions go through <strong>Kelvin intervals</strong> as the base unit. Temperature intervals use linear conversion factors:
-    </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 K  = 1 K    (exact)
-1 °C = 1 K    (exact — a degree Celsius interval equals a Kelvin interval)
-1 °F = 5/9 K  (0.555556 K)
-1 °R = 5/9 K  (0.555556 K)
-
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Note: this is for <strong>intervals only</strong>. Converting absolute temperatures (e.g., 25°C to °F) requires offset formulas. Temperature <em>differences</em> of 1 K and 1 °C are identical because the Kelvin and Celsius scales have the same size degree — they only differ in their zero point.
-    </p>
+    <h2 class="font-display seo-h2">How the Temperature Interval Converter Works</h2>
+    <p class="seo-p">This tool converts between temperature differences (deltas) using direct linear scaling factors. Unlike absolute temperature conversions, no offset is involved because intervals measure the gap between two temperatures, not a specific point on a scale.</p>
+    <h3 class="font-display seo-h3-sm">Temperature Interval vs Absolute Temperature</h3>
+    <p class="seo-p">A temperature interval (or delta) represents the difference between two temperatures. For example, a rise from 20°C to 30°C is a delta of 10°C. Because the Celsius and Kelvin scales have identical degree sizes, a 1°C interval equals exactly 1 K. However, a 1°F interval equals only 5/9 K because the Fahrenheit degree is smaller. This is fundamentally different from converting absolute temperatures (e.g., 25°C to 77°F), which requires adding or subtracting offset constants like <code class="inline-code">+32</code> or <code class="inline-code">-273.15</code>.</p>
+    <h3 class="font-display seo-h3-sm">Conversion Factors</h3>
+    <p class="seo-p">All conversions route through Kelvin intervals as the reference unit. The exact ratios are: 1°C delta = 1 K, 1°F delta = 5/9 K, and 1°R delta = 5/9 K. The formula is <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>. For example, converting 10°F delta to Celsius: 10 × (5/9) ÷ 1 = 5.556°C delta. These are pure multiplicative ratios with no additive offset.</p>
+    <h3 class="font-display seo-h3-sm">Common Use Cases</h3>
+    <p class="seo-p">Temperature interval conversions are essential in <strong>HVAC engineering</strong> for calculating heating and cooling loads, in <strong>chemistry</strong> for expressing enthalpy changes and reaction temperature ranges, and in <strong>mechanical engineering</strong> for thermal expansion calculations. Meteorologists also use deltas when reporting daily temperature swings or climate anomalies across different measurement systems.</p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is a temperature interval?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A temperature interval (or temperature difference) measures the change or range between two temperatures. For example, a temperature rise from 20°C to 30°C is an interval of 10°C (or 10 K). Intervals use linear conversion without the offset needed for absolute temperatures." }
-        },
-        {
-          "@type": "Question",
-          "name": "Why is 1°C equal to 1 K but not 1°F?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The Celsius and Kelvin scales have the same degree size — they only differ by their zero point (0 K = -273.15°C). So a 1° change in Celsius equals a 1 K change. However, the Fahrenheit degree is 5/9 the size of a Celsius/Kelvin degree, so 1°F = 5/9 K." }
-        },
-        {
-          "@type": "Question",
-          "name": "How is this different from converting absolute temperatures?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Absolute temperature conversion (e.g., 25°C to °F) uses the formula °F = °C × 9/5 + 32, which includes an offset. Interval conversion uses only the ratio (°F interval = °C interval × 9/5) with no offset. This converter handles intervals only." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is a temperature interval?', a: 'A temperature interval (or temperature difference) measures the change or range between two temperatures. For example, a temperature rise from 20°C to 30°C is an interval of 10°C (or 10 K). Intervals use linear conversion without the offset needed for absolute temperatures.' },
-        { q: 'Why is 1°C equal to 1 K but not 1°F?', a: 'The Celsius and Kelvin scales have the same degree size — they only differ by their zero point (0 K = -273.15°C). So a 1° change in Celsius equals a 1 K change. However, the Fahrenheit degree is 5/9 the size of a Celsius/Kelvin degree, so 1°F = 5/9 K.' },
-        { q: 'How is this different from converting absolute temperatures?', a: 'Absolute temperature conversion (e.g., 25°C to °F) uses the formula °F = °C × 9/5 + 32, which includes an offset. Interval conversion uses only the ratio (°F interval = °C interval × 9/5) with no offset. This converter handles intervals only.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why is a 1°C temperature difference equal to 1 K?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The Celsius and Kelvin scales use the same degree size — they differ only in their zero points (0 K = -273.15°C). Because the spacing between degrees is identical, a change of 1°C is physically the same temperature change as 1 K. This equivalence does not hold for Fahrenheit, where 1°F delta equals 5/9 K.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do temperature differences differ from absolute temperature conversions?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Absolute temperature conversions (like 25°C to °F) use formulas with an offset constant (°F = °C × 9/5 + 32). Interval conversions use only multiplication by a ratio with no offset. A 10°C difference is 50°F difference, but 10°C as an absolute temperature is 50°F. This tool handles only the interval case.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What are temperature intervals used for in HVAC?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">HVAC engineers work with temperature differences constantly — calculating the delta between supply and return air, determining heating or cooling capacity in BTUs, and sizing equipment based on expected temperature swings. A cooling system that drops air by 10°C is removing the same heat whether you express that delta as 10 K, 18°F, or 18°R.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why does this converter include Rankine?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Rankine is the absolute scale based on Fahrenheit, used in some aerospace and thermodynamics contexts. A Rankine interval has the same size as a Fahrenheit interval (1°R delta = 1°F delta = 5/9 K). Including it makes the converter useful for engineers working across both metric and imperial absolute systems.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I use this converter for negative temperature differences?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Negative values represent a temperature decrease rather than an increase. A delta of -5°C means the temperature dropped by 5 degrees Celsius. The conversion math is the same — just multiply by the ratio. A decrease of 5°C equals a decrease of 9°F or 5 K.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why can't I convert absolute temperatures with this tool?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Absolute temperature conversion requires offset formulas because the scales have different zero points. For example, 0°C = 32°F and 0 K = -459.67°F. This converter deliberately omits offsets to focus purely on interval math, which keeps the formulas simple and error-free for delta-based calculations in science and engineering.</p>
+        </div>
+      </div>
     </div>
   </div>
 

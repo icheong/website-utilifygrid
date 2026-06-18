@@ -31,74 +31,78 @@ const tool = tools.find(t => t.slug === 'thermal-conductivity-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Thermal Conductivity Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other thermal conductivity units update instantly — no buttons to click.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      This converter handles <strong>thermal conductivity</strong> — the rate at which heat passes through a material. It is used in materials science, building engineering, and heat transfer calculations. Metals have high thermal conductivity; insulators have low values.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Thermal Conductivity Converter</h2>
+    <p class="seo-p">Enter a value, pick a unit, and instantly see the equivalent in every supported thermal conductivity unit.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Conductivity Value</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Type a numeric value into the input field. You can enter whole numbers or decimals — the converter processes them immediately.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Unit</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the source unit from the dropdown — W/(m·K), BTU/(h·ft·°F), W/(cm·K), cal/(s·cm·°C), or kW/(m·K).</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">View All Conversions</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">The results panel instantly displays your value in every supported unit, so you can compare and pick the one you need.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button next to any result to copy that converted value to your clipboard for use in documents, code, or reports.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How thermal conductivity conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions go through <strong>W/(m·K)</strong> as the base unit. Each unit has a fixed conversion factor:
-    </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 BTU/(h·ft·°F) = 0.577789 W/(m·K)
-1 W/(cm·K)       = 100 W/(m·K)
-1 cal/(s·cm·°C)  = 418.4 W/(m·K)
-1 kW/(m·K)       = 0.001 W/(m·K)
-
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Thermal conductivity (k or λ) measures a material's ability to conduct heat. Metals like copper (k ≈ 400 W/(m·K)) and aluminum (k ≈ 237 W/(m·K)) are excellent conductors, while materials like Styrofoam (k ≈ 0.03 W/(m·K)) are excellent insulators. All calculations run in your browser.
-    </p>
+    <h2 class="font-display seo-h2">How the Thermal Conductivity Converter Works</h2>
+    <p class="seo-p">Every conversion normalizes the input to W/(m·K) and then converts to the target unit using fixed ratios, ensuring accurate results across all supported units.</p>
+    <h3 class="font-display seo-h3-sm">Thermal Conductivity Units</h3>
+    <p class="seo-p"><code class="inline-code">W/(m·K)</code> is the SI standard — watts of heat flow per meter of material thickness per kelvin of temperature difference. <code class="inline-code">BTU/(h·ft·°F)</code> is the imperial equivalent used in US engineering. <code class="inline-code">W/(cm·K)</code> scales the SI unit by centimeters. <code class="inline-code">cal/(s·cm·°C)</code> uses calories and centimeters, common in older literature. <code class="inline-code">kW/(m·K)</code> is used for very high conductivity materials.</p>
+    <h3 class="font-display seo-h3-sm">Conversion Factor Mathematics</h3>
+    <p class="seo-p">Each unit maps to a fixed factor relative to W/(m·K). The converter multiplies your input by the source factor to get the SI base value, then divides by the target factor to produce the result. For example, 1 BTU/(h·ft·°F) equals 0.577789 W/(m·K), so converting BTU to W/(m·K) means multiplying by that factor.</p>
+    <h3 class="font-display seo-h3-sm">Material Classification</h3>
+    <p class="seo-p">Materials with thermal conductivity above roughly 10 W/(m·K) — like copper at 401 W/(m·K) or aluminum at 237 W/(m·K) — are classified as thermal conductors. Materials below 0.1 W/(m·K) — like styrofoam at 0.03 W/(m·K) or aerogel at 0.001 W/(m·K) — are classified as thermal insulators. This converter helps you quickly compare values across unit systems used in different engineering disciplines.</p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is thermal conductivity?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Thermal conductivity is a material property that measures the rate at which heat energy passes through a material. It is expressed in W/(m·K) in SI units. Higher values mean the material conducts heat better — metals have high thermal conductivity, while insulators like wood or foam have low values." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the BTU thermal conductivity unit?",
-          "acceptedAnswer": { "@type": "Answer", "text": "BTU/(h·ft·°F) is the imperial unit for thermal conductivity, commonly used in US engineering. It measures how many BTUs of heat flow per hour through a 1-foot-thick material with a 1°F temperature difference. To convert to SI: multiply by 0.577789 to get W/(m·K)." }
-        },
-        {
-          "@type": "Question",
-          "name": "Which materials have the highest thermal conductivity?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Silver has the highest thermal conductivity of any metal at about 429 W/(m·K), followed by copper at 401 W/(m·K) and gold at 317 W/(m·K). Diamond has an exceptionally high thermal conductivity of about 2000 W/(m·K). At the other extreme, aerogels have thermal conductivity as low as 0.001 W/(m·K)." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is thermal conductivity?', a: 'Thermal conductivity is a material property that measures the rate at which heat energy passes through a material. It is expressed in W/(m·K) in SI units. Higher values mean the material conducts heat better — metals have high thermal conductivity, while insulators like wood or foam have low values.' },
-        { q: 'What is the BTU thermal conductivity unit?', a: 'BTU/(h·ft·°F) is the imperial unit for thermal conductivity, commonly used in US engineering. It measures how many BTUs of heat flow per hour through a 1-foot-thick material with a 1°F temperature difference. To convert to SI: multiply by 0.577789 to get W/(m·K).' },
-        { q: 'Which materials have the highest thermal conductivity?', a: 'Silver has the highest thermal conductivity of any metal at about 429 W/(m·K), followed by copper at 401 W/(m·K) and gold at 317 W/(m·K). Diamond has an exceptionally high thermal conductivity of about 2000 W/(m·K). At the other extreme, aerogels have thermal conductivity as low as 0.001 W/(m·K).' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is a typical thermal conductivity value for copper?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Copper has a thermal conductivity of approximately 401 W/(m·K), making it one of the best metallic conductors of heat. This high value is why copper is widely used in heat exchangers, cookware, and electrical wiring where efficient heat transfer is required.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does thermal conductivity differ from thermal diffusivity?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Thermal conductivity measures how much heat a material can conduct, while thermal diffusivity measures how quickly it changes temperature. A material with high conductivity but also high heat capacity may have moderate diffusivity. Both properties are important but answer different engineering questions.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why do metals conduct heat better than non-metals?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Metals have free electrons that move easily through the crystal lattice, carrying kinetic energy as heat. This electron mobility allows metals like silver, copper, and aluminum to transfer heat far more efficiently than non-metals, which rely on slower atomic vibrations (phonons) to conduct heat.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the thermal conductivity of styrofoam?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Styrofoam typically has a thermal conductivity of about 0.03 W/(m·K), which makes it an excellent insulator. This low value is due to the trapped air pockets within the foam structure, which resist heat flow and are why Styrofoam is commonly used in packaging and building insulation.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I convert BTU/(h·ft·°F) to W/(m·K)?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Multiply the BTU/(h·ft·°F) value by 0.577789 to get the equivalent in W/(m·K). For example, a material with a conductivity of 1 BTU/(h·ft·°F) equals approximately 0.578 W/(m·K). This converter does the math automatically for all supported unit pairs.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Which material has the highest known thermal conductivity?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Diamond has the highest thermal conductivity of any known material at roughly 2000 W/(m·K), far exceeding silver at 429 W/(m·K). At the opposite end, aerogels and vacuum insulation panels can have values as low as 0.001 W/(m·K), making them among the best insulators available.</p>
+        </div>
+      </div>
     </div>
   </div>
 

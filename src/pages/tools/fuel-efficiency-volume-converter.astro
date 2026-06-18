@@ -35,81 +35,78 @@ const tool = tools.find(t => t.slug === 'fuel-efficiency-volume-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Fuel Efficiency — Volume Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other volume-based fuel efficiency units update instantly — no buttons to click.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      This converter handles both <strong>distance-per-volume</strong> units (km/L, mi/gal) and <strong>volume-per-distance</strong> units (L/100km, gal/100mi). The inverted units are automatically handled — just enter your value and the converter does the rest.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Fuel Efficiency — Volume Converter</h2>
+    <p class="seo-p">Convert between volume-based fuel economy units instantly — enter a value, pick a source unit, and see the result in all supported units at once.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Fuel Economy Value</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Type your fuel economy number into the input field and select the source unit from the dropdown menu.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Unit</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the volume-based unit you want to convert from — L/100km, mpg US, mpg UK, km/L, mi/L, or any of the supported distance-per-volume and volume-per-distance units.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">View All Conversions</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See your value displayed in every supported volume-based unit simultaneously, updated in real time as you type.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button next to any result to copy that value to your clipboard for use in documents, code, or messages.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How volume fuel efficiency conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions go through <strong>kilometers per liter (km/L)</strong> as the base unit. Forward units have factors to km/L, while inverted units (L/100km, gal/100mi) use the reciprocal formula:
-    </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">Forward:
-  1 mi/L      = 0.621371 km/L
-  1 mi/gal(US)= 2.35215 km/L
-  1 mi/gal(UK)= 2.82481 km/L
-  1 km/gal(US)= 0.264172 km/L
-  1 km/gal(UK)= 0.354006 km/L
-
-Inverted:
-  L/100km:     km/L = 100 / (L/100km)
-  gal/100mi:   km/L = 100 / (gal/100mi) × mi_to_km / gal_to_L
-
-Result = Input × (FromFactor / ToFactor)  [forward]
-       = 100 / Input                      [inverted]</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      The key insight: L/100km and gal/100mi are <strong>inverted</strong> — lower values mean better fuel economy. The converter automatically handles this inverse relationship. All calculations run in your browser — no data is sent anywhere.
-    </p>
+    <h2 class="font-display seo-h2">How the Fuel Efficiency — Volume Converter Works</h2>
+    <p class="seo-p">All conversions go through a shared intermediate unit so that distance-per-volume and volume-per-distance units can be compared in a single step.</p>
+    <h3 class="font-display seo-h3-sm">Volume-Based Fuel Economy Units</h3>
+    <p class="seo-p">This converter handles two families of volume-based fuel economy. <code class="inline-code">Distance-per-volume</code> units like <code class="inline-code">km/L</code>, <code class="inline-code">mi/L</code>, <code class="inline-code">mpg US</code>, and <code class="inline-code">mpg UK</code> express how far a vehicle travels on one liter or one gallon of fuel — higher values mean better efficiency. <code class="inline-code">Volume-per-distance</code> units like <code class="inline-code">L/100km</code> and <code class="inline-code">gal/100mi</code> express how much fuel is consumed over a fixed distance — lower values mean better efficiency.</p>
+    <h3 class="font-display seo-h3-sm">Inverse Conversion Logic</h3>
+    <p class="seo-p">Units such as <code class="inline-code">L/100km</code> and <code class="inline-code">gal/100mi</code> are mathematical inverses of their distance-per-volume counterparts. To convert from 5 L/100km to km/L, the tool computes <code class="inline-code">100 / 5 = 20 km/L</code>. The converter normalizes all inputs to an intermediate value before applying the target conversion factor, so inverted units are handled automatically without any extra steps from you.</p>
+    <h3 class="font-display seo-h3-sm">Regional Standards</h3>
+    <p class="seo-p">Different regions use different fuel economy units. Most metric-system countries (Europe, Asia, Australia) report fuel economy in <code class="inline-code">L/100km</code>, where lower numbers indicate better mileage. The United States uses <code class="inline-code">mpg US</code> (based on the US gallon of approximately 3.785 liters), while the United Kingdom uses <code class="inline-code">mpg UK</code> (based on the imperial gallon of approximately 4.546 liters). Some Asian markets also use <code class="inline-code">km/L</code> directly. This converter lets you translate between any of these standards in one place.</p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Why is L/100km inverted compared to km/L?",
-          "acceptedAnswer": { "@type": "Answer", "text": "L/100km measures fuel consumed per distance (lower is better), while km/L measures distance per fuel (higher is better). They are mathematical inverses: km/L = 100 / (L/100km). For example, 5 L/100km equals 20 km/L." }
-        },
-        {
-          "@type": "Question",
-          "name": "Which fuel efficiency unit is most commonly used?",
-          "acceptedAnswer": { "@type": "Answer", "text": "L/100km is the standard in most countries using the metric system (Europe, Asia, Australia). Miles per gallon (mpg) is used in the US and UK. km/L is common in some Asian countries. This converter handles all major units." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the difference between US and UK gallons?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A US gallon is approximately 3.785 liters, while a UK (imperial) gallon is approximately 4.546 liters. This means the same vehicle will show different mpg values depending on which gallon is used — UK mpg numbers are about 20% higher than US mpg for the same fuel consumption." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Why is L/100km inverted compared to km/L?', a: 'L/100km measures fuel consumed per distance (lower is better), while km/L measures distance per fuel (higher is better). They are mathematical inverses: km/L = 100 / (L/100km). For example, 5 L/100km equals 20 km/L.' },
-        { q: 'Which fuel efficiency unit is most commonly used?', a: 'L/100km is the standard in most countries using the metric system (Europe, Asia, Australia). Miles per gallon (mpg) is used in the US and UK. km/L is common in some Asian countries. This converter handles all major units.' },
-        { q: 'What is the difference between US and UK gallons?', a: 'A US gallon is approximately 3.785 liters, while a UK (imperial) gallon is approximately 4.546 liters. This means the same vehicle will show different mpg values depending on which gallon is used — UK mpg numbers are about 20% higher than US mpg for the same fuel consumption.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between mpg US and mpg UK?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A US gallon contains approximately 3.785 liters, while a UK imperial gallon contains approximately 4.546 liters. Because the imperial gallon is larger, the same vehicle will show a higher mpg UK number than mpg US for the same actual fuel consumption. UK mpg figures are roughly 20 percent higher than their US equivalent.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How do I compare L/100km with mpg?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">You cannot compare them directly because they measure opposite things — L/100km is a volume-per-distance metric where lower is better, while mpg is a distance-per-volume metric where higher is better. Use this converter to translate between them. For example, 7 L/100km equals about 33.6 mpg US or 40.4 mpg UK.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why is a lower L/100km value better?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">L/100km tells you how many liters of fuel the vehicle consumes to travel 100 kilometers. A car that uses 5 liters to cover 100 km is more efficient than one that uses 8 liters. Therefore, the lower the L/100km number, the less fuel the vehicle needs per unit of distance, which means better fuel economy.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Which fuel economy unit should I use?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Use the unit standard in your region. L/100km is the official metric in most of Europe, Asia, and Oceania. mpg US is the standard in the United States, while mpg UK is used in the United Kingdom. If you are comparing vehicles across regions, convert them all to the same unit using this tool for an accurate side-by-side comparison.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What are gal/100mi and how do they relate to L/100km?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">gal/100mi is the US or UK gallon equivalent of L/100km — it measures fuel consumed per fixed distance. Just as L/100km tells you liters used per 100 km, gal/100mi tells you gallons used per 100 miles. Both are volume-per-distance metrics where lower values indicate better fuel efficiency. This converter supports both US and UK gallon variants.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Are the conversions in this tool accurate?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The tool uses standard conversion factors between gallons and liters and applies exact reciprocal math for inverted units. All calculations run in your browser with no rounding errors introduced by external APIs. The results are accurate to the precision of JavaScript floating-point arithmetic.</p>
+        </div>
+      </div>
     </div>
   </div>
 
