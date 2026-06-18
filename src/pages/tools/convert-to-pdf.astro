@@ -127,46 +127,78 @@ const tool = tools.find(t => t.slug === 'convert-to-pdf')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Convert To PDF</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Select the conversion type using the tabs at the top. Each tab handles a different input format — images, plain text, Markdown, or HTML.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">For <strong>Image → PDF</strong>, drop one or more image files, adjust page size and margin options, then click <strong>Convert to PDF</strong> to download instantly. For <strong>Text</strong> and <strong>Markdown</strong>, paste your content and use the print dialog to save as PDF — this uses your browser's built-in PDF export.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">For <strong>HTML → PDF</strong>, upload your file or paste HTML. The content renders in a print-optimised layout and your browser's Save as PDF function handles the export.</p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;">
-      {[
-        ['Image → PDF', 'pdf-lib encodes each image (JPG or PNG via canvas normalisation) and places it on a new page. Page size can fit the image dimensions or be fixed to A4/Letter with centred scaling.'],
-        ['Text → PDF', 'pdf-lib draws text line-by-line using Helvetica, with configurable font size, line spacing, and margins. Text wraps automatically at the page boundary.'],
-        ['Markdown → PDF', 'Marked.js converts Markdown to HTML in real time. Clicking Print opens a styled print window using your browser\'s native PDF export — fully formatted with headings, code blocks, and lists.'],
-        ['HTML → PDF', 'The uploaded or pasted HTML is loaded into a styled print window. Your browser\'s "Save as PDF" print option exports it as a PDF with correct page breaks.'],
-      ].map(([label, desc]) => (
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">How to Use the Convert to PDF Tool</h2>
+    <p class="seo-p">Convert images, plain text, Markdown, and HTML files into PDF documents entirely in your browser — no upload required.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Upload or Paste Content</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select image files to upload, or paste your text, Markdown, or HTML directly into the input area. You can also drag and drop files onto the drop zone.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Configure PDF Settings</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose your preferred page size, margins, orientation, and font settings. Adjust these options to control exactly how your PDF will look.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Generate PDF</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Convert button to process your content. The tool renders your input into a PDF format using a client-side engine.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Download</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Save the generated PDF file to your device. For some conversion types, your browser print dialog will open so you can choose Save as PDF.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Convert to PDF Tool Works</h2>
+    <p class="seo-p">The tool processes your input locally in the browser, converting different content types into PDF format using specialized parsing and rendering pipelines.</p>
+    <h3 class="font-display seo-h3-sm">Document Parsing</h3>
+    <p class="seo-p">Each input type is parsed differently. Images are decoded via <code class="inline-code">canvas</code> to normalize formats like WEBP and GIF into PNG. Plain text is split into lines and word-wrapped to fit within page boundaries. Markdown is converted to HTML in real time using the <code class="inline-code">marked</code> library. HTML files are loaded into a styled render frame that preserves tags and layout.</p>
+    <h3 class="font-display seo-h3-sm">PDF Rendering Engine</h3>
+    <p class="seo-p">Images and text are compiled using <code class="inline-code">pdf-lib</code>, a JavaScript library that generates PDF files directly in the browser. Each image is embedded onto a new page, and text is drawn line-by-line using embedded Helvetica fonts. Markdown and HTML content are exported through your browser's native print-to-PDF functionality instead.</p>
+    <h3 class="font-display seo-h3-sm">Page Layout and Formatting</h3>
+    <p class="seo-p">The tool applies configurable page dimensions, margin insets, and orientation settings. For image conversions, scaling is calculated to fit images within the page while preserving aspect ratios. Text output respects line spacing and font size, with automatic page breaks when content overflows. Headers, code blocks, and lists from Markdown and HTML are formatted with print-ready CSS.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Is my data uploaded to a server?', a: 'No. All conversions happen entirely in your browser. Images, text, and documents never leave your device.' },
-        { q: 'What image formats are supported?', a: 'JPG, PNG, WEBP, GIF, and BMP. HEIC files from Apple devices need to be converted to JPG first — most phones offer this in their share/export options.' },
-        { q: 'Can I combine multiple images into one PDF?', a: 'Yes. Drop or select multiple images and they will all be converted into a single multi-page PDF, one image per page.' },
-        { q: 'Will Markdown formatting be preserved?', a: 'Yes. Headings, bold, italic, code blocks, blockquotes, lists, and tables are all rendered in the print preview and will appear in the exported PDF.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What file formats can I convert to PDF?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool supports JPG, PNG, WEBP, GIF, and BMP images, plain text, Markdown, and HTML files. HEIC files from Apple devices should be converted to JPG before use.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is there a maximum file size limit?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard server limit since all processing happens in your browser. However, very large files may slow down conversion or cause memory issues depending on your device and available RAM.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Are images preserved when I convert to PDF?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes, images are embedded at their original resolution into the PDF. The tool scales them to fit within the selected page size while maintaining their aspect ratio and quality.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is the original formatting retained in the PDF?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Text formatting like line spacing and font size is preserved. Markdown headings, bold, italic, code blocks, and lists are rendered with structured CSS. HTML layouts retain their original styling and structure in the output PDF.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does this tool work offline?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes, once the page has loaded, all conversions happen entirely in your browser without any network connection. Your files are never uploaded to a server.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I combine multiple images into a single PDF?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes, you can drop or select multiple image files and they will be compiled into a single multi-page PDF. Each image is placed on its own page in the order you selected them.</p>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -113,47 +113,78 @@ const tool = tools.find(t => t.slug === 'pdf-secure')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Secure PDF</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Drop or browse a PDF file. Once loaded, select a tab for the security action you need.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>Encrypt:</strong> Set an open password (required to view) and/or a permissions password (required to change settings). Choose which permissions to allow — printing, copying, modifying, and annotating. Select an encryption algorithm (AES-256 is recommended).</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>Decrypt:</strong> Enter the password for a protected PDF. The output is an unprotected copy that opens without a password.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;"><strong>Sanitize:</strong> One-click removal of all document metadata, including title, author, dates, and producer information.</p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;">
-      {[
-        ['Encrypt', 'pdf-lib applies RC4 or AES encryption at save time. The user password controls access; the owner password controls permission changes. Permission flags are embedded in the PDF\'s encryption dictionary.'],
-        ['Decrypt', 'pdf-lib loads the encrypted PDF with the provided password, decrypts the content streams, and re-saves without encryption. The output is a standard, unprotected PDF.'],
-        ['Sanitize', 'All fields in the PDF\'s Document Information dictionary (Title, Author, Subject, Keywords, Producer, Creator) are cleared. The XMP metadata stream is overwritten on save, removing any embedded private information.'],
-      ].map(([label, desc]) => (
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">How to Use the Secure PDF Tool</h2>
+    <p class="seo-p">Protect your PDF documents with strong encryption, set access permissions, and download the secured file — all directly in your browser.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Upload PDF</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select or drag-and-drop the PDF file you want to protect. The file loads entirely in your browser — nothing is uploaded to any server.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Password</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter an open password (user password) to control who can view the document, and an optional permissions password (owner password) to restrict settings changes.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Permissions</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Toggle permissions for printing, copying text, modifying content, and annotating. Pick an encryption algorithm — AES-256 is recommended for maximum security.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Download Secured PDF</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click Encrypt and Download to save the encrypted PDF with your chosen passwords and permission restrictions applied.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Secure PDF Tool Works</h2>
+    <p class="seo-p">All encryption, decryption, and sanitization happens locally in your browser using pdf-lib — your files never leave your device.</p>
+    <h3 class="font-display seo-h3-sm">PDF Encryption Standards</h3>
+    <p class="seo-p">When you encrypt a PDF, the tool applies industry-standard <code class="inline-code">AES-256</code> or <code class="inline-code">RC4-128</code> encryption to the document's content streams. AES-256 uses a 256-bit key with the cipher-block-chaining mode, making it resistant to brute-force attacks. RC4-128 is a legacy stream cipher supported for backward compatibility with older PDF readers. Both algorithms encrypt the raw PDF data so the content is unreadable without the correct password.</p>
+    <h3 class="font-display seo-h3-sm">Permission Flags</h3>
+    <p class="seo-p">Each PDF stores a set of <code class="inline-code">permission flags</code> in its encryption dictionary. These bit-level flags control what actions are allowed: printing, copying text, modifying content, and adding annotations. When a user opens the PDF with only the user password, compliant PDF readers read these flags and enforce the restrictions. The owner password is required to change these permission settings or re-encrypt the document.</p>
+    <h3 class="font-display seo-h3-sm">Password Protection Levels</h3>
+    <p class="seo-p">A PDF can have two distinct passwords: the <code class="inline-code">user password</code> (also called the open password) which is required to open and view the document, and the <code class="inline-code">owner password</code> (also called the permissions password) which grants full control over the document including the ability to change permissions and remove encryption. If only the owner password is set, the PDF opens freely but permission restrictions are enforced.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Is my PDF uploaded to a server?', a: 'No. All processing happens entirely in your browser using pdf-lib. Your file never leaves your device.' },
-        { q: 'What encryption algorithm should I use?', a: 'AES-256 is recommended for maximum security. AES-128 is also secure. Use RC4-128 only if you need compatibility with very old PDF readers.' },
-        { q: 'Can I remove a password if I don\'t know it?', a: 'No. You must know the password to decrypt a PDF. This tool does not attempt to crack or brute-force passwords.' },
-        { q: 'What metadata is removed by sanitize?', a: 'Title, Author, Subject, Keywords, Producer, Creator, Creation Date, and Modification Date are all cleared. The XMP metadata stream is also overwritten on save.' },
-        { q: 'Will encryption work in all PDF readers?', a: 'AES-256 encryption is supported by all modern PDF readers. If you need compatibility with very old readers, use RC4-128. Note that permission restrictions are advisory — compliant readers enforce them, but some viewers may ignore them.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What encryption standard does this tool use?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool supports AES-256, AES-128, and RC4-128 encryption. AES-256 is the strongest option and is recommended for most use cases. RC4-128 is provided only for compatibility with very old PDF readers.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between an owner password and a user password?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The user password (open password) is required to open and view the PDF. The owner password (permissions password) controls access to permission settings and allows changing or removing encryption. If only the owner password is set, the PDF opens without a prompt but restrictions like print or copy bans are still enforced.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I remove a password from a PDF later?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Use the Decrypt tab and enter the correct password to produce an unprotected copy of the PDF. You must know the password — this tool does not attempt to crack or brute-force protected files.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Are there file size limits?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Since all processing happens in your browser's memory, very large files (hundreds of megabytes) may cause slow performance or run out of memory. For most PDFs under 100 MB, the tool works smoothly without issues.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does encryption affect the visual quality of my PDF?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. Encryption only scrambles the raw data streams — it does not alter fonts, images, layouts, or any visible content. When decrypted, the PDF renders exactly as it did before encryption.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Will the encrypted PDF work in all PDF readers?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">AES-256 encryption is supported by all modern PDF readers including Adobe Acrobat, Chrome, and Preview. If you need compatibility with very old readers, choose RC4-128. Note that permission restrictions are advisory — most compliant readers enforce them, but some viewers may ignore them.</p>
+        </div>
+      </div>
     </div>
   </div>
 

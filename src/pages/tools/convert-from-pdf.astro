@@ -131,46 +131,78 @@ const tool = tools.find(t => t.slug === 'convert-from-pdf')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Convert From PDF</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Drop or browse a PDF file. Once loaded, the page count is shown and the conversion options unlock. Select a tab for your desired output format.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>PDF → Image:</strong> Preview individual pages, choose PNG or JPG and resolution scale, then export. For multi-page PDFs, a ZIP archive is downloaded. <strong>PDF → Text:</strong> Choose native extraction (for PDFs with a text layer) or OCR mode for scanned documents.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;"><strong>PDF → HTML:</strong> Converts the PDF text layer into a structured HTML file you can copy or download.</p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;">
-      {[
-        ['PDF → Image', 'PDF.js renders each page to a <canvas> element at your chosen scale factor. The canvas is exported as a PNG or JPG data URL and downloaded. Multi-page exports are bundled in a ZIP via JSZip.'],
-        ['PDF → Text (Native)', 'PDF.js reads the embedded text layer of the PDF page, returning the text content without any image processing. This is fast and accurate for PDFs that were created digitally.'],
-        ['PDF → Text (OCR)', 'Tesseract.js (loaded on demand) performs optical character recognition on a canvas render of each page. This works on scanned PDFs but takes longer and may have lower accuracy.'],
-        ['PDF → HTML', 'PDF.js extracts the text content and font information per page, wrapping each block in styled <div> elements. The output is a self-contained HTML file approximating the document structure.'],
-      ].map(([label, desc]) => (
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">How to Use the PDF Converter</h2>
+    <p class="seo-p">Convert PDF documents into images, text, or HTML files directly in your browser.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Upload PDF File</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Drag and drop your PDF onto the upload area or click the browse button to select a file from your device.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Output Format</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose between PDF to Image, PDF to Text, or PDF to HTML using the tab buttons.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Configure Extraction</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Set your preferred page range, image format and scale, or OCR mode for scanned documents.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Download Results</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Export and save the extracted content as individual images, a text file, or an HTML document.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the PDF Converter Works</h2>
+    <p class="seo-p">The tool leverages client-side libraries to parse PDF structure and extract content without server uploads.</p>
+    <h3 class="font-display seo-h3-sm">PDF Text Extraction</h3>
+    <p class="seo-p">PDF.js reads the <code class="inline-code">text layer</code> embedded in each page, returning the raw text content. This method is fast and accurate for digitally created PDFs.</p>
+    <h3 class="font-display seo-h3-sm">Image Extraction</h3>
+    <p class="seo-p">Each page is rendered to a <code class="inline-code">canvas</code> element at your chosen scale, then exported as a PNG or JPG image. Multi-page exports are bundled into a ZIP archive.</p>
+    <h3 class="font-display seo-h3-sm">OCR Processing</h3>
+    <p class="seo-p">For scanned PDFs, Tesseract.js performs optical character recognition on the rendered page image, converting visual text into machine-readable characters.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Is my PDF uploaded to a server?', a: 'No. All conversion happens in your browser using PDF.js and Tesseract.js. Your file never leaves your device.' },
-        { q: 'What resolution are the exported images?', a: 'The scale factor controls output resolution. 1× is 72 dpi (screen), 2× is 144 dpi (good for reading), and 3× is 216 dpi (print-ready). Higher scale means larger file sizes.' },
-        { q: 'My PDF text extraction returns nothing — why?', a: 'Scanned PDFs contain images of text, not actual text data. Switch to OCR mode, which uses Tesseract.js to recognise text from the rendered page image.' },
-        { q: 'How accurate is the OCR?', a: 'Accuracy depends on scan quality, font clarity, and language. Clean, well-lit scans of standard fonts achieve very high accuracy. Handwriting, low resolution, or unusual fonts will reduce accuracy.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Are scanned PDFs supported?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Enable OCR mode in the text extraction tab, and the tool will use Tesseract.js to recognize text from scanned pages.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What about encrypted PDFs?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Password-protected PDFs can be opened if you provide the correct password when prompted. Without the password, the file cannot be processed.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does formatting get preserved?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Text extraction returns plain text without styling. HTML conversion preserves basic structure and font sizes but may not match the original layout exactly.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the maximum page count?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard page limit. Processing time increases with page count and chosen output format. Very large files may slow down your browser.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Are tables extracted correctly?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Tables are extracted as continuous text. The structure may not be preserved in text mode. HTML mode attempts to maintain block-level elements but complex tables may lose alignment.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I extract only specific pages?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. In each output format you can choose to process all pages or only the currently previewed page before exporting.</p>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -100,60 +100,78 @@ const tool = tools.find(t => t.slug === 'random-number-generator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Random Number Generator</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>minimum</strong> and <strong>maximum</strong> value to define your range, then click <strong>Generate Number</strong>. The tool produces a truly random integer between those two bounds (inclusive). Use the <em>Quick</em> chips to instantly set common ranges like 1–100 or 1–6 for dice rolls.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Your generated numbers appear with a rolling animation and are added to the <strong>History</strong> section below. Click <strong>Copy</strong> to save the latest number to your clipboard, or <strong>Again</strong> to generate a new one without changing your range.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Ideal for: raffle draws, giveaway winners, classroom sampling, statistical analysis, picking a random page, selecting a lottery number, or any situation where you need an impartial random integer.
-    </p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How it works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Randomness</span><span class="info-value">Uses <code>crypto.getRandomValues()</code> for cryptographically secure random integers</span></div>
-      <div class="info-row"><span class="info-label">Range</span><span class="info-value">Inclusive — both min and max values can appear as results</span></div>
-      <div class="info-row"><span class="info-label">Animation</span><span class="info-value">2.5-second slot-machine roll — each digit locks left to right with blur clearing</span></div>
-      <div class="info-row"><span class="info-label">Privacy</span><span class="info-value">Everything runs in your browser — no data is stored or transmitted</span></div>
+    <h2 class="font-display seo-h2">How to Use the Random Number Generator</h2>
+    <p class="seo-p">Generate a truly random integer within any range in just a few clicks.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Range</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Define your minimum and maximum values to establish the bounds. Every integer between these two values is a possible outcome.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Count</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select how many numbers you need in a single generation. You can produce one result at a time or batch-generate a larger set for sampling or analysis.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Toggle Unique</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enable unique mode to prevent duplicate numbers from appearing in your results. Disable it if you want each draw to be fully independent and allow repeats.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Generate &amp; Copy</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click Generate to produce your random numbers, then use the Copy button to save them to your clipboard. Hit Again to instantly create a new batch.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Random Number Generator Works</h2>
+    <p class="seo-p">Behind the simple interface lies a robust randomness engine built on modern browser APIs.</p>
+    <h3 class="font-display seo-h3-sm">Randomness Source</h3>
+    <p class="seo-p">This tool uses <code class="inline-code">crypto.getRandomValues()</code> rather than <code class="inline-code">Math.random()</code>. The Web Crypto API draws entropy directly from your operating system's hardware-level sources, producing numbers that are cryptographically secure. <code class="inline-code">Math.random()</code> uses a deterministic algorithm and is unsuitable for any application where unpredictability matters.</p>
+    <h3 class="font-display seo-h3-sm">Uniform Distribution</h3>
+    <p class="seo-p">To guarantee equal probability for every integer in your range, the generator rejects biased samples. It calculates a rejection threshold based on the range size, discards any raw value that would introduce bias, and redraws until a fair result is obtained. This ensures each number truly has a one-in-N chance of being selected.</p>
+    <h3 class="font-display seo-h3-sm">Uniqueness Enforcement</h3>
+    <p class="seo-p">When unique mode is enabled, the generator maintains a set of already-emitted values. After each draw, it checks whether the result has already appeared. If a duplicate is detected, the value is discarded and a new random draw occurs immediately. This cycle repeats until the requested count of distinct numbers is fulfilled.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        {
-          q: "Is the random number truly random?",
-          a: "Yes. It uses the Web Crypto API (crypto.getRandomValues) which produces cryptographically secure random numbers — the same quality used in encryption and security applications. Each call draws from the operating system's entropy pool."
-        },
-        {
-          q: "Are both the min and max values included in the range?",
-          a: "Yes. The range is fully inclusive — if you set min=1 and max=100, both 1 and 100 are possible results. Every integer in the range has an equal probability of being selected."
-        },
-        {
-          q: "What is the maximum range I can use?",
-          a: "The tool works with any positive integer range. Very large ranges (billions) work fine mathematically, though the rolling animation duration stays the same. The practical limit is your browser's integer precision (2^53 - 1)."
-        },
-        {
-          q: "Can I use this for giveaways or raffles?",
-          a: "Absolutely. Assign each participant a number and use this tool to draw a winner. For high-stakes draws, screen-record the generation so participants can verify the result was fair."
-        },
-        {
-          q: "Does my generation history get saved?",
-          a: "No. All data stays in your browser's memory. If you refresh the page, the history resets. Nothing is stored on any server."
-        }
-      ].map(item => (
-        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-          <h3 itemprop="name" style="font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:700; color:var(--text-primary); margin:0 0 0.35rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.85rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Is this random number generator cryptographically secure?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. It relies on the Web Crypto API, which pulls entropy from your operating system's hardware random number generator. This is the same level of randomness used in TLS certificates, encryption keys, and security tokens.</p>
         </div>
-      ))}
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Can I generate numbers with repeats?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Absolutely. Leave unique mode disabled and the tool will draw each number independently. The same value can appear multiple times, just like rolling a die several times in a row.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">What is the maximum count I can generate at once?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool can produce up to 1,000 numbers per generation. For very large batches in unique mode, the range must be at least as large as the requested count to avoid an impossible constraint.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Does the range include both the minimum and maximum values?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes, the range is fully inclusive. If you set min to 1 and max to 100, both 1 and 100 are possible results. Every integer in between also has an equal chance of being selected.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Can I use this for lottery or raffle draws?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Assign each participant a number and generate a winner using this tool. For high-stakes draws, screen-record the generation to provide transparent proof that the selection was unbiased.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Is my data stored on any server?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. Every calculation happens locally in your browser. Nothing is transmitted to a server, and refreshing the page clears all generated results and history.</p>
+        </div>
+      </div>
     </div>
   </div>
 

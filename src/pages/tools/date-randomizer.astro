@@ -112,60 +112,78 @@ const tool = tools.find(t => t.slug === 'date-randomizer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Date Randomizer</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Set a <strong>start date</strong> and <strong>end date</strong> to define your range, then click <strong>Pick Random Date</strong>. The tool selects a completely random day within that range. Toggle <strong>Include time</strong> to also generate a random hour and minute.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Use the <em>Quick</em> chips to instantly set common ranges like "This Year" or "Historical (1900–2000)". The result is displayed in a split-flap animation and shown in multiple date formats — click any format to copy it.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Ideal for: writers creating historical settings, developers generating dummy data, couples picking a random weekend for a trip, or any situation where you need an impartial random date.
-    </p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How it works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Randomness</span><span class="info-value">Uses <code>crypto.getRandomValues()</code> for cryptographically secure random selection</span></div>
-      <div class="info-row"><span class="info-label">Range</span><span class="info-value">Inclusive — both start and end dates can appear as results</span></div>
-      <div class="info-row"><span class="info-label">Animation</span><span class="info-value">Split-flap display — each date component cycles through values and locks left to right</span></div>
-      <div class="info-row"><span class="info-label">Privacy</span><span class="info-value">Everything runs in your browser — no data is stored or transmitted</span></div>
+    <h2 class="font-display seo-h2">How to Use the Date Randomizer</h2>
+    <p class="seo-p">Generate random dates within any range with just a few clicks. Define your parameters and let the tool pick a completely random date for you.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Date Range</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Define a start date and end date to establish the boundaries for your random selection. Use the quick preset chips to jump to common ranges like This Year or Historical 1900 to 2000.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Format</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select whether you want just a date or a date with time. Toggle the Include Time checkbox to also generate a random hour and minute, and pick between 24-hour or AM/PM display.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Count</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Each click generates one random date. Use the Again button to quickly generate additional dates within the same range, and browse your recent picks in the History section.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Results</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Your random date is shown in multiple formats simultaneously — Literary, US, International, ISO 8601, DD/MM/YYYY, and with day name. Click any format or use the Copy button to grab it.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Date Randomizer Works</h2>
+    <p class="seo-p">The Date Randomizer combines secure randomness with date math to produce unbiased results across any calendar range.</p>
+    <h3 class="font-display seo-h3-sm">Date Range Parsing</h3>
+    <p class="seo-p">When you enter a start date and end date, the tool parses both values into JavaScript <code class="inline-code">Date</code> objects and validates that the start is strictly before the end. Invalid or missing dates trigger an error message before any generation occurs.</p>
+    <h3 class="font-display seo-h3-sm">Random Date Selection</h3>
+    <p class="seo-p">The tool calculates the total number of days in your range and uses the Web Crypto API via <code class="inline-code">crypto.getRandomValues()</code> to pick a uniformly random day index. This ensures every day in the range has an equal probability of being selected, with no bias toward shorter or longer months.</p>
+    <h3 class="font-display seo-h3-sm">Format Rendering</h3>
+    <p class="seo-p">Once a date is chosen, it is rendered into six common formats: Literary (the 15th of March, 2025), US (March 15, 2025), International (15 March 2025), ISO 8601 (2025-03-15), DD/MM/YYYY (15/03/2025), and with day name (Saturday, March 15, 2025). If time is included, a random hour and minute are appended to each format.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        {
-          q: "Is the random date truly random?",
-          a: "Yes. It uses the Web Crypto API (crypto.getRandomValues) which produces cryptographically secure random numbers. Every day in your selected range has an equal probability of being chosen."
-        },
-        {
-          q: "Can I include a specific time?",
-          a: "Yes. Toggle the 'Include time' checkbox and the tool will also generate a random hour (0–23) and minute (0–59). The time is displayed alongside the date in all copy formats."
-        },
-        {
-          q: "What date range can I use?",
-          a: "Any range where the start date is before the end date. Very large ranges (thousands of years) work fine. The practical limit is your browser's Date object precision."
-        },
-        {
-          q: "Can I use this for generating dummy data?",
-          a: "Absolutely. Developers frequently need random dates for testing databases, filling spreadsheets, or populating test environments. The ISO 8601 format is especially useful for this."
-        },
-        {
-          q: "Does my generation history get saved?",
-          a: "No. All data stays in your browser's memory. If you refresh the page, the history resets. Nothing is stored on any server."
-        }
-      ].map(item => (
-        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-          <h3 itemprop="name" style="font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:700; color:var(--text-primary); margin:0 0 0.35rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.85rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Can I include times with the random dates?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Toggle the Include Time checkbox and the tool will generate a random hour (0 to 23) and minute (0 to 59) alongside the date. You can choose between 24-hour or AM/PM display format for the time component.</p>
         </div>
-      ))}
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Are leap years handled correctly?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Absolutely. The tool uses the native JavaScript Date object which correctly accounts for leap years, varying month lengths, and century leap year rules. February 29 will appear as a valid result only when the range includes a leap year.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">What date formats are available?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Results are displayed in six formats: Literary, US, International, ISO 8601, DD/MM/YYYY, and with day name. Each format is shown with a one-click copy button, so you can grab the exact style you need without manual reformatting.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">What is the maximum date range I can use?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Any range where the start date precedes the end date will work. Practically, the limit is your browser's Date object precision, which handles ranges spanning thousands of years without issue. Very large ranges still produce uniform random results.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Can I exclude weekends from the results?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The current version does not have a built-in weekend exclusion filter. However, you can use the Random Weekend quick preset to specifically target Saturdays and Sundays, or generate multiple dates and manually skip any that fall on a weekend.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Is my data stored on a server?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. Everything runs entirely in your browser. Generated dates, history, and any selections are kept in local memory only. Refreshing the page clears all data, and nothing is ever transmitted to an external server.</p>
+        </div>
+      </div>
     </div>
   </div>
 

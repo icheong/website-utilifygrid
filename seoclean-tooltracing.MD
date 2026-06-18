@@ -108,8 +108,6 @@ thermal-resistance-converter
 thermal-conductivity-converter
 specific-heat-capacity-converter
 heat-density-converter
-
-## TODO
 heat-flux-density-converter
 heat-transfer-coefficient-converter
 convert-to-pdf
@@ -120,6 +118,8 @@ coin-flipper
 random-number-generator
 alphabet-randomizer
 date-randomizer
+
+## TODO
 dice-roll-simulator
 json-prettifier
 json-path-query-evaluator

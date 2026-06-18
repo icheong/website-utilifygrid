@@ -34,77 +34,78 @@ const tool = tools.find(t => t.slug === 'heat-flux-density-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Heat Flux Density Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other heat flux density units update instantly — no buttons to click.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      This converter handles <strong>heat flux density</strong> — the rate of heat energy transfer through a surface per unit area. It is used in heat transfer engineering, solar energy calculations, and thermal system design.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Heat Flux Density Converter</h2>
+    <p class="seo-p">Enter a heat flux value in any supported unit and see the equivalent in all other units instantly. This tool handles conversions across W/m², BTU/h·ft², kcal/h·m², cal/s·cm², and kW/m².</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Heat Flux Value</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Type any positive numeric value into the input field. The converter accepts decimals and scientific notation for precision engineering calculations.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Unit</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the unit you are converting from using the dropdown. Supported units include W/m², kW/m², BTU/(h·ft²), cal/(s·cm²), cal/(min·cm²), cal/(h·cm²), W/cm², and ch/ft².</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">View All Conversions</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">All other heat flux density units update in real time as you type. Results appear in a clean grid so you can compare values across unit systems at a glance.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button next to any result to copy that value to your clipboard. Paste it directly into reports, code, specifications, or thermal design documents.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How heat flux density conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions go through <strong>W/m²</strong> as the base unit. Each unit has a fixed conversion factor:
-    </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 kW/m²          = 1000 W/m²
-1 BTU/(h·ft²)    = 3.15248 W/m²
-1 cal/(s·cm²)    = 41840 W/m²
-1 cal/(min·cm²)  = 697.333 W/m²
-1 cal/(h·cm²)    = 11.6222 W/m²
-1 W/cm²          = 10000 W/m²
-1 ch/ft²         = 13562.5 W/m²
-
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      Heat flux (also called thermal flux) measures the rate of heat energy flow through a surface. The solar constant is about 1361 W/m² (the heat flux from the Sun at Earth's orbit). A typical household radiator might produce 500-2000 W/m². All calculations run in your browser.
-    </p>
+    <h2 class="font-display seo-h2">How the Heat Flux Density Converter Works</h2>
+    <p class="seo-p">Every conversion uses a simple factor-based approach, normalizing all units through a common base to ensure accurate results across imperial, metric, and CGS systems.</p>
+    <h3 class="font-display seo-h3-sm">Heat Flux Density Units</h3>
+    <p class="seo-p">Heat flux density measures the rate of thermal energy transfer per unit area, expressed in watts per square meter <code class="inline-code">W/m²</code> as the SI standard. Other common units include <code class="inline-code">BTU/(h·ft²)</code> for imperial systems, <code class="inline-code">cal/(s·cm²)</code> for CGS systems, and <code class="inline-code">kW/m²</code> for high-power applications. Each unit represents the same physical quantity at different scales.</p>
+    <h3 class="font-display seo-h3-sm">Conversion Factor Mathematics</h3>
+    <p class="seo-p">The converter multiplies your input by the <code class="inline-code">fromFactor</code> of the source unit and divides by the <code class="inline-code">toFactor</code> of the target unit. For example, converting 1 BTU/(h·ft²) to W/m² means multiplying by 3.15248. All factors are defined relative to <code class="inline-code">W/m²</code> as the base unit, so the formula <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code> works for any pair of units in the list.</p>
+    <h3 class="font-display seo-h3-sm">Engineering Applications</h3>
+    <p class="seo-p">Engineers use heat flux density values when designing solar panels (typical peak output around 1000 W/m²), sizing industrial heat exchangers, and modeling thermal loads on building envelopes. The solar constant at Earth's orbit is approximately 1361 W/m², while a household radiator typically produces 500–2000 W/m². All calculations in this tool run instantly in your browser with no server calls.</p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is heat flux density?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Heat flux density is the rate of heat energy transfer through a surface per unit area, measured in W/m² (watts per square meter). It describes how much thermal energy passes through each square meter of a surface per second. Higher values indicate more intense heat transfer." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the solar heat flux on Earth?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The solar constant (heat flux from the Sun at Earth's orbit) is about 1361 W/m². At Earth's surface, after atmospheric absorption, peak solar irradiance is about 1000 W/m² on a clear day. This value is critical for solar energy system design." }
-        },
-        {
-          "@type": "Question",
-          "name": "How does heat flux differ from heat flux density?",
-          "acceptedAnswer": { "@type": "Answer", "text": "In practice, 'heat flux' and 'heat flux density' are often used interchangeably — both refer to energy per unit area per unit time (W/m²). Strictly speaking, 'heat flux' could mean total energy flow (W), while 'heat flux density' means flow per area (W/m²). This converter handles the density (per-area) form." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is heat flux density?', a: 'Heat flux density is the rate of heat energy transfer through a surface per unit area, measured in W/m² (watts per square meter). It describes how much thermal energy passes through each square meter of a surface per second. Higher values indicate more intense heat transfer.' },
-        { q: 'What is the solar heat flux on Earth?', a: 'The solar constant (heat flux from the Sun at Earth\'s orbit) is about 1361 W/m². At Earth\'s surface, after atmospheric absorption, peak solar irradiance is about 1000 W/m² on a clear day. This value is critical for solar energy system design.' },
-        { q: 'How does heat flux differ from heat flux density?', a: 'In practice, \'heat flux\' and \'heat flux density\' are often used interchangeably — both refer to energy per unit area per unit time (W/m²). Strictly speaking, \'heat flux\' could mean total energy flow (W), while \'heat flux density\' means flow per area (W/m²). This converter handles the density (per-area) form.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between heat flux and heat flux density?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">In practice, the terms are often used interchangeably, but strictly speaking heat flux refers to total energy flow in watts, while heat flux density refers to energy flow per unit area in W/m². This converter handles the per-area (density) form, which is the standard measure used in thermal engineering and solar energy calculations.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What are typical heat flux density values for solar radiation?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The solar constant at Earth's orbit is approximately 1361 W/m². At Earth's surface, peak solar irradiance on a clear day reaches about 1000 W/m², which is the standard test condition (STC) rating for photovoltaic panels. On cloudy days, solar heat flux can drop to 100–300 W/m².</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does convection heat flux differ from radiation heat flux?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Convection heat flux involves energy transfer through fluid motion (air, water) and depends on temperature difference and flow velocity. Radiation heat flux is electromagnetic energy transfer that requires no medium and scales with the fourth power of absolute temperature. Both are measured in W/m² and can occur simultaneously on the same surface.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why does this converter use W/m² as the base unit?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">W/m² is the SI-derived unit for heat flux density and the international standard in engineering, physics, and energy industries. Using it as the base ensures all conversions are traceable to a single reference, minimizing rounding errors and maintaining consistency across metric, imperial, and CGS unit systems.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What heat flux density values are typical for household radiators?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A typical household radiator produces a heat flux density of 500–2000 W/m² depending on its surface temperature and design. Industrial heat exchangers can reach 10,000–100,000 W/m², while high-performance electronics cooling systems may dissipate heat at fluxes exceeding 100 W/cm² (1,000,000 W/m²).</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I convert between imperial and metric heat flux units?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes, this converter seamlessly handles conversions between imperial units like BTU/(h·ft²) and metric units like W/m² and kW/m². It also supports CGS units such as cal/(s·cm²) and the French horsepower unit ch/ft², making it useful for international engineering projects and cross-system documentation.</p>
+        </div>
+      </div>
     </div>
   </div>
 

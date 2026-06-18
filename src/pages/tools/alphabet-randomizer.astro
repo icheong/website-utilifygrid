@@ -112,60 +112,78 @@ const tool = tools.find(t => t.slug === 'alphabet-randomizer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Alphabet Randomizer</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Choose how many letters you want (1–10) using the count input or the quick-select chips. Optionally toggle off letters you want to exclude — Q, X, and Z are excluded by default. Click <strong>Generate Letter</strong> and watch the slots spin.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Your generated letters appear with a rolling animation and are saved to the <strong>History</strong> section. Click <strong>Copy</strong> to grab the result, or <strong>Again</strong> to roll fresh letters with the same settings.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Ideal for: Scattergories, classroom vocabulary games, creative writing prompts, word-of-the-day picks, team name generators, or any situation where you need a random letter.
-    </p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.875rem;">How it works</h2>
-    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Randomness</span><span class="info-value">Uses <code>crypto.getRandomValues()</code> for cryptographically secure random selection</span></div>
-      <div class="info-row"><span class="info-label">Pool</span><span class="info-value">Starts with A–Z; excluded letters are removed before selection</span></div>
-      <div class="info-row"><span class="info-label">Animation</span><span class="info-value">2.5-second slot-machine roll — each letter slot locks left to right with blur clearing</span></div>
-      <div class="info-row"><span class="info-label">Privacy</span><span class="info-value">Everything runs in your browser — no data is stored or transmitted</span></div>
+    <h2 class="font-display seo-h2">How to Use the Alphabet Randomizer</h2>
+    <p class="seo-p">Generate random letters from the alphabet with full control over exclusions and output length. Perfect for games, prompts, and classroom activities.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Character Set</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select uppercase letters, toggle individual characters on or off, or use quick filters to exclude vowels or consonants. Letters marked with a strikethrough are removed from the pool.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Set Length</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter how many characters to generate using the number input or the quick-select chips. You can generate between 1 and 10 characters per roll.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Configure Options</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Toggle the exclusion buttons to remove vowels, consonants, or specific letters. The tool enforces a minimum pool of 3 characters to ensure valid results.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">After generation, click the Copy button to save the random string to your clipboard. Use Again to re-roll with the same settings instantly.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Alphabet Randomizer Works</h2>
+    <p class="seo-p">The tool builds a pool of available characters, selects randomly from that pool using cryptographic randomness, and applies exclusion rules to filter the result.</p>
+    <h3 class="font-display seo-h3-sm">Character Pool Construction</h3>
+    <p class="seo-p">The randomizer starts with the full set of 26 uppercase letters (A through Z). When you toggle exclusions, those characters are removed from the active pool. A minimum of 3 characters is required before generation is allowed, preventing degenerate results.</p>
+    <h3 class="font-display seo-h3-sm">Random Selection Algorithm</h3>
+    <p class="seo-p">Each character is chosen using <code class="inline-code">crypto.getRandomValues()</code>, which provides cryptographically secure random integers. The tool uses rejection sampling to avoid modulo bias, ensuring every character in the pool has an equal probability of being selected.</p>
+    <h3 class="font-display seo-h3-sm">Exclusion Rules</h3>
+    <p class="seo-p">Quick filters let you exclude vowels (A, E, I, O, U) or consonants in a single click. You can also toggle individual letters. Excluded characters are completely removed from the pool before selection, so they never appear in the output.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        {
-          q: "Is the random letter truly random?",
-          a: "Yes. It uses the Web Crypto API (crypto.getRandomValues) which produces cryptographically secure random numbers — the same quality used in encryption and security applications. Each letter in the pool has an equal probability of being selected."
-        },
-        {
-          q: "Why are Q, X, and Z excluded by default?",
-          a: "These are the least common letters in English. Excluding them by default makes the tool more useful for games like Scattergories where rare letters are harder to work with. You can toggle them back on anytime."
-        },
-        {
-          q: "Can I pick more than one letter at a time?",
-          a: "Yes. Set the count to any value from 1 to 10. Each letter slot is independently randomized from the same pool, so you may get duplicates — just like drawing letters with replacement."
-        },
-        {
-          q: "Can I use this for classroom activities?",
-          a: "Absolutely. It's perfect for vocabulary games, spelling bees, phonics exercises, or assigning random starting letters for creative writing. The exclusion toggles let you focus on specific letter groups."
-        },
-        {
-          q: "Does my generation history get saved?",
-          a: "No. All data stays in your browser's memory. If you refresh the page, the history resets. Nothing is stored on any server."
-        }
-      ].map(item => (
-        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-          <h3 itemprop="name" style="font-family:'Sora',sans-serif; font-size:0.9rem; font-weight:700; color:var(--text-primary); margin:0 0 0.35rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.85rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Can I include special characters or digits?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">This tool focuses on uppercase letters from A to Z. It does not support digits, lowercase letters, or special characters. If you need a broader character set, consider using a general-purpose random string generator instead.</p>
         </div>
-      ))}
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">How do I generate pronounceable letter combinations?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Generate 2 to 4 characters and exclude vowels to get consonant clusters, or exclude consonants to get vowel sequences. By experimenting with exclusions, you can create combinations that mimic syllable-like patterns suitable for placeholder names or codes.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">What is the maximum number of characters I can generate?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">You can generate up to 10 characters in a single roll. The tool enforces this limit to keep the animation smooth and the interface responsive. Run the generator multiple times for longer strings.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Is this suitable for generating passwords?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">While the randomness source is cryptographically secure, uppercase-only letters provide limited entropy. For strong passwords, you should include lowercase letters, digits, and special symbols. Use this tool for games, codes, and educational purposes rather than security-critical applications.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Why do I need at least 3 characters in the pool?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A minimum pool size prevents trivially repetitive or non-random results. When too many characters are excluded, the output loses its usefulness. The tool requires at least 3 remaining characters before it allows you to generate.</p>
+        </div>
+      </div>
+      <div class="surface-2 border-theme seo-faq-card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <h3 itemprop="name" class="seo-faq-q">Can the same letter appear more than once in a single roll?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Each character position is independently randomized from the same pool, so duplicates can occur. This mirrors drawing letters with replacement, which is standard behavior for random letter generators used in games and activities.</p>
+        </div>
+      </div>
     </div>
   </div>
 

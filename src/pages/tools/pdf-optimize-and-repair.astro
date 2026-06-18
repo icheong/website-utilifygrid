@@ -107,49 +107,76 @@ const tool = tools.find(t => t.slug === 'pdf-optimize-and-repair')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use Optimize &amp; Repair PDF</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">Drop or browse a PDF file. Once loaded, select a tab for the action you need.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>Compress:</strong> Choose Extreme, Recommended, or Low compression. Extreme strips all metadata and removes non-essential objects for maximum size reduction. Recommended balances quality and size. Low preserves metadata and image quality.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;"><strong>Repair:</strong> Click Repair to re-serialize the PDF structure, fixing broken cross-references and corrupted objects.</p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;"><strong>Flatten:</strong> Removes all form fields and annotations, merging their visual content into the page. <strong>Metadata:</strong> View and edit the document's Title, Author, Subject, and Keywords fields.</p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How it works</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;">
-      {[
-        ['Compress', 'pdf-lib re-serializes the PDF using object streams, which deduplicates and compresses internal structures. Metadata is stripped based on the chosen level to further reduce file size.'],
-        ['Repair', 'The PDF is loaded with error-tolerant parsing via pdf-lib, then re-saved with fresh cross-reference tables and corrected object streams, fixing many common corruption issues.'],
-        ['Flatten', 'pdf-lib removes all annotation widgets (form fields, sticky notes, highlights) from each page\'s annotation array and strips the document\'s AcroForm catalog entry.'],
-        ['Metadata', 'Reads and writes the PDF\'s document information dictionary (Title, Author, Subject, Keywords) using pdf-lib\'s built-in metadata API.'],
-      ].map(([label, desc]) => (
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:0.625rem;padding:0.875rem 1rem;">
-          <div style="font-size:0.82rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem;">{label}</div>
-          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0;">{desc}</p>
-        </div>
-      ))}
+    <h2 class="font-display seo-h2">How to Use the PDF Optimize and Repair Tool</h2>
+    <p class="seo-p">Compress large PDFs, fix corrupted files, flatten forms, or update metadata — all processing runs entirely in your browser.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Upload PDF</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Drag and drop or browse to select the PDF you want to optimize or repair. The file loads directly into your browser — nothing is uploaded.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Optimization Level</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select a compression tier — Low for minimal changes, Recommended for a balanced result, or Extreme for maximum size reduction.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Run Optimization</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the action button for your chosen mode — Compress, Repair, Flatten, or Save Metadata — to process the document.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Download Optimized PDF</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Save the reduced or fixed file to your device. You can see the original and new file sizes side by side.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the PDF Optimize and Repair Tool Works</h2>
+    <p class="seo-p">The tool rebuilds PDF internals using pdf-lib to shrink file size or restore structural integrity.</p>
+    <h3 class="font-display seo-h3-sm">Compression Techniques</h3>
+    <p class="seo-p">During compression the PDF is re-serialized with <code class="inline-code">object streams</code>, which deduplicate shared resources and apply <code class="inline-code">zlib</code> stream compression. Image-heavy documents benefit from recompression, while text-heavy files gain from font subsetting and removal of unused objects. The Extreme level additionally strips all metadata — Title, Author, Producer — and discards non-essential entries.</p>
+    <h3 class="font-display seo-h3-sm">Repair Algorithm</h3>
+    <p class="seo-p">The repair mode loads the file with error-tolerant parsing, then writes a fresh PDF from scratch. This rebuilds the <code class="inline-code">cross-reference table</code>, re-indexes every object, and corrects malformed streams. Broken links between pages and their content streams are resolved, producing a valid, standards-compliant document.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'Is my PDF uploaded to a server?', a: 'No. All processing happens entirely in your browser using pdf-lib. Your file never leaves your device.' },
-        { q: 'How much smaller will my PDF be?', a: 'It depends on the content. Text-heavy PDFs see modest gains (10–20%) from structural compression. Image-heavy PDFs can see larger reductions depending on the compression level chosen.' },
-        { q: 'Will compression reduce image quality?', a: 'Extreme and Recommended modes strip metadata and remove non-essential objects but do not re-encode images. Low mode preserves all metadata. None of the modes alter embedded image data directly.' },
-        { q: 'Can I undo flatten?', a: 'No. Flattening is permanent — form fields and annotations are removed from the document structure. Always keep a backup of the original PDF.' },
-        { q: 'What metadata fields can I edit?', a: 'Title, Author, Subject, and Keywords. These are stored in the PDF\'s document information dictionary and are visible in most PDF readers.' },
-        { q: 'Will repair fix my corrupted PDF?', a: 'Repair works by re-serializing the document structure, which fixes many common issues like broken cross-reference tables and malformed objects. However, severely damaged files may not be recoverable.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How much can file size be reduced?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Reduction varies by content. Text-heavy PDFs typically shrink 10–20% through structural compression, while image-heavy documents can see 30–50% or more at the Extreme level.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Will compression decrease image quality?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool does not re-encode embedded images. Compression comes from deduplication, stream-level zlib, and metadata removal. Visual quality remains unchanged at all levels.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can it fix corrupted PDFs?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The repair mode rebuilds broken cross-reference tables, re-indexes objects, and corrects malformed streams. Severely damaged files may not be fully recoverable, but most common corruption issues are fixed.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Are bookmarks preserved during compression?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Bookmarks and the document outline are preserved at the Recommended and Low levels. The Extreme level strips all metadata and non-essential objects, which may remove bookmarks.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does it support encrypted PDFs?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The repair mode can load password-protected files using error-tolerant parsing. Compression and flatten require the file to be unencrypted, so remove the password first if possible.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is my PDF uploaded to a server?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No. Every operation runs entirely in your browser using pdf-lib. Your file never leaves your device, ensuring complete privacy.</p>
+        </div>
+      </div>
     </div>
   </div>
 

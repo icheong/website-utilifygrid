@@ -134,41 +134,78 @@ const kangarooHtml = `<svg xmlns="http://www.w3.org/2000/svg" width="56" height=
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.75rem;">How to use the Coin Flipper</h2>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem;">
-      Click the <strong>Flip Coin</strong> button (or press <strong>Space</strong>) to toss the coin. The coin spins in 3D and lands on either <strong>Heads</strong> or <strong>Tails</strong> with equal probability.
-    </p>
-    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;">
-      Your flip history is shown below the coin. Each flip is recorded with a running tally of heads vs tails so you can track results over time.
-    </p>
-  </div>
-
-  <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:0.875rem;">How it works</h2>
-    <div style="display:flex;flex-direction:column;gap:0.5rem;">
-      <div class="info-row"><span class="info-label">Randomness</span><span class="info-value">Uses <code>crypto.getRandomValues()</code> for cryptographically secure randomness</span></div>
-      <div class="info-row"><span class="info-label">Probability</span><span class="info-value">Exactly 50 / 50 — each flip is independent</span></div>
-      <div class="info-row"><span class="info-label">Animation</span><span class="info-value">CSS 3D transforms simulate a physical coin toss with realistic spin</span></div>
-      <div class="info-row"><span class="info-label">Privacy</span><span class="info-value">Everything runs in your browser — no data is stored or transmitted</span></div>
+    <h2 class="font-display seo-h2">How to Use the Coin Flipper</h2>
+    <p class="seo-p">Flip a virtual coin instantly to make fair, random decisions between two options.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Click to Flip</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Press the Flip Coin button or tap the coin itself to trigger a toss. You can also press Space on your keyboard.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">View Animation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Watch the coin spin in 3D with a smooth, realistic flip animation before it lands on Heads or Tails.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Track History</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See a running count of Heads versus Tails below the coin. Each flip is recorded with a percentage breakdown.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Reset Counter</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Clear button in the history section to wipe all recorded flips and start tracking fresh.</p>
+      </div>
     </div>
   </div>
 
+  <div slot="how-it-works">
+    <h2 class="font-display seo-h2">How the Coin Flipper Works</h2>
+    <p class="seo-p">Under the hood, this tool combines secure randomness with smooth CSS-based animation to simulate a real coin toss.</p>
+    <h3 class="font-display seo-h3-sm">Random Number Generation</h3>
+    <p class="seo-p">Every flip uses the browser's <code class="inline-code">crypto.getRandomValues()</code> API, which produces cryptographically secure random bytes. The value is reduced modulo 2 to yield a perfectly balanced heads-or-tails result with no predictable patterns.</p>
+    <h3 class="font-display seo-h3-sm">Fairness Guarantee</h3>
+    <p class="seo-p">Because the randomness comes from a cryptographically secure source, each flip has exactly a <code class="inline-code">50/50</code> probability. No outcome is favoured, and previous flips have zero influence on future ones.</p>
+    <h3 class="font-display seo-h3-sm">Animation Physics</h3>
+    <p class="seo-p">The coin element rotates around its X-axis using <code class="inline-code">CSS 3D transforms</code>. A randomised spin count and an easing curve mimic the deceleration of a real toss, while a shadow beneath the coin grows and shrinks to sell the illusion of height.</p>
+  </div>
+
   <div slot="faq">
-    <h2 style="font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex;flex-direction:column;gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: "Is the coin flip truly random?", a: "Yes. It uses the Web Crypto API (crypto.getRandomValues) which produces cryptographically secure random numbers — the same quality used in encryption and security applications." },
-        { q: "Why does the coin animation look different each time?", a: "The animation uses a randomised number of full rotations and a slight wobble to simulate the unpredictability of a real coin toss. The final result is always 50/50." },
-        { q: "Can I use this to make fair decisions?", a: "Absolutely. A coin flip is one of the simplest and fairest ways to decide between two options — each side has an equal chance." },
-        { q: "Does my flip history get saved?", a: "No. All data stays in your browser's memory. If you refresh the page, the history resets." }
-      ].map(item => (
-        <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-          <h3 itemprop="name" style="font-family:'Sora',sans-serif;font-size:0.9rem;font-weight:700;color:var(--text-primary);margin:0 0 0.35rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.85rem;color:var(--text-secondary);line-height:1.7;margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is the coin flip truly random?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The tool relies on the Web Crypto API, which is the same source of randomness used by banks and encryption systems. Each flip is independent and unbiased.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I use this to make fair decisions?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Absolutely. A coin flip is one of the simplest and fairest methods to choose between two options, and this digital version gives you a provably equal chance for each side.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How many flips can I track?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">There is no hard limit. You can flip as many times as you like and every result will appear in the history log until you manually clear it.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does it work offline?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. The Coin Flipper runs entirely in your browser with no server calls. Once the page has loaded, you can disconnect from the internet and it will still flip perfectly.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens on slow devices?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The animation uses CSS transforms which are hardware-accelerated on virtually all modern devices. Even on older phones the result appears instantly even if the spin animation drops a few frames.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is my flip history stored anywhere?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">No data leaves your browser. History lives only in page memory and is wiped as soon as you refresh the tab or click Clear.</p>
+        </div>
+      </div>
     </div>
   </div>
 

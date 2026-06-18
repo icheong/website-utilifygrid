@@ -33,76 +33,78 @@ const tool = tools.find(t => t.slug === 'heat-transfer-coefficient-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to use the Heat Transfer Coefficient Converter</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      Enter a <strong>numeric value</strong> and select its <strong>unit</strong> from the dropdown. All other heat transfer coefficient units update instantly — no buttons to click.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-      This converter handles the <strong>convective heat transfer coefficient</strong> — the proportionality constant between heat flux and temperature difference. It is used in HVAC, chemical engineering, and thermal system design.
-    </p>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-      Click any <strong>Copy</strong> button to copy that unit's result to your clipboard — handy for pasting into documents, code, or messages.
-    </p>
+    <h2 class="font-display seo-h2">How to Use the Heat Transfer Coefficient Converter</h2>
+    <p class="seo-p">Enter a numeric heat transfer coefficient value and instantly see equivalent values in all supported units. Pick your source unit from the dropdown and every other unit updates in real time.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Coefficient Value</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Type any non-negative number into the value field. You can enter integers, decimals, or very large or small values — the converter handles them all.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Unit</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the unit your input value is expressed in from the dropdown. Supported units include W/(m²·K), BTU/(h·ft²·°F), kcal/(h·m²·°C), and several others.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">View All Conversions</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">All equivalent values across every supported unit appear instantly below the input fields. Results update on each keystroke — no buttons to click.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button next to any result to copy that value to your clipboard. Paste it directly into documents, spreadsheets, or engineering calculations.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How heat transfer coefficient conversions work</h2>
-    <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem;">
-      All conversions go through <strong>W/(m²·K)</strong> as the base unit. Each unit has a fixed conversion factor:
-    </p>
-    <pre style="font-family:'Fira Code',monospace;font-size:.85rem;padding:1rem;border-radius:.5rem;background:var(--bg-surface-2);color:var(--text-primary);overflow-x:auto;white-space:pre-wrap;">1 BTU/(h·ft²·°F) = 5.67447 W/(m²·K)
-1 cal/(s·cm²·°C)  = 41840 W/(m²·K)
-1 W/(cm²·K)       = 10000 W/(m²·K)
-1 kJ/(h·m²·K)     = 0.277778 W/(m²·K)
-1 kcal/(h·m²·°C)  = 1.16278 W/(m²·K)
-1 Wh/(m²·K)       = 3600 W/(m²·K)
-
-Result = Input × (FromFactor / ToFactor)</pre>
-    <p style="color:var(--text-secondary); font-size:0.85rem; line-height:1.75;">
-      The heat transfer coefficient (h) describes how effectively heat is transferred between a solid surface and a fluid. Natural convection in air has h ≈ 5-25 W/(m²·K), forced convection in water has h ≈ 100-2000 W/(m²·K), and boiling heat transfer can exceed 10,000 W/(m²·K). All calculations run in your browser.
-    </p>
+    <h2 class="font-display seo-h2">How the Heat Transfer Coefficient Converter Works</h2>
+    <p class="seo-p">This tool converts between different units used to express the convective <code class="inline-code">heat transfer coefficient (h)</code>, which relates heat flux to temperature difference between a surface and a fluid.</p>
+    <h3 class="font-display seo-h3-sm">Heat Transfer Coefficient Units</h3>
+    <p class="seo-p">The heat transfer coefficient is expressed in units of energy per unit time, per unit area, per unit temperature difference. The most common SI unit is <code class="inline-code">W/(m²·K)</code>. In imperial systems, <code class="inline-code">BTU/(h·ft²·°F)</code> is widely used. Other units include <code class="inline-code">kcal/(h·m²·°C)</code>, <code class="inline-code">cal/(s·cm²·°C)</code>, and <code class="inline-code">kJ/(h·m²·K)</code>. Each unit pairs a different energy scale with a different area and temperature scale.</p>
+    <h3 class="font-display seo-h3-sm">Conversion Mathematics</h3>
+    <p class="seo-p">All conversions use <code class="inline-code">W/(m²·K)</code> as the base unit. Each unit has a fixed conversion factor — for example, 1 <code class="inline-code">BTU/(h·ft²·°F)</code> equals 5.67447 <code class="inline-code">W/(m²·K)</code>. To convert between any two units, the tool multiplies by the source factor and divides by the target factor. All calculations run instantly in your browser with no data sent to a server.</p>
+    <h3 class="font-display seo-h3-sm">Convection vs Radiation Coefficients</h3>
+    <p class="seo-p">The heat transfer coefficient described here applies specifically to <code class="inline-code">convection</code> — heat transfer between a surface and a moving fluid. <code class="inline-code">Radiation</code> heat transfer uses a different formulation based on emissivity and the Stefan-Boltzmann law, though an effective radiation coefficient can sometimes be defined for linearized calculations. Typical convective values range from about 5 <code class="inline-code">W/(m²·K)</code> for natural convection in air up to 10,000+ <code class="inline-code">W/(m²·K)</code> for boiling liquids.</p>
   </div>
 
   <div slot="faq">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is the heat transfer coefficient?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The heat transfer coefficient (h) is a measure of how effectively heat is transferred between a solid surface and a surrounding fluid. It is defined as the heat flux per unit temperature difference (h = q / ΔT), measured in W/(m²·K). Higher values indicate more effective heat transfer." }
-        },
-        {
-          "@type": "Question",
-          "name": "What are typical values for heat transfer coefficients?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Natural convection in air: 5-25 W/(m²·K), Forced convection in air: 25-250 W/(m²·K), Natural convection in water: 100-600 W/(m²·K), Forced convection in water: 100-2000 W/(m²·K), Boiling water: 2500-100,000 W/(m²·K). These values depend on fluid properties, flow conditions, and geometry." }
-        },
-        {
-          "@type": "Question",
-          "name": "What is the difference between natural and forced convection?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Natural convection occurs when fluid motion is driven by density differences caused by temperature gradients (e.g., a radiator heating room air). Forced convection occurs when fluid is mechanically moved by a fan, pump, or other device (e.g., a car radiator with a water pump). Forced convection typically has much higher heat transfer coefficients." }
-        }
-      ]
-    }
-    </script>
-
-    <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Frequently Asked Questions</h2>
-    <div style="display:flex; flex-direction:column; gap:0.75rem;" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        { q: 'What is the heat transfer coefficient?', a: 'The heat transfer coefficient (h) is a measure of how effectively heat is transferred between a solid surface and a surrounding fluid. It is defined as the heat flux per unit temperature difference (h = q / ΔT), measured in W/(m²·K). Higher values indicate more effective heat transfer.' },
-        { q: 'What are typical values for heat transfer coefficients?', a: 'Natural convection in air: 5-25 W/(m²·K), Forced convection in air: 25-250 W/(m²·K), Natural convection in water: 100-600 W/(m²·K), Forced convection in water: 100-2000 W/(m²·K), Boiling water: 2500-100,000 W/(m²·K). These values depend on fluid properties, flow conditions, and geometry.' },
-        { q: 'What is the difference between natural and forced convection?', a: 'Natural convection occurs when fluid motion is driven by density differences caused by temperature gradients (e.g., a radiator heating room air). Forced convection occurs when fluid is mechanically moved by a fan, pump, or other device (e.g., a car radiator with a water pump). Forced convection typically has much higher heat transfer coefficients.' },
-      ].map(item => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-          style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem; padding:1.1rem 1.25rem;">
-          <h3 itemprop="name" style="font-size:0.9rem; font-weight:600; color:var(--text-primary); margin:0 0 0.5rem;">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0;">{item.a}</p>
-          </div>
+    <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
+    <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between convection and radiation heat transfer coefficients?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">A convection heat transfer coefficient relates heat flux to the temperature difference between a surface and a moving fluid, following Newton's law of cooling. A radiation coefficient is a linearized approximation derived from the Stefan-Boltzmann law and depends on emissivity and temperature. Convection coefficients are typically much higher than radiation coefficients at moderate temperatures.</p>
         </div>
-      ))}
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What are typical heat transfer coefficient values for air vs water cooling?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Natural convection in air typically ranges from 5 to 25 W/(m²·K), while forced convection in air reaches 25 to 250 W/(m²·K). Water is far more effective: natural convection in water is about 100 to 600 W/(m²·K), and forced convection in water ranges from 100 to 2000 W/(m²·K). Boiling water can exceed 10,000 W/(m²·K).</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does surface area affect heat transfer?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Total heat transfer rate equals the heat transfer coefficient multiplied by surface area and temperature difference (Q = h × A × ΔT). A larger surface area increases the total heat transferred for a given coefficient and temperature difference. Fins and extended surfaces are commonly used to increase effective area in heat exchangers and electronics cooling.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why use different units for the heat transfer coefficient?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Different industries and regions favor different unit systems. W/(m²·K) is the SI standard used in most scientific and engineering contexts. BTU/(h·ft²·°F) is common in HVAC and American engineering practice. kcal/(h·m²·°C) appears in older European and Asian references. Converting between them ensures consistent calculations across documents and standards.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What factors influence the value of the heat transfer coefficient?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The coefficient depends on fluid properties such as thermal conductivity, viscosity, density, and specific heat. Flow conditions — velocity, turbulence, and whether the flow is laminar or turbulent — have a major effect. Surface geometry, roughness, and orientation also influence the coefficient. Phase changes like boiling or condensation dramatically increase heat transfer rates.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How accurate are these unit conversions?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The conversions use exact, internationally recognized conversion factors between unit systems. For example, 1 BTU/(h·ft²·°F) is exactly 5.67447 W/(m²·K). The tool performs arithmetic only — no approximations or assumptions are involved. Results are as accurate as the precision of JavaScript floating-point arithmetic allows.</p>
+        </div>
+      </div>
     </div>
   </div>
 
