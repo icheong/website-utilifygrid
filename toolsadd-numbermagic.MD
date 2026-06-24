@@ -107,3 +107,49 @@ A Keith number is an integer that secretly hides at the end of its own custom, s
 > * Next term ($4+5$): **9**
 > * Next term ($5+9$): **14**
 > Because the sequence naturally lands exactly on **14**, it is a Keith Number.
+
+
+
+
+## with visualizations ##
+
+1. The Collatz Conjecture (3x + 1) Visualizer
+Concept: A "mathematical black hole" where any positive number eventually traps into a 4-2-1 loop
+.
+Prompt: "Create a interactive tool for the Collatz Conjecture. Include a text input for a starting number. Use three.js to render a 3D branching 'hailstone' path that grows as each step of the sequence is calculated. Even numbers branch left, odd numbers branch right and upwards. The visual should end in a rotating 3D golden loop representing the 4-2-1 trap."
+.
+2. The Narcissistic (Armstrong) Number Scanner
+Concept: Numbers that are "obsessed" with their own digits, where each digit raised to the power of the total number of digits equals the original number
+.
+Prompt: "Build a tool that identifies Narcissistic Numbers (e.g., 153). Use three.js to visualize the digits as 3D floating blocks. When a user inputs a number, the blocks should explode into their constituent digits, grow in size based on the exponent (cubed, etc.), and then fly back together to reform the original number if it is a match."
+.
+3. The Lychrel Number & 196 Palindrome Quest
+Concept: The mystery of numbers that may never form a palindrome through the reverse-and-add process
+.
+Prompt: "Develop a Lychrel Number tester. Implement an iterative loop that reverses and adds digits. Incorporate a three.js 'Folding Paper' animation where a long 3D strip of numbers physically folds over itself at each iteration. If the numbers on both sides of the fold match, it becomes a glowing palindrome; if not (like number 196), the strip continues stretching into the distance."
+.
+4. Cyclic Number "Magic Trick" (142,857)
+Concept: A number where multiplication by 1 through 6 simply rotates its digits
+.
+Prompt: "Create a visualization for the Cyclic Number 142,857. Use three.js to arrange the digits 1, 4, 2, 8, 5, 7 on a 3D rotating carousel. When the user selects a multiplier (1–6), the carousel should spin rapidly and stop with the digits in the new correct order. Multiplying by 7 should cause the digits to flip over and transform into six 9s."
+.
+5. The Belphegor Prime "Hellish" Counter
+Concept: A spooky prime number containing '666' bracketed by 13 zeros on each side
+.
+Prompt: "Build a display for the Belphegor Prime (1000000000000066600000000000001). Use three.js to create a dark, cinematic 3D environment. The number should appear as a long, glowing string in a void. As the user scrolls, they 'fly' through the 13 zeros until the central '666' appears in a red atmospheric haze, emphasizing the 31-digit length (13 backwards)."
+.
+6. Pi: The Infinite Geometric Constant
+Concept: The ratio of a circle's circumference to its diameter, popping up in everything from rivers to probability
+.
+Prompt: "Create a Pi exploration tool. Use three.js to render a 3D bicycle wheel that unrolls its circumference onto a straight 3D line to demonstrate the 3.14159 ratio. Include a 'Search Pi' feature that visualizes Pi as an infinite library of 3D cubes; when a user enters their birthday, the camera should fly through the stacks of digits to find their specific sequence hidden in the decimals."
+.
+7. The Top-Read D4 Die Simulator
+Concept: A 4-sided tetrahedral die where the result is read at the top apex
+.
+Prompt: "Build a 3D d4 simulator for tabletop gaming. Use three.js to render a sharp-edged 'regular tetrahedron' (triangular pyramid). The die must be 'top-read' style, with numbers meeting at the peaks. Implement physics-based rolling (using a library like Matter.js or Cannon.js) and focus the camera on the top point to highlight the winning number (e.g., '4') printed right-side-up on all visible faces."
+.
+8. Perfect & Vampire Number Audit
+Concept: Numbers in perfect balance (sum of divisors) or numbers that can be factored into 'fangs'
+.
+Prompt: "Develop a tool to identify Perfect and Vampire Numbers. For Perfect Numbers, use three.js to show a 3D scale where the number itself is balanced against its divisors. For Vampire Numbers (like 2,187), show the 'fangs' (27 and 81) as 3D objects that 'bite' together to synthesize the original number."
+.
