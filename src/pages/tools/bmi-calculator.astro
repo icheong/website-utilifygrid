@@ -100,20 +100,21 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
 
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2" >BMI Calculator Overview &amp; Technical Context</h2>
+    <h2 class="font-display seo-h2" >Check your BMI in ten seconds — no sign-up, no data stored</h2>
     <p class="seo-p" >
-      This Body Mass Index (BMI) calculator computes your BMI using the standardised formula published by the World Health Organisation (WHO) and the National Institutes of Health (NIH). The tool runs entirely in your browser using vanilla JavaScript — no data is transmitted to any server, no cookies are set, and no tracking scripts execute. The 100% client-side architecture means your health metrics remain completely private, with zero server latency and zero data retention.
+      Your doctor mentioned BMI at your last check-up but you forgot what the number means. A friend posted their BMI on social media and you're curious where you land. Your life insurance form asks for your BMI category and you don't have it handy. Enter your weight and height — either metric or imperial — and this calculator gives you your BMI number and its WHO category (underweight, normal, overweight, or obese) in a colour-coded label. The whole thing takes about ten seconds.
     </p>
     <p class="seo-p" >
-      Select your preferred unit system — metric (kilograms and centimetres) or imperial (pounds and inches). Enter your weight and height, then click <strong>Calculate BMI</strong>. The result appears instantly with a colour-coded category label indicating whether the value falls into the underweight, normal weight, overweight, or obese range. The calculator handles both unit systems natively: the metric path divides weight in kilograms by height in metres squared, while the imperial path applies the standard 703 conversion factor to produce an equivalent result.
+      Toggle between metric (kilograms and centimetres) and imperial (pounds, feet, and inches) using the tabs at the top. Enter your numbers and click <strong>Calculate BMI</strong>. The result appears immediately: your BMI value rounded to one decimal place, and a colour-coded badge showing your category. Blue for underweight, green for healthy weight, amber for overweight, red for obese.
     </p>
 
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Who uses this calculator</h3>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       {[
-        ['Clinical triage and health screenings', 'General practitioners and practice nurses routinely calculate BMI as a first-step screening metric during routine health assessments. This tool replicates the exact computation used in clinical settings, enabling patients to understand their own readings before or after a consultation. The instant result and clear category labelling remove ambiguity when interpreting a BMI figure against WHO thresholds.'],
-        ['Fitness tracking and goal-setting', 'Personal trainers and individuals following a structured fitness programme use BMI as a baseline reference point. When paired with body composition measurements (such as waist circumference or body fat percentage), BMI provides a quick longitudinal indicator of weight management progress. This calculator\'s instant feedback loop makes it suitable for repeated use during training cycles.'],
-        ['Insurance and occupational health assessments', 'Many life insurance providers and occupational health programmes reference BMI categories when assessing risk profiles. Understanding your BMI category before completing a health declaration form helps you provide accurate information. The metric and imperial toggle ensures compatibility with measurement systems used across different countries and industries.'],
+        ['People filling out health or insurance forms', 'Life insurance applications, workplace health assessments, and occupational health questionnaires frequently ask for BMI. If you don\'t have a recent measurement from a clinic, this calculator gives you the number in seconds. A 75kg person who is 170cm tall has a BMI of 25.95 — just into the overweight category — and knowing that before a form avoids guessing.'],
+        ['Patients preparing for a GP appointment', 'If your doctor has asked you to track your weight between visits, calculating BMI at home lets you monitor the trend. A 5kg weight loss for someone at 175cm shifts BMI from 27.1 (overweight) to 25.5 (still overweight, but moving in the right direction). The colour-coded category makes it easy to see progress without interpreting raw numbers.'],
+        ['Parents checking their own numbers', 'Many parents calculate their own BMI while researching their child\'s health. This calculator is designed for adults aged 20+, and knowing your own BMI first helps you understand the context before looking at age-specific percentile charts for children.'],
+        ['Fitness enthusiasts tracking changes over time', 'If you\'re building muscle through strength training, your BMI may increase even as your body composition improves. Tracking BMI alongside waist circumference and body fat percentage gives a fuller picture. A regular check every 4-6 weeks during a training block reveals whether the trend is heading in the right direction.'],
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm" >
           <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
@@ -125,32 +126,46 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
 
   <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2" >Deep-Dive: BMI Formulas, Technical Mechanics &amp; Use Cases</h2>
+    <h2 class="font-display seo-h2" >How BMI is calculated — and where the number comes from</h2>
 
-    <h3 class="font-display seo-h3-sm" >Core Formulas</h3>
+    <h3 class="font-display seo-h3-sm" >The two formulas behind your result</h3>
     <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem">
       <div class="info-row">
         <span class="info-label">Metric</span>
-        <span class="info-value">BMI = weight (kg) ÷ height² (m²)</span>
+        <span class="info-value">BMI = weight (kg) ÷ height (m)²</span>
       </div>
       <div class="info-row">
         <span class="info-label">Imperial</span>
-        <span class="info-value">BMI = (weight (lbs) ÷ height² (in²)) × 703</span>
+        <span class="info-value">BMI = (weight (lbs) ÷ height (in)²) × 703</span>
       </div>
     </div>
 
-    <h3 class="font-display seo-h3-sm" >How the Computation Works</h3>
+    <h3 class="font-display seo-h3-sm" >What happens when you enter your numbers</h3>
     <p class="seo-p" >
-      The BMI formula was devised by Adolphe Quetelet in the 1830s and remains the internationally standardised method for classifying adult body weight relative to height. The metric path converts the user's height from centimetres to metres (dividing by 100), squares the result, then divides weight by that squared value. The imperial path applies the constant factor of 703 — derived from the ratio of pounds-per-square-inch to kilograms-per-square-metre — to produce a dimensionless number comparable to the metric result.
+      When you type in your weight and height and hit Calculate, the calculator converts your measurements into the standard units the formula expects. If you're using metric, your height in centimetres is converted to metres by dividing by 100, then squared, then your weight is divided by that squared value. If you're using imperial, your feet are converted to inches (multiplied by 12), added to any extra inches, then your weight in pounds is divided by the square of total inches and multiplied by 703 — a constant that makes imperial inputs equivalent to metric results.
     </p>
     <p class="seo-p" >
-      Both paths compute BMI to full IEEE 754 double-precision floating-point accuracy before rounding to one decimal place for display. The result is then classified against the WHO's widely adopted thresholds: Underweight (&lt;18.5), Normal weight (18.5–24.9), Overweight (25–29.9), and Obese (≥30). Each category is assigned a distinct colour — blue for underweight, green for normal, amber for overweight, and red for obese — to provide immediate visual context.
+      The number that comes out is rounded to one decimal place and matched against four WHO thresholds: under 18.5 is underweight, 18.5 to 24.9 is normal weight, 25 to 29.9 is overweight, and 30 or above is obese. Each category gets its own colour so you can see at a glance where you land. No health data leaves your device — the calculation runs locally in your browser and nothing is stored or sent anywhere.
     </p>
+
+    <h3 class="font-display seo-h3-sm" >Worked example: 82 kg, 175 cm</h3>
     <p class="seo-p" >
-      <strong>Edge cases handled:</strong> The calculator validates that both weight and height are positive, non-zero numbers before computing. Entering zero or leaving fields blank triggers a clear error message rather than producing <code>Infinity</code> or <code>NaN</code>. Very extreme inputs (e.g. 500 kg or 300 cm) are accepted without capping, allowing the tool to handle legitimately large values while remaining transparent about its output.
+      A 175cm person weighing 82kg: height in metres is 1.75, squared is 3.0625, weight divided by that gives <strong>26.8</strong> — just into the overweight category. That person would need to weigh under 76.2kg (a loss of about 5.8kg) to reach the healthy weight range. At 76kg, their BMI would be 24.8 — green.
     </p>
-    <p class="seo-p-none" >
-      <strong>Note on BMI limitations:</strong> BMI does not distinguish between muscle mass, bone density, and fat mass. An athletic individual with significant muscle may register as overweight or obese despite having low body fat. For a complete health picture, BMI should be interpreted alongside additional metrics such as waist circumference, waist-to-hip ratio, body fat percentage, and blood markers. The WHO explicitly states that BMI is a screening tool, not a diagnostic instrument.
+
+    <h3 class="font-display seo-h3-sm" >Worked example: 11 stone 4 lbs, 5 ft 7 in</h3>
+    <p class="seo-p" >
+      Converting: 11 stone 4 lbs equals 158 lbs, and 5 ft 7 in equals 67 inches. Squaring 67 gives 4,489. Dividing 158 by 4,489 and multiplying by 703 gives <strong>24.7</strong> — healthy weight, just under the 25 threshold. If that person gained half a stone (7 lbs) to 165 lbs, the BMI would rise to 25.8, crossing into overweight.
+    </p>
+
+    <h3 class="font-display seo-h3-sm" >Why BMI matters — and when it doesn't</h3>
+    <p class="seo-p" >
+      BMI is a quick screening tool, not a diagnosis. It correlates with chronic disease risk at a population level — people in the overweight and obese categories statistically face higher rates of type 2 diabetes, heart disease, and certain cancers. But it has real blind spots: a muscular 85kg rugby player and a sedentary 85kg office worker at the same height produce the same BMI, despite having very different body compositions. BMI also doesn't account for where fat is distributed — abdominal fat is more metabolically harmful than fat on the hips or thighs. For a complete picture, pair BMI with waist circumference and, if available, body fat percentage.
+    </p>
+
+    <h3 class="font-display seo-h3-sm" >What the calculator does with edge cases</h3>
+    <p class="seo-p" >
+      Entering zero or leaving fields blank produces an error message instead of an invalid result. Negative numbers are rejected. Extremely large values — someone weighing 400kg or standing 220cm tall — are accepted without capping, because legitimate measurements do exist at those extremes. The result is computed to full decimal accuracy before rounding to one decimal place for display.
     </p>
   </div>
 
@@ -161,27 +176,35 @@ const tool = tools.find(t => t.slug === 'bmi-calculator')!;
       {[
         {
           q: "What is a healthy BMI?",
-          a: "According to the WHO, a BMI between 18.5 and 24.9 is considered a healthy weight range for most adults. Values below 18.5 indicate underweight, 25–29.9 is overweight, and 30 or above is classified as obese. These thresholds apply to adults aged 20 and over and are based on population-level data correlating BMI with chronic disease risk."
+          a: "The WHO classifies a BMI between 18.5 and 24.9 as a healthy weight range for most adults. Under 18.5 is underweight, 25–29.9 is overweight, and 30 or above is obese. These thresholds are based on population-level studies linking BMI to chronic disease risk. They apply to adults aged 20 and over — children and adolescents use different, age-specific percentile charts."
         },
         {
           q: "Is BMI accurate for athletes?",
-          a: "BMI can overestimate body fat in athletes and muscular individuals, since muscle tissue is approximately 18% denser than fat tissue. An athletic person with significant lean mass may register as overweight or obese on the BMI scale despite having a low body fat percentage. For athletes, BMI should be interpreted alongside body composition measurements such as skinfold thickness, DEXA scans, or bioelectrical impedance analysis."
+          a: "BMI can overestimate body fat in athletes and muscular people because it doesn't distinguish between muscle and fat. Muscle tissue is roughly 18% denser than fat, so a fit person with significant lean mass may register as overweight despite having a low body fat percentage. For athletes, BMI works best when paired with other measurements like waist circumference, skinfold thickness, or DEXA scans."
         },
         {
-          q: "Can I use this BMI calculator for children?",
-          a: "This calculator is designed for adults aged 20 and older. For children and adolescents aged 2–19, BMI is interpreted differently using age- and sex-specific percentile charts published by the CDC. A child's BMI percentile — not the raw number — determines their weight status category. Consult your paediatrician or use the CDC's BMI-for-age growth charts for accurate paediatric assessment."
+          q: "Can I use this calculator for children?",
+          a: "No — this calculator is designed for adults aged 20 and older. For children and adolescents aged 2–19, BMI is interpreted using age- and sex-specific percentile charts published by the CDC. A child's BMI percentile, not the raw number, determines their weight category. A 12-year-old boy with a BMI of 21 might be in the 75th percentile (normal), while an adult with the same BMI would also be normal — but the interpretation process is entirely different. Consult your paediatrician or use the CDC's BMI-for-age growth charts."
         },
         {
           q: "How often should I check my BMI?",
-          a: "For most adults, checking BMI every few months is sufficient, or whenever you experience significant weight changes. BMI is just one indicator of health — it does not account for muscle mass, bone density, age, or fat distribution. Frequent BMI monitoring is most useful during structured weight management programmes where trend direction matters more than any single reading."
+          a: "For most adults, checking every few months or whenever you notice significant weight changes is sufficient. BMI is a single snapshot — it doesn't tell you about body composition, fat distribution, or metabolic health. If you're actively managing your weight, tracking BMI every 4–6 weeks alongside waist circumference gives you a useful trend without obsessing over daily fluctuations."
         },
         {
           q: "Why does the imperial formula multiply by 703?",
-          a: "The factor 703 converts from the imperial unit system (pounds and inches) to the metric-based BMI scale. It is derived from the conversion ratio of kilograms to pounds (2.2046) squared and multiplied by the centimetre-to-metre conversion (100²), yielding approximately 703.069. This ensures that an imperial input produces the same BMI classification as the equivalent metric measurement."
+          a: "The factor 703 converts pounds-and-inches measurements into the same BMI scale used by the metric formula. It's derived from the mathematical relationship between kilograms and pounds (1 kg ≈ 2.2046 lbs) and centimetres and metres (100 cm = 1 m). Without this conversion, the same person would get different BMI values depending on which units they used, which would make the WHO thresholds meaningless."
         },
         {
           q: "What is the difference between BMI and body fat percentage?",
-          a: "BMI is a ratio of weight to height and does not directly measure body fat. Body fat percentage quantifies the actual proportion of fat mass relative to total body weight. Two individuals with identical BMIs can have very different body compositions — one may carry excess fat while the other has high muscle mass. BMI is a faster, cheaper screening tool, but body fat percentage is a more precise indicator of metabolic health."
+          a: "BMI is a ratio of weight to height — it doesn't measure fat directly. Body fat percentage tells you what proportion of your total weight is fat. Two people with the same BMI can have very different body compositions: one might carry excess fat while the other has high muscle mass. BMI is faster and cheaper to calculate, but body fat percentage is a more precise indicator of metabolic health."
+        },
+        {
+          q: "How does BMI compare to waist circumference as a health indicator?",
+          a: "Waist circumference measures abdominal fat, which is more metabolically dangerous than fat stored on the hips or thighs. A person with a normal BMI but a large waist (over 94cm for men, 80cm for women) may still face elevated health risks — a condition sometimes called 'normal weight obesity.' The NHS recommends checking both BMI and waist circumference together for a more complete picture. A tape measure around your navel gives you the waist number in seconds."
+        },
+        {
+          q: "Does BMI change as I get older?",
+          a: "BMI thresholds don't change with age for adults, but body composition does. After about age 30, most people lose muscle mass gradually and gain fat, even if their weight stays the same. This means two 70kg people aged 25 and 65 might have the same BMI, but the older person likely has a higher body fat percentage. For people over 65, BMI is less reliable as a standalone measure — pairing it with waist circumference and functional strength assessments gives better insight."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

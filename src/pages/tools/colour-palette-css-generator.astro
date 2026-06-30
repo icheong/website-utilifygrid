@@ -181,20 +181,20 @@ const tool = tools.find(t => t.slug === 'colour-palette-css-generator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2" >Colour Palette &amp; CSS Generator Overview &amp; Technical Context</h2>
+    <h2 class="font-display seo-h2" >Convert any colour to HEX, RGB, HSL, or Tailwind — instantly</h2>
     <p class="seo-p" >
-      This all-in-one colour conversion and CSS generation tool combines HEX-to-RGB conversion, RGB-to-HEX conversion, HSL translation, Tailwind CSS palette matching, and live CSS output generation into a single interface. Built entirely with vanilla JavaScript and running 100% client-side in the browser, every computation happens locally using standard browser APIs — no colour data is transmitted to any server, and no cookies or tracking scripts execute. The zero-server-latency architecture ensures instant updates as you type, providing complete privacy for your design workflow.
+      A designer hands you a Figma file with brand colours in HEX. Your CSS needs rgba() for a semi-transparent overlay. Your Tailwind config uses utility classes you can't quite match. Pick a colour with the visual picker, type a HEX code like #3B82F6, enter RGB values like rgb(59, 130, 246), or paste an HSL value like hsl(217, 91%, 59%) — every output format updates simultaneously. Each result has a one-click copy button so you can paste it straight into your stylesheet, config file, or design system documentation.
     </p>
     <p class="seo-p" >
-      Switch between HEX, RGB, and HSL input modes using the toggle tabs, or type any valid colour format directly into the text field. The tool automatically parses HEX codes (with or without the <code>#</code> prefix, including 3-digit shorthand), RGB functions like <code>rgb(59, 130, 246)</code>, and HSL functions like <code>hsl(217, 91%, 59%)</code>. All output formats update simultaneously, and every result includes a one-click copy button. The CSS Outputs section provides ready-to-paste custom properties, rgba values with an opacity slider, and linear gradients with adjustable angles.
+      The tool also shows the closest Tailwind CSS utility class matches using perceptual colour distance, a CSS custom property string you can drop into your <code>:root</code>, an opacity slider that generates rgba() values, and a live gradient preview with adjustable angle. Everything happens on one screen — no tab switching, no mental arithmetic, no copy-pasting between converter sites.
     </p>
 
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Who uses this colour converter</h3>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       {[
-        ['Front-end development and CSS authoring', 'Developers frequently receive brand colours as HEX codes from designers but need the RGB equivalent for CSS functions like rgba(), gradients, or dynamic colour manipulation with JavaScript. This tool eliminates manual base-16 arithmetic by converting instantly and providing copy-ready strings for direct insertion into stylesheets, including CSS custom properties and linear gradients.'],
-        ['Tailwind CSS integration', 'When migrating a design system to Tailwind CSS, developers need to find the closest utility class for brand colours that may not align exactly with Tailwind\'s predefined palette. The tool uses CIELAB colour space Delta-E distance calculations to identify the five most visually similar Tailwind classes, ranked by perceptual similarity, enabling rapid palette alignment without manual visual comparison.'],
-        ['Design system auditing and accessibility', 'Teams standardising a design system often inherit colour palettes in mixed formats — some assets use HEX, others use RGB, and component libraries may require HSL for CSS custom properties. This converter enables rapid format normalisation across an entire palette, while the opacity slider and gradient generator support creating accessible colour combinations with proper contrast ratios.'],
+        ['Front-end developers writing CSS', 'A developer receives a brand guide with the primary colour as #1D4ED8. They need the RGB values for an rgba() overlay, the HSL version to easily generate lighter shades for hover states, and a CSS custom property string for the design system. Instead of doing the arithmetic manually or juggling three different converter tabs, they paste #1D4ED8 once and get all formats in one place.'],
+        ['Tailwind developers matching brand colours', 'A project uses Tailwind but the brand colour #6C46FF doesn\'t appear in the default palette. The Tailwind matching section shows the five closest utility classes by perceptual distance — violet-500 (dE 1.2) might be close enough, or violet-600 might need a custom override. The Delta-E score tells you how close the match actually is, rather than relying on visual guesswork.'],
+        ['Designers building CSS design systems', 'When assembling a design system, designers need to normalise colours from mixed sources — some in HEX from Figma, some in RGB from a legacy stylesheet, some in HSL from a colour tool. This converter lets them enter any format and verify that the output values are consistent across HEX, RGB, HSL, and CSS custom properties.'],
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm" >
           <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
@@ -205,36 +205,31 @@ const tool = tools.find(t => t.slug === 'colour-palette-css-generator')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2" >Deep-Dive: Colour Conversion Mechanics &amp; Mathematical Logic</h2>
+    <h2 class="font-display seo-h2" >How colour conversion works — and why the formats matter</h2>
 
-    <h3 class="font-display seo-h3-sm" >Core Conversion Formulas</h3>
-    <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem">
-      <div class="info-row">
-        <span class="info-label">HEX to RGB</span>
-        <span class="info-value">R = parseInt(hex[0..1], 16); G = parseInt(hex[2..3], 16); B = parseInt(hex[4..5], 16)</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">RGB to HEX</span>
-        <span class="info-value">HEX = '#' + R.toString(16).padStart(2,'0') + G.toString(16).padStart(2,'0') + B.toString(16).padStart(2,'0')</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">RGB to HSL</span>
-        <span class="info-value">Normalise channels to [0,1], find max/min, compute hue via sector formula, derive saturation and lightness</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">HSL to RGB</span>
-        <span class="info-value">Compute chroma = (1 - |2L - 1|) * S, then hue sector to find intermediate X and m values per channel</span>
-      </div>
-    </div>
-
-    <h3 class="font-display seo-h3-sm" >Tailwind Matching via CIELAB Delta-E</h3>
+    <h3 class="font-display seo-h3-sm" >HEX, RGB, and HSL are three ways to describe the same colour</h3>
     <p class="seo-p" >
-      The Tailwind matching algorithm converts both the input colour and every palette entry from sRGB to the CIELAB (L*a*b*) colour space, which models human colour perception more accurately than RGB. It first applies inverse sRGB companding to linearise the channel values, then transforms through the CIE XYZ intermediate using D65 illuminant reference points. The Delta-E (Euclidean distance in L*a*b* space) between the input and each palette entry is computed, and the five smallest distances are returned as matches. A Delta-E under 2 is perceptually indistinguishable to most observers; under 5 is a close match.
+      HEX stores each colour channel as a two-digit hexadecimal number: #3B82F6 breaks into R=3B (59), G=82 (130), F6 (246). RGB expresses those same three channels as decimal integers from 0 to 255. HSL re-describes the colour in terms humans find more intuitive — Hue is the angle on a 360-degree colour wheel (0 = red, 120 = green, 240 = blue), Saturation is the intensity from 0% (grey) to 100% (fully vivid), and Lightness is how bright it is from 0% (black) to 100% (white). All three formats represent the identical colour; the conversion is pure arithmetic with no data loss.
     </p>
 
-    <h3 class="font-display seo-h3-sm" >Edge Cases and Input Validation</h3>
-    <p class="seo-p-none" >
-      Three-character hex codes like <code>#F0A</code> are automatically expanded to <code>#FF00AA</code> per the CSS specification where each digit is doubled. RGB channel values are clamped to 0-255, HSL hue to 0-360, and saturation/lightness to 0-100%. Invalid inputs produce a clear error state rather than <code>NaN</code>. The conversion uses IEEE 754 double-precision arithmetic internally, with final integer values rounded to the nearest whole number. The opacity slider operates independently of the base colour conversion, appending an alpha value to the CSS output without affecting the underlying RGB/HSL calculations.
+    <h3 class="font-display seo-h3-sm" >What happens when you type a HEX code</h3>
+    <p class="seo-p" >
+      Type #3B82F6 and the tool splits the six characters into three pairs, converts each from base-16 to decimal (3B = 59, 82 = 130, F6 = 246), and feeds those RGB values into the RGB-to-HSL formula. The HSL calculation finds the maximum and minimum channel values, computes lightness as their midpoint, derives saturation from the difference, and determines hue based on which channel was dominant. All three input fields — HEX, RGB, and HSL — update to reflect the same colour in their respective formats. The gradient preview and Tailwind matches also update.
+    </p>
+
+    <h3 class="font-display seo-h3-sm" >Worked example: converting #EF4444 (Tailwind red-500)</h3>
+    <p class="seo-p" >
+      HEX #EF4444 splits into R=239, G=68, B=68. Converting to HSL: the max is 239 (red), min is 68 (green and blue equal), lightness is (239/255 + 68/255) / 2 = 0.598 ≈ 60%. Saturation = (239-68) / (1 - |2×0.60 - 1|) / 255 = 0.836 ≈ 84%. Hue = 0° because red is the dominant channel. Result: hsl(0, 84%, 60%). If you drag the opacity slider to 50%, the rgba output becomes rgba(239, 68, 68, 0.50).
+    </p>
+
+    <h3 class="font-display seo-h3-sm" >Tailwind matching: why Delta-E matters</h3>
+    <p class="seo-p" >
+      Simple RGB distance doesn't match how humans perceive colour differences. A 10-unit shift in the blue channel is far more noticeable than the same shift in green. The tool converts both your colour and every Tailwind palette entry into the CIELAB colour space, which models perceptual uniformity. Delta-E measures the Euclidean distance between two colours in that space. A score under 2 means the difference is invisible to most people; under 5 is a close match; above 10 is a noticeable difference. The five closest Tailwind classes are shown, ranked by this perceptual distance.
+    </p>
+
+    <h3 class="font-display seo-h3-sm" >3-digit shorthand and edge cases</h3>
+    <p class="seo-p" >
+      Three-character HEX codes like #F0A are expanded per the CSS specification: each digit is doubled, so #F0A becomes #FF00AA. RGB channel values above 255 or below 0 are clamped. HSL saturation and lightness are clamped to 0–100%. Invalid input shows an error state rather than producing NaN or Infinity. The gradient generator creates a linear-gradient using your chosen angle and a darker shade of the current colour, computed by subtracting 60 from each RGB channel.
     </p>
   </div>
 
@@ -244,27 +239,31 @@ const tool = tools.find(t => t.slug === 'colour-palette-css-generator')!;
       {[
         {
           q: "What colour formats does this tool accept as input?",
-          a: "The tool accepts three primary formats: HEX codes (with or without the # prefix, including 3-digit shorthand like #F0A), RGB functions (e.g. rgb(59, 130, 246) or comma-separated values 59, 130, 246), and HSL functions (e.g. hsl(217, 91%, 59%) or comma-separated 217, 91, 59). You can also use the native colour picker to select any colour visually. All formats are parsed in real time as you type."
+          a: "HEX codes with or without the # prefix (including 3-digit shorthand like #F0A), RGB functions like rgb(59, 130, 246) or comma-separated values, and HSL functions like hsl(217, 91%, 59%) or comma-separated numbers. You can also use the visual colour picker. All formats are parsed as you type — no submit button needed."
         },
         {
           q: "How does the Tailwind colour matching work?",
-          a: "The tool converts your colour to the CIELAB (L*a*b*) colour space, which models human colour perception more accurately than RGB. It calculates the Delta-E (Euclidean distance) between your colour and every entry in the Tailwind CSS v3 default palette. The five colours with the smallest Delta-E are returned as matches, ranked by visual similarity. A score under 2 is perceptually indistinguishable; under 5 is a close match."
+          a: "The tool converts your colour into the CIELAB colour space, which models how humans actually perceive colour differences. It then calculates the Delta-E distance between your colour and every entry in the Tailwind v3 default palette. The five closest matches are returned, ranked by perceptual similarity. A Delta-E under 2 means the difference is invisible to most people; under 5 is a close match."
         },
         {
-          q: "What is the difference between HEX and RGB colour codes?",
-          a: "Both represent the same colours using different numeral systems. HEX uses a six-character base-16 string (e.g. #3B82F6) where each pair of digits encodes one channel as a value 00-FF. RGB separates the red, green, and blue channels into three decimal integers (e.g. 59, 130, 246) in the 0-255 range. HEX is more compact for CSS and design handoffs; RGB is more intuitive when adjusting individual channel values programmatically."
+          q: "What is the difference between HEX and RGB?",
+          a: "Both describe the same colour using different number systems. HEX uses base-16 (e.g. #3B82F6), where each pair of digits represents one colour channel from 00 to FF. RGB uses decimal numbers from 0 to 255 for each channel (e.g. 59, 130, 246). HEX is more compact and commonly used in CSS and design tools; RGB is easier to work with when adjusting individual channels programmatically."
         },
         {
-          q: "What is HSL and why would I use it instead of RGB?",
-          a: "HSL (Hue, Saturation, Lightness) describes colour in a way that is more intuitive for humans. Hue is the colour angle on the 360-degree colour wheel (0 = red, 120 = green, 240 = blue), saturation controls the intensity from 0% (grey) to 100% (vivid), and lightness ranges from 0% (black) to 100% (white). HSL makes it easier to create harmonious colour palettes by adjusting hue while keeping saturation and lightness constant, which is harder to achieve by manipulating raw RGB channel values."
+          q: "Why would I use HSL instead of RGB?",
+          a: "HSL describes colour in a way that matches how humans think about it. Hue is the colour type on a 360-degree wheel, saturation controls intensity, and lightness controls brightness. Want a lighter version of your brand colour? Increase the L value in HSL. With RGB, you'd have to adjust all three channels simultaneously and guess at the result. HSL makes creating colour variations — lighter tints, darker shades, complementary pairs — much more intuitive."
         },
         {
-          q: "Can I use this for colours with transparency (alpha)?",
-          a: "The base converter handles opaque colours and does not process an alpha channel in the conversion itself. However, the CSS Outputs section includes an opacity slider that generates rgba() values with any alpha level from 0% to 100%. You can also manually append alpha values to the converted output — for example, rgba(59, 130, 246, 0.5) adds 50% transparency. The alpha channel is independent of the RGB-to-hex conversion and does not affect the computed colour values."
+          q: "Can I use this for colours with transparency?",
+          a: "The main converter works with opaque colours, but the opacity slider in the RGB section generates rgba() values at any alpha level from 0% to 100%. For example, setting the slider to 50% on #3B82F6 produces rgba(59, 130, 246, 0.50). You can copy that string directly into your CSS. The alpha channel is independent of the base colour conversion."
         },
         {
-          q: "Why does my hex code look different in another application?",
-          a: "Colour appearance can vary between applications due to colour profile differences. This converter uses the sRGB colour space, which is the default for web browsers and CSS. Applications that operate in Display P3, Adobe RGB, or other wide-gamut colour spaces may render the same numeric values differently. Additionally, screen calibration, gamma settings, and ambient lighting affect perceived colour. The tool's output is accurate for web-standard sRGB contexts."
+          q: "Why does my hex code look different in another app?",
+          a: "Different applications may use different colour profiles. This tool outputs sRGB, which is the standard for web browsers and CSS. Apps using Display P3 or Adobe RGB — common in design software on macOS — render the same numeric values as wider-gamut colours, making them appear more saturated on supporting screens. Screen calibration and ambient lighting also affect perceived colour."
+        },
+        {
+          q: "What does the Delta-E number next to Tailwind matches mean?",
+          a: "Delta-E measures the perceptual distance between two colours. A score of 0 means they are identical. Under 2 — the difference is invisible to most people without side-by-side comparison. Under 5 — a close match that works for most practical purposes. Above 10 — a noticeable difference that would be visible in a UI. If the closest Tailwind match has a Delta-E above 5, you may want to define a custom colour instead."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
