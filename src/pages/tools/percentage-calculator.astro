@@ -92,25 +92,43 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
        SEO CONTENT — OVERVIEW & HOW TO USE
   ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2" >Percentage Calculator — Instant Browser-Based Math</h2>
+    <h2 class="font-display seo-h2" >Three percentage calculations you probably do weekly</h2>
     <p class="seo-p" >
-      Percentage calculations appear in everyday work — invoice discounts, tax estimates, grade conversions, and KPI dashboards. This tool computes three core percentage operations entirely in-browser using vanilla JavaScript. No data leaves your device; there is no server round-trip, no account required, and no tracking. The computation runs on the IEEE 754 double-precision floating-point pipeline that every modern browser provides, delivering sub-millisecond results.
+      You're at a restaurant and the bill is $186. You want to leave 15% but don't want to do mental math. A supplier quotes $4,200 for a project but you need to know what 22% VAT adds to the total. Your marketing dashboard shows conversions went from 340 to 415 last month and you need the percentage increase for your report. All three are the same fundamental operation — percentages — but most people reach for a spreadsheet or Google search each time. This calculator handles all three in one place: enter your numbers, pick the mode, and get the answer instantly.
     </p>
     <p class="seo-p" >
-      <strong>What is X% of Y?</strong> multiplies a percentage by a base value — useful for discounts, tips, or tax. <strong>X is what % of Y?</strong> divides a part by the whole and scales to 100 — useful for scoring, completion rates, and market share. <strong>% Change</strong> computes the relative difference between two values — useful for growth metrics, price changes, and performance deltas.
+      The tool has three modes. <strong>What is X% of Y?</strong> calculates a percentage of a number — the discount amount, the tax, the tip. <strong>X is what % of Y?</strong> tells you what percentage one number is of another — your score on a test, how much of the budget you've spent, what share of the market you hold. <strong>% Change</strong> shows the relative difference between two values — useful for month-over-month growth, price increases, or performance comparisons.
     </p>
     <p class="seo-p-none" >
-      Select a mode tab, enter your numbers, and click <em>Calculate</em> — or press Tab to move between fields; the result updates on every keystroke. Use <em>Reset</em> to clear all fields and return to the initial state.
+      Results update as you type. No button click required. Use the <em>Reset</em> button to clear everything and start over.
     </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Who uses this calculator</h3>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
+      {[
+        ['Shoppers and diners working out discounts and tips', 'A $240 jacket at 30% off costs $168 — but the "% of" mode also handles the reverse: if the jacket is now $168 and you know it was 30% off, what was the original price? Divide 168 by 0.7 to get $240. The calculator does this in one step.'],
+        ['Accountants and bookkeepers reconciling invoices', 'When a supplier invoice shows a subtotal of $3,850 and a total of $4,620, the "% Change" mode instantly confirms 20% VAT was applied. Quick verification without a spreadsheet row.'],
+        ['Students checking exam scores and grade boundaries', 'If you scored 67 out of 85 on a maths test, the "X is what % of Y" mode returns 78.8%. You can immediately compare that against the grade boundary — 80% for an A — to see how many more marks you needed.'],
+        ['Marketing and sales teams tracking KPIs', 'Conversions jumped from 2,400 to 3,120 this quarter. The "% Change" mode returns +30% — the figure that goes straight into your slide deck. No formula in Excel, no Google search, no rounding confusion.'],
+      ].map(([title, desc]) => (
+        <div class="border-theme surface-2 seo-card-sm" >
+          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
+          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
+        </div>
+      ))}
+    </div>
   </div>
 
   <!-- ══════════════════════════════════════════════
        SEO CONTENT — TECHNICAL MECHANICS & APPLICATIONS
   ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2" >Formulas, Technical Mechanics &amp; Use Cases</h2>
+    <h2 class="font-display seo-h2" >The three formulas and when each one applies</h2>
+    <p class="seo-p" >
+      Every percentage problem reduces to one of three arithmetic expressions. This calculator identifies which one you need based on which mode tab you select, then executes it on every keystroke so the answer is always current.
+    </p>
 
-    <h3 class="font-display seo-h3-sm" >Core Formulas</h3>
+    <h3 class="font-display seo-h3-sm" >The formulas</h3>
     <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem">
       <div class="info-row">
         <span class="info-label">X% of Y</span>
@@ -126,18 +144,26 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
       </div>
     </div>
 
-    <h3 class="font-display seo-h3-sm" >How the Computation Works</h3>
+    <h3 class="font-display seo-h3-sm" >How each formula works in practice</h3>
     <p class="seo-p" >
-      Each mode follows a single arithmetic expression. <strong>X% of Y</strong> divides the percentage by 100 to produce a decimal multiplier, then multiplies by the base value. <strong>X is what % of Y</strong> divides the part by the whole, then multiplies by 100 to express the ratio as a percentage. <strong>% Change</strong> subtracts the original from the new value, divides by the absolute value of the original (to handle both increases and decreases correctly), and multiplies by 100. The absolute-value step prevents a sign flip when the original value is negative — a common source of errors in manual calculations.
+      <strong>X% of Y</strong> is the most straightforward: divide the percentage by 100 to get a decimal, then multiply. A 20% discount on $150 is 150 × 0.20 = $30. A 7% tax on $84.50 is 84.50 × 0.07 = $5.915, which rounds to $5.92. The division by 100 is the key step that most people skip when doing this in their head — "20% of 150" feels like it should be 150 × 20, but it's 150 × 0.20.
     </p>
     <p class="seo-p" >
-      Results are rounded to at most six decimal places before formatting, then displayed with locale-aware thousand separators via <code>toLocaleString()</code>. This avoids floating-point display artefacts such as <code>0.30000000000000004</code> while preserving full precision during intermediate steps. Division-by-zero is caught before computation: if the denominator is zero, the tool returns a clear error instead of <code>Infinity</code> or <code>NaN</code>.
+      <strong>X is what % of Y</strong> flips the operation: you know the part and the whole, and need the ratio. 45 out of 180 on a test is (45 ÷ 180) × 100 = 25%. Your team closed 12 out of 48 deals this quarter: (12 ÷ 48) × 100 = 25% close rate. The same formula works for market share: if your company has $3.2M in revenue out of a $28M market, your share is (3.2 ÷ 28) × 100 = 11.4%.
     </p>
-    <p class="seo-p">
-      Edge cases handled include negative inputs (valid — the % Change mode uses the absolute value of the original), zero denominators (blocked with an error), and empty fields (treated as <code>NaN</code>, which triggers validation). The auto-calculate listener fires on every <code>input</code> event, so partial entries do not produce stale results.
+    <p class="seo-p" >
+      <strong>% Change</strong> is the most error-prone because the order matters. Going from 80 to 100 is a +25% increase: ((100 − 80) ÷ 80) × 100 = 25%. But going from 100 back to 80 is a −20% decrease: ((80 − 100) ÷ 100) × 100 = −20%. The same absolute difference (20 units) produces different percentages because the base changes. The formula uses the absolute value of the original to handle negative inputs correctly — a price drop from −$5 to −$3 is a 40% change, not a sign-flipped result.
     </p>
 
+    <h3 class="font-display seo-h3-sm" >Why results update as you type</h3>
+    <p class="seo-p" >
+      The calculator attaches an <code>input</code> event listener to every field. Each keystroke triggers a recalculation, so the answer is always current without pressing a button. This is faster than a "Calculate" button workflow for quick checks — you type "20" and "150" and the answer "30" appears before your finger leaves the keyboard. If any field is empty or contains non-numeric text, the result clears automatically to avoid showing a stale number.
+    </p>
 
+    <h3 class="font-display seo-h3-sm" >Handling edge cases</h3>
+    <p class="seo-p" >
+      Division by zero is the most dangerous percentage error. If the denominator is zero — for example, asking "what % of 0 is 5?" — the calculator catches it before computing and shows a clear error message instead of <code>Infinity</code> or <code>NaN</code>. Negative denominators in "% Change" mode are handled correctly: a price going from −$50 to −$30 is a 40% increase (the formula divides by the absolute value of the original). Empty fields are treated as <code>NaN</code>, which triggers the validation check and prevents partial results from displaying.
+    </p>
   </div>
 
   <!-- ══════════════════════════════════════════════
@@ -149,41 +175,49 @@ const tool = tools.find(t => t.slug === 'percentage-calculator')!;
       {[
         {
           q: "How do I calculate a percentage increase?",
-          a: "Switch to the '% Change' mode. Enter the original (lower) value in the 'Original value' field and the new (higher) value in the 'New value' field. The calculator returns the percentage increase as a positive number. For example, going from 80 to 100 yields +25%. The same mode handles decreases — entering a higher original and lower new value produces a negative percentage."
+          a: "Switch to the '% Change' mode. Enter the original value (the lower number) in the 'Original value' field and the new value (the higher number) in the 'New value' field. The calculator returns the percentage increase as a positive number. For example, going from 80 to 100 yields +25%. The same mode handles decreases — entering a higher original and lower new value produces a negative percentage. A price drop from $200 to $150 shows −25%, which is the correct figure for your margin calculation."
         },
         {
           q: "What is the formula for a percentage discount?",
-          a: "Use the 'What is X% of Y?' mode: enter the discount percentage (e.g. 20) and the original price (e.g. 150). The result (30) is the discount amount. Subtract it from the original price to get the final sale price (120). This two-step approach works for any discount structure, including stacked or tiered promotions."
+          a: "Use the 'What is X% of Y?' mode: enter the discount percentage (e.g. 20) and the original price (e.g. 150). The result (30) is the discount amount. Subtract it from the original price to get the final sale price ($120). For a quick check: a 20% discount means you pay 80% of the original, so multiply 150 by 0.80 directly. Both methods give $120. This two-step approach works for any discount structure, including stacked promotions where a second discount applies to the already-reduced price."
         },
         {
           q: "Can I calculate reverse percentages?",
-          a: "Yes — the 'X is what % of Y?' mode is designed for this. Enter the part value (X) and the total (Y). The calculator returns what percentage the part represents out of 100. This is useful for determining completion rates, market share, or what fraction of a budget has been spent."
+          a: "Yes — the 'X is what % of Y?' mode handles this directly. Enter the part value (X) and the total (Y). The calculator returns what percentage the part represents. If a product is now $168 after a 30% discount, you can verify the original price by entering 168 as X and working backward: 168 ÷ 0.70 = $240. This is also useful for determining completion rates, market share, or what fraction of a budget has been spent."
         },
         {
           q: "How do I work out a tip?",
-          a: "Enter the tip percentage (e.g. 15 or 20) and the bill total in the 'What is X% of Y?' mode. The result is the tip amount in dollars. Add it to the original bill to get the total you should pay. For split bills, divide the tip amount by the number of people before adding each person's share of the food cost."
+          a: "Enter the tip percentage (e.g. 15 or 20) and the bill total in the 'What is X% of Y?' mode. The result is the tip amount in dollars. For a $186 bill at 15%, the tip is $27.90, making the total $213.90. For split bills, divide the tip amount by the number of people before adding each person's share of the food cost. If four people split a $186 bill with a $27.90 tip, each person pays $53.48 ($46.50 food + $6.98 tip)."
         },
         {
           q: "What happens if I enter zero as the denominator?",
-          a: "The calculator detects division by zero before performing the operation and displays a clear error message. In '% Change' mode, the original value cannot be zero because the formula divides by it. In 'X is what % of Y?' mode, Y cannot be zero. This prevents IEEE 754 Infinity or NaN results from appearing in the output."
+          a: "The calculator catches division by zero before computing and shows a clear error message instead of Infinity or NaN. In '% Change' mode, the original value cannot be zero because the formula divides by it — a move from $0 to $50 is mathematically undefined as a percentage. In 'X is what % of Y?' mode, Y cannot be zero for the same reason. This validation runs on every keystroke, so you'll see the error immediately rather than after clicking a button."
         },
         {
           q: "Why does the result update as I type instead of only after clicking Calculate?",
-          a: "The tool listens for the 'input' event on every field, triggering a recalculation on each keystroke. This gives immediate feedback and eliminates the need to press a button for quick checks. If any field is empty or contains non-numeric text, the result clears automatically until valid numbers are provided."
+          a: "The tool listens for the 'input' event on every field, triggering a recalculation on each keystroke. This gives immediate feedback — you type '20' in the percentage field and '150' in the value field, and '30' appears before your finger leaves the keyboard. The Calculate button still works if you prefer a deliberate action, but the auto-update is faster for quick checks. If any field is empty or contains non-numeric text, the result clears automatically to prevent showing a stale number."
         },
         {
           q: "How do I find what percentage one number is of another?",
-          a: "Use the 'X is what % of Y?' mode. Enter the first number as X (the part) and the second as Y (the whole). The result is the percentage. For example, 45 out of 180 returns 25%. This is the most common percentage calculation in academic grading, survey analysis, and budget tracking."
+          a: "Use the 'X is what % of Y?' mode. Enter the first number as X (the part) and the second as Y (the whole). The result is the percentage. For example, 45 out of 180 on a test returns 25%. Your team's $3.2M revenue in a $28M market gives 11.4% market share. A completed project showing 847 out of 1,200 tasks done returns 70.6% — useful for status reports. This is the most versatile of the three modes because it answers 'how much of the total do I have?'"
         },
         {
           q: "Can I use this calculator for compound percentage changes?",
-          a: "This tool handles single-step percentage calculations. For compound changes (e.g. a 10% increase followed by a 15% decrease), apply each change sequentially: calculate the first percentage change, note the result, then use that as the 'Original value' for the second calculation. The % Change mode will show the net effect across both steps."
+          a: "This tool handles single-step calculations. For compound changes — for example, a 10% price increase followed by a 15% discount — apply each change sequentially: calculate the first percentage, note the result, then use that as the input for the second. On a $200 item: 10% increase = $220, then 15% discount on $220 = $33 off, final price $187. The net effect is actually a −7% change overall, which the '% Change' mode confirms when you compare $200 to $187."
+        },
+        {
+          q: "How is this different from Excel's percentage formulas?",
+          a: "Excel requires you to remember formula syntax (=A1*20%, =B1/A1*100, =(B1-A1)/ABS(A1)*100) and set up cells correctly. This calculator gives you three clearly labelled modes with no formula setup. For quick, one-off percentage calculations — a discount at the store, a tip, a test score — it's faster than opening a spreadsheet. For ongoing calculations with linked data, Excel is more powerful. Use whichever fits the task."
+        },
+        {
+          q: "Why does a 50% decrease require a 100% increase to get back to the original?",
+          a: "This is the base-change problem that catches everyone. A $100 item at 50% off costs $50. To get back to $100 from $50, you need a $50 increase on a $50 base — which is 100%, not 50%. The '% Change' mode handles this correctly because it always divides by the current value, not the original. This asymmetry is why percentage changes are misleading without specifying the base: '50% off' sounds equal to '50% increase' but they aren't inverse operations."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
             <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>

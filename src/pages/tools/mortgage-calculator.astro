@@ -145,20 +145,21 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2" >Mortgage Amortization Calculator Overview</h2>
+    <h2 class="font-display seo-h2" >See exactly where your mortgage payments go</h2>
     <p class="seo-p" >
-      This mortgage amortization calculator provides a precise, real-time breakdown of how principal and interest payments reduce your home loan balance over time. Built with modern vanilla JavaScript and running entirely in-browser, the tool executes every computation locally using standard browser APIs — no data is transmitted to any server, and no cookies or tracking scripts are involved. The 100% client-side architecture ensures zero server latency and complete privacy for your financial inputs.
+      When you take out a 30-year home loan, most of your early payments go toward interest rather than paying down the principal. On a $600,000 mortgage at 6.5%, the first month's payment of $3,796 allocates $3,250 to interest and only $546 to principal — a split that most borrowers never see laid out clearly. This calculator breaks down that split month by month, shows you the full amortization schedule, and lets you model how extra repayments change the trajectory of your loan.
     </p>
     <p class="seo-p" >
-      The calculator models a standard principal-and-interest (P&amp;I) amortization schedule, which is the most common mortgage structure offered by Australian lenders. It computes the fixed monthly repayment using the standard annuity formula, then iterates month-by-month to allocate each payment between interest (calculated on the outstanding balance) and principal reduction. An extra-payment slider allows you to model additional repayments and quantify their impact on total interest paid and loan term.
+      Adjust the loan amount, interest rate, term, and extra monthly payment using the sliders. The three result cards update instantly: your monthly payment, how much interest you save by making extra repayments, and how many years you cut from the loan term. A balance-over-time chart plots two lines — your baseline loan trajectory and the accelerated one — so you can see the crossover where extra payments pull ahead. Toggle the amortization table to inspect every single payment down to the dollar.
     </p>
 
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Who uses this calculator</h3>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       {[
-        ['Home buyers comparing loan structures', 'A prospective buyer evaluating a $500,000 mortgage across 25-year and 30-year terms can instantly see the trade-off between lower monthly payments and higher total interest. This tool quantifies the exact dollar cost of each option, enabling informed decisions before committing to a lender.'],
-        ['Homeowners modelling extra repayments', 'Borrowers who receive annual bonuses, tax refunds, or salary increases can test how directing an additional $200–$1,000 per month toward principal shortens their loan term and reduces interest. The visual chart and amortization table make the compounding benefit of early principal reduction tangible.'],
-        ['Mortgage brokers and financial educators', 'Professionals advising clients can use this tool as a transparent, client-side demonstration of amortization mechanics. Because all formulas are visible and nothing is obscured behind a server call, it serves as a trustworthy educational resource during consultations.'],
+        ['First-home buyers comparing loan terms', 'A couple looking at a $550,000 loan can instantly see that a 25-year term costs $873/month more than a 30-year term but saves $142,000 in total interest. That concrete dollar figure helps them decide whether the higher monthly commitment is worth it before they apply with a lender.'],
+        ['Homeowners testing extra repayment strategies', 'If you receive a $12,000 annual bonus, you can model the impact of putting $1,000/month extra toward the mortgage versus making a single $12,000 lump-sum payment once a year. The amortization table shows exactly how each approach shifts the interest-to-principal ratio month by month.'],
+        ['Mortgage brokers walking clients through options', 'A broker comparing a 5.9% variable rate against a 6.3% fixed rate can pull up this tool during a meeting and show the client the real monthly and total-interest difference on their specific loan amount — no spreadsheets required.'],
+        ['Refinancing homeowners evaluating a rate switch', 'Someone currently paying 7.2% who has been offered 6.1% by a new lender can enter both scenarios and see the monthly savings, total interest reduction, and how long it takes for the refinancing costs to pay for themselves.'],
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm" >
           <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
@@ -169,10 +170,15 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2" >Deep-Dive: Amortization Mechanics &amp; Mathematical Logic</h2>
+    <h2 class="font-display seo-h2" >How the amortization schedule is calculated</h2>
     <p class="seo-p" >
-      The calculator employs the standard mortgage amortization formula, which is derived from the time-value-of-money equation for an ordinary annuity. This formula is the industry standard used by financial institutions worldwide and conforms to the mathematical conventions outlined in mortgage lending practice.
+      Every mortgage payment covers two things: interest on the outstanding balance and repayment of the principal. The split between these two shifts every month — early payments are mostly interest, later payments are mostly principal. This tool computes that split using the standard annuity formula that lenders worldwide use to structure principal-and-interest loans.
     </p>
+    <p class="seo-p" >
+      All calculations run locally in your browser. No financial data you enter is transmitted anywhere.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">The fixed-payment formula</h3>
     <div class="seo-card-code" style="background:var(--bg-surface-2); border:1px solid var(--border); color:var(--text-primary)">
       Monthly rate r = Annual rate / 12<br/>
       n = Total months = Years × 12<br/>
@@ -182,16 +188,25 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
               Balance = Balance − Principal
     </div>
     <p class="seo-p-sm" >
-      The monthly payment <strong>M</strong> is computed once at loan origination and remains fixed throughout the term. In the early years of a 30-year mortgage, approximately 70–80% of each payment services interest, with the remainder reducing principal. As the balance decreases, a progressively larger share of each payment applies to principal — this non-linear allocation is the defining characteristic of amortization.
+      The monthly payment <strong>M</strong> is calculated once at the start and stays fixed for the life of the loan. On a $600,000 loan at 6.5% over 30 years, that works out to $3,796 per month. In month one, interest is $600,000 × 0.065 ÷ 12 = $3,250, leaving only $546 to reduce the principal. By month 120 (year 10), the balance has dropped enough that roughly $1,200 of each payment goes to principal. By month 300 (year 25), the split has flipped — about $2,800 goes to principal and $1,000 to interest. This gradual shift is why a 30-year loan costs so much more total interest than a 15-year loan, even though the monthly payment is lower.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">How extra payments shorten the loan</h3>
+    <p class="seo-p-sm" >
+      When you add an extra amount each month, the entire extra payment goes directly to reducing the principal. Because interest for the next month is calculated on the now-smaller balance, you pay less interest the following month — and every month after that. The effect compounds: an extra $500/month on a $600,000 loan at 6% saves approximately $152,000 in total interest and pays off the loan about 8 years early. The chart on this page shows this visually — the green "with extra" line diverges from the blue baseline, and the dashed vertical line marks the point where the accelerated loan is fully paid off.
     </p>
     <p class="seo-p-sm" >
-      <strong>Extra payments and principal acceleration:</strong> When an additional amount is contributed each month, it is applied entirely to the principal balance. Because interest for the following month is computed on the reduced balance, the savings compound forward — each extra dollar paid in month one reduces interest in every subsequent month until the loan is fully retired.
+      The amortization table lets you verify this month by month. Each row shows the payment, the interest portion, the principal portion, and the remaining balance. You can watch the interest column shrink and the principal column grow as you scroll through the schedule.
     </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Daily vs. monthly interest calculation</h3>
     <p class="seo-p-sm" >
-      <strong>Edge cases handled:</strong> The calculator gracefully manages a 0% interest rate (linear amortization), very short loan terms (10 years), and high extra-payment scenarios where the loan is paid off significantly ahead of schedule. Floating-point precision is maintained using IEEE 754 double-precision arithmetic, with the final payment adjusted to zero out the balance exactly.
+      Most Australian lenders calculate interest daily on the outstanding balance rather than monthly. A daily-method lender charges interest on day 1 based on the full balance, applies your payment, then charges interest on day 2 based on the reduced balance, and so on for 365 days. This tool uses standard monthly compounding — one calculation per month — which produces results within approximately 0.5% of the daily method. The difference on a $600,000 loan over 30 years is typically a few hundred dollars in total interest, which is negligible for planning purposes but worth knowing about if you're comparing these figures to your lender's official statements.
     </p>
-    <p class="seo-p-none" >
-      <strong>Note on daily vs. monthly compounding:</strong> Some Australian lenders calculate interest daily on the outstanding balance and sum 365 daily charges per year. This tool uses standard monthly compounding, which produces results within a small margin (typically &lt;0.5% variance) of daily-method calculations. For exact figures, always refer to your lender's official loan contract.
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Edge cases the tool handles</h3>
+    <p class="seo-p-sm" >
+      A 0% interest rate produces linear amortization — the monthly payment is simply the loan amount divided by the number of months, with no interest component. Very short terms (10 years) are fully supported. When extra payments are large enough to retire the loan before the end of the term, the final payment is automatically adjusted to zero out the remaining balance exactly, avoiding rounding artefacts that could leave a residual cent.
     </p>
   </div>
 
@@ -203,7 +218,7 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How much does an extra $500/month save on a $600k mortgage?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">On a $600,000 mortgage at 6% over 30 years, an extra $500 per month reduces the loan term by approximately 8 years and saves roughly $140,000–$160,000 in total interest. The savings arise because each extra payment reduces the principal immediately, which means every subsequent month calculates interest on a smaller balance. Use the extra payment slider to see the precise figure for your exact rate, term, and repayment amount.</p>
+          <p itemprop="text" class="seo-faq-a">On a $600,000 mortgage at 6% over 30 years, an extra $500 per month reduces the loan term by approximately 8 years and saves roughly $152,000 in total interest. The savings compound because each extra dollar reduces the principal immediately, meaning every subsequent month calculates interest on a smaller balance. Over 30 years, that $500/month extra — totalling $180,000 in additional contributions — avoids $152,000 in interest charges, effectively earning a risk-free 84% return on the extra money deployed. Use the extra payment slider to see the precise figure for your exact rate, term, and repayment amount.</p>
         </div>
       </div>
 
@@ -211,7 +226,7 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does this calculator account for offset accounts?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">No — this is a standard principal-and-interest amortization calculator. An offset account functions mathematically like a lump-sum reduction to your loan balance each month. To approximate the effect of an offset account, subtract your typical offset balance from the loan amount before entering it into the calculator. This gives a reasonable approximation, though actual offset interest savings are calculated daily by most lenders.</p>
+          <p itemprop="text" class="seo-faq-a">No — this tool models a standard principal-and-interest loan without an offset facility. An offset account works by reducing the balance that interest is calculated on each day. To approximate the effect, subtract your typical offset balance from the loan amount before entering it into the calculator. For example, if you have a $600,000 loan and $50,000 in an offset account, enter $550,000 as the loan amount. The approximation is close but not exact because most lenders calculate offset interest daily while this tool uses monthly compounding.</p>
         </div>
       </div>
 
@@ -219,7 +234,7 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What is the difference between P&amp;I and interest-only loans?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">This calculator models a principal-and-interest (P&amp;I) loan where each payment reduces the outstanding balance. Interest-only loans charge only the interest for an initial period (typically 1–5 years), after which they revert to P&amp;I with significantly higher payments to cover the original principal within the remaining term. Interest-only periods dramatically increase total interest paid over the life of the loan.</p>
+          <p itemprop="text" class="seo-faq-a">This calculator models a principal-and-interest (P&amp;I) loan where each payment reduces the outstanding balance. Interest-only loans charge only the interest for an initial period — typically 1 to 5 years — after which they revert to P&amp;I with significantly higher payments to cover the original principal within the remaining term. On a $600,000 loan at 6%, interest-only for 5 years means you pay $30,000/year in interest for 5 years without reducing the principal at all, then face P&amp;I payments on the full $600,000 for the remaining 25 years. That structure adds roughly $90,000 in total interest compared to P&amp;I from day one.</p>
         </div>
       </div>
 
@@ -227,7 +242,7 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Why does the schedule show slightly different numbers to my bank?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Banks may calculate interest daily rather than monthly, apply rounding differently at each step, or use a 365-day vs 12-equal-month convention. Some lenders also include fees or charges in the periodic statement that are not captured here. This calculator uses standard monthly compounding, which produces results within a small margin (typically under 0.5%) of daily-method calculations. For exact figures, always refer to your lender's official loan statements.</p>
+          <p itemprop="text" class="seo-faq-a">Most Australian lenders calculate interest daily on the outstanding balance rather than monthly. A daily-method lender applies your payment on the day it's received, then recalculates interest on the new balance for the next day. This tool uses monthly compounding — one interest calculation per month — which produces results within approximately 0.5% of the daily method. On a $600,000 loan over 30 years, the difference is typically $200–$500 in total interest. Some lenders also include monthly account-keeping fees ($8–$15/month) in their statements, which this tool does not capture. For exact figures, always refer to your lender's official loan contract and periodic statements.</p>
         </div>
       </div>
 
@@ -235,7 +250,7 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Can I use this calculator for an investment property loan?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes — the amortization mathematics are identical for owner-occupied and investment property loans. However, investment property loans may carry a slightly higher interest rate, and tax implications (such as negative gearing or depreciation deductions) are not modelled here. Enter your investment loan's actual rate and term to see the repayment schedule. Consult a qualified tax professional for investment-specific advice.</p>
+          <p itemprop="text" class="seo-faq-a">Yes — the amortization mathematics are identical for owner-occupied and investment property loans. The key difference is that investment loans often carry a 0.2–0.5% higher interest rate, and you may be able to claim tax deductions on the interest portion. This tool does not model tax deductions or negative gearing. Enter your investment loan's actual rate and term to see the repayment schedule, then consult a qualified accountant for the tax implications specific to your situation.</p>
         </div>
       </div>
 
@@ -243,14 +258,30 @@ const tool = tools.find(t => t.slug === 'mortgage-calculator')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What happens if I make extra payments irregularly rather than monthly?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">This calculator assumes a consistent extra payment each month. In practice, irregular extra payments (such as annual lump sums from a bonus) still reduce total interest, but the savings will be slightly less than the same total amount spread evenly across 12 months, because the compounding benefit of each dollar is realised sooner when paid monthly. For irregular scenarios, consider splitting your annual extra amount by 12 and using that as the monthly extra figure.</p>
+          <p itemprop="text" class="seo-faq-a">This calculator assumes a consistent extra payment each month. In practice, irregular extra payments — such as a $12,000 annual bonus deposited once a year — still reduce total interest, but the savings are slightly less than spreading the same $1,000/month across 12 months. The reason is timing: the $1,000 paid in January starts saving interest for 12 months, while the $12,000 deposited the following January only saves interest for 11 months. For irregular scenarios, divide your annual extra amount by 12 and enter that as the monthly figure to get a realistic estimate.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does this compare to my bank's mortgage calculator?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Bank calculators typically show you the minimum monthly repayment and little else. This tool goes further: it displays the full amortization schedule month by month, shows the interest-versus-principal split for every payment, plots a balance-over-time chart, and lets you model extra repayments to see the exact interest savings and term reduction. Bank calculators also often exclude fees, charges, and LMI (lenders mortgage insurance), while this tool focuses purely on the loan principal and interest — giving you a cleaner picture of the core loan mechanics.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Should I use the offset account or make extra repayments?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Both strategies reduce interest, but they work differently. Extra repayments permanently reduce your loan balance, which means you can't redraw the money without a formal loan increase. An offset account keeps your money liquid — you can withdraw it at any time — while still reducing the interest charged each day. The trade-off is that offset accounts often come with higher loan fees ($10–$25/month) and slightly higher interest rates. If you have disciplined savings habits and want to minimise total interest, extra repayments usually win. If you need emergency fund access, an offset account provides flexibility that extra repayments don't.</p>
         </div>
       </div>
 
     </div>
 
     <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7">
-      <strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This calculator is provided for educational and illustrative purposes only. It does not constitute financial, lending, or tax advice. The results are estimates based on standard amortization formulas and may differ from your lender's actual figures due to rounding, fee structures, or alternative compounding conventions. Always consult a licensed financial advisor or your lender for decisions related to mortgage financing.
+      <strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This calculator is provided for educational and illustrative purposes only. It does not constitute financial, lending, or tax advice. The results are estimates based on standard amortization formulas and may differ from your lender's actual figures due to rounding, fee structures, daily interest calculations, or alternative compounding conventions. Always consult a licensed financial advisor or your lender for decisions related to mortgage financing.
     </div>
   </div>
 

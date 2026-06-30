@@ -59,9 +59,9 @@ Expand each tool page's SEO content slots (`how-to-use`, `how-it-works`, `faq`) 
 
 ## TODO
 
-- [ ] mortgage-calculator
-- [ ] compound-interest-retirement
-- [ ] percentage-calculator
+- [x] mortgage-calculator
+- [x] compound-interest-retirement
+- [x] percentage-calculator
 - [ ] bmi-calculator
 - [ ] word-counter
 - [ ] colour-palette-css-generator
