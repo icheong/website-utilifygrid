@@ -46,20 +46,20 @@ const tool = tools.find(t => t.slug === 'json-to-typescript')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2" >JSON to TypeScript Generator — Overview &amp; Modern Technical Context</h2>
+    <h2 class="font-display seo-h2" >Paste JSON — get TypeScript interfaces or Zod schemas in one click</h2>
     <p class="seo-p" >
-      TypeScript has become the dominant typed superset of JavaScript, with over 80% of new JavaScript projects adopting it for compile-time type safety. A frequent workflow bottleneck is manually translating JSON payloads — from API responses, configuration files, or test fixtures — into TypeScript type definitions. This generator automates that process entirely in the browser using vanilla JavaScript. Paste any JSON object, and the tool recursively infers TypeScript interfaces or Zod validation schemas in real time. No data leaves your browser; no server calls are made; no cookies or tracking scripts execute.
+      You're consuming a REST API and the response is a 40-line JSON object with nested objects and arrays. You need to write TypeScript interfaces for every level of nesting, name each one correctly, handle the nullable fields, and deal with the mixed-type array. Instead of typing it all manually — which takes 15 minutes and you'll probably miss a field — paste the JSON here and get a complete set of exported interfaces in one click. Toggle to Zod mode if you also need runtime validation schemas.
     </p>
     <p class="seo-p" >
-      The tool supports two output modes: <strong>TypeScript Interface</strong> (generates exported interface declarations with proper nesting) and <strong>Zod Schema</strong> (generates runtime validation schemas using the Zod library). Both modes handle nested objects, arrays of any depth, optional fields detected from <code>null</code> values, and union types derived from mixed-type arrays. Paste JSON into the left panel and the output updates automatically — no manual "Generate" click required, though one is available. Click <strong>Copy</strong> to export the result directly into your codebase.
+      Paste JSON into the left panel — the output updates automatically. The tool handles nested objects (generating sub-interfaces with PascalCase names), arrays (inferring element types), mixed-type arrays (producing union types), and null values (marking fields as optional). Click <strong>Copy</strong> to export the result directly into your codebase.
     </p>
 
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Who uses this generator</h3>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       {[
-        ['API response typing', 'When consuming REST or GraphQL APIs, developers receive JSON payloads that must be typed in the application. Instead of manually writing interfaces for each endpoint — which is error-prone and tedious — paste a sample response into this generator to produce a complete, ready-to-use TypeScript interface. This is particularly valuable when working with large API surfaces (e.g., Stripe, Twilio, or internal microservices) where dozens of response types need definitions.'],
-        ['Configuration file validation', 'Projects that load configuration from JSON or YAML files benefit from both TypeScript types and Zod schemas. The interface mode provides compile-time safety when accessing config properties, while the Zod mode adds runtime validation that catches malformed config at application startup. This dual approach is standard practice in production Node.js applications.'],
-        ['Test fixture generation', 'When writing integration tests, developers often need typed mock data that matches API contracts. Generating a TypeScript interface from a real API response ensures test fixtures are type-safe and will compile against the actual data shape. The Zod mode is equally useful for creating test schemas that validate mock data matches expected structures.'],
+        ['Developers typing API responses', 'A developer receives a 200-line JSON response from a payments API and needs TypeScript interfaces for every endpoint. Instead of manually writing each interface — which is tedious and error-prone — they paste a sample response and get a complete, correctly-nested interface in seconds. For 30 endpoints, that\'s 30 pastes instead of 30 minutes of manual typing.'],
+        ['Teams adding Zod validation to config files', 'A Node.js application loads configuration from a JSON file. A TypeScript interface gives compile-time safety, but Zod schemas add runtime validation — catching malformed config at startup instead of at an unpredictable point during execution. The Zod mode generates importable schemas with .nullable().optional() chains for null values and z.union() for mixed arrays.'],
+        ['Test fixture authors creating mock data', 'When writing integration tests, you need typed mock data that matches the API contract. Paste a real API response, generate the interface, and your test fixtures are type-safe. The generated types will catch mismatches at compile time — a typo in a field name or a wrong type becomes a TypeScript error instead of a flaky test.'],
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm" >
           <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
@@ -70,32 +70,31 @@ const tool = tools.find(t => t.slug === 'json-to-typescript')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2" >Deep-Dive: Type Inference Rules &amp; Schema Generation Mechanics</h2>
+    <h2 class="font-display seo-h2" >How the generator infers types from your JSON</h2>
 
-    <h3 class="font-display seo-h3-sm" >TypeScript Interface Inference</h3>
-    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem">
-      <div class="info-row"><span class="info-label">string</span><span class="info-value">JSON string → <code>string</code></span></div>
-      <div class="info-row"><span class="info-label">number</span><span class="info-value">JSON number → <code>number</code> (IEEE 754 double-precision)</span></div>
-      <div class="info-row"><span class="info-label">boolean</span><span class="info-value">JSON boolean → <code>boolean</code></span></div>
-      <div class="info-row"><span class="info-label">null</span><span class="info-value">JSON null → field marked optional (<code>?</code>) with type <code>string | null</code></span></div>
-      <div class="info-row"><span class="info-label">array</span><span class="info-value">Infers element type from first element, generates <code>Type[]</code>. Mixed arrays produce union types.</span></div>
-      <div class="info-row"><span class="info-label">object</span><span class="info-value">Recursively generates nested interface with PascalCase naming derived from property key</span></div>
-    </div>
-
-    <h3 class="font-display seo-h3-sm" >Zod Schema Generation</h3>
-    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem">
-      <div class="info-row"><span class="info-label">Primitives</span><span class="info-value"><code>z.string()</code>, <code>z.number()</code>, <code>z.boolean()</code> map directly from JSON types</span></div>
-      <div class="info-row"><span class="info-label">Nullable</span><span class="info-value">Fields with <code>null</code> values produce <code>.nullable().optional()</code> chain</span></div>
-      <div class="info-row"><span class="info-label">Arrays</span><span class="info-value"><code>z.array()</code> wrapping inferred element type or <code>z.union()</code> for mixed arrays</span></div>
-      <div class="info-row"><span class="info-label">Objects</span><span class="info-value"><code>z.object()</code> with recursive field schemas; nested objects generate separate exported schemas</span></div>
-    </div>
-
-    <h3 class="font-display seo-h3-sm" >How the Generator Processes Input</h3>
+    <h3 class="font-display seo-h3-sm" >Basic type mapping</h3>
     <p class="seo-p" >
-      The generator listens to <code>input</code> events on the JSON textarea. On each keystroke, it attempts <code>JSON.parse()</code> on the trimmed content. If parsing succeeds, the resulting JavaScript object is passed to either <code>inferInterface()</code> or <code>inferZod()</code> depending on the selected output mode. Both functions perform a single-pass recursive traversal of the object tree. For interface mode, each object key generates a property line with its inferred type, and nested objects trigger a new <code>export interface</code> block appended to the output. For Zod mode, the same traversal produces <code>z.object()</code> calls with nested schemas exported as standalone constants.
+      The generator reads each value in your JSON and maps it to a TypeScript type: strings become <code>string</code>, numbers become <code>number</code>, booleans become <code>boolean</code>, and null marks a field as optional with type <code>string | null</code>. Arrays are typed by looking at the first element — an array of objects becomes <code>Item[]</code>, an array of strings becomes <code>string[]</code>. Objects trigger a new interface block with the property name converted to PascalCase.
     </p>
-    <p class="seo-p-none" >
-      <strong>Edge cases handled:</strong> Empty arrays produce <code>unknown[]</code> (interface) or <code>z.array(z.unknown())</code> (Zod) since no element type can be inferred. Mixed-type arrays produce union types by collecting unique inferred types via a <code>Set</code>. Top-level arrays are wrapped in a root type alias (<code>type Root = Item[]</code>) rather than an interface, since TypeScript does not allow interfaces to extend arrays. Nested object names are derived from the property key using PascalCase conversion, ensuring valid TypeScript identifiers.
+
+    <h3 class="font-display seo-h3-sm" >Worked example: the sample payload</h3>
+    <p class="seo-p" >
+      The sample JSON contains an id (number), name, email (strings), age (null), roles (array of strings), address (nested object with street, city, postcode), and active (boolean). The generator produces: an <code>export interface Root</code> with <code>id: number</code>, <code>name: string</code>, <code>email: string</code>, <code>age?: string | null</code> (optional because null), <code>roles: string[]</code>, <code>address: Address</code> (a new sub-interface), and <code>active: boolean</code>. The Address interface contains <code>street: string</code>, <code>city: string</code>, <code>postcode: string</code>.
+    </p>
+
+    <h3 class="font-display seo-h3-sm" >What happens with arrays</h3>
+    <p class="seo-p" >
+      If all elements in an array have the same type, it generates a typed array — <code>string[]</code>, <code>number[]</code>, or <code>Item[]</code> for objects. If the array mixes types (like <code>[1, "hello", true]</code>), it collects the unique inferred types and produces a union: <code>(string | number | boolean)[]</code>. Empty arrays produce <code>unknown[]</code> because there's nothing to infer the element type from.
+    </p>
+
+    <h3 class="font-display seo-h3-sm" >Zod mode: runtime validation</h3>
+    <p class="seo-p" >
+      In Zod mode, the same traversal generates <code>z.string()</code>, <code>z.number()</code>, <code>z.boolean()</code> for primitives. Null values produce <code>.nullable().optional()</code>. Arrays become <code>z.array()</code>. Objects become <code>z.object()</code> with nested schemas exported as standalone constants. The output includes an import statement and a type inference line: <code>export type Root = z.infer&lt;typeof rootSchema&gt;</code> — giving you both runtime validation and compile-time type safety from a single source.
+    </p>
+
+    <h3 class="font-display seo-h3-sm" >Edge cases</h3>
+    <p class="seo-p" >
+      Top-level arrays are wrapped in a root type alias (<code>type Root = Item[]</code>) rather than an interface, because TypeScript doesn't allow interfaces to extend arrays. Nested object names are derived from the property key using PascalCase — <code>address</code> becomes <code>Address</code>, <code>shipping_info</code> becomes <code>ShippingInfo</code>. The generator handles any nesting depth — the recursion terminates naturally when it reaches primitives or empty arrays.
     </p>
   </div>
 
@@ -103,12 +102,13 @@ const tool = tools.find(t => t.slug === 'json-to-typescript')!;
     <h2 class="font-display seo-h2-faq" >Frequently Asked Questions</h2>
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        {q:'Does it handle deeply nested JSON?',a:'Yes. The generator recurses through nested objects and creates sub-interfaces (or nested Zod objects) for each level. Interface names are derived from the property name using PascalCase. There is no practical depth limit — the recursion terminates naturally when it reaches primitive values (string, number, boolean, null) or empty arrays.'},
-        {q:'What happens with arrays of mixed types?',a:'If an array contains elements of different types, the generator collects the unique inferred types and produces a union type (e.g., <code>(string | number)[]</code>). For Zod mode, it uses <code>z.union()</code> with the detected member schemas. The type deduction is based on the actual runtime types present in the first few elements of the array.'},
-        {q:'Why use Zod instead of a TypeScript interface?',a:'TypeScript interfaces are erased at compile time — they provide no runtime safety. Zod schemas validate data at runtime, which is critical for API responses, form inputs, user uploads, or any external data source where the shape cannot be guaranteed. Both approaches are complementary: Zod schemas can infer TypeScript types automatically via <code>z.infer<typeof schema></code>, giving you both runtime validation and compile-time type safety from a single source.'},
-        {q:'Can I paste a JSON array at the top level?',a:'Yes. If the top-level JSON value is an array, the generator wraps it in a root type alias. For interfaces it produces <code>type Root = Item[]</code>; for Zod it produces <code>z.array(itemSchema)</code>. The item type is inferred from the first element of the array.'},
-        {q:'How does the tool handle null values in JSON?',a:'JSON <code>null</code> is not a TypeScript primitive. When the generator encounters a <code>null</code> value, it marks the field as optional using the <code>?</code> syntax and types it as <code>string | null</code> (the most common intent). In Zod mode, null values produce <code>.nullable().optional()</code>, allowing both <code>null</code> and <code>undefined</code> at runtime.'},
-        {q:'Is the generated code production-ready?',a:'The output follows TypeScript and Zod best practices: exported interfaces, proper nesting, correct union types, and valid Zod schema composition. For production use, review the generated types against your actual data contracts — the tool infers from the shape of the sample JSON you provide, so ensure your sample is representative of all possible response shapes.'},
+        {q:'Does it handle deeply nested JSON?',a:'Yes. The generator recurses through nested objects and creates sub-interfaces (or nested Zod objects) for each level. Interface names are derived from the property name using PascalCase — a field called shipping_info becomes ShippingInfo. There is no practical depth limit; the recursion terminates when it reaches primitives (string, number, boolean, null) or empty arrays.'},
+        {q:'What happens with arrays of mixed types?',a:'If an array contains elements of different types, the generator collects the unique inferred types and produces a union type — for example, (string | number)[] for a mixed array. In Zod mode, it uses z.union() with the detected member schemas. The deduction is based on the actual runtime types present in the elements.'},
+        {q:'Why use Zod instead of a TypeScript interface?',a:'TypeScript interfaces are erased at compile time — they provide no runtime safety. Zod schemas validate data at runtime, which matters for API responses, form inputs, user uploads, or any external data where the shape can\'t be guaranteed. Both are complementary: Zod schemas infer TypeScript types via z.infer<typeof schema>, giving you both runtime validation and compile-time type safety from a single source.'},
+        {q:'Can I paste a JSON array at the top level?',a:'Yes. If the top-level value is an array, the generator wraps it in a root type alias. For interfaces it produces type Root = Item[]; for Zod it produces z.array(itemSchema). The item type is inferred from the array elements.'},
+        {q:'How does the tool handle null values?',a:'JSON null is not a TypeScript primitive. When the generator encounters null, it marks the field as optional using the ? syntax and types it as string | null (the most common intent). In Zod mode, null values produce .nullable().optional(), allowing both null and undefined at runtime.'},
+        {q:'Is the generated code production-ready?',a:'The output follows TypeScript and Zod best practices: exported interfaces, proper nesting, correct union types, and valid Zod schema composition. For production use, review the generated types against your actual data contracts — the tool infers from the shape of the sample JSON you provide, so ensure your sample represents all possible response shapes.'},
+        {q:'What if my JSON has duplicate keys?',a:'JSON parsers handle duplicate keys by keeping the last value. If your JSON has {"name":"Alice","name":"Bob"}, the parser sees only name: "Bob". The generator will produce name: string — it can\'t detect the duplicate because the parser already resolved it. For most real-world JSON (from APIs or config files), duplicate keys aren\'t an issue.'},
       ].map(item=>(
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>

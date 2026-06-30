@@ -61,20 +61,20 @@ const tool = tools.find(t => t.slug === 'jwt-debugger')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2" >JWT Debugger Overview &amp; Modern Technical Context</h2>
+    <h2 class="font-display seo-h2" >Paste a JWT — see what's inside in two seconds</h2>
     <p class="seo-p" >
-      JSON Web Tokens (JWTs) are the dominant stateless authentication mechanism used across modern web APIs, single-sign-on (SSO) implementations, and microservice architectures. This JWT Debugger provides instant, client-side decoding of any standard-compliant token, allowing developers to inspect headers, payloads, and signature segments without transmitting sensitive data to external servers. The tool is built with modern vanilla JavaScript and the Web Crypto API-compatible Base64url decoding routines — every operation executes entirely within your browser with zero network requests, zero cookies, and zero data retention.
+      Your API keeps returning 401 Unauthorized but the token looks fine at first glance. You copied a JWT from a login response and need to check whether the <code>exp</code> claim has expired. You're integrating with a third-party OAuth provider and want to verify the <code>sub</code> and <code>aud</code> claims before wiring up your auth middleware. Paste the token into the text box and the header, payload, and signature decode instantly — formatted JSON, colour-coded segments, and standard claims extracted into labelled rows.
     </p>
     <p class="seo-p" >
-      Paste any JWT into the input field or click <strong>Load sample</strong> to see a demonstration token. The debugger instantly splits the token at its two dot delimiters, decodes each Base64url-encoded segment, and renders the header and payload as formatted JSON. Standard claims — such as <code>iat</code> (issued at), <code>exp</code> (expiration), <code>sub</code> (subject), <code>iss</code> (issuer), and <code>aud</code> (audience) — are automatically extracted and displayed as labelled info rows. A colour-coded token preview highlights the three segments in amber, blue, and green for immediate visual identification. Copy buttons allow you to export individual sections to your clipboard for integration into logs, documentation, or debugging workflows.
+      Click <strong>Load sample</strong> to see a demonstration token with an expired <code>exp</code> claim, or paste your own token. The three segments appear colour-coded — amber for header, blue for payload, green for signature — so you can visually identify where each part begins and ends. Each decoded section has a <strong>Copy</strong> button for exporting to your clipboard.
     </p>
 
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Who uses this JWT debugger</h3>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       {[
-        ['API authentication debugging', 'When integrating with third-party APIs that use Bearer token authentication (OAuth 2.0, OpenID Connect), developers frequently encounter 401 Unauthorized errors caused by malformed tokens, expired exp claims, or mismatched iss fields. Pasting the token into this debugger instantly reveals the payload contents, allowing you to verify claims without contacting the identity provider\'s introspection endpoint.'],
-        ['Security auditing and penetration testing', 'Security engineers reviewing JWT implementations need to verify that tokens do not contain sensitive data in the payload (JWTs are Base64url-encoded, not encrypted). This tool enables rapid inspection of token contents to confirm whether PII, session identifiers, or privilege escalation claims are exposed in the clear — a critical step in OWASP Top 10 assessments.'],
-        ['Educational and training contexts', 'Students learning about modern authentication protocols benefit from visualising the internal structure of JWTs. This debugger demystifies the three-segment format, demonstrates how Base64url encoding preserves URL safety, and illustrates the relationship between header algorithm declarations (alg) and the corresponding signature verification requirements.'],
+        ['Developers debugging 401 errors', 'A developer receives a 401 from a protected endpoint. The token exists in the Authorization header but something is wrong. Paste it here and the decoded payload shows whether the exp claim expired three hours ago, whether the iss claim doesn\'t match the expected issuer, or whether the aud claim points to the wrong service. The answer is visible in two seconds instead of adding debug logs and redeploying.'],
+        ['Security auditors inspecting token contents', 'JWTs are Base64url-encoded, not encrypted — anyone with the token can read the payload. A security reviewer pasting a production token into this tool can immediately see whether sensitive data like email addresses, internal user IDs, or role assignments are exposed in the clear. This is a critical check during OWASP assessments and penetration tests.'],
+        ['Teams learning OAuth and OIDC flows', 'Students and junior developers working through OAuth 2.0 or OpenID Connect tutorials benefit from seeing the actual structure of the tokens they receive. The colour-coded three-segment display makes the header.payload.signature format intuitive, and the extracted claims rows show what iat, exp, sub, iss, and aud actually contain in practice.'],
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm" >
           <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
@@ -85,29 +85,31 @@ const tool = tools.find(t => t.slug === 'jwt-debugger')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2" >Deep-Dive: JWT Structure, Base64url Encoding &amp; Signature Mechanics</h2>
+    <h2 class="font-display seo-h2" >How a JWT is decoded — and what each part means</h2>
 
-    <h3 class="font-display seo-h3-sm" >Core Structure</h3>
-    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem">
-      <div class="info-row"><span class="info-label">Format</span><span class="info-value">header.payload.signature — three Base64url-encoded segments separated by dots</span></div>
-      <div class="info-row"><span class="info-label">Encoding</span><span class="info-value">Base64url (RFC 4648 §5) — replaces + with -, / with _, and strips trailing =</span></div>
-      <div class="info-row"><span class="info-label">Header</span><span class="info-value">JSON object: <code>alg</code> (signing algorithm) and <code>typ</code> (token type, typically "JWT")</span></div>
-      <div class="info-row"><span class="info-label">Payload</span><span class="info-value">JSON object containing registered claims (sub, iat, exp, iss, aud) and custom claims</span></div>
-      <div class="info-row"><span class="info-label">Signature</span><span class="info-value">Cryptographic hash of header+payload using the algorithm declared in <code>alg</code></span></div>
-    </div>
+    <h3 class="font-display seo-h3-sm" >The three-part structure</h3>
+    <p class="seo-p" >
+      A JWT looks like a long random string, but it's actually three pieces of data joined by dots: <code>header.payload.signature</code>. Each piece is Base64url-encoded — a URL-safe encoding that converts binary data into printable ASCII characters. The encoding is not encryption; it's a reversible transformation, like Base64 but with two character substitutions (<code>+</code> becomes <code>-</code>, <code>/</code> becomes <code>_</code>) and the trailing <code>=</code> padding stripped. Anyone with the token can decode it.
+    </p>
 
-    <h3 class="font-display seo-h3-sm" >How the Decoding Process Works</h3>
+    <h3 class="font-display seo-h3-sm" >What happens when you paste a token</h3>
     <p class="seo-p" >
-      The JWT specification (RFC 7519) defines a compact, URL-safe means of representing claims between two parties. The decoder first splits the raw token string at each <code>.</code> delimiter. A valid JWT must produce exactly three segments; any other count triggers an immediate error. Each segment is then Base64url-decoded — a process that reverses the URL-safe encoding by substituting standard Base64 characters back (+ becomes -, / becomes _) and re-appending any stripped <code>=</code> padding characters before invoking <code>atob()</code>. The decoded bytes are then parsed as UTF-8 and deserialised from JSON into a JavaScript object.
+      The debugger splits the string at each dot. A valid JWT has exactly three segments — if you get two or four, it's not a standard JWT. Each segment is Base6url-decoded by restoring the padding, reversing the character substitutions, and decoding the resulting bytes as UTF-8. The header and payload are then parsed as JSON. The signature is displayed as-is, because verifying it requires the original signing key which only the issuer has.
     </p>
+
+    <h3 class="font-display seo-h3-sm" >Worked example: the sample token</h3>
     <p class="seo-p" >
-      The <strong>header</strong> typically contains two fields: <code>alg</code> (e.g., HS256, RS256, ES256) specifying the signing algorithm, and <code>typ</code> declaring the media type. The <strong>payload</strong> carries the claims — standardised fields defined by the JWT specification plus any application-specific key-value pairs. The <strong>signature</strong> segment is the raw output of the signing algorithm applied to the ASCII bytes of <code>base64url(header) + "." + base64url(payload)</code> using a secret key (HMAC) or private key (RSA/ECDSA). This debugger decodes the first two segments and displays the third as-is, since signature verification requires the original signing secret.
+      The sample token's header decodes to show alg: HS256 and typ: JWT — it's an HMAC-SHA256 signed token of type JWT. The payload decodes to show sub: 1234567890, name: John Doe, iat: 1516239022, and exp: 1735089600. The <code>iat</code> (issued at) is January 19, 2018. The <code>exp</code> (expiration) is December 25, 2024 — which means this token is expired. The debugger flags it with a warning. The signature segment is the cryptographic proof that the payload hasn't been tampered with, but the tool can't verify it without the server's secret key.
     </p>
+
+    <h3 class="font-display seo-h3-sm" >What the decoded claims tell you</h3>
     <p class="seo-p" >
-      <strong>Edge cases handled:</strong> The tool rejects tokens that do not contain exactly three dot-separated segments. Malformed Base64url sequences that produce invalid JSON trigger a descriptive error rather than an unhandled exception. The <code>exp</code> claim is automatically cross-referenced against the current system time — expired tokens are flagged with a warning indicator in the decoded output. Tokens with missing or unexpected claim structures are decoded gracefully; the tool displays whatever fields are present without requiring a rigid schema.
+      The <code>sub</code> claim identifies who the token belongs to — usually a user ID. The <code>iss</code> claim (if present) identifies who issued it. The <code>aud</code> claim identifies which service it's intended for. The <code>exp</code> claim is a Unix timestamp indicating when the token expires. The <code>iat</code> claim records when it was created. If any of these claims don't match what your server expects — wrong issuer, expired timestamp, unexpected audience — your API will reject the token with a 401.
     </p>
-    <p class="seo-p-none" >
-      <strong>Important limitation:</strong> This tool performs <em>decoding only</em> — it does not verify the cryptographic signature. Signature verification requires the original secret key (for HMAC algorithms) or the public key (for RSA/ECDSA), which only the token issuer possesses. A decoded payload is trustworthy only if you trust the issuer; the presence of a valid-looking <code>exp</code> or <code>iss</code> claim does not guarantee authenticity. Always verify tokens server-side against your application's signing key.
+
+    <h3 class="font-display seo-h3-sm" >Important: this tool decodes but does not verify</h3>
+    <p class="seo-p" >
+      The signature is displayed but not validated. To verify a signature, you'd need the server's secret key (for HMAC algorithms) or public key (for RSA/ECDSA). This is a deliberate limitation — the debugger is for inspection, not security validation. A decoded payload is only trustworthy if you trust the issuer. An attacker can craft a JWT with any payload they want; the signature is what makes it valid, and only the signing party can produce a valid one.
     </p>
   </div>
 
@@ -116,11 +118,12 @@ const tool = tools.find(t => t.slug === 'jwt-debugger')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {q:'Can this tool verify the JWT signature?',a:'No. Signature verification requires the secret key or RSA public key, which is a server-side operation. This tool decodes and displays the header and payload, but cannot confirm the signature is valid — only your server can do that. A decoded JWT is readable, but authenticity can only be confirmed by cryptographic verification against the original signing key.'},
-        {q:'Is it safe to paste my JWT here?',a:'Yes. This tool runs entirely in your browser using client-side JavaScript — no data is transmitted to any server, no cookies are set, and no network requests are made. However, as a best practice, avoid pasting production JWTs containing sensitive claims into any online tool. Use test tokens where possible, and never expose tokens with PII or elevated privileges in shared environments.'},
-        {q:'What does the exp claim mean?',a:'The <code>exp</code> (expiration time) claim is a Unix timestamp (seconds since 1970-01-01T00:00:00Z) indicating when the token expires. This debugger automatically converts it to a human-readable UTC date and flags tokens that have already expired by comparing the timestamp against your local system clock. Expired tokens should be rejected by consuming services, though some implementations may allow a grace period.'},
-        {q:'What is the difference between HS256 and RS256?',a:'HS256 uses a shared HMAC secret (symmetric cryptography), meaning both the issuer and verifier use the same key. RS256 uses RSA public/private key pairs (asymmetric cryptography) — the server signs with the private key and any party can verify with the corresponding public key. RS256 is preferred for distributed systems where multiple services need to verify tokens without sharing a secret.'},
-        {q:'Why is the payload not encrypted?',a:'JWTs are Base64url-encoded, not encrypted. The payload is readable by anyone who intercepts the token — this is by design. The signature ensures integrity (the payload hasn\'t been tampered with) and authenticity (it was signed by the expected issuer), but does not provide confidentiality. If the payload contains sensitive data, use JWE (JSON Web Encryption) or transmit the JWT over an encrypted channel (TLS).'},
-        {q:'What happens if I paste a JWE or non-JWT token?',a:'The tool expects standard JWS (JSON Web Signature) tokens following the RFC 7519 three-segment format. JWE (JSON Web Encryption) tokens have five segments and will trigger a validation error. Non-JWT tokens (such as opaque session identifiers or SAML assertions) do not follow the dot-separated structure and will also be rejected with a descriptive error message.'},
+        {q:'Is it safe to paste my JWT here?',a:'Yes. The decoding happens entirely in your browser — no data is sent to any server, no cookies are set, no network requests are made. The token stays in your browser\'s memory and is gone when you close the tab. That said, avoid pasting production tokens with sensitive claims (like admin privileges or personal data) into any online tool as a general security practice.'},
+        {q:'What does the exp claim mean?',a:'The exp (expiration time) claim is a Unix timestamp — seconds since 1 January 1970 — indicating when the token expires. The debugger converts it to a human-readable UTC date and flags expired tokens by comparing against your system clock. A token with exp 1735089600 expired on 25 December 2024. Consuming services should reject expired tokens, though some implementations allow a short grace period.'},
+        {q:'What is the difference between HS256 and RS256?',a:'HS256 uses a shared secret (symmetric) — the same key signs and verifies. RS256 uses RSA key pairs (asymmetric) — the server signs with a private key, anyone can verify with the public key. RS256 is preferred when multiple services need to verify tokens without sharing a secret, such as in microservice architectures or when third-party services need to validate your tokens.'},
+        {q:'Why is the payload not encrypted?',a:'JWTs are Base64url-encoded, not encrypted. The payload is readable by anyone who intercepts the token — this is by design. The signature ensures integrity (the payload hasn\'t been tampered with) and authenticity (it was signed by the expected issuer), but does not provide confidentiality. If the payload contains sensitive data, use JWE (JSON Web Encryption) or transmit the JWT over TLS only.'},
+        {q:'What happens if I paste a JWE or non-JWT token?',a:'JWE tokens have five dot-separated segments and will trigger a validation error because this tool expects the three-segment JWS format. Non-JWT tokens like opaque session IDs or SAML assertions don\'t follow the dot-separated structure and will also be rejected with a descriptive error message.'},
+        {q:'What is Base64url and why is it different from Base64?',a:'Base64url (RFC 4648 §5) is a URL-safe variant of Base64 encoding. It replaces the + character with - and / with _, then strips trailing = padding. Standard Base64 uses + and / which are not safe in URLs and filenames. JWTs use Base64url so the token can be safely included in HTTP headers, query parameters, and URLs without additional escaping.'},
       ].map(item=>(
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>

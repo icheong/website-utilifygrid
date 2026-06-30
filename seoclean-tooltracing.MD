@@ -1,5 +1,8 @@
 # SEO Content Expansion — Tool Tracing
 
+## PROMPT
+implement new SEO method {file:seoclean-AdSenseText3.MD} on next 4 tool in {file:seoclean-tooltracing.MD}. No functionality or styling must be broken.
+
 ## Instructions
 
 Follow these steps to expand a tool page's SEO content consistently:
@@ -65,10 +68,10 @@ Expand each tool page's SEO content slots (`how-to-use`, `how-it-works`, `faq`) 
 - [x] bmi-calculator
 - [x] word-counter
 - [x] colour-palette-css-generator
-- [ ] jwt-debugger
-- [ ] css-flexbox-grid-sandbox
-- [ ] json-to-typescript
-- [ ] ev-novated-lease-calculator
+- [x] jwt-debugger
+- [x] css-flexbox-grid-sandbox
+- [x] json-to-typescript
+- [x] ev-novated-lease-calculator
 - [ ] phev-novated-lease-calculator
 - [ ] regex-toolkit
 - [ ] crontab-expression-visualizer

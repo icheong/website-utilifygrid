@@ -263,23 +263,20 @@ const FYS = [
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display text-primary seo-h2" >EV Novated Lease Calculator — Overview &amp; Modern Technical Context</h2>
+    <h2 class="font-display text-primary seo-h2" >Is a novated EV lease actually cheaper? Here's the real maths</h2>
     <p class="seo-p" >
-      Salary packaging an electric vehicle through a novated lease is one of the most tax-effective ways to acquire a car in Australia, provided the vehicle meets the FBT exemption criteria. Since 1 July 2022, eligible battery electric vehicles (BEVs) and hydrogen fuel cell vehicles (FCEVs) with a drive-away price below the Luxury Car Tax (LCT) threshold for fuel-efficient vehicles are fully exempt from Fringe Benefits Tax. This calculator models the complete financial picture — including LCT validation, smart running cost estimation, lease hidden costs, and an opportunity-cost comparison against using your own cash or housing equity. All computations run client-side in your browser using vanilla JavaScript; no financial data is transmitted to any server.
+      Your employer offers salary packaging. You've heard EVs get an FBT exemption. But the lease provider's sales pitch says you'll save "up to 30%" and you don't know whether that's real or marketing. This calculator shows you the actual numbers — pre-tax deductions, tax saved, LCT if your vehicle breaches the threshold, hidden admin fees, running costs, and the opportunity cost if you'd otherwise use your own cash or housing equity. Enter your salary, vehicle price, and driving habits — the results show side-by-side: novated lease vs out-of-pocket vs cash purchase (with offset interest cost).
     </p>
     <p class="seo-p" >
-      The calculator applies current Australian tax rates and ATO-published LCT thresholds across financial years FY 2022-23 through FY 2026-27. It automatically detects whether your vehicle breaches the LCT threshold — and if it does, removes the FBT exemption and surfaces the FBT cost in the results. The <strong>Smart Running Cost Estimator</strong> derives annual energy costs from real-world EV efficiency data (kWh/100km), home vs public charging ratios, and electricity rates, plus fixed costs like insurance, rego, tyres, and servicing. The <strong>Lease Terms &amp; Hidden Costs</strong> section captures provider admin fees and upfront setup fees — commonly overlooked line items that materially affect net savings.
-    </p>
-    <p class="seo-p-none" >
-      Toggle the <strong>Alternative Cash / Housing Equity</strong> comparison to model the true economic cost of buying outright, including the opportunity cost of offset interest your cash would otherwise have saved on your mortgage. This tells you whether the novated lease tax advantage genuinely beats leaving your money in the offset account — a calculation most lease calculators skip entirely.
+      The calculator applies current Australian tax rates and ATO-published LCT thresholds across FY 2022-23 to FY 2026-27. It automatically detects whether your vehicle breaches the LCT threshold — and if it does, removes the FBT exemption and shows the FBT cost in the results. Toggle the <strong>Alternative Cash / Housing Equity</strong> comparison to see whether the novated lease tax advantage genuinely beats leaving your money in the offset account.
     </p>
 
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Who uses this calculator</h3>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       {[
-        ['Employee salary packaging decision', 'A salaried employee considering a $65,000 BEV needs to understand whether novated leasing saves money compared to buying with cash or a personal car loan. This calculator provides a side-by-side comparison showing the net cost of each option over the lease term, accounting for pre-tax deductions, marginal tax rates, FBT treatment, LCT, and opportunity cost — enabling an informed, data-driven decision rather than relying on provider sales pitches.'],
-         ['Fleet manager policy evaluation', 'HR and fleet managers evaluating whether to offer novated EV leases as an employee benefit need to understand the tax implications at different salary levels. The calculator\'s marginal tax rate engine (0%–45% brackets) and dynamic FBT detection allow fleet managers to model scenarios across employee cohorts — from junior staff at $60,000 to executives at $200,000+ — and quantify the organisation\'s FBT exposure.'],
-        ['Financial adviser client modelling', 'Tax agents and financial planners advising clients on EV acquisition strategies can use this tool to demonstrate the impact of LCT thresholds, the ATO\'s proposed $120,000 ZEV-only threshold (not yet legislated), and the interplay between novated lease deductions and reportable fringe benefits on income-tested government benefits.'],
+        ['Employees deciding on salary packaging', 'A salaried worker on $120,000 is looking at a $65,000 BEV. The novated lease provider says they\'ll save $8,000 over three years. But does that account for the $350 setup fee, the $8/month admin fee, and the opportunity cost of not keeping $65,000 in their mortgage offset? This calculator shows the true net cost of each option — novated lease, out-of-pocket, and cash with offset — so you can make a decision based on real numbers, not a sales pitch.'],
+        ['Fleet managers evaluating employee benefits', 'HR managers modelling whether to offer novated EV leases across different salary levels need to understand the FBT implications. The marginal tax rate engine (0%–45% brackets) and dynamic FBT detection let you model scenarios from junior staff at $60,000 to executives at $200,000+ — and quantify the FBT exposure at each level.'],
+        ['Financial advisers demonstrating EV strategies', 'Tax agents advising clients on EV acquisition can show the impact of LCT thresholds, the interplay between novated lease deductions and reportable fringe benefits, and how the cash/offset comparison changes at different mortgage rates. The calculator provides the numbers; you provide the advice.'],
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm" >
           <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
@@ -290,48 +287,35 @@ const FYS = [
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display text-primary seo-h2" >Deep-Dive: EV Novated Lease Calculation Mechanics</h2>
+    <h2 class="font-display text-primary seo-h2" >How the EV novated lease calculation works</h2>
 
-    <h3 class="font-display text-primary seo-h3-sm" >Core Formulas</h3>
-    <div class="surface-2 border-theme seo-card-code" >
-      LCT = max(0, (Price − LCT threshold) × 33%)<br/>
-      Effective price = Price + LCT<br/>
-      <br/>
-      Energy kWh/yr = (km × Efficiency) ÷ 100<br/>
-      Energy $/yr = Home kWh × Home rate + Public kWh × Public rate<br/>
-      Running cost/yr = Energy + Other fixed costs<br/>
-      <br/>
-      Annual lease = (Effective price − Residual) ÷ Term + Interest<br/>
-      Annual pre-tax = Lease + (Admin × 12) + Running<br/>
-      Tax saved/yr = Annual pre-tax × Marginal rate<br/>
-      FBT cost/yr = Annual pre-tax × FBT rate (0% if under LCT / 37.7% if over LCT)<br/>
-      Net tax benefit/yr = Tax saved − FBT cost<br/>
-      Net novated cost = (Pre-tax × Term) × (1 − Marginal) + (FBT × Term) + Setup × (1 − Marginal) + Residual<br/>
-      <br/>
-      Out-of-pocket = Effective price + (Running × Term)<br/>
-      Cash/Offset total = Effective price + (Running × Term) + (Cash used × Offset rate × Term)
-    </div>
-
-    <h3 class="font-display text-primary seo-h3-sm" >LCT &amp; FBT Interaction Mechanics</h3>
+    <h3 class="font-display text-primary seo-h3-sm" >LCT and FBT: the two taxes that make or break the deal</h3>
     <p class="seo-card-body" style="margin-bottom:0.5rem">
-      <strong>LCT (Luxury Car Tax):</strong> 33% applies to the amount above the <a href="https://www.ato.gov.au/rates/luxury-car-tax-rate-and-thresholds/" target="_blank" rel="noopener" style="color:#1D4ED8; text-decoration:underline; text-underline-offset:2px">fuel-efficient threshold</a> for the chosen financial year ($84,916 in 2022-23, $89,332 in 2023-24, $91,387 in 2024-25 and 2025-26, $91,661 in 2026-27). Unlike FBT, LCT is <em>not</em> exempt for EVs — it is added to the effective vehicle cost. A proposed new $120,000 ZEV-only threshold from FY 2027-28 (A–EU FTA, signed 24 Mar 2026) is not yet legislated and is therefore not modelled here.
+      <strong>Luxury Car Tax (LCT)</strong> is 33% on the amount above the fuel-efficient threshold for the chosen financial year. Unlike FBT, LCT is not exempt for EVs — it's added to the vehicle cost before calculating the lease. The threshold changes each year: $84,916 (2022-23), $89,332 (2023-24), $91,387 (2024-25 and 2025-26), $91,661 (2026-27). If your $65,000 BEV sits under the threshold, you pay $0 LCT. If you buy a $95,000 BEV in FY 2024-25, LCT is ($95,000 − $91,387) × 33% = $1,192 — and you lose the FBT exemption entirely.
     </p>
     <p class="seo-card-body" style="margin-bottom:0.5rem">
-      <strong>FBT exemption logic:</strong> The calculator applies a binary FBT treatment — if the vehicle price (drive-away, before LCT) sits under the LCT threshold, the vehicle qualifies for the full FBT exemption (0% FBT on the novated-lease pre-tax deduction). If the price exceeds the threshold, the exemption is lost entirely and standard FBT applies at the statutory rate of 20% grossed up by the Type 1 factor of 1.8868, yielding an effective FBT rate of ~37.7% of the taxable value.
-    </p>
-    <p class="seo-card-body" style="margin-bottom:0.5rem">
-      <strong>Marginal tax rates</strong> used: ≤$18,200 → 0%, $18,201–$45,000 → 19%, $45,001–$120,000 → 32.5%, $120,001–$180,000 → 37%, &gt;$180,000 → 45% (excluding Medicare levy). This is a simplified estimate — actual savings depend on your employer's novated lease arrangements, <a href="https://www.ato.gov.au/individuals-and-families/jobs-and-employment-types/working-as-an-employee/reportable-fringe-benefits-for-employees" target="_blank" rel="noopener" style="color:#1D4ED8; text-decoration:underline; text-underline-offset:2px">Reportable Fringe Benefits Amount (RFBA)</a> impact, and GST treatment.
+      <strong>FBT exemption logic:</strong> If the vehicle price (drive-away, before LCT) is under the LCT threshold, the novated lease pre-tax deduction is fully FBT-exempt (0% FBT). If the price exceeds the threshold, the exemption is lost and standard FBT applies at ~37.7% of the taxable value (20% statutory rate × 1.8868 Type 1 gross-up). This is a binary outcome — there's no partial exemption.
     </p>
 
-    <h3 class="font-display text-primary seo-h3-sm" >Edge Cases &amp; Important Notes</h3>
+    <h3 class="font-display text-primary seo-h3-sm" >Worked example: $65,000 BEV on $120,000 salary, 3-year term</h3>
     <p class="seo-card-body" style="margin-bottom:0.5rem">
-      <strong>Opportunity cost</strong> in the cash/offset scenario is the offset interest (or high-yield savings interest) you forgo by spending the cash. It compounds simply over the term: <code>cash_used × offset_rate × term_years</code>. The "Total true cost" therefore reflects the real economic cost of buying with cash, not just the sticker price.
+      Vehicle price $65,000, under the $91,387 LCT threshold → $0 LCT, full FBT exemption. Residual at 30% = $19,500. Loan amount = $65,000 − $19,500 = $45,500. At 6% finance rate, annual interest = $2,730. Annual lease repayment = $45,500 ÷ 3 + $2,730 = $17,930. Add $96/yr admin fee and $3,000/yr running costs → annual pre-tax deduction ≈ $21,026. At the 32.5% marginal tax rate ($120,000 salary), tax saved ≈ $6,833/yr. Net cost over 3 years ≈ $63,078 − $20,500 tax saved + $19,500 residual = ~$62,078.
     </p>
     <p class="seo-card-body" style="margin-bottom:0.5rem">
-      <strong>Residual value</strong> (guaranteed future value) is set as a percentage of the effective (LCT-inclusive) price. ATO minimum residuals range from ~65.63% for a 1-year lease to ~28.13% for a 5-year lease. The residual is paid at end-of-term to own the vehicle, re-financed, or traded in. The calculator includes the residual in the net novated cost.
+      <strong>Out-of-pocket comparison:</strong> Buying the same car outright costs $65,000 + $9,000 running costs = $74,000. The novated lease saves approximately $11,922 — or about 16% — over three years. But if you'd used that $65,000 to offset a 5.5% mortgage, you'd save $10,725 in interest over three years. The true novated saving vs the cash+offset scenario is smaller — and that's what this calculator reveals.
+    </p>
+
+    <h3 class="font-display text-primary seo-h3-sm" >Marginal tax rates used</h3>
+    <p class="seo-card-body" style="margin-bottom:0.5rem">
+      ≤$18,200 → 0%, $18,201–$45,000 → 19%, $45,001–$120,000 → 32.5%, $120,001–$180,000 → 37%, >$180,000 → 45% (excluding Medicare levy). This is a simplified estimate — actual savings depend on your employer's novated lease arrangements, Reportable Fringe Benefits Amount (RFBA) impact, and GST treatment.
+    </p>
+
+    <h3 class="font-display text-primary seo-h3-sm" >Running costs and hidden fees</h3>
+    <p class="seo-card-body" style="margin-bottom:0.5rem">
+      <strong>Energy cost:</strong> annual km × efficiency (kWh/100km) ÷ 100 = total kWh. Split by home vs public charging ratio, multiplied by respective rates. Typical EVs: 15–22 kWh/100km. Home electricity: $0.25–$0.35/kWh. Public fast charging: $0.50–$0.70/kWh. <strong>Hidden fees:</strong> A $8/month admin fee adds $288 over a 3-year term. A $350 setup fee is pre-tax deductible, so its net cost is reduced by your marginal tax rate. These line items are commonly missed in provider quotes but materially reduce your saving.
     </p>
     <p class="seo-card-body" >
-      <strong>GST recovery:</strong> One significant benefit of novated leasing is that your employer can claim back the GST on the vehicle purchase and running costs, effectively reducing the cost by 1/11th. This calculator uses pre-GST running cost inputs; if your provider quotes inclusive figures, divide by 1.1 before entering them here for a more accurate result.
+      <strong>Residual value:</strong> ATO minimums range from ~65.63% (1-year lease) to ~28.13% (5-year lease). The residual is paid at end-of-term to own the vehicle, re-financed, or traded in. The calculator includes the residual in the net novated cost.
     </p>
   </div>
 
@@ -339,16 +323,15 @@ const FYS = [
     <h2 class="font-display text-primary seo-h2-faq" >Frequently Asked Questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Which vehicles qualify for the FBT exemption?', a: 'As of 2024–25, the FBT exemption applies to battery electric vehicles (BEVs), hydrogen fuel cell vehicles, and plug-in hybrid electric vehicles (PHEVs) with a drive-away price below the LCT threshold (currently $91,387 for fuel-efficient vehicles in FY 2024-25). PHEVs only qualified for new leases entered into before 1 April 2025. From 1 April 2025, only zero-emission vehicles (BEVs and FCEVs) qualify. See the <a href="https://www.ato.gov.au/businesses-and-organisations/hiring-and-paying-your-workers/fringe-benefits-tax/types-of-fringe-benefits/fbt-on-cars-other-vehicles-parking-and-tolls/electric-cars-exemption" target="_blank" rel="noopener" style="color:#1D4ED8; text-decoration:underline">ATO\'s official electric cars exemption page</a> for full eligibility criteria.' },
-        { q: 'What is the LCT threshold and how does it affect my novated lease?', a: 'Luxury Car Tax (LCT) is 33% on the amount above the fuel-efficient threshold. Unlike the FBT exemption, LCT is not waived for EVs — it is added to your vehicle cost before calculating the lease. The threshold changes each financial year (e.g., $89,332 in 2023-24 → $91,387 in 2024-25 → $91,661 in 2026-27). This calculator validates your price against the chosen FY and adds the correct LCT automatically. Refer to the ATO\'s luxury car tax rate and thresholds page for the latest figures.' },
-        { q: 'How does the LCT threshold affect my FBT exemption?', a: 'The LCT threshold is the hard eligibility ceiling for the EV FBT exemption — there is no partial FBT exemption; you either qualify for the full exemption (and pay 0% FBT on the novated-lease pre-tax deduction) or you do not (and pay the full FBT, ~37.7% of the taxable value after the Type 1 gross-up). If your vehicle sits under the threshold for the chosen financial year, the calculator applies the full exemption. If it exceeds the threshold (and LCT is therefore payable), the calculator removes the FBT exemption and shows the FBT cost and net tax benefit on the Novated Lease result card. From 1 April 2025, only zero-emission vehicles (BEVs and FCEVs) qualify for the exemption — PHEVs do not. See the ATO\'s FBT plug-in hybrid electric vehicle guidance for details.' },
-        { q: 'How much do hidden lease fees (admin + setup) cost over a term?', a: 'A typical $8/month admin fee adds $96/year, or $288 over a 3-year term. A $350 setup fee is usually charged once but is pre-tax deductible, so its net cost is reduced by your marginal tax rate. These line items are easy to miss in provider quotes but materially reduce your saving — always confirm the full fee schedule before signing.' },
-        { q: 'How is the smart running cost estimator calculated?', a: 'Energy use = annual km × efficiency (kWh/100km) ÷ 100. The total kWh is split by your home vs public charging ratio, then multiplied by the relevant per-kWh rate. The energy cost is added to your other fixed costs (insurance, rego, tyres, servicing). Typical EVs use 15–22 kWh/100km; Australian home electricity averages $0.25–$0.35/kWh; public fast-charging averages $0.50–$0.70/kWh.' },
-        { q: 'Should I use my own cash or housing equity instead of leasing?', a: 'It depends on the opportunity cost. If your cash sits in an offset account saving 5.5% mortgage interest, spending it on a $65,000 car costs you ~$10,725 in lost interest over a 3-year term. A novated lease typically beats this by 3–7% in effective discount (your marginal tax rate), but admin fees, setup fees, and LCT can narrow or even reverse the gap. Use the "Alternative Cash" comparison to see the true net cost in your specific scenario.' },
-        { q: 'Does the FBT exemption affect my reportable fringe benefits?', a: 'Yes. Even though eligible EVs are FBT-exempt, the pre-tax amount is still recorded as a Reportable Fringe Benefit Amount (RFBA) on your payment summary. This can affect income-tested thresholds for Medicare levy surcharge, HECS/HELP repayments, childcare subsidy, and certain Centrelink payments. Factor this into your personal assessment. See the <a href="https://www.ato.gov.au/individuals-and-families/jobs-and-employment-types/working-as-an-employee/reportable-fringe-benefits-for-employees" target="_blank" rel="noopener" style="color:#1D4ED8; text-decoration:underline">ATO\'s guidance on reportable fringe benefits for employees</a> for more information.' },
-        { q: 'What is a residual value?', a: 'The residual value (also called guaranteed future value) is the agreed value of the vehicle at the end of the lease term, set as a percentage of the effective (LCT-inclusive) price. ATO minimum residuals range from ~65.63% for a 1-year lease to ~28.13% for a 5-year lease. You can pay the residual to own the vehicle, re-finance it, or trade in.' },
-        { q: 'Can I include GST savings in the calculation?', a: 'Yes — one significant benefit of novated leasing is that your employer can claim back the GST on the vehicle purchase and running costs, effectively reducing the cost by 1/11th. This calculator uses pre-GST running cost inputs; if your provider quotes inclusive figures, divide by 1.1 before entering them here for a more accurate result.' },
-        { q: 'What happens if my salary changes during the lease term?', a: 'This calculator uses a static salary input to determine your marginal tax rate. In reality, salary changes (promotions, bonuses, pay cuts) will shift your marginal bracket and alter the tax saving each year. For a more accurate multi-year model, recalculate at each salary change point. The calculator\'s single-salary approach provides a conservative baseline estimate.' },
+        { q: 'Which vehicles qualify for the FBT exemption?', a: 'Battery electric vehicles (BEVs) and hydrogen fuel cell vehicles (FCEVs) with a drive-away price below the LCT threshold qualify. PHEVs only qualified for new leases entered before 1 April 2025 — from that date, only zero-emission vehicles qualify. The LCT threshold for fuel-efficient vehicles is $91,387 in FY 2024-25 and $91,661 in FY 2026-27. See the ATO\'s electric cars exemption page for full eligibility criteria.' },
+        { q: 'What is the LCT threshold and how does it affect my lease?', a: 'Luxury Car Tax is 33% on the amount above the fuel-efficient threshold. Unlike FBT, LCT is not waived for EVs — it\'s added to your vehicle cost before calculating the lease. The threshold changes each financial year ($89,332 in 2023-24, $91,387 in 2024-25, $91,661 in 2026-27). If your vehicle price exceeds the threshold, you pay LCT on the excess AND lose the FBT exemption.' },
+        { q: 'How does the LCT threshold affect my FBT exemption?', a: 'The LCT threshold is the hard eligibility ceiling — there is no partial exemption. Under the threshold: full FBT exemption (0% FBT on the pre-tax deduction). Over the threshold: FBT exemption lost entirely, standard FBT applies at ~37.7% of the taxable value. A $65,000 BEV sits under the threshold and gets full exemption. A $95,000 BEV breaches it and loses the exemption completely.' },
+        { q: 'How much do hidden lease fees cost over a term?', a: 'A $8/month admin fee adds $288 over a 3-year term. A $350 setup fee is usually charged once but is pre-tax deductible, so its net cost is reduced by your marginal rate — at 32.5%, the setup fee costs $236 after tax. These line items are easy to miss in provider quotes but can reduce your saving by 3-5%. Always confirm the full fee schedule before signing.' },
+        { q: 'How is the running cost estimator calculated?', a: 'Energy use = annual km × efficiency (kWh/100km) ÷ 100. The total kWh is split by your home vs public charging ratio, then multiplied by the per-kWh rate. Add insurance, rego, tyres, and servicing. Typical EVs: 15-22 kWh/100km. Home electricity: $0.25-$0.35/kWh. Public fast charging: $0.50-$0.70/kWh. If your provider quotes GST-inclusive figures, divide by 1.1 before entering them.' },
+        { q: 'Should I use my own cash or housing equity instead?', a: 'It depends on the opportunity cost. If your cash sits in a 5.5% offset account, spending $65,000 on a car costs ~$10,725 in lost interest over 3 years. A novated lease typically saves 3-7% (your marginal tax rate), but admin fees, setup fees, and LCT can narrow or reverse the gap. Use the Alternative Cash comparison to see the true net cost in your scenario.' },
+        { q: 'Does the FBT exemption affect reportable fringe benefits?', a: 'Yes. Even though eligible EVs are FBT-exempt, the pre-tax amount is still recorded as a Reportable Fringe Benefit Amount (RFBA) on your payment summary. This can affect HECS/HELP repayments, childcare subsidy, Medicare levy surcharge, and certain Centrelink payments. Factor this into your personal assessment.' },
+        { q: 'What is a residual value?', a: 'The residual (guaranteed future value) is the agreed vehicle value at end of lease, set as a percentage of the effective price. ATO minimums: ~65.63% (1-year) to ~28.13% (5-year). You can pay it to own the vehicle, re-finance, or trade in. The calculator includes the residual in the net novated cost.' },
+        { q: 'What happens if my salary changes during the lease?', a: 'This calculator uses a static salary for the marginal tax rate. Salary changes (promotions, bonuses) shift your bracket and alter the tax saving each year. Recalculate at each change point for a more accurate multi-year model. The single-salary approach provides a conservative baseline.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="seo-faq-card">
