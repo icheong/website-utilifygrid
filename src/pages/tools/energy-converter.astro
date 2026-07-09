@@ -47,20 +47,20 @@ const tool = tools.find(t => t.slug === 'energy-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Energy Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Joules, Calories, kWh, BTU, and Electronvolts</h2>
     <p class="seo-p">
-      This energy converter computes precise conversions between 11 metric, scientific, electrical, and imperial energy units entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in nutrition, physics, electrical engineering, or HVAC systems.
+      Your electricity bill shows you used 450 kWh last month. You want to compare that to the energy content of natural gas to see which heating option is cheaper. Converting 450 kWh to BTU gives 1,535,460 BTU, while the same amount in joules is 1.62 billion J. Enter the number, pick kWh, and every other energy unit appears instantly. The copy button lets you paste the BTU figure into your cost comparison spreadsheet.
     </p>
     <p class="seo-p">
-      The converter supports the most commonly used energy units across scientific and everyday contexts: joules, kilojoules, and megajoules for SI; calories and kilocalories for nutrition and chemistry; watt-hours and kilowatt-hours for electrical energy; electronvolts for atomic and particle physics; BTU and therm for heating and cooling; and foot-pounds for mechanical work. Results are dynamically formatted based on magnitude, switching between fixed notation, locale-formatted numbers, and scientific notation as appropriate.
+      The converter covers 11 units from electronvolts to therms. A nutritionist comparing a 2,500 kcal daily target with a European label showing 10,460 kJ can confirm they match. A physicist converting a photon energy of 2.5 eV to joules gets 4.005 x 10^-19 J. The quick-reference strip at the bottom shows everyday energy values: an AA battery at 10,800 J, a smartphone charge at 36,000 J, a gallon of petrol at 120 million J.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Nutrition labels where kcal and kJ cause confusion</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        ['Nutrition and dietary planning', 'Food labels list energy content in kilocalories (kcal), which are often called "Calories" with a capital C. A typical meal provides 600–800 kcal, equivalent to approximately 2,510–3,347 kJ. Athletes and dietitians convert between kcal and kJ to compare products from different countries — European food labels use kJ while US labels use kcal. This tool handles the full range from a single food calorie (4,184 J) to daily intake targets (2,000–3,000 kcal).'],
-        ['Electrical energy and utility billing', 'Your electric utility bills you in kilowatt-hours (kWh). Running a 1,500-watt air conditioner for 8 hours consumes 12 kWh. Converting 12 kWh to joules gives 43,200,000 J, while converting to BTU yields approximately 40,946 BTU — useful for comparing electric heating to gas heating costs. The quick-reference section helps visualise everyday energy values like an AA battery (10,800 J), a smartphone charge (36,000 J), or a gallon of gasoline (120 million J) for intuitive scale comparison.'],
-        ['Physics and scientific research', 'Particle physicists measure energy in electronvolts (eV). A typical chemical bond has an energy of 1–5 eV, while nuclear reactions release millions of eV (MeV). Converting 1 MeV to joules gives 1.602 × 10⁻¹³ J. Researchers studying photon energies, particle collisions, or semiconductor band gaps frequently convert between eV and joules. This tool provides IEEE 754 double-precision accuracy across the full 19-order-of-magnitude range from electronvolts to megajoules.']
+        ['Comparing food labels across countries', 'A British cereal box lists 380 kJ per 30 g serving. An American equivalent shows 90 kcal. Converting 380 kJ to kcal: divide by 4.184 to get 90.8 kcal, essentially the same. But a shopper who confuses kJ with kcal might think the British cereal has 380 Calories per serving, which is actually a full meal worth of energy. The converter makes these cross-label comparisons instant and error-free.'],
+        ['Electricity cost comparison between gas and electric', 'A homeowner wants to compare a 1500W electric heater running for 10 hours (15 kWh) against a gas furnace rated at 40,000 BTU/hr. The electric heater uses 15 kWh = 51,182 BTU total. At $0.12/kWh, that costs $1.80. The gas furnace producing the same 51,182 BTU uses about 0.51 therms. At $1.00/therm, that costs $0.51, gas is roughly 3.5 times cheaper per BTU. The converter bridges the unit gap between the two energy sources.'],
+        ['Scientific photon energy calculations', 'A solar panel engineer needs to compare photon energies. Visible light photons have energies of 1.8 to 3.1 eV. A 2.0 eV photon corresponds to 3.204 x 10^-19 J, or a wavelength of about 620 nm (orange light). The converter lets the engineer quickly translate between eV (used in semiconductor physics) and joules (used in thermal calculations) without memorising the conversion factor 1.602 x 10^-19.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -71,26 +71,25 @@ const tool = tools.find(t => t.slug === 'energy-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Energy Converter Handles Joules, Calories, kWh, and Electronvolts</h2>
     <p class="seo-p">
-      The converter employs a hub-and-spoke conversion model using joules as the universal base unit. Every supported energy unit is defined by a fixed conversion factor relative to one joule. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain joules, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      Every unit in the converter is stored as a multiple of one joule. When you enter 1 kilowatt-hour, the tool multiplies by 3,600,000 to get 3.6 million J, then divides by each target unit's factor. The conversion to BTU gives 3,412.14 BTU (using the IT BTU factor of 1055.06 J). Because all conversions pass through joules in one step, there is no rounding drift from chained multiplications.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Why the calorie has three different definitions</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">j</code>, <code class="inline-code">kwh</code>, <code class="inline-code">btu</code>) to its exact factor in joules. Metric units use powers of 10 (e.g. <code class="inline-code">1 kJ = 1,000 J</code>, <code class="inline-code">1 MJ = 1,000,000 J</code>), while scientific and imperial units use internationally defined values.
+      The thermochemical calorie is defined as exactly 4.184 J. The international steam table calorie is 4.1868 J. The 15 degrees C calorie is 4.1855 J. These differ because early experimenters measured the energy needed to heat water at different starting temperatures, and the results varied slightly. The thermochemical definition (4.184 J) is the most widely used in chemistry and nutrition. This converter uses the thermochemical value. The difference between the definitions is less than 0.1%, which matters only in high-precision calorimetry.
     </p>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to joules. For example, converting 1 kWh to joules: <code class="inline-code">1 × 3,600,000 = 3,600,000 J</code>. This intermediate result is an IEEE 754 double-precision floating-point number, which provides approximately 15 to 17 significant decimal digits of precision.
+      The electronvolt is defined by fixing the elementary charge at exactly 1.602176634 x 10^-19 C and multiplying by 1 volt. This makes it exact by definition. The BTU (ISO) is defined as 1055.06 J, which is approximate, the original definition (energy to heat 1 lb of water by 1 degree F) depends on the starting temperature because water's specific heat capacity varies with temperature. The therm (100,000 BTU) is used by natural gas utilities and is exact relative to the BTU definition.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Why food calories are capitalised</h3>
     <p class="seo-p-sm">
-      <strong>3. Target conversion:</strong> The joule value is divided by the target unit's factor. Converting 3,600,000 J to BTU: <code class="inline-code">3,600,000 / 1055.06 = 3,412.14 BTU</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (1 quadrillion or greater) use scientific notation. Values between 1 billion and 1 quadrillion use locale-formatted numbers with 2 decimal places. Values between 1,000 and 1 billion use 2 to 4 decimal places. Values between 0.001 and 1,000 use 6 to 8 decimal places. Values below 0.001 use scientific notation. This ensures readability across the full range from electronvolts to therms.
+      The "Calorie" (capital C) on food labels is actually a kilocalorie (kcal) = 1,000 small calories. This convention was introduced in 1940 to reduce confusion, but it backfired, most people still do not know the difference. A 200 Calorie snack contains 200,000 small calories, or 836,800 joules. The energy is enough to heat 200 grams of water from room temperature to boiling. This converter shows both kcal and kJ, which is useful because European food labels list energy in kJ while US labels list kcal.
     </p>
     <p class="seo-p-none">
-      <strong>Exact vs. approximate factors:</strong> The thermochemical calorie is defined as exactly 4.184 J, making <code class="inline-code">1 cal = 4.184 J</code> exact. The kilowatt-hour is defined as exactly 3,600,000 J (1,000 W × 3,600 s). The electronvolt is defined exactly as <code class="inline-code">1.602176634 × 10⁻¹⁹ J</code>. The BTU uses the ISO standard value of 1,055.06 J (IT BTU). The therm is defined as exactly 100,000 BTU, making <code class="inline-code">1 therm = 105,506,000 J</code> approximate but consistent with utility billing standards.
+      The formatting thresholds adapt to the enormous range of the converter. Electronvolts (10^-19 J) display in scientific notation. Joules and calories use 6-8 decimal places. Kilowatt-hours and therms use locale-formatted numbers with 2-4 decimal places. This keeps the output readable whether you are converting atomic-scale energies or household electricity consumption.
     </p>
   </div>
 
@@ -99,32 +98,24 @@ const tool = tools.find(t => t.slug === 'energy-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is the difference between a calorie and a kilocalorie?",
-          a: "A calorie (cal) is the energy needed to raise 1 gram of water by 1 degree Celsius. A kilocalorie (kcal) equals 1,000 calories and is what food labels call a 'Calorie' (capital C). One kcal equals 4,184 joules or about 3.968 BTU. When reading nutrition labels, a 2,000 kcal daily diet means 2,000,000 small calories."
+          q: "How many joules are in 500 kcal?",
+          a: "500 kcal equals 2,092,000 joules (500 x 4.184 = 2,092). This is roughly the energy in a large fast-food meal. For comparison, running at 8 km/h for one hour burns about 500 kcal, the same energy as the meal. The converter shows both values instantly: enter 500 kcal, see 2,092 kJ, 581.1 Wh, or 1,984 BTU."
         },
         {
-          q: "What is a kilowatt-hour?",
-          a: "A kilowatt-hour (kWh) is the energy consumed by a 1,000-watt device running for one hour. It equals 3.6 million joules and is the unit your electric utility uses to bill you. Running a 100W light bulb for 10 hours uses 1 kWh. The average US household consumes about 900 kWh per month."
+          q: "Why does my electricity bill use kWh instead of joules?",
+          a: "A kWh is a more practical unit for household electricity. One kWh = 3.6 million joules. If your bill listed joules, you would see numbers in the billions, 900 kWh/month becomes 3.24 billion J. The kWh keeps the numbers manageable (900 instead of 3.24 billion) and directly relates to appliance wattage: a 100W bulb running 10 hours uses exactly 1 kWh."
         },
         {
-          q: "What is an electronvolt?",
-          a: "An electronvolt (eV) is the energy gained by an electron moving through a potential difference of one volt. It equals about 1.602 × 10⁻¹⁹ joules and is commonly used in atomic, nuclear, and particle physics. A typical visible-light photon has an energy of about 2 eV, while gamma-ray photons can have energies of millions of eV (MeV)."
+          q: "What is the energy of a photon of visible light?",
+          a: "A photon of visible light has an energy of about 1.8 to 3.1 electronvolts (eV). Red light (700 nm) is about 1.8 eV; blue light (450 nm) is about 2.8 eV. Converting 2.5 eV to joules: 2.5 x 1.602 x 10^-19 = 4.005 x 10^-19 J. This tiny energy per photon is why you need billions of photons to see anything, the human eye can detect as few as 5-10 photons at the retina."
         },
         {
-          q: "What is a BTU?",
-          a: "A BTU (British thermal unit) is the energy needed to raise the temperature of one pound of water by one degree Fahrenheit. It equals about 1,055 joules. BTUs are commonly used to rate furnaces, air conditioners, and the energy content of natural gas. A standard ton of air conditioning equals 12,000 BTU per hour."
+          q: "How do I compare gas and electricity costs?",
+          a: "Convert both to the same unit (BTU or kWh) and compare the price per unit. Gas is typically sold in therms (100,000 BTU) at $1.00/therm. Electricity is sold in kWh at $0.12/kWh. Converting: 1 therm = 29.3 kWh. So $1.00 for gas buys 29.3 kWh worth of energy, while $1.00 for electricity buys only 8.33 kWh. Gas is roughly 3.5 times cheaper per BTU."
         },
         {
-          q: "How many calories are in a food Calorie?",
-          a: "One food Calorie (with a capital C) is actually one kilocalorie (kcal) = 1,000 thermochemical calories. So a 200 kcal snack contains 200,000 small calories. Food labels use the term 'Calorie' to mean kilocalorie. This convention can be confusing — a 200 Calorie snack has enough energy to heat 200 grams of water by 100 degrees Celsius."
-        },
-        {
-          q: "How do I convert joules to calories?",
-          a: "To convert joules to calories, divide by 4.184 (the exact conversion factor). For example, 1,000 J equals approximately 239 cal. To convert to kilocalories, divide by 4,184 instead. A quick mental shortcut: divide joules by about 4,200 to get kcal. So 8,400 J is roughly 2 kcal."
-        },
-        {
-          q: "What is the difference between a therm and a BTU?",
-          a: "A therm is a unit of energy equal to exactly 100,000 BTU. It is commonly used by natural gas utilities to bill customers. One therm equals approximately 105,506,000 joules or 29.3 kWh. A typical household uses 50–100 therms per month for heating, cooking, and hot water. The therm is convenient because it represents a practical amount of gas energy."
+          q: "What is a food Calorie in terms I can visualise?",
+          a: "One food Calorie (1 kcal) has enough energy to heat 1 kg of water by 1 degree C. A 200 Calorie banana could theoretically heat 200 kg of water (a large bathtub) by 1 degree C. A 2,000 Calorie daily diet provides enough energy to heat 2,000 kg of water by 1 degree C, or one bathtub by 2 degrees C. This helps visualise why food energy matters for body heat production in cold weather."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

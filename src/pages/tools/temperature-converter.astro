@@ -38,23 +38,20 @@ const tool = tools.find(t => t.slug === 'temperature-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Temperature Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Celsius, Fahrenheit, and Kelvin</h2>
     <p class="seo-p">
-      This temperature converter computes precise conversions between Celsius, Fahrenheit, and Kelvin entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your measurements, whether you are working in cooking, science, engineering, or everyday weather reporting.
+      The recipe says to preheat the oven to 375°F, but your oven only has Celsius markings. Setting it to 375°C would incinerate the cake. Enter 375, select Fahrenheit, and the converter instantly shows 190.56°C and 463.71 K. The copy button lets you paste the Celsius value straight into your oven timer app. For quick reference, the common temperatures strip at the bottom shows water boiling at 100°C / 212°F, so you can sanity-check that 190°C is in the right ballpark for baking.
     </p>
     <p class="seo-p">
-      The converter supports the three most commonly used temperature scales worldwide. Celsius is the SI-derived scale used for weather forecasting, cooking, and scientific measurements in most countries. Fahrenheit is primarily used in the United States for weather and everyday temperature references. Kelvin is the SI absolute temperature scale used in physics, chemistry, and thermodynamics, where 0 K represents absolute zero — the theoretical lowest possible temperature.
-    </p>
-    <p class="seo-p">
-      Unlike length or weight conversions, which use simple multiplicative factors, temperature scales have different zero points and interval sizes. The tool handles all six possible pairwise conversions using the correct linear formulas, applying the appropriate offset and multiplier for each pair. Results are displayed to two decimal places for precision, and each result can be copied to the clipboard with a single click.
+      The converter handles all six pairwise conversions — Celsius to Fahrenheit, Celsius to Kelvin, Fahrenheit to Celsius, Fahrenheit to Kelvin, Kelvin to Celsius, and Kelvin to Fahrenheit — using the correct linear formula for each. A chemistry student working with the ideal gas law needs temperature in Kelvin. A traveller in Tokyo sees a 35°C weather forecast and wants to know if that is "wear shorts" or "stay indoors" in Fahrenheit terms. Each conversion appears instantly, no button press required.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Cooking conversions where the wrong scale ruins the dish</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        ['Cooking and baking', 'Recipes from different countries use different temperature scales — American recipes specify oven temperatures in Fahrenheit, while European and Australian recipes use Celsius. A baker converting a recipe that calls for 350°F needs to know that the equivalent is approximately 177°C. This tool provides instant conversions with copy-to-clipboard functionality, eliminating manual calculation errors when scaling recipes between regions.'],
-        ['Scientific research and engineering', 'Physicists, chemists, and engineers frequently convert between Celsius and Kelvin when working with thermodynamic calculations, gas laws, or cryogenic systems. The Kelvin scale is essential for equations like the ideal gas law (PV = nRT) and the Stefan-Boltzmann law, where temperature must be expressed in absolute terms. A conversion error of even a few kelvin can significantly affect experimental results or engineering tolerances.'],
-        ['International travel and weather', 'Travelers moving between countries encounter weather forecasts in different scales — Celsius in most of the world, Fahrenheit in the United States. Understanding that 25°C equals 77°F helps travelers pack appropriately and interpret local weather reports. The quick-reference section below the converter shows common temperatures like body temperature (37°C / 98.6°F) and water boiling point (100°C / 212°F) for intuitive comparison.']
+        ['Baking at the wrong oven temperature', 'A French pastry recipe calls for baking choux pastry at 200°C. If you accidentally set a Fahrenheit oven to 200°F, the pastry will not rise at all — choux needs the rapid steam expansion that only happens above 180°C (356°F). The correct Fahrenheit equivalent is 392°F. This tool gives you that conversion instantly, preventing the kind of kitchen disaster that wastes ingredients and time.'],
+        ['Converting weather forecasts for travel', 'A British tourist arriving in New York sees a forecast of 85°F and wonders whether to pack a jacket. Converting to Celsius gives 29.4°C — warm shorts weather. Conversely, a New Yorker visiting London sees "18°C" and needs to know that means 64.4°F — a light sweater, not a coat. The converter helps you translate weather intuition across scales without memorising the formula.'],
+        ['Lab work requiring Kelvin', 'A physics experiment measures gas temperature at 22°C. For the ideal gas law calculation (PV = nRT), the temperature must be in Kelvin: 22°C + 273.15 = 295.15 K. Using 22 instead of 295.15 in the equation would give a pressure reading roughly 13 times too low. The converter shows the Kelvin value alongside Fahrenheit, so students can verify their manual conversion before plugging it into the equation.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -65,26 +62,25 @@ const tool = tools.find(t => t.slug === 'temperature-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Formulas and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Temperature Converter Handles Three Different Scales</h2>
     <p class="seo-p">
-      Temperature scales differ from length or weight scales because they have different zero points and different interval sizes between degrees. Celsius and Kelvin share the same interval size (1 degree = 1 kelvin), but Kelvin starts at absolute zero while Celsius starts at the freezing point of water offset by 273.15. Fahrenheit uses both a different zero point and a different interval size — there are 180 degrees between freezing and boiling (32°F to 212°F) compared to 100 degrees in Celsius (0°C to 100°C).
+      Unlike length or weight, temperature scales have different zero points and different gap sizes between degrees. The converter handles each of the six possible pairwise conversions with its own formula. Celsius to Fahrenheit multiplies by 1.8 and adds 32. Celsius to Kelvin adds 273.15. Fahrenheit to Celsius subtracts 32 then multiplies by 5/9. The tool applies the correct formula based on which two scales you are converting between, and displays the result to two decimal places.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Why the Celsius-to-Fahrenheit formula is 9/5 plus 32</h3>
     <p class="seo-p-sm">
-      <strong>1. Identify source and target scales:</strong> The tool determines which of the six possible pairwise conversions to apply based on the user's input scale selection. Each pair has its own formula with a specific multiplier and offset.
+      The 9/5 multiplier (1.8) exists because Fahrenheit and Celsius use different gap sizes. Water freezes at 0°C and boils at 100°C — a 100-degree span. In Fahrenheit, water freezes at 32°F and boils at 212°F — a 180-degree span. The ratio of those spans is 180/100 = 9/5. The +32 offset exists because Fahrenheit's zero point is 32 degrees below Celsius's zero point. Combining both corrections gives the formula: °F = (°C × 9/5) + 32. The reverse formula reverses the operations: °C = (°F − 32) × 5/9.
     </p>
     <p class="seo-p-sm">
-      <strong>2. Apply the appropriate linear formula:</strong> Temperature conversions follow the general form <code class="inline-code">T_target = T_source × multiplier + offset</code>. For Celsius to Fahrenheit, the multiplier is 9/5 (1.8) and the offset is +32. For Celsius to Kelvin, the multiplier is 1 and the offset is +273.15. The tool uses the correct formula for each of the six conversion paths.
+      Kelvin is simpler because it shares Celsius's gap size — 1 kelvin equals exactly 1 degree Celsius. The only difference is the zero point: 0 K = −273.15°C, so converting between them requires only the 273.15 offset. This makes Kelvin-to-Fahrenheit conversions a two-step process: first convert Kelvin to Celsius (subtract 273.15), then apply the Celsius-to-Fahrenheit formula.
     </p>
+
+    <h3 class="font-display seo-h3-sm">The point where both scales read the same number</h3>
     <p class="seo-p-sm">
-      <strong>3. Handle edge cases:</strong> The tool correctly processes negative temperatures, zero, and very large values. Absolute zero (−273.15°C) converts correctly to −459.67°F and 0 K across all scales. The formulas work identically for negative values because the linear relationship holds across the entire number line.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Format and display:</strong> Results are displayed to two decimal places using IEEE 754 double-precision floating-point arithmetic, which provides approximately 15 to 17 significant decimal digits of precision. This is more than sufficient for any practical temperature measurement, as most thermometers measure to at most one decimal place.
+      Celsius and Fahrenheit intersect at −40 degrees. Setting the two formulas equal and solving: °C × 9/5 + 32 = °C gives °C = −40. This means −40°C = −40°F exactly. It is the only temperature where both scales produce the same number. This is not a useful reference point for everyday life (it is colder than any inhabited place on Earth), but it is a handy verification check: if you convert −40 and get a different number back, your formula is wrong.
     </p>
     <p class="seo-p-none">
-      <strong>Why the formulas work:</strong> The Celsius-to-Fahrenheit formula <code class="inline-code">°F = (°C × 9/5) + 32</code> accounts for two differences: the 9/5 ratio compensates for the different interval sizes (180°F span vs 100°C span), and the +32 offset accounts for Fahrenheit's zero point being 32 degrees below Celsius's zero point. The Kelvin formulas are simpler because Kelvin shares Celsius's interval size, requiring only the 273.15 offset to shift the zero point.
+      The Kelvin scale has no degree symbol because it is an absolute scale defined by fixing the Boltzmann constant at exactly 1.380649 × 10⁻²³ J/K. The International Bureau of Weights and Measures (BIPM) dropped the degree symbol in 1967 to distinguish kelvins from degrees Celsius. You write "295.15 K", not "295.15°K".
     </p>
   </div>
 
@@ -93,32 +89,24 @@ const tool = tools.find(t => t.slug === 'temperature-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is the formula to convert Celsius to Fahrenheit?",
-          a: "To convert Celsius to Fahrenheit, multiply by 9/5 (or 1.8) and add 32: °F = (°C × 9/5) + 32. For example, 25°C equals 77°F, and 0°C equals 32°F. The reverse formula is °C = (°F − 32) × 5/9."
+          q: "How do I convert 200°F to Celsius for my oven?",
+          a: "200°F equals 93.33°C. The formula is (200 − 32) × 5/9 = 93.33°C. For quick mental estimates, subtract 30 from the Fahrenheit value and divide by 2 — 200 minus 30 is 170, divided by 2 is 85°C. That is close but about 8°C low, so for baking where precision matters (especially for bread and pastries), use the exact formula or this converter."
         },
         {
-          q: "At what temperature are Celsius and Fahrenheit equal?",
-          a: "Celsius and Fahrenheit are equal at −40 degrees. At that point, −40°C = −40°F. This is the only temperature where both scales read the same value. It occurs because the two scales intersect when their offset and ratio differences cancel each other out."
+          q: "What is absolute zero in practical terms?",
+          a: "Absolute zero is 0 K, −273.15°C, or −459.67°F. At this temperature, all molecular motion theoretically stops. It has never been achieved in practice — the coldest recorded lab temperature is about 0.000000001 K, achieved by cooling rubidium atoms with lasers. For context, outer space is about 2.7 K (−270.45°C), which is warmer than absolute zero because of the cosmic microwave background radiation."
         },
         {
-          q: "What is Kelvin used for?",
-          a: "Kelvin is the SI unit of temperature used in science and engineering. It is an absolute scale where 0 K (absolute zero) is the lowest possible temperature, corresponding to −273.15°C or −459.67°F. It is commonly used in physics, chemistry, and thermodynamics because thermodynamic equations require absolute temperature values."
+          q: "Why does my phone weather app show different temperatures than the thermometer?",
+          a: "The difference is usually rounding, not a conversion error. A weather app might display 72°F while your thermometer reads 72.2°F, because the app rounds to the nearest whole number. The conversion formula itself is exact: 72°F = 22.22°C. If the discrepancy is larger (more than 2°F), check whether one device is measuring Celsius and displaying a converted value — some thermometers display °F but measure °C internally, introducing a small rounding offset."
         },
         {
-          q: "Why does the US use Fahrenheit?",
-          a: "Fahrenheit was developed by Daniel Gabriel Fahrenheit in 1724 and was the first standardized temperature scale. The United States adopted it early and retained it for everyday use during metrication in other countries. Most other nations switched to Celsius during the 20th century as part of metric system adoption."
+          q: "Is 37°C really normal body temperature?",
+          a: "37°C (98.6°F) was established as the average normal body temperature by Carl Wunderlich in 1868, based on 25,000 measurements. More recent studies show the average is actually about 36.6°C (97.9°F), and normal range spans from roughly 36.1°C to 37.2°C. Body temperature also varies by time of day (lower in the morning, higher in the evening), so 37°C is a useful reference point but not a strict threshold for fever."
         },
         {
-          q: "What is absolute zero?",
-          a: "Absolute zero is the lowest possible temperature: 0 K, −273.15°C, or −459.67°F. At this point, all molecular motion theoretically stops according to classical thermodynamics. It has never been reached in practice, though scientists have cooled matter to within billionths of a degree above absolute zero using laser cooling and other techniques."
-        },
-        {
-          q: "How do I convert Fahrenheit to Kelvin?",
-          a: "To convert Fahrenheit to Kelvin, first subtract 32 from the Fahrenheit value, then multiply by 5/9, and finally add 273.15: K = (°F − 32) × 5/9 + 273.15. For example, 212°F (boiling point of water) converts to 373.15 K, which equals 100°C."
-        },
-        {
-          q: "Why is there no degree symbol for Kelvin?",
-          a: "Kelvin does not use a degree symbol because it is an absolute scale based on fundamental physical constants, not a relative scale like Celsius or Fahrenheit. The kelvin is defined by fixing the numerical value of the Boltzmann constant at exactly 1.380649 × 10⁻²³ J/K. The International Bureau of Weights and Measures (BIPM) standardized this notation in 1967."
+          q: "How do I quickly estimate Celsius to Fahrenheit in my head?",
+          a: "Double the Celsius value and add 30. For example, 20°C doubled is 40, plus 30 gives 70°F (actual: 68°F — close). 30°C doubled is 60, plus 30 gives 90°F (actual: 86°F — a bit off). The estimate works best between 10°C and 30°C. Outside that range, the error grows because the 9/5 ratio means each Celsius degree is larger than each Fahrenheit degree."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

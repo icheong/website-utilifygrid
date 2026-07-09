@@ -180,25 +180,60 @@ test baz</textarea>
 
   <!-- ═══ HOW TO USE ═══ -->
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2" >RegEx Toolkit — Visualize, Extract &amp; Find-and-Replace in One Tool</h2>
-    <p class="seo-p" >The <strong style="color:var(--text-primary)">RegEx Toolkit</strong> is a browser-based developer tool that combines three essential regex workflows into a single interface. Type any JavaScript-compatible regular expression into the shared pattern field, toggle flags (<code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">g</code> global, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">i</code> case-insensitive, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">m</code> multiline, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">s</code> dot-all), and switch between three tabs: <strong style="color:var(--text-primary)">Visualize</strong> shows a token-by-token breakdown of your regex structure plus a capture groups table; <strong style="color:var(--text-primary)">Extract</strong> highlights matches and renders them as a chip list for quick scanning; <strong style="color:var(--text-primary)">Find &amp; Replace</strong> lets you stack multiple regex rules into an ordered pipeline with colour-coded highlights, back-reference substitution, and a source/result toggle. All processing runs entirely in your browser — zero server requests, complete privacy.</p>
+    <h2 class="font-display seo-h2">Build, test, and debug regex without leaving your browser</h2>
+    <p class="seo-p">
+      You have got a regular expression that works in your code editor but breaks when a user submits unexpected input, and you need to figure out why — fast. This tool lets you paste your regex and your test string, see exactly which parts of the pattern match which parts of the text, and debug the problem without switching to a terminal or a different app.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Visualize tab — see what your regex actually does</h3>
+    <p class="seo-p">
+      Paste your pattern into the shared field and the Visualize tab breaks it down into individual tokens — anchors, character classes, quantifiers, groups, lookaheads — each colour-coded and labelled. Below the token strip, a capture groups table shows exactly what each numbered or named group captured in your first three matches. If your pattern has a greedy quantifier where you expected a lazy one, you will see it here immediately.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Extract tab — pull out the matches</h3>
+    <p class="seo-p">
+      Switch to Extract and your test string is highlighted in real time. Every match appears as a chip below the text, so you can scan the results visually. If you have the global flag turned on, you see every match in the string. Turn it off and you see only the first match with its full capture group details.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Find and Replace tab — stack multiple regex rules</h3>
+    <p class="seo-p">
+      The Replace tab lets you chain multiple regex rules together. Each rule has its own pattern, replacement string, and flags. Rules execute in order — the output of rule one becomes the input of rule two. Use back-references like $1 and $2 to insert captured text, or $ and $ for the whole match and surrounding text. Quick presets load common transformations such as stripping HTML tags or collapsing whitespace.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Flags and options</h3>
+    <p class="seo-p">
+      Toggle four flags at the top of the pattern field: g (global — match all occurrences), i (case-insensitive), m (multiline — treat each line as a separate string), and s (dot-all — let the dot match newlines). The error banner at the bottom of the field shows the exact engine error if your pattern has a syntax problem, so you can fix it without guessing.
+    </p>
   </div>
 
   <!-- ═══ HOW IT WORKS ═══ -->
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2" >Deep-Dive: How the RegEx Toolkit Engine Works</h2>
+    <h2 class="font-display seo-h2">How the RegEx Toolkit processes your pattern</h2>
 
-    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">Hand-Written Finite-State Tokenizer (Visualize Mode)</h3>
-    <p class="seo-p" >The Visualize tab uses a hand-written finite-state machine (no external regex library) that walks the input pattern character-by-character, tracking bracket depth, escape sequences, and lookahead context to classify every component into one of eleven token types: anchor, literal, class, quantifier, group, namedgroup, ncgroup, alternation, lookahead, escape, and dot. The tokenizer correctly handles nested groups by maintaining a depth counter, identifies quantifiers (<code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">*</code>, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">+</code>, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">?</code>, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">&#123;n,m&#125;</code>) including lazy modifiers, and distinguishes capturing groups, non-capturing groups, named groups, and lookaheads/lookbehinds.</p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">The Visualize tokenizer walks your pattern character by character</h3>
+    <p class="seo-p">
+      When you type a regex like <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">^(\w+)\s+(foo|bar)\s*$</code>, the Visualize tab does not use another regex to parse it. It uses a hand-written finite-state machine that reads each character one at a time, tracking whether you are inside a character class, inside a group, or in an escape sequence. It identifies eleven token types — anchors, literals, character classes, quantifiers, capturing groups, non-capturing groups, named groups, alternations, lookaheads, escapes, and dots — and renders each one as a labelled, colour-coded chip.
+    </p>
 
-    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">Real-Time Match Highlighting &amp; Extraction</h3>
-    <p class="seo-p" >All three modes use the browser's native <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">RegExp</code> engine (ECMAScript standard). The text is scanned via <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">matchAll()</code> when the global flag is active, or <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">exec()</code> otherwise; result indices are spliced into <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">&lt;mark&gt;</code> elements for instant visual feedback. Capture group extraction iterates each MatchResult, pulling numbered sub-groups (and named groups via <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">m.groups</code>) for the first three matches. Extract mode renders each match as a styled chip for quick scanning.</p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">Match highlighting uses the browser's built-in engine</h3>
+    <p class="seo-p">
+      All three tabs use the same JavaScript RegExp engine that runs in your browser. The tool calls matchAll() when the global flag is on, or exec() when it is off, and splices the resulting indices into marked elements overlaid on your text. For a pattern like <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">\b\d{4}\b</code> against "The years are 2024 and 2025", the engine finds two matches at character positions 15 and 24, highlights them, and lists them as chips below the text.
+    </p>
 
-    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">Multi-Rule Pipeline (Find &amp; Replace Mode)</h3>
-    <p class="seo-p" >The Replace tab supports stacking multiple regex rules, each with its own pattern, replacement, and flags. Rules execute in order — the output of rule N becomes the input of rule N+1. Each rule is assigned a unique highlight colour for the overlay. Replacements support back-references: <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">$1</code>, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">$2</code> for numbered groups, <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">$&lt;name&gt;</code> for named groups, and special tokens <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">$&amp;</code> (whole match), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">$`</code> (pre-match), <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">$'</code> (post-match). Quick presets load common transformations (strip HTML, collapse whitespace, etc.) as ready-to-use rules.</p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">Capture groups are extracted from the MatchResult object</h3>
+    <p class="seo-p">
+      Each match returned by the engine includes a groups property for named captures and indexed entries for numbered captures. The tool iterates the first three matches and populates a table showing what each group captured. For the pattern <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">^(\w+)\s+(foo|bar)\s*$</code>, group 1 captures the word before the space, and group 2 captures either "foo" or "bar". The table shows these values side by side across all three matches.
+    </p>
 
-    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">Token Rendering &amp; Scroll-Synced Overlay</h3>
-    <p class="seo-p-none" >Each token from the Visualize tokenizer carries <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">&#123; text, type, description &#125;</code>. The renderer maps the type to a CSS class that applies a distinct colour scheme, appends a small uppercase label, and joins chips with arrow connectors. In Replace mode, a positioned overlay div sits on top of the textarea, syncing scroll position to display colour-coded highlights without modifying the editable text. All processing happens client-side with zero network requests.</p>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">Find and Replace processes rules sequentially</h3>
+    <p class="seo-p">
+      In Replace mode, each rule is a separate regex with its own pattern, replacement, and flags. Rule 1 runs first against the source text, produces output, and hands that output to rule 2. If rule 1 matches "foo" and replaces it with "baz", rule 2 never sees the original "foo". The replacement string supports back-references — $1 inserts whatever group 1 captured, $ and $ insert text before and after the match. A scroll-synced overlay displays colour-coded highlights on top of the editable textarea without modifying its contents.
+    </p>
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem">Why greedy and lazy quantifiers matter</h3>
+    <p class="seo-p">
+      A greedy quantifier like <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">.*</code> matches as much text as possible before backtracking. A lazy quantifier like <code style="background:var(--bg-surface-2); padding:0.1rem 0.4rem; border-radius:0.25rem; font-size:0.85rem">.*?</code> matches as little as possible. The Visualize tab labels each quantifier as greedy or lazy in the token breakdown, so you can see which strategy your pattern is using without running it against test data.
+    </p>
   </div>
 
   <!-- ═══ FAQ ═══ -->
@@ -211,81 +246,90 @@ test baz</textarea>
         {
           "@type": "Question",
           "name": "What regex flavour does this tool use?",
-          "acceptedAnswer": { "@type": "Answer", "text": "JavaScript's built-in ECMAScript regex engine — the same one in Chrome, Firefox, and Safari. Supports lookaheads, lookbehinds, named capture groups, and Unicode property escapes. PCRE-specific syntax like (?P<name>) or possessive quantifiers is not supported." }
+          "acceptedAnswer": { "@type": "Answer", "text": "JavaScript's built-in ECMAScript regex engine — the same one in Chrome, Firefox, and Safari. Supports lookaheads, lookbehinds, named capture groups, and Unicode property escapes. PCRE-specific syntax like possessive quantifiers or atomic groups is not supported." }
         },
         {
           "@type": "Question",
           "name": "What is the difference between the three tabs?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Visualize parses your regex into a colour-coded token breakdown and shows a capture groups table. Extract highlights matches in the text and lists them as chips. Find & Replace lets you stack multiple regex rules with ordered pipeline execution, colour-coded highlights, and back-reference substitution." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Visualize shows a colour-coded breakdown of your regex pattern and a capture groups table. Extract highlights every match in your text and lists them as chips. Find and Replace lets you stack multiple regex rules into an ordered pipeline with back-reference substitution." }
         },
         {
           "@type": "Question",
-          "name": "What does the s (dot-all) flag do?",
-          "acceptedAnswer": { "@type": "Answer", "text": "By default, the dot metacharacter matches any character except newline. With the s flag enabled, dot matches every character including newlines, which is essential for matching patterns that span multiple lines." }
+          "name": "Why does my regex show an error?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The error banner shows the exact engine message. Common causes include unmatched parentheses, an unescaped special character used as a literal (like a dot without a backslash), or an invalid escape sequence. Fix the syntax and the error clears automatically." }
         },
         {
           "@type": "Question",
           "name": "What is a capture group?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A capture group is a section of a regex wrapped in parentheses. It groups the enclosed pattern so quantifiers apply to it as a unit, and captures the matched text so you can extract it programmatically. The Capture Groups table in Visualize mode shows what each group matched across the first three matches." }
+          "acceptedAnswer": { "@type": "Answer", "text": "A capture group is a section of your regex wrapped in parentheses. It groups the enclosed pattern so quantifiers apply to it as a unit, and captures the matched text so you can extract it. The Capture Groups table in Visualize mode shows what each group matched across your first three matches." }
         },
         {
           "@type": "Question",
-          "name": "How do I use back-references in Find & Replace?",
-          "acceptedAnswer": { "@type": "Answer", "text": "In the replacement field, use $1, $2, etc. to refer to text captured by numbered parentheses in your pattern. Use $<name> for named groups. Special tokens: $&amp; is the whole match, $` is text before the match, $' is text after. These follow the standard String.prototype.replace() substitution patterns." }
+          "name": "How do back-references work in Find and Replace?",
+          "acceptedAnswer": { "@type": "Answer", "text": "In the replacement field, $1 and $2 insert text captured by numbered parentheses in your pattern. $<name> inserts text from a named group. $&amp; inserts the whole match, $` inserts text before the match, and $' inserts text after. These follow the standard JavaScript String.prototype.replace() patterns." }
         },
         {
           "@type": "Question",
-          "name": "Can rules conflict with each other in Find & Replace?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes, and that is often intentional. Rules run in order, so the output of one feeds the next. If two rules match the same text, the first rule wins on the source text; the second sees the already-replaced output. Use the rule order to control execution priority." }
+          "name": "Can rules conflict with each other in Find and Replace?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, and that is often intentional. Rules execute in order — the output of rule 1 becomes the input of rule 2. If two rules match the same text, the first rule wins on the original text and the second rule sees the already-replaced output. Use rule order to control execution priority." }
         },
         {
           "@type": "Question",
-          "name": "Why does my regex show 'Invalid regular expression'?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Common causes: unmatched parentheses or brackets, an unescaped special character used as a literal, an invalid escape sequence, or a variable-length lookbehind in older engines. The error banner displays the exact engine error message to help you debug." }
+          "name": "What does the s (dot-all) flag do?",
+          "acceptedAnswer": { "@type": "Answer", "text": "By default, the dot metacharacter matches any character except newline. With the s flag enabled, dot matches every character including newlines. This matters when your test string spans multiple lines and you want the dot to cross line boundaries." }
         },
         {
           "@type": "Question",
           "name": "How do greedy and lazy quantifiers differ?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A greedy quantifier (*, +, {2,5}) matches as much text as possible before backtracking. A lazy quantifier (*?, +?, {2,5}?) matches as little as possible. The Visualize tab labels each quantifier as (greedy) or (lazy) in the token breakdown so you can see the matching strategy at a glance." }
+          "acceptedAnswer": { "@type": "Answer", "text": "A greedy quantifier like * or + matches as much text as possible before backtracking. A lazy quantifier like *? or +? matches as little as possible. The Visualize tab labels each quantifier as greedy or lazy so you can see which strategy your pattern is using." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data sent to a server?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Every computation — tokenization, matching, extraction, and replacement — runs entirely in your browser using the built-in JavaScript RegExp engine. Your regex patterns and test strings never leave your device." }
         }
       ]
     }
     </script>
 
-    <h2 class="font-display seo-h2-faq" >Frequently asked questions</h2>
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
           q: 'What regex flavour does this tool use?',
-          a: "JavaScript's ECMAScript regex engine — the same one in Chrome, Firefox, and Safari. Supports lookaheads, lookbehinds, named capture groups, and Unicode property escapes. PCRE-specific syntax like (?P<name>) or possessive quantifiers is not supported.",
+          a: "JavaScript's ECMAScript regex engine — the same one in Chrome, Firefox, and Safari. Supports lookaheads, lookbehinds, named capture groups, and Unicode property escapes. PCRE-specific syntax like possessive quantifiers or atomic groups is not supported.",
         },
         {
           q: 'What is the difference between the three tabs?',
-          a: 'Visualize parses your regex into a colour-coded token breakdown and shows a capture groups table. Extract highlights matches in the text and lists them as chips. Find & Replace lets you stack multiple regex rules with ordered pipeline execution, colour-coded highlights, and back-reference substitution.',
+          a: 'Visualize shows a colour-coded breakdown of your regex pattern and a capture groups table. Extract highlights every match in your text and lists them as chips. Find and Replace lets you stack multiple regex rules into an ordered pipeline with back-reference substitution.',
         },
         {
-          q: "What does the s (dot-all) flag do?",
-          a: "By default, the dot metacharacter matches any character except newline. With the s flag enabled, dot matches every character including newlines — essential for patterns that span multiple lines.",
+          q: 'Why does my regex show an error?',
+          a: 'The error banner shows the exact engine message. Common causes include unmatched parentheses, an unescaped special character used as a literal (like a dot without a backslash), or an invalid escape sequence. Fix the syntax and the error clears automatically.',
         },
         {
           q: 'What is a capture group?',
-          a: 'A capture group is a section of a regex wrapped in parentheses. It groups the enclosed pattern so quantifiers apply to it as a unit, and captures the matched text so you can extract it programmatically. The Capture Groups table in Visualize mode shows what each group matched across the first three matches.',
+          a: 'A capture group is a section of your regex wrapped in parentheses. It groups the enclosed pattern so quantifiers apply to it as a unit, and captures the matched text so you can extract it. The Capture Groups table in Visualize mode shows what each group matched across your first three matches.',
         },
         {
-          q: 'How do I use back-references in Find & Replace?',
-          a: 'In the replacement field, use $1, $2, etc. to refer to text captured by numbered parentheses. Use $<name> for named groups. Special tokens: $& is the whole match, $` is text before, $\' is text after. These follow the standard String.prototype.replace() patterns.',
+          q: 'How do back-references work in Find and Replace?',
+          a: 'In the replacement field, $1 and $2 insert text captured by numbered parentheses in your pattern. $<name> inserts text from a named group. $& inserts the whole match, $` inserts text before the match, and $\' inserts text after. These follow the standard JavaScript String.prototype.replace() patterns.',
         },
         {
-          q: 'Can rules conflict with each other in Find & Replace?',
-          a: 'Yes, and that is often intentional. Rules run in order, so the output of one feeds the next. If two rules match the same text, the first rule wins on the source text; the second sees the already-replaced output. Use the rule order to control execution priority.',
+          q: 'Can rules conflict with each other in Find and Replace?',
+          a: 'Yes, and that is often intentional. Rules execute in order — the output of rule 1 becomes the input of rule 2. If two rules match the same text, the first rule wins on the original text and the second rule sees the already-replaced output. Use rule order to control execution priority.',
         },
         {
-          q: 'Why does my regex show "Invalid regular expression"?',
-          a: 'Common causes: unmatched parentheses or brackets, an unescaped special character used as a literal, an invalid escape sequence, or a variable-length lookbehind in older engines. The error banner displays the exact engine error message to help you debug.',
+          q: 'What does the s (dot-all) flag do?',
+          a: 'By default, the dot metacharacter matches any character except newline. With the s flag enabled, dot matches every character including newlines. This matters when your test string spans multiple lines and you want the dot to cross line boundaries.',
         },
         {
           q: 'How do greedy and lazy quantifiers differ?',
-          a: 'A greedy quantifier (*, +, {2,5}) matches as much text as possible before backtracking. A lazy quantifier (*?, +?, {2,5}?) matches as little as possible. The Visualize tab labels each quantifier as (greedy) or (lazy) in the token breakdown.',
+          a: 'A greedy quantifier like * or + matches as much text as possible before backtracking. A lazy quantifier like *? or +? matches as little as possible. The Visualize tab labels each quantifier as greedy or lazy so you can see which strategy your pattern is using.',
+        },
+        {
+          q: 'Is my data sent to a server?',
+          a: 'No. Every computation — tokenization, matching, extraction, and replacement — runs entirely in your browser using the built-in JavaScript RegExp engine. Your regex patterns and test strings never leave your device.',
         },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

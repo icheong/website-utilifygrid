@@ -50,20 +50,20 @@ const tool = tools.find(t => t.slug === 'acceleration-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Acceleration Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between m/s², G-Force, and ft/s²</h2>
     <p class="seo-p">
-      This acceleration converter computes precise conversions between 8 acceleration units — meters per second squared, standard gravity, feet per second squared, inches per second squared, Gal (centimeters per second squared), kilometers per second squared, kilometers per hour per second, and miles per hour per second — entirely within your browser. Built with modern vanilla JavaScript and SVG charting, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in automotive engineering, aerospace, seismology, or physics education.
+      Your car's spec sheet says 0-60 mph in 3.5 seconds. You need the acceleration in m/s² for a physics formula. Type 56.8 (which is 60 mph / 3.5 seconds), select mph/s, and see that it equals 25.4 m/s², 2.59 g, and 83.3 ft/s². The bar chart shows your car accelerates between a sports car (8.9 m/s²) and a fighter jet (29.4 m/s²).
     </p>
     <p class="seo-p">
-      The converter features a comparative SVG bar chart that displays your entered value alongside common real-world accelerations — from elevator motion to Formula 1 cars — providing immediate visual context. The tool handles the full range from microgravity experiments (millionths of g) to extreme rocket launches (several g), with dynamic formatting that adapts to each result's magnitude. Standard gravity (1 g = 9.80665 m/s²) serves as the universal reference point for intuitive comparison.
+      The converter handles 8 units: m/s², g (standard gravity), ft/s², in/s², Gal (cm/s²), km/s², km/h/s, and mph/s. An engineer designing a vibration test enters 10 g and sees it equals 98.07 m/s², 321.74 ft/s², and 9,807 Gal. A seismologist reading 2,500 Gal from a magnitude 7 earthquake sees it equals 25 m/s² and 2.55 g. The bar chart compares your value to elevators, cars, and F1 racers.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Why the unit matters for structural design</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Automotive performance engineering and vehicle testing`, `Automotive engineers measure vehicle acceleration in multiple units depending on context: 0–60 mph times convert to m/s² for physics calculations, g-forces for driver experience analysis, and mph/s for regulatory compliance. A car achieving 0–60 mph in 4 seconds accelerates at 6.7 m/s² (0.68 g). Converting between these units is essential when comparing manufacturer specifications, which may use different units depending on the market (European specs often use m/s² while US specs use mph/s).`],
-        [`Aerospace and astronautics`, `Rocket launches and spacecraft maneuvers are specified in g-forces for crew safety analysis and m/s² for trajectory calculations. A typical crewed launch subjects astronauts to 3–4 g during ascent, while abort scenarios can briefly reach 8–12 g. Converting between g and m/s² is critical for structural load analysis: a 1,000 kg payload experiencing 5 g requires a mounting structure rated for 49,033 N (1,000 × 9.80665 × 5).`],
-        [`Seismology and earthquake engineering`, `Seismologists measure ground acceleration in Gal (cm/s²) because earthquake motions produce small accelerations that are conveniently expressed in this unit. A magnitude 7 earthquake can produce peak ground accelerations of 1,000–3,000 Gal (10–30 m/s², approximately 1–3 g). Converting Gal to g-force helps engineers design structures that can withstand seismic loads: a building must resist horizontal forces proportional to the peak ground acceleration multiplied by its mass.`]
+        ['Rocket payload must survive g-forces', 'A 500 kg satellite mounted on a rocket experiences 5 g during launch. The mounting brackets must withstand 500 x 9.80665 x 5 = 24,517 N. If you accidentally use 5 m/s² instead of 5 g, the brackets are designed for only 2,500 N and fail at launch. Converting g to m/s² correctly (5 x 9.80665 = 49.03 m/s²) ensures the structural analysis is accurate.'],
+        ['Earthquake forces use Gal', 'Seismometers measure ground acceleration in Gal (cm/s²). A magnitude 7 earthquake produces 1,000-3,000 Gal. To convert to g-force: divide by 980.665. So 2,000 Gal = 2.04 g. Building codes require structures to withstand horizontal forces equal to peak ground acceleration times mass. A 1,000,000 kg building at 2,000 Gal needs to resist 2,000,000 x 0.01 x 9.80665 = 196,133 N.'],
+        ['Car crash tests measure peak g', 'A frontal crash test at 56 km/h produces peak deceleration of about 60 g for 15 milliseconds. That is 60 x 9.80665 = 588.4 m/s². The airbag must deploy within 30 milliseconds to reduce the occupant deceleration from 60 g to 10 g. Converting between g and m/s² helps engineers design restraint systems that manage energy absorption over the crash duration.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -74,26 +74,22 @@ const tool = tools.find(t => t.slug === 'acceleration-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Acceleration Converter Handles G-Force and m/s²</h2>
     <p class="seo-p">
-      All conversions use meters per second squared (m/s²) as the universal base unit. Each supported acceleration unit is defined by a fixed conversion factor relative to one m/s². To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain m/s², then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      All conversions pass through meters per second squared (m/s²). When you enter 2 g, the tool multiplies by 9.80665 to get 19.6133 m/s². Then it divides by each target unit's factor: by 1 for m/s², by 0.3048 for ft/s², by 0.01 for Gal, by 0.44704 for mph/s. The result: 2 g = 19.6133 m/s² = 64.35 ft/s² = 1,961.33 Gal = 43.88 mph/s.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Conversion factors from exact international definitions</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">ms2</code>, <code class="inline-code">g</code>, <code class="inline-code">ft2</code>) to its conversion factor relative to m/s². Standard gravity is defined as exactly <code class="inline-code">9.80665 m/s²</code>. Imperial units use exact definitions: <code class="inline-code">1 ft = 0.3048 m</code> exactly, so <code class="inline-code">1 ft/s² = 0.3048 m/s²</code>. The Gal is exactly <code class="inline-code">0.01 m/s²</code>.
+      Standard gravity is defined as exactly 9.80665 m/s² (3rd CGPM, 1901). The international foot is exactly 0.3048 m (1959). The inch is exactly 0.0254 m (1/12 of a foot). The Gal is exactly 0.01 m/s². km/h/s is exactly 1/3.6 m/s². mph/s is exactly 0.44704 m/s². All factors are exact rational numbers, so the IEEE 754 approximations provide full double-precision accuracy.
     </p>
+
+    <h3 class="font-display seo-h3-sm">The comparative bar chart and its scaling</h3>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion to m/s²:</strong> The input value is multiplied by the source unit's factor. For example, converting 2 g to m/s²: <code class="inline-code">2 × 9.80665 = 19.6133 m/s²</code>. Converting 60 mph/s to m/s²: <code class="inline-code">60 × 0.44704 = 26.8224 m/s²</code>. The intermediate result is an IEEE 754 double-precision floating-point number.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Target conversion from m/s²:</strong> The m/s² value is divided by the target unit's factor. Converting 19.6133 m/s² to ft/s²: <code class="inline-code">19.6133 / 0.3048 ≈ 64.35 ft/s²</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. SVG bar chart rendering:</strong> The chart dynamically scales to accommodate the user's value alongside reference accelerations. The maximum bar width is set to 1.2× the largest value (user or reference) to prevent overflow. Each bar's pixel width is calculated as <code class="inline-code">(value / maxValue) × availableWidth</code>. Labels and values are positioned using SVG text elements with consistent font sizing.
+      The SVG bar chart displays your value alongside 6 reference accelerations: elevator (1.5 m/s²), typical car (6.7 m/s²), sports car (8.9 m/s²), Earth gravity (9.81 m/s²), F1 car (19.6 m/s²), and fighter jet (29.4 m/s²). The chart scales dynamically: the longest bar is 1.2x the largest value to prevent overflow. Your bar is highlighted in blue while reference bars are grey.
     </p>
     <p class="seo-p-none">
-      <strong>Exact conversion factors:</strong> All factors are derived from exact international definitions: <code class="inline-code">1 g = 9.80665 m/s²</code> (standard gravity, defined by the 3rd CGPM in 1901), <code class="inline-code">1 ft = 0.3048 m</code> (international foot, defined in 1959), <code class="inline-code">1 in = 0.0254 m</code> (exactly 1/12 of a foot), <code class="inline-code">1 Gal = 0.01 m/s²</code> (exactly). The <code class="inline-code">km/h/s</code> factor is <code class="inline-code">1/3.6</code> (exactly), derived from <code class="inline-code">1 km/h = 1/3.6 m/s</code>. These are all exact rational values, so the IEEE 754 approximations provide full double-precision accuracy.
+      The chart updates instantly when you change the input value or unit. It handles values from millionths of g (microgravity experiments) to hundreds of g (crash tests). Very small values show as tiny bars with scientific notation labels. Very large values compress the reference bars to near-invisibility. This gives you immediate visual context for whether your acceleration is modest (elevator) or extreme (rocket launch).
     </p>
   </div>
 
@@ -102,32 +98,28 @@ const tool = tools.find(t => t.slug === 'acceleration-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is 1 g of acceleration?",
-          a: "1 g equals exactly 9.80665 m/s², which is the standard acceleration due to Earth's gravitational pull at sea level. When you drop an object, it accelerates at approximately 1 g (ignoring air resistance). Astronauts on the International Space Station experience microgravity not because Earth's gravity is weaker at that altitude, but because they are in continuous free fall around the planet."
+          q: "How do I convert 3 g to m/s²?",
+          a: "Multiply by 9.80665: 3 x 9.80665 = 29.42 m/s². This is roughly 3x the acceleration due to gravity. A roller coaster at the bottom of a loop typically pulls 3-4 g. A fighter pilot in a tight turn can pull 6-9 g. The human body can withstand about 5 g sustained without a g-suit, but only 1-2 g for extended periods without discomfort."
         },
         {
-          q: "What is the acceleration of a sports car?",
-          a: "A typical sports car accelerates from 0 to 60 mph in about 3 to 4 seconds, which translates to approximately 6.7 to 8.9 m/s² (0.68 to 0.91 g). A Tesla Model S Plaid achieves approximately 1.2 g. Formula 1 cars can exceed 2 g during hard acceleration and over 5 g under braking. These values are measured at the vehicle's centre of mass."
+          q: "What is the acceleration of a falling object?",
+          a: "Near Earth's surface, all objects fall at approximately 9.81 m/s² (1 g) regardless of mass (ignoring air resistance). After 1 second, the object is moving at 9.81 m/s. After 2 seconds, 19.62 m/s. After 3 seconds, 29.43 m/s. In ft/s², that is 32.17 ft/s². On the Moon, the same object falls at 1.62 m/s² (0.17 g)."
         },
         {
-          q: "How much g-force can a human survive?",
-          a: "Humans can tolerate approximately 5 g sustained for short periods without specialised equipment. Fighter pilots train to withstand 9 g with the help of g-suits that compress the legs to prevent blood from pooling. In car crashes, forces can reach 50 to 100 g for milliseconds, which is survivable with proper restraint systems. NASA centrifuge tests subject volunteers to up to 10 g for research purposes."
+          q: "What is 1 g in different units?",
+          a: "1 g = 9.80665 m/s² = 32.1740 ft/s² = 386.089 in/s² = 980.665 Gal = 0.00981 km/s² = 35.3036 km/h/s = 21.9368 mph/s. The most common conversions are g to m/s² (multiply by 9.80665) and g to ft/s² (multiply by 32.174)."
         },
         {
-          q: "What is a Gal?",
-          a: "A Gal (galileo) equals exactly 1 cm/s² or 0.01 m/s². It is named after Galileo Galilei and is the standard unit used in seismology to measure ground acceleration during earthquakes. Strong earthquakes can produce peak ground accelerations of 1,000 to 3,000 Gal (10 to 30 m/s²). The related unit milliGal (mGal) is used in gravimetry for measuring subtle variations in Earth's gravitational field."
+          q: "How many g-forces does a car crash produce?",
+          a: "A frontal crash at 56 km/h (35 mph) produces peak deceleration of about 60 g for 15 milliseconds. The occupant experiences about 20-30 g sustained over 100 milliseconds. Airbags reduce peak force by extending the deceleration time. A head-on collision at 120 km/h produces over 100 g, which is usually fatal without a seatbelt and airbag."
         },
         {
-          q: "What is the acceleration due to gravity on other planets?",
-          a: "Mars: 3.72 m/s² (0.38 g), Moon: 1.62 m/s² (0.17 g), Jupiter: 24.79 m/s² (2.53 g), Venus: 8.87 m/s² (0.90 g). An object weighs approximately 38% of its Earth weight on Mars and approximately 17% on the Moon. On Jupiter, the same object would weigh over 2.5 times its Earth weight, which is why gas giants are often referenced as extreme acceleration environments."
+          q: "What is the acceleration of gravity on Mars?",
+          a: "Mars gravity is 3.72 m/s² (0.38 g). A 100 kg person weighs 372 N on Mars vs 981 N on Earth. A car that accelerates from 0-60 mph in 4 seconds on Earth would take about 6.5 seconds on Mars (same power, less traction). The Moon is 1.62 m/s² (0.17 g), Jupiter is 24.79 m/s² (2.53 g)."
         },
         {
-          q: "What is the difference between acceleration and deceleration?",
-          a: "Acceleration and deceleration are the same physical quantity — a change in velocity over time — distinguished only by direction relative to the current motion. Acceleration increases speed (positive), while deceleration decreases it (negative). In physics, both are measured in the same units (m/s², g, etc.) and are handled identically in calculations. The converter handles both positive and negative values."
-        },
-        {
-          q: "How do I convert between g-force and m/s²?",
-          a: "To convert g-force to m/s², multiply by 9.80665 (standard gravity). To convert m/s² to g-force, divide by 9.80665. For example, 3 g equals 29.42 m/s² (3 × 9.80665), and 50 m/s² equals approximately 5.1 g (50 / 9.80665). This conversion is essential in aerospace engineering, where structural loads are specified in g but trajectory calculations require m/s²."
+          q: "Why do seismometers measure in Gal?",
+          a: "Gal (cm/s²) is convenient because earthquake ground accelerations are typically in the range of 100-3,000 Gal (1-30 m/s²). Using Gal avoids awkward decimals. A magnitude 7 earthquake produces 1,000-3,000 Gal. Building codes specify minimum resistance in terms of peak ground acceleration: a structure in a high-seismic zone must withstand 0.3-0.5 g (2,942-4,903 Gal)."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

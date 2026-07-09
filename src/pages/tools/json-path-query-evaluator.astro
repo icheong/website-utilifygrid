@@ -77,42 +77,37 @@ const tool = tools.find(t => t.slug === 'json-path-query-evaluator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">JSON Path Query Evaluator Overview</h2>
-    <p class="seo-p">
-      This JSONPath query evaluator lets you extract and filter specific data from JSON documents using the standard JSONPath query language. Paste any valid JSON payload into the data panel, enter a JSONPath expression in the query field, and the matching results update live as you type. Running entirely client-side with vanilla JavaScript, every query executes in your browser using a custom recursive-descent parser — no data is sent to any server, and no tracking occurs.
-    </p>
-    <p class="seo-p">
-       The evaluator supports the full standard JSONPath syntax: dot notation (<code class="inline-code">$.store.book</code>), bracket notation (<code class="inline-code">$['store']['book']</code>), wildcard selectors (<code class="inline-code">$[*]</code>), array index access (<code class="inline-code">$[0]</code>), recursive descent (<code class="inline-code">$..author</code>), and filter expressions (<code class="inline-code">$[?(@.price &lt; 10)]</code>). A built-in cheat sheet below the input field catalogs common query patterns for quick reference.
-    </p>
-
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <h2 class="font-display seo-h2">How to Use the JSON Path Query Evaluator</h2>
+    <p class="seo-p">A QA engineer tests a REST API that returns a nested JSON response with user profiles, order histories, and shipping addresses. The engineer needs to verify that every user object has an email field and that all orders above $100 have a tracking number. Paste the API response into the JSON Data panel, enter the query $.users[*].email to check all email fields, and the result updates live. Then enter $.orders[?(@.total > 100)].trackingNumber to verify tracking numbers on high-value orders. The entire workflow runs in your browser with no server calls.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['API integration testing', 'A QA engineer testing a REST API endpoint can paste the full JSON response into the evaluator and use JSONPath queries to verify specific fields exist and contain expected values. For example, <code class="inline-code">$.data.users[*].email</code> confirms all user objects have an email field, while <code class="inline-code">$[?(@.status == "active")]</code> filters for active records only.'],
-        ['Log analysis and debugging', 'A developer investigating a production issue can paste a large JSON log entry or stack trace and use recursive descent (<code class="inline-code">$..error</code>) to instantly locate all error fields regardless of nesting depth. This is orders of magnitude faster than manually expanding nested objects in a tree viewer.'],
-        ['Data pipeline validation', 'A data engineer processing JSON through ETL pipelines can validate the output structure by querying for expected keys and counts. Expressions like <code class="inline-code">$.records.length</code> or <code class="inline-code">$[?(@.timestamp > "2024-01-01")]</code> provide immediate structural verification without writing a full test suite.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm">
-          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">API integration testing</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A developer testing a payment gateway API receives a response with nested transaction objects. Paste the JSON and use $.transactions[*].status to verify all transactions have a status field. Then use $.transactions[?(@.status == "failed")] to isolate failed transactions for debugging. The cheat sheet below the input field shows common query patterns for quick reference.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Log analysis and debugging</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A developer investigating a production incident pastes a large JSON log entry and uses the recursive descent operator $..error to locate all error fields regardless of nesting depth. This is significantly faster than manually expanding nested objects in a tree viewer. The result shows every error value in a flat array, making it easy to spot patterns across the log.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Data pipeline validation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A data engineer processes JSON through an ETL pipeline and needs to validate the output structure before loading into the data warehouse. Paste the transformed JSON and query $.records.length to verify the expected record count. Use $[?(@.timestamp > "2024-01-01")] to confirm all records have timestamps after the cutoff date. This provides immediate structural verification without writing a full test suite.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Configuration file inspection</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A DevOps engineer needs to verify that a Kubernetes deployment manifest has the correct environment variables set. Paste the YAML-converted JSON and use $.spec.template.spec.containers[*].env[*].name to list all environment variable names. Use $.spec.template.spec.containers[?(@.name == "app")].resources.limits.memory to check memory limits on the main container. The live preview updates as you type each query.</p>
+      </div>
     </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: JSONPath Query Engine Implementation</h2>
-    <p class="seo-p">
-      The query engine uses a tokeniser-recursive descent architecture. The tokeniser splits the raw JSONPath expression into segments by identifying path separators (dots), bracket groups, filter expressions, and the recursive descent operator (<code class="inline-code">..</code>). Each token is classified by type: dot-access key, bracket-access key, array index, wildcard, filter expression, or recursive descent.
-    </p>
-    <h3 class="seo-h3-sm">Recursive-Descent Evaluation</h3>
-    <p class="seo-p">
-      After tokenisation, the evaluator walks the parsed JavaScript object tree by applying each token in sequence. For dot and bracket tokens, it performs direct property access on the current result set. For wildcards (<code class="inline-code">*</code>), it expands arrays to all elements and objects to all values. Filter expressions are evaluated by applying the comparison operator (<code class="inline-code">==</code>, <code class="inline-code">!=</code>, <code class="inline-code">&lt;</code>, <code class="inline-code">&gt;</code>, <code class="inline-code">&lt;=</code>, <code class="inline-code">&gt;=</code>) between each element's field and the provided value, supporting string, numeric, boolean, and null comparisons.
-    </p>
-    <h3 class="seo-h3-sm">Recursive Descent (<code class="inline-code">..</code>)</h3>
-    <p class="seo-p-none">
-      The recursive descent operator performs a depth-first traversal of the entire object subtree. At each node, the evaluator checks whether the node matches the subsequent token — for example, <code class="inline-code">$..author</code> finds all properties named "author" at any depth. This is implemented using a stack-based traversal that visits every nested object and array element, collecting matches in a flat array. The result is deduplicated and formatted as a JSON array.
-    </p>
+    <h2 class="font-display seo-h2">How the JSON Path Query Evaluator Works</h2>
+    <p class="seo-p">The query engine uses a tokeniser and recursive-descent architecture to evaluate JSONPath expressions against parsed JSON data. All processing happens in your browser with no server calls.</p>
+    <h3 class="font-display seo-h3-sm">Tokeniser Architecture</h3>
+    <p class="seo-p">The tokeniser splits the raw JSONPath expression into segments by identifying path separators (dots), bracket groups, filter expressions, and the recursive descent operator. Each token is classified by type: dot-access key, bracket-access key, array index, wildcard, filter expression, or recursive descent. The tokeniser handles nested bracket expressions and quoted string keys within brackets.</p>
+    <h3 class="font-display seo-h3-sm">Recursive-Descent Evaluation</h3>
+    <p class="seo-p">After tokenisation, the evaluator walks the parsed JavaScript object tree by applying each token in sequence. For dot and bracket tokens, it performs direct property access on the current result set. For wildcards, it expands arrays to all elements and objects to all values. Filter expressions are evaluated by applying the comparison operator (==, !=, less than, greater than, less-equal, greater-equal) between each element field and the provided value, supporting string, numeric, boolean, and null comparisons.</p>
+    <h3 class="font-display seo-h3-sm">Recursive Descent Operator</h3>
+    <p class="seo-p">The recursive descent operator performs a depth-first traversal of the entire object subtree. At each node, the evaluator checks whether the node matches the subsequent token. For example, $..author finds all properties named author at any depth. This is implemented using a stack-based traversal that visits every nested object and array element, collecting matches in a flat array. The result is deduplicated and formatted as a JSON array.</p>
   </div>
 
   <div slot="faq">

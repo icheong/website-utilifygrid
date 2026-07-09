@@ -49,20 +49,20 @@ const tool = tools.find(t => t.slug === 'power-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Power Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Watts, Horsepower, BTU/hr, and Tons of Refrigeration</h2>
     <p class="seo-p">
-      This power converter computes precise conversions between 13 metric, imperial, and thermal power units entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in automotive engineering, HVAC design, electrical engineering, or physics.
+      Your air conditioning quote says you need a 4-ton unit, but the electrician wants the load in kilowatts to size the circuit breaker. Enter 4, select tons, and the converter shows 14.069 kW, 18,864 hp, and 48,000 BTU/hr. The copy button lets you paste the kilowatt figure straight into the electrical load calculation worksheet.
     </p>
     <p class="seo-p">
-      The converter supports the most commonly used power units across SI, imperial, and thermal systems: watts, milliwatts, kilowatts, megawatts, and gigawatts for SI; mechanical, metric, and electrical horsepower for imperial; BTU per hour and BTU per minute for thermal; ton of refrigeration for HVAC; kilocalories per hour for thermal engineering; and foot-pounds per second for mechanical power. Results are dynamically formatted based on magnitude, switching between fixed notation, locale-formatted numbers, and scientific notation as appropriate.
+      The converter handles 13 units from milliwatts to gigawatts. A mechanic comparing a 200 hp (mechanical) engine with a 150 kW (metric) specification can instantly see that 200 hp = 149.14 kW, confirming the metric engine is slightly less powerful. A homeowner comparing a 1500W space heater to a 20,000 BTU/hr gas heater can see that the gas unit produces about 5.86 kW — nearly four times the output. The quick-reference row shows everyday power levels: a phone charger at 5 W, a laptop at 65 W, a car engine at 111,855 W.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">HVAC sizing where the wrong unit wastes thousands</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        ['Automotive and engine specifications', 'Car engines are rated in horsepower. A 150 hp (mechanical) engine produces 111,855 watts of power. European manufacturers specify power in kilowatts (kW) or metric horsepower (PS), so a 110 kW engine equals approximately 147.5 hp (mech) or 149.6 PS (metric). The quick-reference section helps visualise everyday power levels like a smartphone charger (5 W), a laptop charger (65 W), or a car engine (111,855 W) for intuitive scale comparison.'],
-        ['HVAC and air conditioning sizing', 'Air conditioners and furnaces are rated in BTU/hr or tons of refrigeration. A 3-ton AC unit produces 36,000 BTU/hr of cooling, equivalent to 10,550 watts or about 14.1 hp. When comparing electric heaters (rated in watts) to gas furnaces (rated in BTU/hr), you need to convert between systems. A 1,500-watt space heater produces about 5,118 BTU/hr — roughly half the output of a small gas furnace.'],
-        ['Electrical appliance energy auditing', 'Homeowners comparing appliance power consumption need to understand wattage ratings. A 100W incandescent bulb produces the same light as a 15W LED, but both are measured in watts. When calculating electricity costs, convert wattage to kilowatts and multiply by hours of use: a 1,500W hair dryer running for 10 minutes uses 0.25 kWh. This tool helps compare power across different unit systems for accurate energy cost estimation.']
+        ['Quoting air conditioning capacity in the wrong unit', 'A contractor in Dubai quotes a 5-ton AC system for a villa. The client, used to kilowatts, sees "5" and assumes 5 kW — but 5 tons of refrigeration is actually 17.58 kW. Installing a 5 kW unit instead of a 17.58 kW unit would leave the villa sweltering. The converter makes it explicit: enter 5 tons, see 17.58 kW, 60,000 BTU/hr, and 23,900 kcal/hr. No ambiguity.'],
+        ['Comparing engine power across manufacturers', 'A motorsport engineer compares a Japanese engine rated at 180 PS (metric horsepower) with a British engine rated at 175 hp (mechanical). Converting: 180 PS = 177.5 hp. The British engine is actually slightly less powerful. Without converting, the engineer might assume 180 > 175 means the Japanese engine wins, which it does — but by only 2.5 hp, not 5.'],
+        ['Electrical circuit sizing for appliances', 'An electrician installs a circuit for a 5,000W convection oven. The breaker must handle the load: 5 kW at 240V draws 20.83 amps. Converting 5,000W to BTU/hr gives 17,061 BTU/hr — useful for comparing the oven\'s heat output to a gas equivalent. The converter helps the electrician work across both the electrical and thermal sides of the same appliance.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -73,26 +73,25 @@ const tool = tools.find(t => t.slug === 'power-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Power Converter Handles Watts, Horsepower, and BTU/hr</h2>
     <p class="seo-p">
-      The converter employs a hub-and-spoke conversion model using watts as the universal base unit. Every supported power unit is defined by a fixed conversion factor relative to one watt. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain watts, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      Every unit in the converter is stored as a multiple of one watt. When you enter 200 hp (mechanical), the tool multiplies by 745.7 to get 149,140 W, then divides by each target unit's factor. The conversion to kilowatts gives 149.14 kW. The conversion to BTU/hr gives 508,827 BTU/hr. Because all conversions pass through watts in one step, there is no rounding drift from chaining through intermediate units.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Why there are three different horsepowers</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">w</code>, <code class="inline-code">hp-mech</code>, <code class="inline-code">btu-hr</code>) to its exact factor in watts. Metric units use powers of 10 (e.g. <code class="inline-code">1 kW = 1,000 W</code>, <code class="inline-code">1 MW = 1,000,000 W</code>), while imperial and thermal units use internationally defined values.
+      Mechanical horsepower (hp) is defined as exactly 550 foot-pounds per second, which equals 745.69987... W. Metric horsepower (PS, from the German Pferdestärke) is defined as exactly 735.49875 W — the power needed to lift 75 kg at 1 m/s. Electrical horsepower is defined as exactly 746 W. The differences are small but real: a 100 hp (mechanical) engine is 101.4 PS (metric) or 99.8 hp (electrical). Car manufacturers choose whichever number makes their engine look best in the target market.
     </p>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to watts. For example, converting 100 hp (mech) to watts: <code class="inline-code">100 × 745.7 = 74,570 W</code>. This intermediate result is an IEEE 754 double-precision floating-point number, which provides approximately 15 to 17 significant decimal digits of precision.
+      The ton of refrigeration is defined as exactly 12,000 BTU/hr, which equals 3,516.85 W. This represents the cooling power needed to freeze one short ton (2,000 lb) of water at 0°C in 24 hours. The definition dates to the era of ice harvesting: a "ton" of ice melting over 24 hours absorbs 12,000 BTU/hr. Modern air conditioners use this unit because it produces convenient whole numbers: a typical home needs 2-5 tons (24,000-60,000 BTU/hr).
     </p>
+
+    <h3 class="font-display seo-h3-sm">Why BTU/hr and watts measure the same thing differently</h3>
     <p class="seo-p-sm">
-      <strong>3. Target conversion:</strong> The watt value is divided by the target unit's factor. Converting 74,570 W to kW: <code class="inline-code">74570 / 1000 = 74.57 kW</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (1 trillion or greater) use scientific notation. Values between 1 billion and 1 trillion use locale-formatted numbers with 2 decimal places. Values between 1,000 and 1 billion use 2 to 4 decimal places. Values between 0.001 and 1,000 use 6 to 8 decimal places. Values below 0.001 use scientific notation. This ensures readability across the full range from milliwatts to gigawatts.
+      Watts and BTU/hr both measure power — the rate of energy transfer. 1 watt = 3.41214 BTU/hr. Electric heaters are rated in watts because they consume electricity. Gas furnaces are rated in BTU/hr because they burn fuel. When comparing an electric heater (1,500W = 5,118 BTU/hr) to a gas furnace (40,000 BTU/hr), the gas unit produces about 7.8 times more heat. The converter bridges the unit gap so you can make this comparison directly.
     </p>
     <p class="seo-p-none">
-      <strong>Exact vs. approximate factors:</strong> Electrical horsepower is defined as exactly 746 W. The metric horsepower (PS) is defined as exactly 735.49875 W. The mechanical horsepower (hp) is defined as exactly 550 foot-pounds per second, which equals 745.69987... W (rounded to 745.7 W for display). The ton of refrigeration is defined as exactly 12,000 BTU/hr. BTU/hr uses the IT BTU definition of 1,055.06 J, making <code class="inline-code">1 BTU/hr = 0.293071 W</code> approximate but standard.
+      The formatting thresholds handle the enormous range: milliwatts (0.001 W) display with 6-8 decimal places; watts and horsepower use 2-4 decimal places; megawatts and gigawatts use locale-formatted numbers. A smartphone charger at 5 W and a nuclear power plant at 1,000 MW (1 GW) both display clearly without scientific notation obscuring the practical meaning of the number.
     </p>
   </div>
 
@@ -101,32 +100,20 @@ const tool = tools.find(t => t.slug === 'power-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is the difference between mechanical and metric horsepower?",
-          a: "Mechanical horsepower (hp) = 745.7 W, used in the US and UK. Metric horsepower (PS or CV) = 735.5 W, used in Europe. The difference is about 1.4%. A car rated at 100 hp (mech) would be 101.4 PS (metric). The electrical horsepower (746 W) is used specifically for electric motor ratings."
+          q: "How many watts is a 3-ton air conditioner?",
+          a: "A 3-ton AC unit produces 36,000 BTU/hr, which equals 10,551 watts (10.55 kW). This means it draws about 44 amps at 240V — requiring a dedicated circuit. The converter shows this instantly: enter 3 tons, see 10.55 kW, 14.1 hp, and 36,000 BTU/hr. For home sizing, a typical house needs 2-5 tons depending on square footage and climate."
         },
         {
-          q: "What is a ton of refrigeration?",
-          a: "One ton of refrigeration equals 12,000 BTU/hr or about 3,517 watts. It represents the cooling power needed to freeze one short ton (2,000 lb) of water at 0°C in 24 hours. Air conditioners are commonly rated in tons — a 3-ton unit provides 36,000 BTU/hr of cooling, equivalent to about 10.5 kW."
+          q: "What is the difference between power and energy in practical terms?",
+          a: "Power is how fast you use energy. A 100W light bulb uses energy at a rate of 100 joules per second. Energy is the total amount consumed. Running that bulb for 10 hours uses 1 kWh of energy (100W × 10h ÷ 1000). Your electricity bill charges for energy (kWh), not power (kW). A 2 kW heater running for 1 hour uses the same energy as a 1 kW heater running for 2 hours."
         },
         {
-          q: "How many watts is a horsepower?",
-          a: "One mechanical horsepower equals 745.7 watts. One metric horsepower equals 735.5 watts. One electrical horsepower equals 746 watts exactly. The value depends on which definition of horsepower you use. For quick mental conversion, 1 hp is roughly 750 W."
+          q: "Why do European car manufacturers use PS instead of hp?",
+          a: "PS (Pferdestärke) is the German metric horsepower, defined as the power needed to lift 75 kg at 1 m/s. It was standardised in Germany in the early 20th century and remains the legal unit for car power ratings in the EU. PS is 1.4% lower than mechanical hp, so a 200 PS engine produces 197.2 hp. Manufacturers sometimes round up — a '200 PS' engine might actually produce 198 PS."
         },
         {
-          q: "What is the difference between power and energy?",
-          a: "Power is the rate of energy transfer, measured in watts (W). Energy is the total amount of work done, measured in joules (J) or watt-hours (Wh). A 100W bulb running for 1 hour uses 100 Wh of energy. Power tells you how fast energy is being used, while energy tells you how much total energy was consumed."
-        },
-        {
-          q: "What is a BTU per hour?",
-          a: "A BTU/hr is a unit of power used in HVAC and heating. One BTU/hr equals about 0.293 watts. Furnaces and air conditioners are often rated in BTU/hr. 12,000 BTU/hr equals one ton of refrigeration. To convert BTU/hr to watts, multiply by 0.293071. To convert watts to BTU/hr, multiply by 3.41214."
-        },
-        {
-          q: "How do I calculate electricity cost from wattage?",
-          a: "Multiply the appliance wattage by hours of use, then divide by 1,000 to get kilowatt-hours (kWh). For example, a 1,500W space heater running for 8 hours uses 12 kWh. At $0.12 per kWh, that costs $1.44. This tool helps convert between power units to compare different appliances accurately."
-        },
-        {
-          q: "What is the relationship between watts and BTU/hr?",
-          a: "1 watt equals approximately 3.41214 BTU/hr. To convert watts to BTU/hr, multiply by 3.41214. To convert BTU/hr to watts, divide by 3.41214 or multiply by 0.293071. For quick mental estimates, 1,000 W is roughly 3,412 BTU/hr. This conversion is essential when comparing electric heaters (watts) to gas furnaces (BTU/hr)."
+          q: "How do I calculate the electricity cost of running a heater?",
+          a: "Multiply the heater's wattage by hours of use, divide by 1,000 to get kWh, then multiply by your electricity rate. A 1,500W heater running 8 hours uses 12 kWh. At $0.12/kWh, that costs $1.44/day. Converting 1,500W to BTU/hr gives 5,118 BTU/hr — useful for comparing to a gas furnace's output per dollar."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

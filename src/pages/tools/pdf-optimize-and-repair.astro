@@ -108,34 +108,36 @@ const tool = tools.find(t => t.slug === 'pdf-optimize-and-repair')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the PDF Optimize and Repair Tool</h2>
-    <p class="seo-p">Compress large PDFs, fix corrupted files, flatten forms, or update metadata — all processing runs entirely in your browser.</p>
+    <p class="seo-p">A project manager uploads a 45 MB PDF proposal to the company file server but the upload times out because the attachment limit is 25 MB. Open this tool, drag the PDF onto the drop zone, select the Recommended compression level, and click Compress and Download. The tool strips non-essential metadata, removes unused objects, and applies zlib stream compression to the internal data streams. The result downloads as a smaller file that fits within the email attachment limit without changing any visible content.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Upload PDF</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Drag and drop or browse to select the PDF you want to optimize or repair. The file loads directly into your browser — nothing is uploaded.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">IT administrators repairing corrupted downloads</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A user reports that a PDF from a client opens with a parser error in Adobe Acrobat. Upload the file, switch to the Repair tab, and click Repair and Download. The tool loads the file with error-tolerant parsing, rebuilds the cross-reference table from scratch, re-indexes every object, and writes a fresh standards-compliant PDF. The repaired file opens cleanly in all readers.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Optimization Level</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select a compression tier — Low for minimal changes, Recommended for a balanced result, or Extreme for maximum size reduction.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Legal teams flattening form fields</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A signed PDF contract contains interactive form fields that some recipients cannot view correctly in their PDF reader. Upload the file, switch to the Flatten tab, and click Flatten and Download. The tool merges all form fields, annotations, and interactive elements into the page content layer, producing a flat non-editable PDF that renders identically in every viewer.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Run Optimization</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the action button for your chosen mode — Compress, Repair, Flatten, or Save Metadata — to process the document.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Marketing teams updating document metadata</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A whitepaper PDF still has the author field set to the intern who drafted it three years ago. Upload the file, switch to the Metadata tab, update the Author and Title fields, add relevant keywords, and click Save Metadata. The tool reads the existing metadata, applies your changes, and downloads a new PDF with the corrected information embedded in the document properties.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Download Optimized PDF</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Save the reduced or fixed file to your device. You can see the original and new file sizes side by side.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Archivists applying extreme compression</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A university library needs to store 10,000 scanned research papers on a limited-budget server. Upload a representative sample, select the Extreme compression level, and click Compress and Download. The tool strips all metadata including Title, Author, Producer, and Creator fields, removes non-essential objects, and applies maximum stream compression. Text-heavy PDFs typically shrink 10 to 20 percent, while image-heavy documents can see 30 to 50 percent reduction.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the PDF Optimize and Repair Tool Works</h2>
-    <p class="seo-p">The tool rebuilds PDF internals using pdf-lib to shrink file size or restore structural integrity.</p>
+    <p class="seo-p">The tool rebuilds PDF internals using pdf-lib to shrink file size or restore structural integrity. All processing happens in your browser with no server calls.</p>
     <h3 class="font-display seo-h3-sm">Compression Techniques</h3>
-    <p class="seo-p">During compression the PDF is re-serialized with <code class="inline-code">object streams</code>, which deduplicate shared resources and apply <code class="inline-code">zlib</code> stream compression. Image-heavy documents benefit from recompression, while text-heavy files gain from font subsetting and removal of unused objects. The Extreme level additionally strips all metadata — Title, Author, Producer — and discards non-essential entries.</p>
+    <p class="seo-p">During compression the PDF is re-serialised with object streams, which deduplicate shared resources and apply zlib stream compression. Image-heavy documents benefit from recompression, while text-heavy files gain from font subsetting and removal of unused objects. The Extreme level additionally strips all metadata including Title, Author, Producer, and Creator fields, and discards non-essential entries. The Low level preserves all metadata and applies only structural optimisation for minimal size reduction.</p>
     <h3 class="font-display seo-h3-sm">Repair Algorithm</h3>
-    <p class="seo-p">The repair mode loads the file with error-tolerant parsing, then writes a fresh PDF from scratch. This rebuilds the <code class="inline-code">cross-reference table</code>, re-indexes every object, and corrects malformed streams. Broken links between pages and their content streams are resolved, producing a valid, standards-compliant document.</p>
+    <p class="seo-p">The repair mode loads the file with error-tolerant parsing using the ignoreEncryption flag, then writes a fresh PDF from scratch. This rebuilds the cross-reference table, re-indexes every object, and corrects malformed streams. Broken links between pages and their content streams are resolved, producing a valid standards-compliant document. The repair process does not modify visual content, it only fixes the internal document structure.</p>
+    <h3 class="font-display seo-h3-sm">Flatten Process</h3>
+    <p class="seo-p">Flattening iterates through every page and removes Widget annotations, which represent form fields, from the page annotation arrays. The AcroForm dictionary is deleted from the document catalog, removing the form field definitions entirely. The visual appearance of the form fields is preserved as part of the page content layer, producing a flat non-editable PDF that renders identically in all viewers.</p>
   </div>
 
   <div slot="faq">
@@ -144,37 +146,37 @@ const tool = tools.find(t => t.slug === 'pdf-optimize-and-repair')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How much can file size be reduced?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Reduction varies by content. Text-heavy PDFs typically shrink 10–20% through structural compression, while image-heavy documents can see 30–50% or more at the Extreme level.</p>
+          <p itemprop="text" class="seo-faq-a">Reduction varies by content type. Text-heavy PDFs typically shrink 10 to 20 percent through structural compression and object deduplication. Image-heavy documents can see 30 to 50 percent or more at the Extreme level because the tool removes metadata and non-essential objects. The actual savings depend on how much redundancy exists in the original file.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Will compression decrease image quality?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">The tool does not re-encode embedded images. Compression comes from deduplication, stream-level zlib, and metadata removal. Visual quality remains unchanged at all levels.</p>
+          <p itemprop="text" class="seo-faq-a">The tool does not re-encode embedded images. Compression comes from deduplication of shared resources, stream-level zlib compression, and metadata removal. Visual quality remains unchanged at all compression levels because the image data streams are preserved exactly as they are in the original document.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Can it fix corrupted PDFs?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. The repair mode rebuilds broken cross-reference tables, re-indexes objects, and corrects malformed streams. Severely damaged files may not be fully recoverable, but most common corruption issues are fixed.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. The repair mode rebuilds broken cross-reference tables, re-indexes objects, and corrects malformed streams by writing a fresh PDF from scratch. Severely damaged files with missing page content or truncated streams may not be fully recoverable, but most common corruption issues like broken cross-reference tables and malformed objects are fixed.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Are bookmarks preserved during compression?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Bookmarks and the document outline are preserved at the Recommended and Low levels. The Extreme level strips all metadata and non-essential objects, which may remove bookmarks.</p>
+          <p itemprop="text" class="seo-faq-a">Bookmarks and the document outline are preserved at the Recommended and Low compression levels because these levels retain the document structure. The Extreme level strips all metadata and non-essential objects, which may remove bookmarks along with other metadata entries. If you need to preserve bookmarks, use the Recommended level instead.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does it support encrypted PDFs?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">The repair mode can load password-protected files using error-tolerant parsing. Compression and flatten require the file to be unencrypted, so remove the password first if possible.</p>
+          <p itemprop="text" class="seo-faq-a">The repair mode can load password-protected files using error-tolerant parsing with the ignoreEncryption flag. Compression and flatten require the file to be unencrypted, so remove the password first if possible. You can use the Secure PDF tool to decrypt the file before running optimisation.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Is my PDF uploaded to a server?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">No. Every operation runs entirely in your browser using pdf-lib. Your file never leaves your device, ensuring complete privacy.</p>
+          <p itemprop="text" class="seo-faq-a">No. Every operation runs entirely in your browser using pdf-lib. Your file never leaves your device, ensuring complete privacy. All compression, repair, flatten, and metadata operations happen in browser memory with no network calls whatsoever.</p>
         </div>
       </div>
     </div>

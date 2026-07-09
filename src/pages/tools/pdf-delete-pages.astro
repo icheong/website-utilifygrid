@@ -47,20 +47,20 @@ const tool = tools.find(t => t.slug === 'pdf-delete-pages')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Delete Pages Overview</h2>
+    <h2 class="font-display seo-h2">How to Remove Specific Pages From a PDF</h2>
     <p class="seo-p">
-      This PDF delete pages tool lets you remove specific pages from a PDF document by clicking to select them — entirely within your browser. Built with <strong>pdf-lib</strong> (for page removal) and <strong>PDF.js</strong> (for thumbnail rendering), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are removing blank pages from a scan, stripping out confidential sections before sharing, or cleaning up a draft document, the deletion is performed client-side with full lossless quality preservation for the remaining pages.
+      A 100-page double-sided scan has 50 blank pages between content pages. Click Select Even to mark all even-numbered pages (the blank ones), see them highlighted with red borders, and click Delete. The output is a 50-page PDF with only the content pages. The thumbnails show every page so you can verify your selection before deleting.
     </p>
     <p class="seo-p">
-      Every page is rendered as a thumbnail with a click-to-select interface. Selected pages get a red border and badge for clear visual feedback. Bulk selection buttons (Select All, Deselect All, Select Odd, Select Even) speed up common deletion patterns. The delete operation copies only the unselected pages to a new PDF, producing a smaller file without the removed content.
+      The delete tool renders every page as a thumbnail. Click to select pages for removal (they get a red border). Bulk buttons speed up common patterns: Select All, Deselect All, Select Odd, Select Even. The delete operation copies only the unselected pages to a new PDF, producing a smaller file without the removed content.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Cleaning up scans and removing unwanted sections</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Scan cleanup and blank page removal`, `When scanning physical documents, blank pages often appear between content pages due to double-sided scanning. The Select Even or Select Odd buttons quickly identify these blank pages for removal. A 50-page double-sided scan might produce 100 pages with 50 blank intermediates — this tool removes them in seconds with visual confirmation via thumbnails.`],
-        [`Confidential section removal before sharing`, `Legal and business teams frequently need to share PDFs with specific sections removed — for example, removing financial projections from a board deck before sharing with external partners, or stripping privileged pages from a litigation document before production. The click-to-select interface provides precise control over which pages are deleted, and the thumbnail preview ensures you remove exactly the right content.`],
-        [`Document size reduction`, `Large PDFs with unnecessary pages consume more storage and transfer bandwidth. A 200-page report might contain 30 pages of appendices that are only relevant to a specific audience. By selecting and deleting those appendix pages, you reduce the file size proportionally while maintaining the core content. The remaining pages are copied losslessly with no quality degradation.`]
+        ['Double-sided scans produce blank intermediates', 'A 50-page document scanned double-sided produces 100 pages: content, blank, content, blank... The blank pages are the backs of the previous sheet. Select Even marks all 50 blank pages. Delete them. The output is a clean 50-page PDF. The thumbnails let you verify that the even pages are indeed blank before deleting.'],
+        ['Board decks need sections removed before sharing', 'A 40-page board deck has financial projections on pages 15-20 that cannot be shared with external partners. Select pages 15-20 by clicking each one. The red borders show exactly which pages will be deleted. The remaining 34 pages are copied to a new PDF. The original file is never modified.'],
+        ['Appendices bloat file size unnecessarily', 'A 200-page technical report has 40 pages of raw data appendices. Only the 160-page main report is needed for the client presentation. Select the 40 appendix pages and delete them. The output is 60% smaller and easier to email. The remaining pages are copied losslessly.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -71,26 +71,22 @@ const tool = tools.find(t => t.slug === 'pdf-delete-pages')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Delete Process</h2>
+    <h2 class="font-display seo-h2">How the PDF Delete Pages Tool Removes Pages Without Upload</h2>
     <p class="seo-p">
-      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla's PDF renderer) handles page thumbnail rendering by drawing each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual deletion by copying only the unselected pages from the source document to a new document. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+      When you drop a PDF, every page is rendered as a thumbnail at 25% scale. Click a page to toggle its selection (red border means selected for deletion). Bulk buttons mark all odd, all even, all pages, or no pages. The tool prevents deleting all pages: at least one must remain. When you click Delete, pdf-lib creates a new PDF with only the unselected pages.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Delete Process</h3>
+    <h3 class="font-display seo-h3-sm">How the bulk selection buttons save time</h3>
     <p class="seo-p-sm">
-      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. The file data is held in browser memory — no network requests are made. The file is validated as a PDF by checking the file type and attempting to parse it with PDF.js.
+      Select Even marks all even-numbered pages (2, 4, 6...) for deletion. This is the fastest way to clean up double-sided scans where blank pages appear on even numbers. Select Odd marks pages 1, 3, 5... Select All marks every page (the tool prevents this from being the final state). Deselect All clears the selection. These buttons update the selection state and red borders instantly.
     </p>
+
+    <h3 class="font-display seo-h3-sm">What happens to the remaining pages</h3>
     <p class="seo-p-sm">
-      <strong>2. Thumbnail generation:</strong> PDF.js renders every page at 25% scale onto temporary Canvas elements, converting them to inline thumbnail cards. Each card displays a numbered badge and a click handler for selection. Selected pages show a red border and red badge for clear visual feedback.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Page selection:</strong> The user clicks pages to toggle their selection state. Bulk buttons provide shortcuts: "Select All" selects every page, "Deselect All" clears the selection, "Select Odd" selects odd-numbered pages, and "Select Even" selects even-numbered pages. The selection count updates in real time. The tool prevents deleting all pages (at least one must remain).
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Delete execution:</strong> When the user clicks "Delete Selected Pages", pdf-lib creates a new empty <code class="inline-code">PDFDocument</code>. It iterates through all page numbers, skipping the selected pages, and copies only the unselected pages using <code class="inline-code">copyPages()</code>. The resulting PDF contains only the pages that were not selected for deletion.
+      The delete operation copies only unselected pages using copyPages(). Text, images, vectors, and embedded fonts are transferred byte-for-byte. The remaining pages are identical to the originals. Bookmarks and annotations are preserved on the remaining pages. The output PDF is smaller because it contains fewer pages, but the content of each remaining page is unchanged.
     </p>
     <p class="seo-p-none">
-      <strong>Feature preservation:</strong> The remaining pages are copied byte-for-byte from the source, preserving text, images, vectors, bookmarks, and annotations. Embedded fonts are kept without re-encoding. The deletion is a pure extraction operation — it removes pages without modifying the content of any remaining page.
+      The original file is never modified. The delete operation produces a new PDF. If you delete the wrong pages, re-upload the original and select different pages. The tool does not maintain an undo stack within a session, so the original file serves as your backup.
     </p>
   </div>
 
@@ -99,32 +95,28 @@ const tool = tools.find(t => t.slug === 'pdf-delete-pages')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "Is my file uploaded to a server?",
-          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device — there is no server upload at any point. This provides complete privacy for confidential documents."
+          q: "How do I remove blank pages from a double-sided scan?",
+          a: "Click Select Even to mark all even-numbered pages. The thumbnails show which pages are blank. If some even pages have content, deselect them manually. Click Delete Selected Pages. The output is a clean PDF with only the content pages. The thumbnails let you verify before deleting."
         },
         {
-          q: "Can I preview pages before deleting?",
-          a: "Yes. All pages are shown as thumbnails so you can see exactly which pages you are selecting for removal. Selected pages get a red border and red badge number for clear visual feedback."
+          q: "Can I delete pages from a password-protected PDF?",
+          a: "PDFs with an owner password (restricting editing) can be processed because they open without a password. PDFs with a user password (requiring a password to open) cannot be processed. Remove the password first using a PDF reader that supports decryption."
         },
         {
-          q: "Does deleting pages reduce quality?",
-          a: "No. Remaining pages are copied losslessly — text, vectors, images, and bookmarks are preserved byte-for-byte. There is no re-encoding, recompression, or rasterisation. The output PDF has exactly the same visual quality as the original for the remaining pages."
+          q: "What happens to the page numbers after deletion?",
+          a: "The output PDF renumbers pages starting from 1. If you delete pages 5-10 from a 20-page document, the output has 14 pages numbered 1-14. Internal links and bookmarks that referenced the deleted pages will break. For complex documents, edit bookmarks after deleting."
         },
         {
-          q: "Can I delete all pages from a PDF?",
-          a: "No. The tool prevents deleting all pages — at least one page must remain in the output PDF. If you need to completely replace a PDF, use the PDF edit or PDF enhance tools instead."
+          q: "Can I delete the same page multiple times?",
+          a: "Each page appears once in the thumbnail grid. You can only delete it once. If you need to remove duplicate content from different positions, use the organize tool instead, which lets you reorder and delete individual page instances."
         },
         {
-          q: "How do the bulk selection buttons work?",
-          a: "Select All marks every page for deletion. Deselect All clears the selection. Select Odd marks all odd-numbered pages (1, 3, 5, etc.). Select Even marks all even-numbered pages (2, 4, 6, etc.). These are useful for removing blank pages from double-sided scans or selecting alternating content."
+          q: "Does deleting pages reduce the file size?",
+          a: "Yes, proportionally. A 100-page PDF with 30 pages deleted becomes a 70-page PDF. The file size reduction depends on the content of the deleted pages. Text-heavy pages reduce size more than image-heavy pages. The remaining pages are copied without re-encoding."
         },
         {
-          q: "Can I undo a deletion?",
-          a: "The delete operation produces a new PDF file — your original file is never modified. If you need to undo a deletion, simply re-upload the original PDF and select different pages. The tool does not maintain an undo stack within a session."
-        },
-        {
-          q: "What happens to bookmarks and annotations?",
-          a: "Bookmarks and annotations from the source PDF are preserved on the remaining pages where the source structure allows. However, because the delete operation creates a new PDF document, the bookmark hierarchy may need manual adjustment in a dedicated PDF editor if you require a unified table of contents."
+          q: "Is there a limit to how many pages I can delete?",
+          a: "You can select and delete as many pages as you want, as long as at least one page remains. The tool prevents the final state where all pages are selected for deletion. For a 50-page document, you can delete 49 pages and keep 1."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

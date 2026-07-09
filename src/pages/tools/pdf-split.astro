@@ -75,20 +75,20 @@ const tool = tools.find(t => t.slug === 'pdf-split')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Split PDF Overview</h2>
+    <h2 class="font-display seo-h2">How to Extract Specific Pages From a PDF</h2>
     <p class="seo-p">
-      This PDF split tool lets you extract specific pages or separate every page from a PDF document — entirely within your browser. Built with <strong>pdf-lib</strong> (for splitting) and <strong>PDF.js</strong> (for preview rendering), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are extracting a chapter from a textbook, separating signed pages from a multi-page contract, or breaking a large report into individual sections, the split is performed client-side with full lossless quality preservation.
+      A 200-page court filing has exhibits on pages 45-62 and signature pages on 180-195. You need just those sections for a motion. Type "45-62, 180-195" into the range input, see the thumbnails update to show selected pages, and click Split. The output is a single PDF with only those 38 pages. The Extract All mode creates a ZIP with every page as a separate file.
     </p>
     <p class="seo-p">
-      The tool supports two split modes: <strong>By Page Ranges</strong> (enter specific page numbers or ranges like <code class="inline-code">1-3, 5, 8-10</code>) and <strong>Extract All Pages</strong> (every page becomes a separate PDF bundled into a ZIP archive). Quick preset buttons let you instantly select odd pages, even pages, or split the document in half. Inline page thumbnails provide visual confirmation before splitting.
+      The split tool supports two modes: By Page Ranges (enter numbers like "1-3, 5, 8-10") and Extract All Pages (each page becomes a separate PDF in a ZIP). Quick presets instantly select odd pages, even pages, or split the document in half. Inline thumbnails show every page so you can verify which pages you are extracting before downloading.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Splitting documents for different audiences</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Legal document page extraction`, `Law firms regularly need to extract specific pages from contracts, court filings, or depositions. A 200-page court filing might require extracting only pages 45-62 (the exhibits section) and pages 180-195 (the signature pages) for a specific motion. The range input supports comma-separated values and hyphens, making complex extractions straightforward. The tool processes everything in-browser, so confidential legal documents never leave the device.`],
-        [`Academic paper and chapter separation`, `Students and researchers split textbooks, theses, or multi-chapter reports into individual chapter files for focused study or sharing. A 400-page thesis might be split into 8 chapter files, each containing 40-60 pages. The "Extract All" mode creates a ZIP archive with every page as a separate file, useful when you need to distribute individual pages to different team members or upload them to a learning management system.`],
-        [`Business report section distribution`, `Corporate teams split quarterly reports to distribute specific sections to different stakeholders. The finance team might need pages 1-15 (executive summary), the marketing team pages 30-45 (market analysis), and the operations team pages 60-80 (operational metrics). The preset buttons (odd/even, halves) provide quick shortcuts for common splitting patterns. The preview thumbnails let you verify page content before committing to the split.`]
+        ['Legal teams extract specific sections', 'A 300-page litigation document contains the complaint (pages 1-20), discovery requests (pages 21-80), depositions (pages 81-250), and exhibits (pages 251-300). Each section goes to a different team. The range input accepts "1-20" for the complaint, "251-300" for exhibits. The split runs three times, producing three focused PDFs from one source file.'],
+        ['Students split theses into chapters', 'A 400-page PhD thesis has 8 chapters. Each chapter is 40-60 pages. The student enters ranges like "1-45, 46-95, 96-140" to extract individual chapters. The Extract All mode creates 400 separate page files in a ZIP, which is useful when submitting individual figures to a journal. The thumbnails show each page so the student can verify chapter boundaries.'],
+        ['Accountants extract audit sections', 'A 150-page audit report has financial statements (pages 1-30), notes (pages 31-80), and management letter (pages 81-100). The client only needs the financial statements. Enter "1-30" and split. The 30-page output is emailed to the client. The original 150-page file stays intact on the accountant\'s machine.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -99,26 +99,22 @@ const tool = tools.find(t => t.slug === 'pdf-split')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Split Process</h2>
+    <h2 class="font-display seo-h2">How the PDF Split Tool Extracts Pages Without Upload</h2>
     <p class="seo-p">
-      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla's PDF renderer) handles page preview rendering by drawing each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual split by copying page objects from the source document to new documents. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+      When you drop a PDF into the split tool, PDF.js renders every page as a thumbnail at 20% scale. The range parser reads your input (like "1-3, 5, 8-10"), validates each page number against the total count, deduplicates, and sorts numerically. When you click Split, pdf-lib loads the source document and copies only the specified pages using copyPages() into a new PDF.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Split Process</h3>
+    <h3 class="font-display seo-h3-sm">How the range parser handles complex inputs</h3>
     <p class="seo-p-sm">
-      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. The file data is held in browser memory — no network requests are made. The file is validated as a PDF by checking the file type and attempting to parse it with PDF.js.
+      The parser accepts comma-separated values with hyphens for ranges: "1-3, 5, 8-10" means pages 1, 2, 3, 5, 8, 9, 10. It validates each number against the total page count (you cannot extract page 50 from a 30-page document). Duplicates are removed and results are sorted numerically. The quick presets generate range strings automatically: Odd pages produces "1, 3, 5, 7..." and Even pages produces "2, 4, 6, 8...".
     </p>
+
+    <h3 class="font-display seo-h3-sm">Extract All creates a ZIP archive</h3>
     <p class="seo-p-sm">
-      <strong>2. Thumbnail generation:</strong> PDF.js renders every page at 20% scale onto temporary Canvas elements, converting them to inline thumbnails. The page count is extracted from the PDF document metadata. This provides instant visual feedback without uploading anything.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Range parsing:</strong> The range input parser accepts comma-separated values with hyphens for ranges (e.g., <code class="inline-code">1-3, 5, 8-10</code>). It validates each page number against the total page count, deduplicates pages, and sorts them numerically. Quick presets generate range strings for odd pages, even pages, or document halves.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Split execution:</strong> When the user clicks "Split &amp; Download", pdf-lib loads the source document, copies the specified pages using <code class="inline-code">copyPages()</code>, and creates a new PDF. For a single page, the output downloads directly as <code class="inline-code">page_N.pdf</code>. For multiple pages, they are combined into one PDF. For "Extract All", each page becomes a separate PDF bundled into a ZIP archive via JSZip.
+      When you select Extract All, each page becomes a separate PDF file. For a 10-page document, you get page_1.pdf through page_10.pdf. These are bundled into a ZIP archive using JSZip for a single download. This is useful when you need to distribute individual pages to different people or upload them separately to a system that only accepts one PDF per entry.
     </p>
     <p class="seo-p-none">
-      <strong>Feature preservation:</strong> The split copies page content objects byte-for-byte from the source, preserving visual fidelity. Text, images, vectors, bookmarks, and annotations are preserved. Embedded fonts are kept without re-encoding. The split does not modify page content — it is a pure extraction operation with zero quality loss.
+      The split is a lossless extraction: text, vectors, images, and embedded fonts are copied byte-for-byte. There is no re-encoding or recompression. The extracted pages look identical to the originals. Bookmarks and annotations are preserved on the extracted pages. The source file is never modified.
     </p>
   </div>
 
@@ -127,32 +123,28 @@ const tool = tools.find(t => t.slug === 'pdf-split')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "Is my PDF uploaded to a server?",
-          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device — there is no server upload at any point. This provides complete privacy for confidential documents such as legal filings, medical records, and financial reports."
+          q: "How do I extract pages 1 through 5 from a 50-page PDF?",
+          a: "Type 1-5 in the range input and click Split. The output is a single PDF with only pages 1-5. For non-contiguous pages, use commas: 1, 3, 5 extracts just those three pages. The thumbnails update to show which pages are selected before you download."
         },
         {
-          q: "How do page ranges work?",
-          a: "Enter page numbers separated by commas. Use hyphens for ranges: '1-3' means pages 1, 2, and 3. '1, 4-6, 10' extracts pages 1, 4, 5, 6, and 10. Pages start at 1. Duplicate pages are automatically removed and results are sorted numerically."
+          q: "What does Extract All do?",
+          a: "Each page becomes a separate PDF file. A 10-page document produces 10 files (page_1.pdf through page_10.pdf) bundled into a single ZIP download. This is useful when you need to submit individual pages to different systems or distribute them to different people."
         },
         {
-          q: "What happens when I extract all pages?",
-          a: "Each page is saved as a separate PDF file. All individual PDFs are bundled into a ZIP archive for a single download. For a 10-page PDF, you get 10 separate files named page_1.pdf through page_10.pdf."
+          q: "Can I split a password-protected PDF?",
+          a: "PDFs with an owner password (restricting editing) can be split because they open without a password. PDFs with a user password (requiring a password to open) cannot be processed. Remove the password first using a PDF reader that supports decryption."
         },
         {
-          q: "Does splitting reduce PDF quality?",
-          a: "No. The split is a lossless copy — text, vectors, images, and bookmarks are copied byte-for-byte from the source. There is no re-encoding, recompression, or rasterisation. The extracted pages have exactly the same visual quality as the original."
+          q: "Does splitting change the page quality?",
+          a: "No. Pages are copied byte-for-byte from the source. Text, vector graphics, images, and embedded fonts are transferred without re-encoding. The extracted pages look identical to the originals. There is no recompression or rasterization."
         },
         {
-          q: "Can I split password-protected PDFs?",
-          a: "This tool can split PDFs encrypted without a user password (they open freely but restrict editing). PDFs requiring a password to open cannot be processed because pdf-lib cannot decrypt them without the password."
+          q: "What are the quick preset buttons?",
+          a: "Odd pages selects 1, 3, 5, 7... Even pages selects 2, 4, 6, 8... First half selects pages 1 through the midpoint. Second half selects pages from the midpoint to the end. These save time for common splitting patterns like separating double-sided scans."
         },
         {
-          q: "What are the quick preset buttons for?",
-          a: "The presets let you instantly populate the range input with common patterns: 'First page' selects page 1, 'Odd pages' selects all odd-numbered pages, 'Even pages' selects all even-numbered pages, and 'First half'/'Second half' split the document at the midpoint. These save time when you need standard splitting patterns."
-        },
-        {
-          q: "Can I split a PDF into multiple separate files at once?",
-          a: "Yes. Use the 'Extract All Pages' mode to save every page as a separate PDF inside a ZIP archive. For selective multi-file extraction (e.g., pages 1-5 as one file and pages 10-15 as another), you can run the split multiple times with different ranges, or use the range mode to extract specific pages as a single combined PDF."
+          q: "Can I extract the same page multiple times?",
+          a: "Yes. Enter a page number multiple times in the range: 1, 1, 1 produces a 3-page PDF where all three pages are copies of page 1. This is useful when you need duplicate copies of a signature page or cover sheet."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

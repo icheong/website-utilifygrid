@@ -72,43 +72,72 @@ const tool = tools.find(t => t.slug === 'car-loan-amortization-calculator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2" >How to use the Car Loan Calculator</h2>
-    <p class="seo-p" >Enter the full vehicle purchase price, your down payment amount, the annual interest rate from your lender, and select the loan term. The calculator instantly shows your monthly payment, total interest paid, and complete amortization schedule. All computations run locally in your browser using the standard loan amortization formula — no data is sent to any server.</p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
-    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['Negotiating with a dealership', 'Dealerships often frame monthly payment as the primary metric. Use this calculator to independently verify whether a quoted payment matches the agreed price, rate, and term — catching hidden fees or inflated rates before signing.'],
-        ['Refinancing analysis', 'If rates drop or your credit score improves, input your remaining balance, new rate, and remaining term to compare current vs refinanced costs. The total interest figure reveals whether refinancing fees are worth the savings.'],
-        ['Multi-vehicle comparison shopping', 'When choosing between two vehicles at different price points, run both through the calculator at their respective rates. A $5,000 cheaper car at a higher rate can cost more total interest than a more expensive car with a lower promotional rate.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm" >
-          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
-    </div>
+    <h2 class="font-display seo-h2">Find out exactly what your car loan will cost you</h2>
+    <p class="seo-p">
+      The dealership quoted you $487 per month for a $35,000 car, but you are not sure if that number includes hidden fees or an inflated interest rate. This calculator takes the vehicle price, your down payment, the interest rate, and the loan term, then shows you the true monthly payment, total interest paid, and a month-by-month amortization schedule so you can verify the dealer's numbers before signing.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 1: Enter the vehicle price</h3>
+    <p class="seo-p">
+      Type the full purchase price of the vehicle including taxes and registration if you are rolling those into the loan. For a $35,000 car with $2,000 in on-road costs, enter 37000. This is the starting amount the loan is based on.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 2: Set your down payment</h3>
+    <p class="seo-p">
+      Enter the amount you are paying upfront. A 20% down payment on a $37,000 car is $7,400, leaving $29,600 to finance. A larger down payment reduces your monthly payment and total interest, and lowers the risk of being upside down on the loan — owing more than the car is worth.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 3: Enter the interest rate</h3>
+    <p class="seo-p">
+      Use the APR your lender quoted. In 2024-2025, borrowers with excellent credit typically see 5% to 8% for new cars and 7% to 12% for used cars. Check pre-approval rates from your bank or credit union before visiting the dealership — this gives you a baseline to negotiate against. Even a 1% rate difference on a $30,000 loan over 5 years costs roughly $800 more in total interest.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 4: Choose the loan term</h3>
+    <p class="seo-p">
+      Select the number of months from the dropdown. Shorter terms mean higher monthly payments but significantly less total interest. A 48-month loan on $30,000 at 7% costs about $4,500 in interest. The same loan over 72 months costs about $8,000 — roughly $3,500 more for the convenience of lower monthly payments.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 5: Review the amortization schedule</h3>
+    <p class="seo-p">
+      The output shows three numbers: monthly payment, total interest paid, and total amount paid. Below that, a month-by-month table shows how each payment is split between principal and interest. In the early months, most of your payment goes to interest. By the final months, nearly the entire payment reduces the remaining balance. This table helps you understand exactly where your money goes.
+    </p>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2" >How the calculation works</h2>
-    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">The loan amortization formula</h3>
-    <p class="seo-p" >The monthly payment is calculated using the standard annuity formula: <strong class="text-primary">M = P × r(1+r)&#119895; / ((1+r)&#119895; − 1)</strong>, where P is the principal (vehicle price minus down payment), r is the monthly interest rate (annual rate ÷ 12), and n is the total number of months. This formula is codified in international accounting standards and produces a fixed monthly payment that fully amortizes the loan to zero over the term.</p>
+    <h2 class="font-display seo-h2">How car loan amortization works</h2>
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">The standard loan amortization formula</h3>
+    <p class="seo-p">
+      The monthly payment is calculated using the standard annuity formula: M equals P multiplied by r(1+r) raised to the power of n, divided by ((1+r) raised to the power of n) minus 1. P is the principal (vehicle price minus down payment), r is the monthly interest rate (annual rate divided by 12), and n is the total number of months. This formula is codified in international accounting standards and produces a fixed monthly payment that fully amortizes the loan to zero over the term.
+    </p>
+
     <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">How each payment is split between principal and interest</h3>
-    <p class="seo-p" >Each monthly payment covers accrued interest first, with the remainder reducing the principal. In month one, interest is calculated on the full principal balance, so a large portion of the payment goes to interest. As the balance decreases each month, less interest accrues and more of the fixed payment is applied to principal. By the final months, nearly the entire payment reduces the remaining balance. The amortization table shows this shift row by row.</p>
-    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">Edge cases and constraints</h3>
-    <p class="seo-p-none" >When the interest rate is zero, the formula degenerates to a simple equal-division: principal divided by months. If the down payment equals or exceeds the vehicle price, the principal is zero and no loan is needed. The calculator clamps negative principal values to zero, preventing invalid states. All arithmetic uses IEEE 754 double-precision floating point, which provides sufficient accuracy for financial calculations at the cent level.</p>
+    <p class="seo-p">
+      Each monthly payment covers accrued interest first, with the remainder reducing the principal. In month one, interest is calculated on the full principal balance, so a large portion of the payment goes to interest. On a $30,000 loan at 7% over 60 months, the first payment is $594 — of which $175 goes to interest and $419 to principal. As the balance decreases each month, less interest accrues and more of the fixed payment is applied to principal. By month 60, nearly the entire $594 payment reduces the remaining balance.
+    </p>
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">Why shorter terms save thousands in interest</h3>
+    <p class="seo-p">
+      A 48-month loan on $30,000 at 7% produces total interest of about $4,500. The same loan over 72 months produces about $8,000 in interest — roughly $3,500 more. The monthly payment drops from $718 to $511, but you pay for that convenience with 24 extra months of interest accrual. Financial advisors generally recommend keeping car payments under 10% of take-home pay and the loan term at 60 months or fewer to avoid negative equity.
+    </p>
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">Zero-interest and edge cases</h3>
+    <p class="seo-p">
+      When the interest rate is zero, the formula simplifies to principal divided by months — a simple equal division. If the down payment equals or exceeds the vehicle price, the principal is zero and no loan is needed. The calculator clamps negative principal values to zero, preventing invalid states. All arithmetic uses double-precision floating point, which provides sufficient accuracy for financial calculations at the cent level.
+    </p>
   </div>
 
   <div slot="faq">
-    <h2 class="font-display seo-h2-faq" >Frequently asked questions</h2>
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'What is a good car loan interest rate?', a: 'Interest rates vary by credit score, lender, and whether the vehicle is new or used. In 2024–2025, rates for borrowers with excellent credit typically range from 5–8% for new cars and 7–12% for used cars. Rates above 15% are generally considered high and warrant negotiation or credit improvement before purchasing. Checking pre-approval rates from your bank or credit union before visiting a dealership gives you a baseline to compare against.' },
-        { q: 'Should I make a larger down payment?', a: 'A larger down payment reduces your loan principal, lowering both monthly payments and total interest paid. It also reduces the risk of being "upside down" on the loan (owing more than the car is worth). A 20% down payment is a common recommendation, though any amount helps. If you have high-interest debt (credit cards, personal loans), prioritizing that payoff over a larger car down payment may be mathematically better.' },
+        { q: 'What is a good car loan interest rate?', a: 'Interest rates vary by credit score, lender, and whether the vehicle is new or used. In 2024-2025, rates for borrowers with excellent credit typically range from 5-8% for new cars and 7-12% for used cars. Rates above 15% are generally considered high and warrant negotiation or credit improvement before purchasing. Checking pre-approval rates from your bank or credit union before visiting a dealership gives you a baseline to compare against.' },
+        { q: 'Should I make a larger down payment?', a: 'A larger down payment reduces your loan principal, lowering both monthly payments and total interest paid. It also reduces the risk of being upside down on the loan (owing more than the car is worth). A 20% down payment is a common recommendation, though any amount helps. If you have high-interest debt (credit cards, personal loans), prioritizing that payoff over a larger car down payment may be mathematically better.' },
         { q: 'Is a longer loan term better?', a: 'A longer term lowers monthly payments but significantly increases total interest paid. A 72-month loan on a $30,000 vehicle at 7% costs roughly $3,500 more in interest than a 48-month loan. Longer terms also risk negative equity as cars depreciate faster than the loan is paid down. Financial advisors generally recommend keeping car payments under 10% of take-home pay and the loan term at 60 months or fewer.' },
         { q: 'Can I pay off my car loan early?', a: 'Most car loans allow early repayment without penalty, but check your loan agreement first. Making extra principal payments reduces the outstanding balance faster, saving significant interest. Even one extra payment per year can shorten a 5-year loan by several months. Some lenders apply extra payments to future installments rather than reducing principal — always specify that extra amounts should go toward principal reduction.' },
         { q: 'How does a trade-in affect my loan?', a: 'A trade-in acts like an additional down payment, reducing the principal you need to finance. Enter your vehicle\'s trade-in value in the down payment field along with any cash down payment to see the combined effect. Be aware that dealerships may offer less than private-sale value, so comparing trade-in vs selling independently is worthwhile. The negative equity on a trade-in (if you owe more than it\'s worth) gets added to the new loan principal.' },
         { q: 'What is the difference between APR and interest rate?', a: 'The interest rate is the cost of borrowing the principal. APR (Annual Percentage Rate) includes the interest rate plus additional lender fees, origination charges, and other costs rolled into the loan, expressed as a yearly percentage. APR is always equal to or higher than the interest rate. Use the APR figure in this calculator for the most accurate total-cost comparison between different loan offers.' },
+        { q: 'How much car can I afford?', a: 'A common guideline is that your total car costs (payment, insurance, fuel, maintenance) should not exceed 15-20% of your take-home pay. For the loan itself, financial advisors recommend keeping the monthly payment under 10% of take-home pay. On a $5,000 monthly take-home pay, that means a car payment of $500 or less. Use this calculator with different vehicle prices and down payments to find a combination that fits your budget.' },
+        { q: 'Does the calculator include insurance and registration costs?', a: 'No. This calculator only models the loan principal, interest, and repayment schedule. Insurance, registration, stamp duty, and dealer delivery charges are separate costs that you should budget for independently. Include these in your total cost-of-ownership calculation when deciding how much car you can afford.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="surface-2 border-theme seo-faq-card">

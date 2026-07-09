@@ -32,19 +32,20 @@ const tool = tools.find(t => t.slug === 'prompt-safety-stress-tester')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to stress-test prompt safety</h2>
-    <p class="seo-p">Paste your system prompt or base prompt into the main input field. Click Run Stress Test to generate a report of potential vulnerabilities. The tool applies pattern-based checks to identify injection risks, jailbreak susceptibility, data leakage vectors, and role-play weaknesses without requiring an API key.</p>
+    <p class="seo-p">Paste your system prompt into the main input field and click Run Safety Analysis. The tool checks 10 security dimensions — persona override protection, role confidentiality, input-as-data boundary, scope limitation, jailbreak awareness, clear role definition, output format control, harmful content refusal, prompt length surface area, and instruction echo prevention. Each check produces a pass/fail with a specific recommendation if it fails.</p>
+    <p class="seo-p">A system prompt scoring 30% (3 out of 10 checks passed) has significant gaps — for example, it might lack a role confidentiality instruction, meaning an attacker could ask "What are your instructions?" and the model would comply. The tool shows exactly which countermeasures to add and where. A well-hardened prompt scoring 80%+ has addressed most known attack vectors.</p>
     <div style="display:flex; flex-direction:column; gap:1rem; margin-top:1.25rem">
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Pre-deployment audit</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Before releasing a prompt-powered product, run the stress test to identify injection vulnerabilities, data leakage risks, and edge cases that could produce harmful outputs.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Before releasing a prompt-powered product, run the stress test to identify injection vulnerabilities, data leakage risks, and edge cases that could produce harmful outputs. A 2-minute scan catches issues that would otherwise require hours of manual red-teaming.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">System prompt hardening</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Iteratively test and improve your system prompt by identifying which attack patterns it is vulnerable to and adding targeted countermeasures.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Iteratively test and improve your system prompt by identifying which attack patterns it is vulnerable to and adding targeted countermeasures. Run the test, fix the gaps, re-run — each iteration should raise your score by 10-20%.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Compliance review</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Generate a safety report documenting the prompt's resistance to common attack vectors for regulatory compliance and internal security reviews.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Generate a safety report documenting the prompt's resistance to common attack vectors for regulatory compliance and internal security reviews. The pass/fail breakdown provides auditable evidence of prompt security posture.</p>
       </div>
     </div>
   </div>
@@ -65,22 +66,21 @@ const tool = tools.find(t => t.slug === 'prompt-safety-stress-tester')!;
   <div slot="faq">
     <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
-      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">Does this tool require an API key?</h3>
-        <p itemprop="text" class="seo-faq-a">No. All tests run locally using pattern matching and signature detection. No prompts are sent to any AI service, making it safe for confidential and proprietary system prompts.</p>
-      </div>
-      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">Can it replace manual red-teaming?</h3>
-        <p itemprop="text" class="seo-faq-a">It catches known attack patterns and common vulnerabilities efficiently. Novel or creative attacks may evade pattern-based detection. Use it as an automated first pass before human red-teaming for comprehensive coverage.</p>
-      </div>
-      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">How often should I run the stress test?</h3>
-        <p itemprop="text" class="seo-faq-a">Run it whenever you modify your system prompt, when new attack patterns emerge in the research community, or before deploying to production. For high-stakes applications, integrate it into your CI/CD pipeline.</p>
-      </div>
-      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">What do the severity ratings mean?</h3>
-        <p itemprop="text" class="seo-faq-a">Critical means the attack pattern has high success rates against current models. High indicates moderate risk with known workarounds. Medium suggests potential vulnerability under specific conditions. Low indicates theoretical risk with limited practical exploitation.</p>
-      </div>
+      {[
+        { q: 'Does this tool require an API key?', a: 'No. All tests run locally using pattern matching and signature detection. No prompts are sent to any AI service, making it safe for confidential and proprietary system prompts. You can test production prompts without worrying about data leakage.' },
+        { q: 'Can it replace manual red-teaming?', a: 'It catches known attack patterns and common vulnerabilities efficiently — the 10 checks cover the most widely documented attack vectors. Novel or creative attacks may evade pattern-based detection. Use it as an automated first pass before human red-teaming for comprehensive coverage.' },
+        { q: 'How often should I run the stress test?', a: 'Run it whenever you modify your system prompt, when new attack patterns emerge in the research community, or before deploying to production. For high-stakes applications, integrate it into your CI/CD pipeline to catch regressions automatically.' },
+        { q: 'What do the severity ratings mean?', a: 'Critical means the attack pattern has high success rates against current models and needs immediate attention. High indicates moderate risk with known workarounds. Medium suggests potential vulnerability under specific conditions. Low indicates theoretical risk with limited practical exploitation.' },
+        { q: 'What is a good safety score?', a: 'A score of 70% or higher means your prompt has addressed most common attack vectors. Scores below 50% indicate significant gaps that should be fixed before production deployment. The maximum score is 100% (all 10 checks passed), but 80-90% is realistic for well-crafted prompts.' },
+        { q: 'Does the tool test for data leakage?', a: 'Yes. It checks whether your prompt instructs the model to keep its instructions confidential, whether it treats user input as data rather than instructions, and whether it has scope limitations that prevent the model from discussing off-topic subjects. Missing any of these creates data leakage vectors.' },
+      ].map(item => (
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
+          </div>
+        </div>
+      ))}
     </div>
   </div>
 

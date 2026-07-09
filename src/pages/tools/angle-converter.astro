@@ -43,20 +43,20 @@ const tool = tools.find(t => t.slug === 'angle-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Angle Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Degrees, Radians, Gradians, and Arcminutes</h2>
     <p class="seo-p">
-      This angle converter computes precise conversions between 7 angular measurement units entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in mathematics, surveying, astronomy, navigation, or military applications.
+      Your Python script calls math.sin(30) and returns 0.5, but the formula expects radians, not degrees. The correct call is math.sin(math.radians(30)). If you are unsure whether your calculator or code expects degrees or radians, type 30 into this converter, select degrees, and see that it equals 0.5236 radians. The copy button lets you paste the radian value straight into your code.
     </p>
     <p class="seo-p">
-      The converter supports the most commonly used angle units across scientific, engineering, and practical contexts: degrees and radians for mathematics and physics; gradians for surveying and civil engineering; arcminutes and arcseconds for astronomy; revolutions for rotational mechanics; and NATO mils for military artillery. Results are dynamically formatted based on magnitude, switching between fixed notation, locale-formatted numbers, and scientific notation as appropriate.
+      The converter handles 7 units: degrees, radians, gradians, arcminutes, arcseconds, revolutions, and NATO mils. A surveyor reading a European blueprint showing 100 grad needs to know that equals 90 degrees. An astronomer measuring a star separation of 120 arcseconds needs to express it as 0.0333 degrees or 0.000579 radians for a telescope pointing calculation. The quick-reference row shows common angles: a right angle at 90 degrees, a straight angle at 180 degrees, a full circle at 360 degrees.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Programming where the wrong angle unit produces wrong results</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        ['Mathematics and physics education', 'Students and educators frequently convert between degrees and radians when working with trigonometric functions. A right angle equals 90° or π/2 radians. The sine function in most programming languages expects radians: sin(π/6) = 0.5, not sin(30°). Converting 45° to radians gives approximately 0.7854 rad. The quick-reference section helps visualise common angles like a right angle (90°), a straight angle (180°), or a full circle (360°) for intuitive understanding.'],
-        ['Surveying and civil engineering', 'Land surveyors use gradians (also called grads or gons) because they divide a right angle into exactly 100 parts, making percentage-based calculations straightforward. A 45° slope equals 50 grad. When reading European surveying equipment or blueprints, angles may be specified in gradians rather than degrees. Converting between these units ensures accurate interpretation of site plans and topographic data across international projects.'],
-        ['Astronomy and observational science', 'Astronomers measure angular separations, planetary positions, and stellar coordinates in degrees, arcminutes, and arcseconds. The Moon has an angular diameter of approximately 31 arcminutes (0.5167°), while Jupiter appears as small as 30 arcseconds (0.0083°) from Earth. Telescopes with equatorial mounts use right ascension measured in hours, minutes, and seconds of time, which must be converted to degrees for coordinate transformations.']
+        ['Trigonometric functions in code', 'JavaScript, Python, and C all expect radians for Math.sin, Math.cos, and Math.tan. A developer computing sin(90) expecting 1.0 gets 0.8940 instead, because 90 radians is not 90 degrees. The correct value is sin(pi/2) = 1.0. This converter shows that 90 degrees = 1.5708 radians, so the correct code is Math.sin(1.5708) or Math.sin(Math.PI / 2). Getting this wrong produces silently incorrect results, not errors.'],
+        ['Surveying equipment set to gradians', 'A land surveyor in France uses a theodolite that reads in gradians. The measured angle is 150 grad. The US construction drawings require degrees. Converting: 150 grad x 0.9 = 135 degrees. If the surveyor mistakenly treats 150 grad as 150 degrees, the building foundation would be laid out at the wrong angle, requiring expensive rework.'],
+        ['Military artillery mil adjustments', 'A forward observer reports a target 5 mils to the right. The gunner needs to adjust the aim. One mil equals 0.05625 degrees, so 5 mils = 0.28125 degrees. At 1 km distance, 5 mils corresponds to approximately 5 metres of lateral offset. The converter helps translate between the observer mil reading and the gunner degree adjustment.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -67,26 +67,25 @@ const tool = tools.find(t => t.slug === 'angle-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Angle Converter Handles Degrees, Radians, and Gradians</h2>
     <p class="seo-p">
-      The converter employs a hub-and-spoke conversion model using degrees as the universal base unit. Every supported angle unit is defined by a fixed conversion factor relative to one degree. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain degrees, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      Every unit in the converter is stored as a multiple of one degree. When you enter 1 radian, the tool multiplies by 180/pi to get 57.29578 degrees, then divides by each target unit's factor. The conversion to gradians gives 63.66198 grad. Because all conversions pass through degrees in one step, there is no rounding drift from chaining through intermediate units.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Why radians use an irrational conversion factor</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">deg</code>, <code class="inline-code">rad</code>, <code class="inline-code">arcmin</code>) to its exact factor in degrees. The radian uses the mathematical constant π: <code class="inline-code">1 rad = 180/π °</code>. Other units use rational fractions: <code class="inline-code">1 grad = 0.9°</code>, <code class="inline-code">1 arcmin = 1/60 °</code>, <code class="inline-code">1 rev = 360°</code>.
+      The radian is defined as the angle subtended by an arc equal in length to the radius. This makes 1 full circle = 2pi radians = 360 degrees, so 1 radian = 180/pi degrees. Because pi is transcendental (irrational), the radian factor can never be expressed as an exact decimal. JavaScript's Math.PI provides 15 decimal digits of precision, which is sufficient for any practical calculation. The other units use exact rational factors: 1 grad = 0.9 degrees, 1 arcminute = 1/60 degree, 1 arcsecond = 1/3600 degree.
     </p>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to degrees. For example, converting 1 radian to degrees: <code class="inline-code">1 × (180/π) = 57.29578°</code>. This intermediate result is an IEEE 754 double-precision floating-point number, which provides approximately 15 to 17 significant decimal digits of precision.
+      The NATO mil divides a circle into 6,400 equal parts (1 mil = 9/160 degree = 0.05625 degree). This number was chosen because 6,400 is close to 6,283 (2pi x 1,000), making mils approximately equal to milliradians. The approximation error is about 0.01%, which is acceptable for military gunnery where the mil allows quick range estimation: 1 mil corresponds to approximately 1 metre width at 1 km distance.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Why gradians exist and where they are still used</h3>
     <p class="seo-p-sm">
-      <strong>3. Target conversion:</strong> The degree value is divided by the target unit's factor. Converting 57.29578° to gradians: <code class="inline-code">57.29578 / 0.9 = 63.66198 grad</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (1 trillion or greater) use scientific notation. Values between 1 billion and 1 trillion use locale-formatted numbers with 4 decimal places. Values between 1,000 and 1 billion use 4 to 6 decimal places. Values between 0.001 and 1,000 use 8 to 10 decimal places. Values below 0.001 use scientific notation with 6 decimal places. This ensures readability across the full range from arcseconds to revolutions.
+      The gradian was introduced during the French Revolution as part of the metric system. It divides a right angle into exactly 100 parts, so a full circle = 400 grad. This makes percentage-based slope calculations trivial: a 50 grad slope rises 50 units for every 100 units horizontal, which is a 50% grade. Gradians are still used in some European surveying equipment (particularly French and Swiss theodolites) and in certain geodetic coordinate systems. Outside these niches, gradians are rarely encountered.
     </p>
     <p class="seo-p-none">
-      <strong>Exact vs. approximate factors:</strong> The degree, gradian, arcminute, arcsecond, revolution, and NATO mil are all defined by exact rational relationships: <code class="inline-code">1 grad = 9/10 °</code>, <code class="inline-code">1 arcmin = 1/60 °</code>, <code class="inline-code">1 arcsec = 1/3600 °</code>, <code class="inline-code">1 rev = 360°</code>, <code class="inline-code">1 mil = 9/160 ° = 0.05625°</code>. The radian is the only unit involving an irrational number: <code class="inline-code">1 rad = 180/π °</code>, where π is transcendental. The tool computes this using JavaScript's built-in <code class="inline-code">Math.PI</code> constant, which provides 15 decimal digits of precision.
+      The converter formats results dynamically based on magnitude. Arcseconds for astronomical measurements display with 8-10 decimal places. Degrees and radians use 6-8 decimal places. Revolutions use 2-4 decimal places. Very large or very small values switch to scientific notation. This keeps the output readable whether you are converting arcsecond-scale telescope offsets or multi-revolution motor speeds.
     </p>
   </div>
 
@@ -95,32 +94,24 @@ const tool = tools.find(t => t.slug === 'angle-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is the difference between degrees and radians?",
-          a: "Degrees divide a circle into 360 equal parts. Radians use the arc length equal to the radius: one full circle = 2π radians ≈ 6.2832 rad. Radians are the standard unit in mathematics and physics because they simplify many formulas. For example, the derivative of sin(θ) is cos(θ) only when θ is in radians. In degrees, extra conversion factors appear in calculus formulas."
+          q: "How many radians is 90 degrees?",
+          a: "90 degrees equals pi/2 radians, approximately 1.5708 rad. The conversion formula is radians = degrees x pi / 180. For quick mental estimates: 90 deg = 1.57 rad, 180 deg = 3.14 rad, 360 deg = 6.28 rad. These are the three most common conversions in physics and engineering."
         },
         {
-          q: "What is a gradian?",
-          a: "A gradian (also called grad, gon, or grade) divides a right angle into 100 parts, so a full circle = 400 grad. It was designed for metrication during the French Revolution. It is used in some surveying and civil engineering contexts, mainly in Europe. The gradian makes percentage-based slope calculations easy: a 50% slope equals approximately 26.565° or 29.518 grad."
+          q: "Why do programming languages use radians instead of degrees?",
+          a: "Radians simplify calculus. The derivative of sin(x) is cos(x) only when x is in radians. In degrees, an extra factor of pi/180 appears in every derivative and integral. This is why all major languages (JavaScript, Python, C, Java) use radians for their trigonometric functions. If your code uses degrees, you must convert first: radians = degrees x pi / 180."
         },
         {
-          q: "What is a NATO mil?",
-          a: "A NATO mil divides a circle into 6,400 equal parts (1 mil = 0.05625°). It is used for military artillery and gunnery to express angular measurements for targeting. The mil allows rough mental calculations: 1 mil corresponds to approximately 1 meter of width at 1 kilometer of distance. This makes range estimation and adjustment calculations straightforward in the field."
+          q: "What is a gradian used for?",
+          a: "Gradians (grad) divide a right angle into 100 parts, so a full circle = 400 grad. They are used in some European surveying equipment and geodetic calculations. A 50 grad slope equals exactly 50% grade. Outside surveying, gradians are rarely encountered. If you see an angle in gradians, multiply by 0.9 to get degrees."
         },
         {
-          q: "How many arcminutes are in a degree?",
-          a: "There are exactly 60 arcminutes (′) in one degree, and 60 arcseconds (″) in one arcminute. So 1° = 60′ = 3,600″. Arcminutes and arcseconds are commonly used in astronomy to express the angular size of objects. The full Moon has an angular diameter of about 31 arcminutes, while Venus at its smallest appears as small as 10 arcseconds."
+          q: "How do I convert arcseconds to degrees?",
+          a: "Divide arcseconds by 3,600. One degree = 60 arcminutes = 3,600 arcseconds. So 7,200 arcseconds = 2 degrees. For quick estimates: 3,600 arcsec = 1 deg, 60 arcsec = 0.0167 deg. Arcseconds are used in astronomy for telescope pointing and stellar coordinate measurements."
         },
         {
-          q: "Why is a full circle 360 degrees?",
-          a: "The 360-degree circle dates to ancient Babylonian astronomy. The Babylonians used a base-60 (sexagesimal) number system, and 360 is close to the number of days in a year. 360 is also highly divisible (by 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18, 20, 24, 30, 36, 40, 45, 60, 72, 90, 120, 180, and 360), making it easy to work with fractions of a circle."
-        },
-        {
-          q: "How do I convert degrees to radians in my head?",
-          a: "To convert degrees to radians, multiply by π/180. For quick mental estimates: 90° = π/2 ≈ 1.571 rad, 180° = π ≈ 3.142 rad, 360° = 2π ≈ 6.283 rad. A useful shortcut: divide degrees by about 57.3 to get radians. For example, 60° ÷ 57.3 ≈ 1.047 rad (actual: π/3 ≈ 1.0472 rad)."
-        },
-        {
-          q: "What is the angular size of the Moon in different units?",
-          a: "The Moon has an angular diameter of approximately 0.5167° (about 31 arcminutes). In radians, this equals approximately 0.00902 rad. In gradians, it equals approximately 0.5741 grad. The Sun has a very similar angular size (about 0.533°), which is why total solar eclipses are possible when the Moon passes directly in front of the Sun."
+          q: "What angle does a clock hand move per minute?",
+          a: "The minute hand moves 360 degrees in 60 minutes, which is 6 degrees per minute. In radians, that is 0.1047 rad/min. In gradians, that is 6.6667 grad/min. The hour hand moves 30 degrees per hour (360/12), which is 0.5 degrees per minute."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

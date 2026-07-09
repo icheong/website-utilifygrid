@@ -64,37 +64,39 @@ const tool = tools.find(t => t.slug === 'compression-inspector')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to use the Brotli &amp; Gzip Compression Inspector</h2>
-    <p class="seo-p">Paste any text, HTML, CSS, JavaScript, or JSON and click Inspect Compression. The tool uses your browser's native CompressionStream API to measure the actual byte size after Gzip and Brotli compression and shows the savings percentage for each.</p>
+    <p class="seo-p">Paste any text, HTML, CSS, JavaScript, or JSON into the text area and click Inspect Compression. The tool compresses your input using both Gzip and Brotli via the browser's native CompressionStream API, then shows the compressed byte sizes and savings percentages side by side. A winner row at the bottom shows which algorithm saves more and by how many bytes.</p>
     <div style="display:flex;flex-direction:column;gap:0.625rem;">
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary);font-size:0.875rem;">Web server optimisation</strong>
-        <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0;">Test how much specific content blocks benefit from compression to decide whether to enable Brotli, Gzip, or both on your web server configuration.</p>
+        <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0;">Paste your actual HTML output from a CMS page (typically 15-50 KB) to see whether Brotli's 15-25% advantage over Gzip justifies the extra CPU cost on your server. If your server is CPU-constrained, Gzip at level 6 might be more practical than Brotli at level 11.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary);font-size:0.875rem;">Asset pipeline audit</strong>
-        <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0;">Compare compression ratios across CSS, JavaScript, and JSON responses to identify which assets benefit most from pre-compression and which are already compact.</p>
+        <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0;">Test your CSS framework output (Tailwind, Bootstrap) and JavaScript bundles separately. A 200 KB CSS file might compress to 35 KB with Brotli (82.5% reduction) while a 500 KB JS bundle compresses to 120 KB (76% reduction). This tells you which assets to prioritise for pre-compression on the server.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary);font-size:0.875rem;">API response analysis</strong>
-        <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0;">Measure compression savings on API JSON payloads to determine whether enabling compression at the reverse proxy level is worth the CPU cost for your specific response patterns.</p>
+        <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0;">Paste a sample JSON API response to measure compression savings. A typical 10 KB JSON payload compresses to about 2 KB with Gzip and 1.8 KB with Brotli. For APIs serving millions of requests per day, that 200-byte difference per request adds up to significant bandwidth savings over a month.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Compression details</h2>
+    <h2 class="font-display seo-h2">Compression algorithms and measurement</h2>
+    <p class="seo-p">The tool uses the native CompressionStream API available in modern browsers to perform real compression without sending your data to any server. Input text is first converted to bytes using TextEncoder, then piped through the compression stream, and the resulting byte length is measured.</p>
     <div style="display:flex;flex-direction:column;gap:0.625rem;">
-      <h3 class="font-display seo-h3-sm">CompressionStream API</h3>
-      <p class="seo-p">The tool uses the native <code class="inline-code">CompressionStream</code> interface (Chrome 80+, Edge 80+, Firefox 113+, Safari 16.4+) to perform real compression in the browser. No server round-trip is needed.</p>
-
-      <h3 class="font-display seo-h3-sm">Gzip algorithm</h3>
-      <p class="seo-p">Gzip uses the DEFLATE algorithm (LZ77 + Huffman coding) with a gzip wrapper header. It is universally supported and typically achieves 60–80% reduction on HTML, CSS, and JavaScript.</p>
-
-      <h3 class="font-display seo-h3-sm">Brotli algorithm</h3>
-      <p class="seo-p">Brotli uses a larger, more sophisticated compression dictionary optimised for web content. It typically achieves 15–25% smaller files than Gzip but requires more CPU during compression.</p>
-
-      <h3 class="font-display seo-h3-sm">Measurement pipeline</h3>
-      <p class="seo-p">Input text is converted to bytes via <code class="inline-code">TextEncoder</code>, compressed through the <code class="inline-code">CompressedStream</code>, and the resulting <code class="inline-code">byteLength</code> is measured. The savings percentage is calculated as 1 minus compressed size divided by original size.</p>
+      <div>
+        <h3 class="font-display seo-h3-sm">Gzip (DEFLATE + wrapper)</h3>
+        <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0;color:var(--text-secondary);">Gzip wraps the DEFLATE algorithm (LZ77 sliding window + Huffman coding) with a 10-byte header and 8-byte checksum trailer. LZ77 finds repeated byte sequences within a 32 KB sliding window and replaces duplicates with back-references. Huffman coding then assigns shorter bit codes to more frequent symbols. Typical compression ratio on HTML is 60-80%.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Brotli (LZ77 + Huffman + static dictionary)</h3>
+        <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0;color:var(--text-secondary);">Brotli uses a similar LZ77 + Huffman approach but adds a pre-computed static dictionary of 120 KB containing common HTML, CSS, and JavaScript patterns. This dictionary gives Brotli a head start on web content -- it already knows what "function", "return", "margin:", and common HTML tags look like. The result is 15-25% smaller files than Gzip on typical web assets.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Measurement pipeline</h3>
+        <p style="font-size:0.85rem;line-height:1.65;margin:0.35rem 0 0;color:var(--text-secondary);">The pipeline converts input to UTF-8 bytes via TextEncoder, creates a CompressionStream, writes the bytes through the writable side, reads compressed chunks from the readable side, and sums their byteLength values. The savings percentage is calculated as 1 minus compressed size divided by original size, multiplied by 100.</p>
+      </div>
     </div>
   </div>
 
@@ -102,10 +104,11 @@ const tool = tools.find(t => t.slug === 'compression-inspector')!;
     <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        {q:'Why is Brotli usually smaller than Gzip?',a:'Brotli uses a larger compression dictionary and more advanced context modelling, specifically optimised for web content. The tradeoff is slower compression, though decompression speed is comparable.'},
-        {q:'Does my browser support the CompressionStream API?',a:'Supported in Chrome 80+, Edge 80+, Firefox 113+, and Safari 16.4+. Brotli support was added later than Gzip in some browsers.'},
-        {q:'How much compression benefit can I expect?',a:'Typical ratios: HTML 60–80% reduction, CSS 65–80%, JavaScript 60–75%, JSON 70–90%. Highly repetitive content compresses more.'},
-        {q:'Does minifying before compressing make a difference?',a:'Yes. Minification removes redundant whitespace, creating more repetitive patterns that compress better. A minified and gzipped file is typically 60–80% smaller than the original uncompressed version.'},
+        {q:'Why is Brotli usually smaller than Gzip?',a:'Brotli includes a 120 KB static dictionary of common web content patterns -- HTML tags, CSS properties, JavaScript keywords. When Brotli sees "</div>" or "function(" in your input, it can reference the dictionary entry instead of encoding it from scratch. Gzip has no such dictionary and must learn all patterns from your input alone. The tradeoff is that Brotli compression is 20-50% slower than Gzip at equivalent compression levels.'},
+        {q:'Does my browser support the CompressionStream API?',a:'Supported in Chrome 80+ (February 2020), Edge 80+, Firefox 113+ (May 2023), and Safari 16.4+ (March 2023). If your browser does not support it, the tool displays an error message suggesting Chrome or Firefox. The API performs compression natively in the browser -- no server is involved.'},
+        {q:'How much compression benefit can I expect?',a:'Typical savings: HTML 60-80% reduction (highly repetitive with repeated tags), CSS 65-80% (repetitive property names and values), JavaScript 60-75% (variable names compress well), JSON 70-90% (key names repeat across objects). Binary content like images and fonts compress poorly because they lack repetitive byte patterns.'},
+        {q:'Does minifying before compressing make a difference?',a:'Yes, significantly. Minification removes comments, whitespace, and shortens variable names, creating more repetitive byte patterns. A 300 KB unminified CSS file might compress to 45 KB with Gzip (85% reduction), while the same file minified to 200 KB compresses to 28 KB (86% reduction). The absolute savings are larger on the unminified file, but the minified + compressed combination gives the smallest final size.'},
+        {q:'Should I enable both Gzip and Brotli on my server?',a:'Yes. Configure your server to serve Brotli to browsers that support it (Accept-Encoding: br) and fall back to Gzip for older browsers. Nginx supports this natively with the brotli and gzip directives. Cloudflare, AWS CloudFront, and most CDNs handle this automatically. About 96% of global browsers support Brotli as of 2024.'},
       ].map(item=>(
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>

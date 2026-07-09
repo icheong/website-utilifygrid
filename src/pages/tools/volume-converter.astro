@@ -46,20 +46,20 @@ const tool = tools.find(t => t.slug === 'volume-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Volume Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Cups, Liters, Gallons, and Other Volume Units</h2>
     <p class="seo-p">
-      This volume converter computes precise conversions between 11 metric and imperial volume units entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your measurements, whether you are working in cooking, engineering, chemistry, or logistics.
+      You found a British baking recipe that lists milk as 300 mL, but your measuring cups are marked in US cups. Pouring 300 mL into a "1 cup" measure would overfill it by nearly a quarter. Enter 300, select mL, and the converter instantly shows 1.268 US cups, 10.56 fl oz, and every other equivalent. The copy button beside each result means you can paste the right measurement straight into your recipe notes.
     </p>
     <p class="seo-p">
-      The converter supports the most commonly used volume units across metric and imperial systems: milliliters, liters, and cubic meters for metric; teaspoons, tablespoons, fluid ounces, cups, pints, quarts, US gallons, and imperial gallons for imperial/US customary. The imperial gallon is defined as exactly 4.54609 liters, while the US gallon is defined via the international inch (2.54 cm exactly). Results are dynamically formatted based on magnitude, switching between fixed notation, locale-formatted numbers, and scientific notation as appropriate.
+      The converter covers 11 units from milliliters through cubic meters, including the US and imperial gallons that differ by about 20%. A homebrewer converting a 5-gallon batch recipe to liters (18.93 L) for a metric brewing kit, a nurse converting fluid ounces to milliliters for medication dosing, or a fuel buyer comparing pump prices in liters versus gallons — all get their answer without leaving the page. The quick-reference row at the bottom translates the current value into everyday objects: a teaspoon at 4.93 mL, a wine bottle at 750 mL, a bathtub at 300,000 mL.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Cooking conversions where precision actually matters</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        ['Cooking and recipe conversion', 'Recipes from different countries use different volume units — milliliters and liters for metric recipes, cups and tablespoons for US recipes, and fluid ounces for UK recipes. A baker scaling a recipe from 4 US cups of flour to metric needs to know that 1 US cup equals approximately 236.588 mL. This tool provides instant, exact conversions with copy-to-clipboard functionality, eliminating manual lookup errors when scaling recipes up or down.'],
-        ['Laboratory and chemical measurements', 'Chemists and biology researchers frequently convert between milliliters, liters, and cubic meters when preparing solutions, measuring reagents, or scaling experiments. A 0.5 M NaCl solution requiring 250 mL of stock solution must be measured precisely — a conversion error of even 1% can invalidate experimental results. The tool handles the full range from microliter-scale measurements to cubic-meter-scale industrial volumes with IEEE 754 double-precision accuracy.'],
-        ['Industrial and logistics planning', 'Shipping companies, beverage manufacturers, and fuel distributors routinely convert between liters, US gallons, and imperial gallons when processing international orders. A tanker carrying 50,000 US gallons of fuel must be converted to liters for metric-market invoicing, or to imperial gallons for UK delivery. The quick-reference section helps visualise everyday volumes like a teaspoon (4.93 mL), a wine bottle (750 mL), or a swimming pool (2.5 million liters) for intuitive scale comparison.']
+        ['Scaling a British recipe for a US kitchen', 'A Mary Berry cake recipe calls for 225 g of butter — but your US measuring cup reads volume, not weight. Butter has a density of about 0.911 g/mL, so 225 g equals roughly 247 mL. A US cup is 236.588 mL, so you need just over 1 cup. The volume converter helps you cross-reference: enter 247 mL and see that equals 1.044 US cups, 8.35 US fl oz, or 15.74 metric tablespoons. Getting this right means the difference between a cake that rises and one that collapses.'],
+        ['Medication dosing across measurement systems', 'A pharmacist in the US receives a prescription written in milliliters but the measuring syringe is marked in teaspoons. A 10 mL dose equals exactly 2.029 US teaspoons. For pediatric dosing, where a 0.5 mL error can mean a 10% overdose on a 5 mL dose, the exact conversion matters. The tool converts between mL, tsp, tbsp, and fl oz so the pharmacist can select the closest safe mark on the syringe.'],
+        ['Homebrewing beer with imperial-to-metric ingredients', 'A homebrewer in Canada follows an American recipe calling for 5 US gallons of wort. Converting to liters gives 18.927 L. But the yeast pitching rate is specified per liter, and the malt extract is sold in kilograms per liter. The volume converter bridges the gap: 5 US gal = 18.927 L, which means at 0.75 million cells per mL per degree Plato, the brewer needs roughly 14.2 billion cells for a moderate-gravity ale.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -70,26 +70,25 @@ const tool = tools.find(t => t.slug === 'volume-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Volume Converter Handles Cups, Gallons, and Liters</h2>
     <p class="seo-p">
-      The converter employs a hub-and-spoke conversion model using milliliters as the universal base unit. Every supported volume unit is defined by a fixed conversion factor relative to one milliliter. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain milliliters, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      Every unit in the converter is stored as a multiple of one milliliter. When you enter 2 US gallons, the tool multiplies 2 by 3785.411784 to get 7570.823568 mL, then divides by each target unit's factor. Because all conversions pass through milliliters in a single step, there is no cascade of intermediate rounding. The result for 1 US gallon to imperial gallons is 0.832674 imp gal — not an approximation derived from rounding the individual factors first.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Why US and imperial gallons differ by exactly 20%</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">ml</code>, <code class="inline-code">gal-us</code>, <code class="inline-code">cup</code>) to its exact factor in milliliters. Metric units use powers of 10 (e.g. <code class="inline-code">1 L = 1000 mL</code>, <code class="inline-code">1 m³ = 1,000,000 mL</code>), while imperial/US customary units use internationally defined values.
+      The US gallon traces back to the wine gallon defined by Queen Anne in 1707, which was based on the medieval English wine measure of 231 cubic inches. When the British Empire reformed its measures in 1824, the imperial gallon was redefined as the volume of 10 pounds of water at 62°F — which works out to approximately 277.42 cubic inches, about 20% larger than the US gallon. The US never adopted the 1824 reform, keeping the older wine gallon. This historical accident means a US gas station selling "a gallon" is selling about 3.785 liters, while a British petrol station sells 4.546 liters per gallon.
     </p>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to milliliters. For example, converting 2 US gallons to milliliters: <code class="inline-code">2 × 3785.41 = 7570.82 mL</code>. This intermediate result is an IEEE 754 double-precision floating-point number, which provides approximately 15 to 17 significant decimal digits of precision.
+      US smaller units derive from the gallon by exact factors of 2: 1 gallon = 4 quarts = 8 pints = 16 cups = 128 fluid ounces. The metric equivalents are exact to 6+ decimal places: 1 US cup = 236.5882365 mL, 1 US fl oz = 29.5735295625 mL. The metric units (mL, L, m³) are exact powers of 10. The imperial gallon is exactly 4.54609 liters, making all imperial volume factors exact as well.
     </p>
+
+    <h3 class="font-display seo-h3-sm">The teaspoon-tablespoon-cup hierarchy in US customary</h3>
     <p class="seo-p-sm">
-      <strong>3. Target conversion:</strong> The milliliter value is divided by the target unit's factor. Converting 7570.82 mL to liters: <code class="inline-code">7570.82 / 1000 = 7.57082 L</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Large values (1 billion or greater) use scientific notation. Values between 1,000 and 1 billion use locale-formatted numbers with 2 to 4 decimal places. Values between 0.001 and 1,000 use 6 to 8 decimal places. Values below 0.001 use scientific notation. This ensures readability across the full 12-order-of-magnitude range (milliliters to cubic meters).
+      In the US system, volumes follow a clean binary subdivision: 1 cup = 16 tablespoons = 48 teaspoons. A tablespoon is exactly 3 teaspoons, and a cup is exactly 2 tablespoons times 8 (16 tbsp). This is convenient for recipe scaling — doubling a recipe that calls for 1.5 tsp of vanilla means 3 tsp = 1 tbsp exactly. The metric system does not have this hierarchical relationship: a metric tablespoon is 15 mL, a metric teaspoon is 5 mL, and a metric cup is 250 mL — so 1 metric cup = 5 tablespoons, not 16.
     </p>
     <p class="seo-p-none">
-      <strong>Exact vs. approximate factors:</strong> The metric factors are exact by definition: <code class="inline-code">1 L = 1000 mL</code>, <code class="inline-code">1 m³ = 1,000,000 mL</code>. The imperial gallon is defined as exactly 4.54609 liters, making <code class="inline-code">1 imp gal = 4546.09 mL</code> exact. US customary units are derived from the international inch (2.54 cm exactly), so <code class="inline-code">1 US gal = 231 cubic inches = 3785.411784 mL</code> is also exact. Smaller US units (teaspoons, tablespoons, fluid ounces, cups, pints, quarts) are derived by exact factors of 2 within the US system, though their milliliter equivalents are rounded to 5–6 decimal places for display.
+      The converter's formatting adapts to the magnitude of the result. Cubic meters for a swimming pool (2.5 million mL) display with locale separators and two decimal places. Milliliters for a single teaspoon (4.929 mL) show six decimal places. Very large or very small values switch to scientific notation. This keeps the output readable whether you are measuring a single drop or a tanker load.
     </p>
   </div>
 
@@ -98,32 +97,24 @@ const tool = tools.find(t => t.slug === 'volume-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is the difference between a US gallon and an imperial gallon?",
-          a: "A US gallon equals exactly 3.78541 liters (231 cubic inches), while an imperial gallon (used in the UK) equals exactly 4.54609 liters — about 20% larger. The US gallon is subdivided into 4 US quarts, 8 US pints, or 128 US fluid ounces. The imperial gallon is subdivided into 4 imperial quarts, 8 imperial pints, or 160 imperial fluid ounces. When following British recipes or reading UK product labels, always use imperial gallons, not US gallons."
+          q: "How many milliliters are in 3 US cups?",
+          a: "Three US cups equals exactly 709.765 mL. One US cup is 236.5882365 mL, and multiplying by 3 gives 709.7647095 mL, which rounds to 709.765 for display. If your recipe calls for 3 cups of milk, you need a measuring container marked to at least 710 mL. Most metric measuring jugs have mL markings every 25 mL, so you would fill to the 700 mL line and add roughly 10 more mL — about two-thirds of a metric tablespoon."
         },
         {
-          q: "How many milliliters are in a cup?",
-          a: "One US cup equals exactly 236.5882365 milliliters (derived from the US gallon). An imperial cup (used in some UK recipes) is slightly larger at 284.131 mL. A metric cup (used in Australia, Canada, and New Zealand) is exactly 250 mL. This tool uses the US cup measurement, which is the most common standard in cooking worldwide."
+          q: "Why is a metric cup 250 mL when a US cup is 236.588 mL?",
+          a: "The metric cup was defined in 1970 by the Canadian government as exactly 250 mL — a round number in the metric system. The US cup traces back to the 19th century and is defined as half a US pint (231 cubic inches), which works out to 236.588 mL. The 13.4 mL difference seems small, but over 8 cups (a common baking quantity) it adds up to 107 mL — nearly half a cup of extra flour if you use a metric cup for a US recipe."
         },
         {
-          q: "What is a fluid ounce and how does it differ from a regular ounce?",
-          a: "A fluid ounce (fl oz) is a unit of volume, not weight. One US fluid ounce equals approximately 29.5735 mL. An imperial fluid ounce is slightly smaller at approximately 28.4131 mL. A regular ounce (oz) measures weight, so comparing fluid ounces to ounces requires knowing the density of the substance. Water, for example, has approximately 1 gram per fluid ounce at room temperature."
+          q: "How do I convert a recipe from liters to gallons?",
+          a: "Divide the liter value by 3.78541 for US gallons, or by 4.54609 for imperial gallons. A recipe making 4 liters of soup equals 1.057 US gal or 0.880 imp gal. For quick mental estimates, 4 liters is roughly 1 US gallon — close enough for home cooking. The exact figure matters more when scaling commercial food production, where a 1% error across a 500-gallon batch means 5 gallons of wasted product."
         },
         {
-          q: "Why are there different tablespoon sizes around the world?",
-          a: "A US tablespoon is approximately 14.7868 mL (defined as exactly 1/2 US fluid ounce). An Australian tablespoon is exactly 20 mL (defined metrically). A UK tablespoon is 15 mL. A Canadian tablespoon is typically 15 mL but varies by province. This tool uses the US tablespoon. Always check which standard your recipe uses — using an Australian tablespoon (20 mL) in a US recipe (14.79 mL) introduces a 35% error per tablespoon."
+          q: "What is the difference between a fluid ounce and a regular ounce?",
+          a: "A fluid ounce measures volume, while a regular ounce measures weight. One US fluid ounce of water weighs approximately 1.043 oz (29.57 g) at room temperature — close to one ounce by weight, which is why the names are confusing. For water and similar liquids, 1 fl oz ≈ 1.04 oz weight. For denser liquids like honey (1.42 g/mL), 1 fl oz weighs about 1.47 oz. This converter handles volume only; for weight conversions, use the weight converter."
         },
         {
-          q: "How do I convert liters to US gallons?",
-          a: "To convert liters to US gallons, divide by 3.78541. To convert to imperial gallons, divide by 4.54609. For example, 10 liters equals approximately 2.64 US gallons or 2.20 imperial gallons. A quick mental shortcut: 1 US gallon is roughly 3.785 liters, and 1 imperial gallon is roughly 4.546 liters."
-        },
-        {
-          q: "Can I use this converter for fuel economy calculations?",
-          a: "Yes. Fuel economy is typically measured in miles per gallon (MPG) in the US/UK, or liters per 100 kilometers (L/100km) in metric countries. To convert between these, you need both a volume conversion and a distance conversion. This tool handles the volume component: for example, converting 30 MPG (US) to L/100km requires dividing 235.215 by the MPG value, giving approximately 7.84 L/100km."
-        },
-        {
-          q: "What is the relationship between teaspoons, tablespoons, and cups?",
-          a: "In the US system, 1 tablespoon = 3 teaspoons, 1 cup = 16 tablespoons, and 1 pint = 2 cups. This creates a clean base-2 subdivision: 1 US pint = 32 teaspoons. The imperial system uses a different subdivision: 1 imperial tablespoon = approximately 1.67 imperial teaspoons, and 1 imperial cup = 10 imperial fluid ounces. This tool handles all these conversions automatically."
+          q: "Can I use this to calculate fuel costs for a road trip?",
+          a: "Yes, as part of a two-step calculation. If fuel is sold by the liter at $1.85/L and your car consumes 8.5 L/100km, you can use the volume converter to translate between liters and gallons. A 500 km trip uses 42.5 L of fuel. In US gallons that is 11.23 gal. At $1.85/L, the trip costs $78.63. At US prices (around $3.50/gal), the same trip costs $39.30 — demonstrating why fuel economy comparisons between metric and imperial countries can be misleading."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

@@ -22,35 +22,39 @@ const tool = tools.find(t => t.slug === 'variable-case-converter')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the Variable Case Converter</h2>
-    <p class="seo-p">Convert any identifier or variable name between standard programming case formats in seconds.</p>
+    <p class="seo-p">Every programming language follows its own naming convention, and switching between them manually invites typos and wasted minutes. A variable that should be camelCase ends up as snake_case when you copy it into a Python file, or a CSS class gets PascalCase when it needs kebab-case. Converting identifiers correctly by hand means counting delimiters, splitting on capitalization boundaries, and rejoining words — tedious work that compounds across dozens of variables per file.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Variable Names</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter one identifier at a time. The converter accepts camelCase, snake_case, PascalCase, kebab-case, or any other delimited format as input.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Migrating a REST API from Express to FastAPI</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">When moving an Express.js API to a Python FastAPI backend, hundreds of camelCase query parameters need snake_case equivalents. A developer migrating 150 endpoint parameters can paste each name and immediately see all formats, cutting what would be an hour of manual renaming down to a few seconds per identifier.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Case</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Every supported case format is displayed at once — camelCase, PascalCase, snake_case, SCREAMING_SNAKE, kebab-case, Title Case, dot.case, and more.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Refactoring a React component library</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A front-end engineer refactoring a 60-component library encounters inconsistencies where some props use camelCase while others use kebab-case in CSS modules. Converting each prop name through all formats at once reveals which convention was used, making it straightforward to standardize across the entire codebase without introducing regressions.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Results</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button next to any format to copy that converted name straight to your clipboard for immediate use in your code.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Adopting BEM naming for a CSS framework</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Teams adopting BEM methodology for an existing stylesheet with 200+ utility classes need to rename every class from camelCase to kebab-case. Rather than running regex find-and-replace commands that might break selectors elsewhere, pasting each class name produces the exact BEM-formatted version needed.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Integrating with a database ORM</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A developer working with an ORM that maps snake_case database columns to PascalCase model properties needs to convert dozens of column names. Processing 40 column names through the converter ensures every mapping is correct before writing the model definitions.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the Variable Case Converter Works</h2>
-    <p class="seo-p">The converter uses a three-stage pipeline to split raw input into words and reassemble them in any target format.</p>
+    <p class="seo-p">Converting between case formats is a three-stage process: split the input into individual words, apply the capitalization and delimiter rules of each target format, and output every result simultaneously. Each conversion happens locally without any data leaving your device, so identifiers with proprietary or sensitive names never travel over a network.</p>
 
     <h3 class="font-display seo-h3-sm">Word Tokenization</h3>
-    <p class="seo-p">Input strings are split on common delimiters such as underscores, hyphens, and dots. Capitalization boundaries — where a lowercase letter meets an uppercase letter — are also treated as split points. Consecutive capitals are grouped intelligently so acronyms like <code class="inline-code">HTTP</code> or <code class="inline-code">XMLParser</code> separate into <code class="inline-code">HTTP</code> and <code class="inline-code">XML</code> + <code class="inline-code">Parser</code> rather than fragmenting each letter.</p>
+    <p class="seo-p">Input strings are split on common delimiters such as underscores, hyphens, and dots, producing an initial set of raw segments. Capitalization boundaries — where a lowercase letter meets an uppercase letter — are then used to further divide segments, so getUserProfile becomes get, User, and Profile. Consecutive capitals are grouped intelligently: the string parseXMLHttpRequest splits into parse, XML, Http, and Request rather than fragmenting each letter into individual tokens. This multi-pass approach handles the most common naming conventions without requiring the user to specify the source format.</p>
 
     <h3 class="font-display seo-h3-sm">Case Transformation Rules</h3>
-    <p class="seo-p">Once tokens are identified, each target format applies its own rules. <code class="inline-code">camelCase</code> lowercases the first word and capitalizes every subsequent word. <code class="inline-code">PascalCase</code> capitalizes every word. <code class="inline-code">snake_case</code> and <code class="inline-code">kebab-case</code> join all-lower tokens with underscores or hyphens. <code class="inline-code">SCREAMING_SNAKE_CASE</code> uppercases every token before joining with underscores.</p>
+    <p class="seo-p">Once tokens are identified, each target format applies its own capitalization and joining rules. <code class="inline-code">camelCase</code> lowercases the first word and capitalizes every subsequent word, while <code class="inline-code">PascalCase</code> capitalizes every word — so get, User, and Profile become getUserProfile and GetUserProfile respectively. <code class="inline-code">snake_case</code> and <code class="inline-code">kebab-case</code> lower all tokens and join them with underscores or hyphens, producing get_user_profile and get-user-profile, while <code class="inline-code">SCREAMING_SNAKE_CASE</code> uppercases every token to produce GET_USER_PROFILE. <code class="inline-code">Title Case</code> capitalizes each word and joins with spaces, and <code class="inline-code">dot.case</code> lowercases all tokens and joins with periods.</p>
 
     <h3 class="font-display seo-h3-sm">Batch Processing</h3>
-    <p class="seo-p">Every supported format is computed and displayed simultaneously on a single keystroke. The entire pipeline — tokenization, transformation, and rendering — runs client-side in the browser with no server round-trip, so conversions are effectively instantaneous.</p>
+    <p class="seo-p">Every supported format is computed and displayed simultaneously on a single keystroke, so you never have to convert identifiers one format at a time. The pipeline processes tokenization, transformation, and rendering in a single pass, meaning a 20-word identifier produces all nine case variants in under a millisecond. Because all processing happens before any output is rendered, scrolling through results feels instantaneous even when the input string changes rapidly.</p>
   </div>
 
   <div slot="faq">
@@ -59,37 +63,55 @@ const tool = tools.find(t => t.slug === 'variable-case-converter')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What case should I use for CSS class names?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">CSS class names conventionally use kebab-case (e.g. .nav-item, .btn-primary). BEM methodology extends this with double underscores and double hyphens (block__element--modifier). Utility-first frameworks like Tailwind also stick with kebab-case.</p>
+          <p itemprop="text" class="seo-faq-a">CSS class names conventionally use kebab-case (e.g. .nav-item, .btn-primary) because hyphens are the most readable delimiter in HTML attributes. BEM methodology extends this with double underscores and double hyphens (block__element--modifier) to express component relationships within a single class name. Utility-first frameworks like Tailwind CSS also use kebab-case consistently, ensuring compatibility across preprocessors, frameworks, and linting rules.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What case should I use for JavaScript variables?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">JavaScript variables and function names conventionally use camelCase (getUserData). Class names and constructors use PascalCase (UserService). Constants often use SCREAMING_SNAKE_CASE (MAX_RETRIES). Following these conventions makes your code immediately recognizable to other developers.</p>
+          <p itemprop="text" class="seo-faq-a">JavaScript variables and function names use camelCase (getUserData) per the ECMAScript specification and popular style guides. Class names and constructor functions use PascalCase (UserService) to distinguish them from plain values. Module-level constants use SCREAMING_SNAKE_CASE (MAX_RETRIES) to signal that a value should not be reassigned, and these conventions pass most default linter configurations.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What case should Python variables use?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Python follows PEP 8: variables and functions use snake_case, class names use PascalCase (CapWords), and module-level constants use SCREAMING_SNAKE_CASE. Using the correct convention makes Python code immediately readable to other Python developers.</p>
+          <p itemprop="text" class="seo-faq-a">Python follows PEP 8: variables and functions use snake_case (get_user_data), class names use PascalCase (UserService), and module-level constants use SCREAMING_SNAKE_CASE (MAX_RETRIES). Private attributes are prefixed with a single underscore (_internal) or double underscore (__mangled) to signal restricted access. Using the correct convention aligns with the output of tools like black and pylint and makes code immediately readable to other Python developers.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does it handle acronyms correctly?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. Acronyms in input (like HTTP, API, URL) are recognized as single word tokens during tokenization. In camelCase output they become parseHttp; in PascalCase ParseHttp. Consecutive capitals are grouped so the acronym stays intact.</p>
+          <p itemprop="text" class="seo-faq-a">Acronyms in input (like HTTP, API, URL) are recognized as single word tokens during tokenization rather than being split into individual letters. In camelCase output they become parseHttp, parseApi, and parseUrl respectively; in PascalCase they become ParseHttp, ParseApi, and ParseUrl. Consecutive capitals are grouped so the acronym stays intact even when followed by a lowercase letter, as in XMLHttpRequest which splits into Xml, Http, and Request.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Can I convert between any case formats?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. The converter first tokenizes your input into words regardless of the source format, then reassembles them into every target format. So camelCase, snake_case, PascalCase, kebab-case, and even dot.case inputs all work as starting points.</p>
+          <p itemprop="text" class="seo-faq-a">The converter first tokenizes your input into words regardless of the source format, then reassembles them into every target format. So camelCase, snake_case, PascalCase, kebab-case, and even dot.case inputs all work as starting points. Mixed or irregular inputs like get-userProfile or getUser_profile are also handled correctly because the tokenizer splits on both delimiters and capitalization boundaries.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does the converter handle abbreviations and acronyms?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. Abbreviations and acronyms are preserved as coherent tokens. For example, parseXMLHttpRequest produces camelCase parseXmlHttpRequest and PascalCase ParseXmlHttpRequest, keeping the multi-letter caps sequences grouped rather than splitting them.</p>
+          <p itemprop="text" class="seo-faq-a">Abbreviations and acronyms are preserved as coherent tokens rather than being fragmented into individual characters. For example, parseXMLHttpRequest produces camelCase parseXmlHttpRequest and PascalCase ParseXmlHttpRequest, keeping the multi-letter caps sequences grouped. Similarly, getHTTPSConnection splits into get, HTTPS, and Connection, then reassembles as getHttpsConnection in camelCase and Get_Https_Connection in SCREAMING_SNAKE_CASE.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does this compare to IDE refactoring tools?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">IDE refactoring tools like IntelliJ Rename or VS Code rename symbol can convert case when renaming a variable across a project, but they require a full project context and language server setup. This converter works on isolated strings without any project configuration, making it useful for quick conversions when you are between files or working in an environment without LSP support. It also shows all formats simultaneously rather than requiring you to specify a target format upfront.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens with single-word inputs or numbers?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Single-word inputs like isLoading or MAX_TIMEOUT are handled correctly: the tokenizer treats the entire word as one token, and each format applies its rules to that single token. Numbers and alphanumeric identifiers like version2 or h1Element are preserved as part of the token sequence, so version2 becomes version_2 in snake_case and stays version2 in camelCase. Tokens that are already all-lowercase or all-uppercase remain unchanged in their respective formats.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why are there so many case formats?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Different programming languages, frameworks, and communities adopted different naming conventions over decades of software development. JavaScript favors camelCase, Python and Ruby use snake_case, CSS uses kebab-case, and Java uses PascalCase for classes — each convention emerged from its own ecosystem and tooling. Having a converter that produces all formats at once eliminates the need to memorize the specific convention for every language you work with.</p>
         </div>
       </div>
     </div>

@@ -225,25 +225,35 @@ const tool = tools.find(t => t.slug === 'plagiarism-compare-checker')!;
       {[
         {
           q: 'Is this tool suitable for detecting academic plagiarism?',
-          a: 'It is effective for direct copying and light paraphrasing but compares only the two documents you paste. It does not search the internet. For institutional checking against the web, purpose-built services like Turnitin are more appropriate.'
+          a: 'It is effective for direct copying and light paraphrasing but compares only the two documents you paste. It does not search the internet or access any database. If a student copies from Wikipedia and pastes the original into Document A and their submission into Document B, the tool will flag the matching sentences. For institutional checking against the web, purpose-built services like Turnitin are more appropriate.'
         },
         {
           q: 'What does the similarity percentage mean?',
-          a: 'It reflects how many of Document A\'s sentences have a matching counterpart in Document B, weighted by match strength. A 100% score means every sentence has an exact duplicate somewhere in Document B.'
+          a: 'The similarity score reflects how many of Document A sentences have a matching counterpart in Document B, weighted by match strength. A 100% score means every sentence in Document A has an exact duplicate somewhere in Document B. A 45% score means roughly half of Document A sentences were copied or closely paraphrased. The score combines both exact matches and near-matches above your threshold.'
         },
         {
           q: 'Why might a similar sentence not be flagged?',
-          a: 'The Jaccard method measures shared vocabulary, not meaning. Two sentences conveying the same idea with completely different words will score near 0. Enable ignore stop words to focus on content words.'
+          a: 'The Jaccard method measures shared vocabulary between word sets, not semantic meaning. Two sentences conveying the same idea with completely different words will score near 0. For example, the AI might rewrite "The system processes data in real-time" as "Information is handled instantaneously by the engine" -- same meaning, zero shared content words. Enable the Ignore Stop Words option to focus on content words and improve detection.'
         },
         {
           q: 'Does this tool send my text to a server?',
-          a: 'No. All comparison logic runs entirely in your browser. Neither document ever leaves your device, making it safe for confidential manuscripts, legal documents, or student submissions.'
+          a: 'No. All comparison logic runs entirely in your browser using JavaScript. Neither document ever leaves your device, making it safe for confidential manuscripts, legal contracts, patent applications, or student submissions. The tool does not use cookies, does not make network requests, and does not persist any data after you close the tab.'
+        },
+        {
+          q: 'What is the near-match threshold slider for?',
+          a: 'The threshold controls the minimum Jaccard similarity score required for a sentence pair to be considered a near-match. At 70% (the default), two sentences must share 70% of their unique words to be flagged. Lowering to 50% catches more paraphrasing but increases false positives. Raising to 90% catches only near-exact copies. Adjust based on how strict you need the comparison to be.'
+        },
+        {
+          q: 'How does the word-level diff work?',
+          a: 'For each near-match sentence pair, the tool computes a longest common subsequence (LCS) between the word arrays. Words present in one sentence but absent from the other are highlighted in amber. This shows you exactly which words were changed -- for example, swapping "accelerated" for "sped up" or reordering a clause. The LCS approach handles insertions, deletions, and reordering better than simple word-by-word comparison.'
         },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
-          <p itemprop="text" class="seo-faq-a">{item.a}</p>
+          <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
+          </div>
         </div>
       ))}
     </div>

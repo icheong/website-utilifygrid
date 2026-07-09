@@ -89,12 +89,12 @@ const faqs = [
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Overview &amp; Technical Context</h2>
+    <h2 class="font-display seo-h2">How to use the CSV to JSON and XML Converter</h2>
     <p class="seo-p">
-      The CSV to JSON &amp; XML Converter is a lightweight, client-side utility designed for developers, data analysts, and anyone working with tabular data who needs to migrate CSV exports into formats suitable for APIs, configuration files, or document storage. Built with modern vanilla JavaScript and the browser's built-in string manipulation APIs, the tool operates with zero server calls — your CSV data never leaves your device, guaranteeing full compliance with GDPR, HIPAA, and other data-protection regulations.
+      Your manager hands you a CSV export from the old CRM and asks you to load it into a REST API by end of day. The API expects JSON, but the spreadsheet is 2,000 rows of comma-separated text. Paste the CSV into the left panel, pick JSON or XML on the toggle, and click Convert. The output appears instantly on the right — copy it straight into your API client or config file.
     </p>
     <p class="seo-p">
-      Unlike server-hosted converters that log uploaded files or impose size restrictions through paid tiers, this tool processes data entirely within the V8 JavaScript engine running in your browser tab. There is no authentication, no account creation, and no network latency — conversion of a 10,000-row dataset typically completes in under 50 milliseconds on a modern machine.
+      A data analyst converting a 10,000-row customer export sees the JSON output in under 50 milliseconds. The parser follows RFC 4180, so quoted fields containing commas (like "New, York, USA") stay intact instead of splitting into separate columns. Numbers, dates, and boolean-looking strings are preserved exactly as written — leading zeros like "00123" are not silently converted to the number 123.
     </p>
 
     <h3 class="font-display seo-h3-sm">Real-World Applications &amp; Use Cases</h3>
@@ -109,9 +109,9 @@ const faqs = [
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Technical Mechanics &amp; Parsing Logic</h2>
+    <h2 class="font-display seo-h2">How the CSV to JSON and XML conversion works</h2>
 
-    <h3 class="font-display seo-h3-sm">RFC 4180 State-Machine CSV Parser</h3>
+    <h3 class="font-display seo-h3-sm">RFC 4180 state-machine CSV parser</h3>
     <p class="seo-p">
       The converter implements a character-by-character state-machine parser that adheres to RFC 4180, the de facto standard for CSV format. It tracks a single boolean <code class="inline-code">inQ</code> flag that toggles when a double-quote character is encountered. Commas and newlines are treated as field and row delimiters only when <code class="inline-code">inQ</code> is false, so values like <code class="inline-code">"New, York"</code> or multi-line addresses are preserved correctly. Escaped double quotes — represented as two consecutive quotes (<code class="inline-code">""</code>) — are collapsed to a single literal quote during parsing, matching the RFC specification exactly.
     </p>

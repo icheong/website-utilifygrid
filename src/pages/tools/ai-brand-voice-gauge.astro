@@ -56,42 +56,42 @@ const tool = tools.find(t => t.slug === 'ai-brand-voice-gauge')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to use the Brand Voice Gauge</h2>
-    <p class="seo-p">Paste the AI-generated content you want to evaluate into the input field. Enter your brand's style guidelines or voice description in the reference field. Click Analyse to score the content across four dimensions: tone consistency, vocabulary match, formality level, and emotional register.</p>
+    <p class="seo-p">Your marketing team just used ChatGPT to draft a product launch email. Before sending it to 50,000 subscribers, you need to verify it actually sounds like your brand. Paste your brand's own writing into the Reference Brand Text field -- a blog post, a landing page, any copy that represents your voice. Then paste the AI-generated email into the AI-Generated Output field. Click Analyse Brand Voice Match and the tool scores the output against your reference across vocabulary overlap, sentence length patterns, and power word density.</p>
     <div style="display:flex; flex-direction:column; gap:0.75rem;">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Content quality control</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Before publishing AI-generated marketing copy, verify it matches your brand's established tone, vocabulary, and formality standards across all channels.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Pre-publish content check</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Run every AI-generated blog post, ad copy, or social caption through the gauge before publishing. A brand voice score below 50% means the content reads like it was written by a stranger, not your team.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Multi-writer alignment</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Ensure content produced by different team members or different AI models maintains a consistent brand voice by comparing outputs against the same reference guidelines.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Multi-author consistency</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">When five different team members each use a different AI tool to draft content, run all five outputs through the gauge with the same reference text. This catches outliers -- one writer using casual slang while the rest are formal -- before the inconsistency reaches your audience.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Localization review</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Check whether translated or adapted content preserves the original brand voice while accounting for cultural and linguistic differences in tone expectations.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Post-rebrand alignment</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">After updating your brand guidelines, use the gauge to audit existing AI-generated content. Compare old copy against new brand reference text to identify which pieces need rewriting and which already align with the updated voice.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">Brand voice analysis framework</h2>
-    <p class="seo-p">The tool applies a multi-dimensional analysis to measure how closely content matches brand guidelines.</p>
+    <p class="seo-p">The tool tokenises both texts into word arrays, strips stop words (the, a, is, and), and builds frequency-ranked vocabularies. It then compares the top 50 most frequent content words from each text to calculate overlap percentage. A 40% overlap means 20 of your brand's 50 most-used words appear in the AI output.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem;">
       <div class="result-card">
-        <h3 class="font-display seo-h3-sm">Tone detection</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">Analyses the content's overall tone along axes of formality, confidence, warmth, and urgency. Uses word choice, sentence structure, and punctuation patterns to classify the detected tone.</p>
+        <h3 class="font-display seo-h3-sm">Sentence length comparison</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">The tool splits both texts on terminal punctuation (. ! ?), counts words per sentence, and averages them. If your brand averages 15 words per sentence but the AI output averages 28, the 13-word gap triggers a mismatch warning. Short sentences feel punchy; long sentences feel academic.</p>
       </div>
       <div class="result-card">
-        <h3 class="font-display seo-h3-sm">Vocabulary matching</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">Compares the content's word choices against the brand's preferred terminology and prohibited words. Flags jargon, slang, or competitors' terminology that deviates from brand standards.</p>
+        <h3 class="font-display seo-h3-sm">Vocabulary overlap scoring</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">Both texts are tokenised and the top 50 content words (by frequency, excluding stop words) are extracted into sets. Overlap is calculated as the intersection size divided by the brand set size. A score of 35% means the AI uses only about a third of your brand's characteristic vocabulary.</p>
       </div>
       <div class="result-card">
-        <h3 class="font-display seo-h3-sm">Formality scoring</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">Measures formality level from casual to formal based on contractions, sentence length, passive voice usage, and technical term density. Compares against the brand's specified formality target.</p>
+        <h3 class="font-display seo-h3-sm">Power word density</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">A predefined list of 30 marketing power words (proven, exclusive, effortless, transform, guarantee, instant, free, save, discover, secret, boost, unlock, ultimate) is checked against both token sets. Density is calculated as the percentage of content words that are power words. A brand using 8% power words vs an AI output using 2% indicates the AI is too neutral.</p>
       </div>
       <div class="result-card">
-        <h3 class="font-display seo-h3-sm">Emotional register</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">Identifies the emotional undertone of the content: enthusiastic, neutral, professional, playful, or authoritative. Checks alignment with the brand's intended emotional positioning.</p>
+        <h3 class="font-display seo-h3-sm">Overall match calculation</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin:0;">The final percentage is the arithmetic mean of three sub-scores: vocabulary overlap (0-100%), sentence length similarity (0-100%, penalised by absolute word difference times 5), and power word density similarity (0-100%, penalised by absolute density difference times 8). The tool also generates specific discrepancy flags for each dimension that falls below threshold.</p>
       </div>
     </div>
   </div>
@@ -101,19 +101,27 @@ const tool = tools.find(t => t.slug === 'ai-brand-voice-gauge')!;
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How do I define my brand voice for the reference field?</h3>
-        <p itemprop="text" class="seo-faq-a">Describe your brand's personality, tone preferences, vocabulary rules, and formality level in plain text. Include examples of on-brand and off-brand writing if possible. The more specific your guidelines, the more accurate the analysis.</p>
+        <p itemprop="text" class="seo-faq-a">Paste 200-500 words of your own published copy -- a landing page, a blog post, or a sales email that represents your brand at its best. The tool needs enough text to extract your top 50 content words and average sentence length. Single paragraphs or bullet lists do not provide enough signal; aim for at least three full paragraphs of running text.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does this work for non-English content?</h3>
-        <p itemprop="text" class="seo-faq-a">The current analysis focuses on English-language content. Tone and formality patterns are language-specific, so results may be less accurate for other languages. Multilingual support is planned for future updates.</p>
+        <p itemprop="text" class="seo-faq-a">The current analysis focuses on English-language content. Stop word lists, power word detection, and sentence segmentation rules are tuned for English. Tone and formality patterns are language-specific, so results may be less accurate for other languages. Multilingual support is planned for future updates.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Can it compare multiple pieces of content?</h3>
-        <p itemprop="text" class="seo-faq-a">Yes. Run the analysis on each piece separately using the same reference guidelines. Compare the scores to identify which pieces are most aligned and which need revision. Batch comparison for large content sets is a planned feature.</p>
+        <p itemprop="text" class="seo-faq-a">Yes. Run the analysis on each piece separately using the same reference guidelines. Compare the scores to identify which pieces are most aligned and which need revision. For example, you might find that your email copy scores 72% while your blog posts score 45%, indicating the blog writer needs brand voice coaching.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What score indicates good brand alignment?</h3>
-        <p itemprop="text" class="seo-faq-a">Scores above 75 indicate strong alignment. Scores between 50 and 75 suggest moderate alignment with room for improvement. Below 50 indicates significant deviation from brand guidelines that should be addressed before publishing.</p>
+        <p itemprop="text" class="seo-faq-a">Scores above 75% indicate strong alignment -- the AI output uses your vocabulary patterns, matches your sentence rhythm, and mirrors your power word density. Scores between 50% and 75% suggest moderate alignment with room for improvement. Below 50% indicates significant deviation from brand guidelines that should be addressed before publishing.</p>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What are the discrepancy warnings?</h3>
+        <p itemprop="text" class="seo-faq-a">The tool flags three specific issues: sentence length mismatch (triggered when the gap exceeds 5 words per sentence), low vocabulary overlap (below 30%), and power word density gap (above 2 percentage points). Each warning includes the exact numbers so you can see, for example, that your brand averages 14 words per sentence while the AI averages 23.</p>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does the tool store my brand text?</h3>
+        <p itemprop="text" class="seo-faq-a">No. All processing happens in your browser. The tool does not send your text to any server, does not use cookies for tracking, and does not persist any data after you close the tab. Your brand guidelines and AI outputs remain entirely on your device.</p>
       </div>
     </div>
   </div>

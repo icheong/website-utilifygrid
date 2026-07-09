@@ -75,52 +75,68 @@ const tool = tools.find(t => t.slug === 'compound-interest-wealth-calculator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="seo-h2" >Overview and Technical Context</h2>
-    <p class="seo-p" >
-      The Compound Interest Wealth Calculator is a client-side financial projection tool that models how an initial investment grows over time with regular monthly contributions and compound interest. Built with vanilla JavaScript and running entirely in the browser, it computes a year-by-year breakdown table showing balance, total contributed, and interest earned at each stage. No data is sent to any server — your financial inputs remain entirely private.
+    <h2 class="seo-h2">See exactly how your money grows over time</h2>
+    <p class="seo-p">
+      You have $10,000 in savings and you are thinking about putting $500 a month into an index fund. But will that actually be enough for retirement? This calculator shows you the year-by-year growth of your money — including how much comes from your contributions and how much comes from compound interest — so you can see the numbers before you commit.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
-    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['Planning a long-term retirement savings strategy', 'A 30-year-old employee wants to know how much their $10,000 emergency fund plus $500 monthly contributions will grow by age 60 at a 7% average annual return. The calculator shows the year-by-year trajectory, making the abstract concept of compound growth tangible and actionable for retirement planning conversations.'],
-        ['Comparing investment timing scenarios', 'A recent graduate is deciding whether to start investing $300/month now or wait five years and invest $500/month later. The calculator demonstrates that starting earlier — even with smaller contributions — often produces a larger final balance due to the exponential nature of compounding over a longer period.'],
-        ['Evaluating the impact of increasing monthly contributions', 'A financial planner is advising a client on whether increasing monthly contributions from $400 to $600 is worth the lifestyle trade-off. Running both scenarios through the calculator quantifies the exact difference in final balance and interest earned, providing concrete numbers for the decision.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm" >
-          <strong style="color:#0F172A; font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
-    </div>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 1: Enter your starting balance</h3>
+    <p class="seo-p">
+      Type the lump sum you already have invested or saved. If you are starting from zero, enter 0. This initial amount compounds alongside your monthly contributions. A $10,000 starting balance at 7% annual return grows to about $76,123 over 30 years even without any additional contributions.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 2: Set your monthly contribution</h3>
+    <p class="seo-p">
+      Enter the amount you plan to add each month. This is the variable you have the most control over. A common guideline is 15% to 20% of gross income for retirement savings. The calculator adds this amount to your balance every month after applying the monthly interest rate.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 3: Choose your annual return rate</h3>
+    <p class="seo-p">
+      The default is 7%, which reflects the historical average real return of the S&P 500 after adjusting for inflation over the past century. For a high-yield savings account, use 4% to 5%. For a bond portfolio, use 2% to 4%. Remember that higher returns come with higher risk — a 7% rate assumes a diversified stock portfolio held for decades.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 4: Set your time horizon</h3>
+    <p class="seo-p">
+      Enter the number of years you plan to keep the money invested. The calculator accepts 1 to 50 years. Time is the most powerful variable in compound growth. A 25-year-old investing $300 per month for 40 years at 7% ends up with about $720,000. A 35-year-old investing the same amount for 30 years ends up with about $340,000 — less than half, despite contributing for only 10 fewer years.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 5: Read the year-by-year table</h3>
+    <p class="seo-p">
+      The output shows three numbers: your final balance, total amount contributed, and total interest earned. Below that, a year-by-year table breaks down balance, contributions, and interest for each year. In the early years, your contributions make up most of the growth. In later years, interest on interest begins to dominate — this is the crossover point where compounding truly accelerates.
+    </p>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="seo-h2" >Deep-Dive Technical Mechanics</h2>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Monthly Compounding Formula</h3>
-    <p class="seo-p" >
-      The calculator applies monthly compounding, which is more accurate than simple annual compounding for regular contribution scenarios. Each month, the current balance is multiplied by <code style="background:#F1F5F9; padding:0.1rem 0.35rem; border-radius:0.25rem; font-size:0.85rem">(1 + annual rate ÷ 12)</code>, then the monthly contribution is added. This process repeats for every month across the investment period. Monthly compounding captures the effect of interest earning interest more frequently, which is how most savings accounts, ETFs, and retirement funds actually compound.
+    <h2 class="seo-h2">How compound interest actually works</h2>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Monthly compounding is more accurate than annual</h3>
+    <p class="seo-p">
+      The calculator applies interest monthly, which is how most savings accounts and investment funds actually compound. Each month, your current balance is multiplied by (1 + annual rate divided by 12), then your monthly contribution is added. This process repeats for every month across the investment period. Monthly compounding captures the effect of interest earning interest more frequently than annual compounding. On a $100,000 balance at 7% annual return, monthly compounding produces about $2,000 more per year than annual compounding because each month's interest starts earning its own interest immediately.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Exponential Growth Dynamics</h3>
-    <p class="seo-p" >
-      The year-by-year breakdown table reveals the fundamental principle of compound interest: in the early years, most of the balance growth comes from your contributions. In later years, interest on interest begins to dominate. This crossover point — where accumulated interest exceeds total contributions — is the visual demonstration of why time in the market matters more than timing the market. The 7% default rate is based on the historical average real return of the S&P 500 after adjusting for inflation over the past century.
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">The crossover point where interest overtakes contributions</h3>
+    <p class="seo-p">
+      The year-by-year table reveals the fundamental principle of compound growth. In year 1, your balance grows almost entirely from your contributions. By year 15, interest on interest starts matching your annual contributions. By year 25, interest earned exceeds what you contributed that year. This crossover point is why time in the market matters more than timing the market — the longer your money compounds, the harder the interest works relative to your contributions.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Important Limitations</h3>
-    <p class="seo-p" >
-      The calculation does not account for taxes, inflation, management fees, or variable returns. Real-world investment returns fluctuate year to year — the 7% used here is an average, not a guarantee. The tool is designed to illustrate the mathematical principle of compound growth and to help with initial scenario planning. For personalised financial advice, consult a qualified financial advisor.
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">A worked example: $10,000 starting balance, $500/month, 7% return</h3>
+    <p class="seo-p">
+      Starting with $10,000 and adding $500 per month at 7% annual return compounded monthly: after 10 years your balance is about $103,000 — you contributed $70,000 and earned $33,000 in interest. After 20 years, your balance is about $282,000 — you contributed $130,000 and earned $152,000 in interest. After 30 years, your balance is about $604,000 — you contributed $190,000 and earned $414,000 in interest. By year 30, you are earning more in interest each year than you contribute annually. This is the exponential effect of compounding made visible.
     </p>
-    <div class="border-theme surface-2 seo-card-code" style="margin-top:0.75rem">
-      <div style="font-size:0.78rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem">Core Formula</div>
-      <p class="seo-card-body" style="font-family:'Fira Code',monospace; color:#0F172A; margin:0">
-        Balance<sub>n+1</sub> = Balance<sub>n</sub> × (1 + r ÷ 12) + Monthly Contribution
-      </p>
-      <p style="font-size:0.82rem; line-height:1.6; margin:0.5rem 0 0">
-        Where r = annual interest rate (e.g., 0.07 for 7%). Applied monthly for each month of the investment period.
-      </p>
-    </div>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Why starting 10 years earlier almost doubles your outcome</h3>
+    <p class="seo-p">
+      A 25-year-old investing $300 per month for 40 years at 7% ends up with about $720,000. A 35-year-old investing the same amount for 30 years ends up with about $340,000. The difference is $380,000 — despite the 35-year-old contributing only $36,000 less over their shorter timeframe. The extra 10 years of compounding on the earlier contributions is what creates the massive gap. This is the strongest mathematical argument for starting to invest as early as possible.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">What this calculator does not model</h3>
+    <p class="seo-p">
+      The calculator uses a fixed annual return rate and does not account for taxes, inflation, management fees, or year-to-year market volatility. Real investment returns fluctuate — the S&P 500 has returned more than 20% in some years and dropped more than 30% in others. The 7% rate is a long-term average, not a guarantee. For tax-advantaged accounts like superannuation or 401(k)s, the effective return may be higher due to deferred taxation. Always consult a qualified financial advisor for personalised advice.
+    </p>
   </div>
 
   <div slot="faq">
-    <h2 class="seo-h2-faq" >Frequently asked questions</h2>
+    <h2 class="seo-h2-faq">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
@@ -146,6 +162,14 @@ const tool = tools.find(t => t.slug === 'compound-interest-wealth-calculator')!;
         {
           q: 'Should I prioritise increasing contributions or finding a higher return rate?',
           a: 'For most investors, increasing contributions has a larger impact than chasing higher returns. A 1% increase in annual return is meaningful, but doubling your monthly contribution has a far greater effect on the final balance. Additionally, higher returns typically come with higher risk, while increasing contributions is a guaranteed improvement to your outcome.',
+        },
+        {
+          q: 'What happens if I miss a month of contributions?',
+          a: 'Missing a single month has a small immediate effect but a larger long-term impact due to lost compounding. On a $500 monthly contribution at 7%, missing one month costs you about $3,500 in final balance after 30 years — the $500 you missed plus roughly $3,000 in interest it would have earned. Missing multiple months compounds this loss. If you cannot contribute one month, try to make it up the following month if possible.',
+        },
+        {
+          q: 'Is compound interest the same as simple interest?',
+          a: 'No. Simple interest is calculated only on the original principal. If you invest $10,000 at 5% simple interest, you earn $500 every year regardless of how much interest has accumulated. With compound interest, you earn interest on your interest as well. After 10 years at 5% compound interest, your $10,000 grows to about $16,289. With simple interest, it would only be $15,000. The gap widens dramatically over longer time periods.',
         },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
@@ -181,6 +205,16 @@ const tool = tools.find(t => t.slug === 'compound-interest-wealth-calculator')!;
           "@type": "Question",
           "name": "How much should I invest per month?",
           "acceptedAnswer": { "@type": "Answer", "text": "A common guideline is 15-20% of gross income for retirement. Starting 10 years earlier can roughly double the final balance even with the same total contributions." }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens if I miss a month of contributions?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Missing a single month has a small immediate effect but a larger long-term impact due to lost compounding. On a $500 monthly contribution at 7%, missing one month costs about $3,500 in final balance after 30 years." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is compound interest the same as simple interest?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Simple interest is calculated only on the original principal. Compound interest earns interest on accumulated interest as well, producing exponential growth over time." }
         }
       ]
     })} />

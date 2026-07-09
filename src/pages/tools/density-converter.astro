@@ -47,20 +47,20 @@ const tool = tools.find(t => t.slug === 'density-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Density Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Kg/m³, G/cm³, Lb/ft³, and Specific Gravity</h2>
     <p class="seo-p">
-      This density converter computes precise conversions between 11 density units — kilograms per cubic meter, grams per cubic centimeter, grams per milliliter, kilograms per liter, grams per liter, pounds per cubic foot, pounds per cubic inch, pounds per US gallon, pounds per imperial gallon, specific gravity, and slugs per cubic foot — entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in materials science, chemical engineering, food production, or construction.
+      A concrete specification calls for 150 lb/ft³ aggregate. Your supplier quotes in kg/m³. Type 150, select lb/ft³, and see that it equals 2,403 kg/m³, 2.403 g/cm³, and 2.403 SG. The material reference section confirms normal-weight concrete is around 2,400 kg/m³, so the numbers match.
     </p>
     <p class="seo-p">
-      The converter supports the most commonly used density units across metric, imperial, and dimensionless systems. <strong>Specific Gravity</strong> (SG) is a dimensionless ratio comparing a substance's density to that of water at 4°C, making it invaluable for quick comparisons. The material density reference section provides benchmarks from air (1.225 kg/m³) to osmium (22,590 kg/m³), covering common engineering materials, precious metals, and everyday substances.
+      The converter handles 11 units: kg/m³, g/cm³, g/mL, kg/L, g/L, lb/ft³, lb/in³, lb/US gal, lb/imp gal, specific gravity, and slug/ft³. A food scientist measuring honey at SG 1.42 sees it equals 1,420 kg/m³ and 88.6 lb/ft³. A chemical engineer working with ethanol at 0.789 g/cm³ sees it equals 789 kg/m³ and 49.3 lb/ft³. The material reference shows air at 1.225 kg/m³ to osmium at 22,590 kg/m³.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Why density units confuse engineers across borders</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Chemical engineering and process design`, `Chemical engineers design mixing, separation, and storage systems that depend on fluid densities. A reactor vessel holding a mixture of ethanol (SG ≈ 0.789) and water (SG = 1.0) requires density calculations to determine fluid levels, pump sizing, and heat transfer coefficients. Converting between kg/m³ and lb/ft³ is essential when working with international standards — a US-designed plant may specify fluids in lb/ft³ while European plants use kg/m³.`],
-        [`Construction and building materials`, `Construction professionals specify concrete, asphalt, and aggregate densities for structural calculations. Normal-weight concrete has a density of approximately 2,400 kg/m³ (150 lb/ft³), while lightweight concrete ranges from 1,200 to 1,800 kg/m³. Converting between metric and imperial units is critical when sourcing materials from different regions — a specification calling for 145 lb/ft³ aggregate must be matched to the correct metric equivalent.`],
-        [`Food and beverage quality control`, `Food scientists measure density to verify product concentration and quality. Honey (SG ≈ 1.42) is denser than water, while olive oil (SG ≈ 0.92) floats. Brix measurements (sugar content) correlate with density — a Brix 10° syrup has a density of approximately 1,040 kg/m³. Converting between g/mL (common in lab settings) and kg/m³ (common in industrial specifications) ensures consistent quality across production facilities.`]
+        ['US plants use lb/ft³, European plants use kg/m³', 'A US-designed chemical plant specifies a fluid at 62.4 lb/ft³. The European team needs kg/m³. The conversion factor is 16.0185: 62.4 x 16.0185 = 1,000 kg/m³ (water). If the engineer mistakenly uses 62.4 kg/m³ instead of 1,000, the pipe sizing is wrong by a factor of 16, and the pump cannot deliver the required flow rate.'],
+        ['Specific gravity eliminates unit confusion', 'Specific gravity (SG) is dimensionless: the ratio of a substance density to water density (1,000 kg/m³ at 4°C). Gold at SG 19.3 means 19.3x denser than water. A jeweller verifying gold purity measures SG: 19.3 = pure, 18.0 = 14-karat alloy. SG works because it is the same number in any unit system.'],
+        ['Lab measurements use g/mL, industrial specs use kg/m³', 'A lab technician measures a polymer at 1.15 g/mL. The factory specification requires kg/m³. Since 1 g/mL = 1,000 kg/m³, the polymer is 1,150 kg/m³. If the technician reports 1.15 kg/m³ (forgetting the factor of 1,000), the factory rejects the batch as too light. The converter prevents this error.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -71,26 +71,22 @@ const tool = tools.find(t => t.slug === 'density-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Density Converter Handles Kg/m³, G/cm³, and Lb/ft³</h2>
     <p class="seo-p">
-      All conversions use kilograms per cubic meter (kg/m³) as the universal base unit. Each supported density unit is defined by a fixed conversion factor relative to one kg/m³. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain kg/m³, then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      All conversions pass through kilograms per cubic meter (kg/m³). When you enter 8.96 g/cm³ (copper), the tool multiplies by 1,000 to get 8,960 kg/m³. Then it divides by each target unit's factor: by 16.0185 for lb/ft³, by 1,000 for specific gravity, by 0.03613 for lb/in³. The result: 8.96 g/cm³ = 8,960 kg/m³ = 559.1 lb/ft³ = 8.96 SG.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Why g/cm³ and kg/m³ differ by exactly 1,000</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">kgm3</code>, <code class="inline-code">gcm3</code>, <code class="inline-code">lbft3</code>) to its conversion factor relative to kg/m³. Metric units use powers of 10: <code class="inline-code">1 g/cm³ = 1,000 kg/m³</code>. Imperial units use exact definitions: <code class="inline-code">1 lb/ft³ = 16.0185 kg/m³</code> (derived from <code class="inline-code">1 lb = 0.45359237 kg</code> and <code class="inline-code">1 ft = 0.3048 m</code>).
+      1 g/cm³ = (0.001 kg) / (0.000001 m³) = 1,000 kg/m³. This factor of 1,000 comes from the centi prefix (10^-2) cubed: (10^-2)^3 = 10^-6 for volume, and the kilo prefix (10^3) for mass. The same factor applies to g/mL and kg/L since 1 mL = 1 cm³ and 1 L = 1,000 cm³. This is why specific gravity (which compares to water at 1,000 kg/m³) numerically equals g/cm³.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Imperial conversion factors from exact definitions</h3>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion to kg/m³:</strong> The input value is multiplied by the source unit's factor. For example, converting 8.96 g/cm³ (copper) to kg/m³: <code class="inline-code">8.96 × 1,000 = 8,960 kg/m³</code>. Converting 557 lb/ft³ to kg/m³: <code class="inline-code">557 × 16.0185 ≈ 8,922 kg/m³</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Target conversion from kg/m³:</strong> The kg/m³ value is divided by the target unit's factor. Converting 8,960 kg/m³ to lb/ft³: <code class="inline-code">8,960 / 16.0185 ≈ 559 lb/ft³</code>. Converting to Specific Gravity: <code class="inline-code">8,960 / 1,000 = 8.96</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (10⁹ or greater) use scientific notation. Values between 1,000 and 10⁹ use locale-formatted numbers with 2 decimal places. Values between 1 and 1,000 use 4 to 6 decimal places. Values below 0.001 use scientific notation. This ensures readability across the full range from air density to heavy metal alloys.
+      lb/ft³ = 16.0185 kg/m³, derived from 1 lb = 0.45359237 kg and 1 ft = 0.3048 m. So 1 lb/ft³ = 0.45359237 / (0.3048)^3 = 0.45359237 / 0.0283168 = 16.0185. The US gallon factor is 8.3454 lb/US gal (from 1 US gal = 3.78541 L and water density). The imperial gallon factor is 10.022 lb/imp gal (from 1 imp gal = 4.54609 L). The slug is 14.5939 kg, derived from 1 lbf = 4.44822 N and g = 9.80665 m/s².
     </p>
     <p class="seo-p-none">
-      <strong>Exact conversion factors:</strong> All factors are derived from exact international definitions: <code class="inline-code">1 lb = 0.45359237 kg</code> (exactly), <code class="inline-code">1 ft = 0.3048 m</code> (exactly), <code class="inline-code">1 in = 0.0254 m</code> (exactly), <code class="inline-code">1 US gallon = 3.785411784 L</code> (exactly), <code class="inline-code">1 imp gallon = 4.54609 L</code> (exactly), and <code class="inline-code">1 slug = 14.59390 kg</code> (derived from <code class="inline-code">1 lbf = 4.448221615 N</code>). The Specific Gravity factor is exactly <code class="inline-code">1,000</code> (the density of water at 4°C in kg/m³). These are all exact rational values, so the IEEE 754 approximations provide full double-precision accuracy.
+      Specific gravity is dimensionless: the ratio of a substance density to water density at 4°C (1,000 kg/m³). So SG = density in kg/m³ divided by 1,000. Gold at 19,300 kg/m³ has SG = 19.3. Air at 1.225 kg/m³ has SG = 0.001225. The converter handles SG as a unit with factor 1,000 (since SG x 1,000 = kg/m³).
     </p>
   </div>
 
@@ -99,32 +95,28 @@ const tool = tools.find(t => t.slug === 'density-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is density?",
-          a: "Density is the mass per unit volume of a substance, typically expressed as kg/m³ or g/cm³. Water has a density of 1,000 kg/m³ (1 g/cm³) at 4°C, which is used as the reference standard for specific gravity. Materials denser than water (SG > 1) sink, while less dense materials (SG < 1) float. Density is an intrinsic property — it does not depend on the sample size."
+          q: "How do I convert 2.7 g/cm³ to lb/ft³?",
+          a: "First convert to kg/m³: 2.7 x 1,000 = 2,700 kg/m³. Then divide by 16.0185: 2,700 / 16.0185 = 168.6 lb/ft³. This is the density of aluminum. The quick shortcut is to multiply g/cm³ by 62.43 to get lb/ft³ directly (since 1,000 / 16.0185 = 62.43). The converter shows all units simultaneously."
         },
         {
-          q: "What is Specific Gravity?",
-          a: "Specific Gravity (SG) is the dimensionless ratio of a substance's density to that of water at 4°C (1,000 kg/m³). An SG of 0.5 means the substance is half as dense as water and will float. An SG of 11.3 means it is 11.3 times denser than water and will sink rapidly. Specific Gravity is widely used in brewing, wine-making, and petroleum engineering because it provides an intuitive comparison without units."
+          q: "What material has a density of 1 g/cm³?",
+          a: "Water at 4°C has a density of exactly 1 g/cm³ = 1,000 kg/m³ = 62.43 lb/ft³ = 1.0 SG. This is why water is the reference standard for specific gravity. Many common materials cluster around this value: wood (0.4-0.8 g/cm³), oil (0.8-0.9 g/cm³), ice (0.917 g/cm³). Materials above 1.0 sink in water, below 1.0 float."
         },
         {
-          q: "What is the densest material on Earth?",
-          a: "Osmium is the densest naturally occurring element at 22,590 kg/m³ (22.59 g/cm³). Iridium is nearly identical at 22,560 kg/m³. For comparison, gold is 19,300 kg/m³, lead is 11,340 kg/m³, and water is 1,000 kg/m³. Osmium is so dense that a sphere of osmium with a diameter of 1 metre would weigh approximately 11.8 metric tonnes."
+          q: "Why does ice float if it is solid water?",
+          a: "Water expands about 9% when it freezes because hydrogen bonding creates an open hexagonal crystal structure. This increases volume while keeping the same mass, reducing density from 1.0 g/cm³ to 0.917 g/cm³. Most materials contract when they solidify and become denser. Water is unusual, and this property is critical for aquatic life because lakes freeze from the top down."
         },
         {
-          q: "Why does ice float on water?",
-          a: "Ice has a density of approximately 917 kg/m³, which is less than water's 1,000 kg/m³. This occurs because water expands when it freezes, increasing its volume by approximately 9% while keeping the same mass. Hydrogen bonding in solid water creates an open hexagonal crystal structure that occupies more volume than the disordered liquid phase. This property is critical for aquatic ecosystems, as it insulates lakes and oceans in winter."
+          q: "What is the density of common metals?",
+          a: "Aluminum: 2.70 g/cm³ (2,700 kg/m³). Iron: 7.87 g/cm³ (7,870 kg/m³). Copper: 8.96 g/cm³ (8,960 kg/m³). Silver: 10.49 g/cm³ (10,490 kg/m³). Gold: 19.32 g/cm³ (19,320 kg/m³). Osmium: 22.59 g/cm³ (22,590 kg/m³). The density reference section in the converter shows these values for quick lookup."
         },
         {
-          q: "What is a slug?",
-          a: "A slug is the imperial unit of mass, equal to approximately 14.594 kg. It is defined as the mass that accelerates at 1 ft/s² when a force of 1 pound-force (lbf) is applied, following F = ma. Slugs are used in engineering contexts where the foot-pound-second (FPS) system is standard, particularly in aerospace and structural engineering. The related unit lb/ft³ uses pounds-mass rather than slugs."
+          q: "How accurate is specific gravity for quality control?",
+          a: "Specific gravity is precise to about 0.1% with a standard hydrometer. Honey at SG 1.42 +/- 0.001 indicates about 82% sugar content. Wine at SG 0.995 indicates fermentation is complete (all sugar converted to alcohol). Petroleum products are graded by API gravity, which is a modified specific gravity scale. SG is reliable for quality control because temperature corrections are well-established."
         },
         {
-          q: "How do I convert between g/cm³ and kg/m³?",
-          a: "To convert g/cm³ to kg/m³, multiply by 1,000. To convert kg/m³ to g/cm³, divide by 1,000. For example, aluminum has a density of 2.70 g/cm³ = 2,700 kg/m³. This simple factor of 1,000 comes from the relationship: 1 g/cm³ = (0.001 kg) / (0.000001 m³) = 1,000 kg/m³. The same factor applies to g/mL and kg/L since 1 mL = 1 cm³ and 1 L = 1,000 cm³."
-        },
-        {
-          q: "How does temperature affect density?",
-          a: "Density generally decreases as temperature increases because most materials expand when heated (thermal expansion). Water is an exception between 0°C and 4°C, where it becomes denser as it warms — this is why 4°C water sinks to the bottom of lakes. For most engineering calculations, density is specified at a standard temperature (often 20°C or 25°C) to ensure consistency across measurements."
+          q: "What is the density of air and why does it matter?",
+          a: "Air at sea level and 15°C has a density of 1.225 kg/m³ (0.0765 lb/ft³). This matters for aircraft performance (lift depends on air density), HVAC system sizing (fan capacity depends on air mass flow), and combustion calculations (stoichiometric air-fuel ratio depends on air density). At 3,000 m altitude, air density drops to about 0.91 kg/m³, reducing aircraft lift by 25%."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

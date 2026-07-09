@@ -31,36 +31,38 @@ const tool = tools.find(t => t.slug === 'temperature-interval-converter')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the Temperature Interval Converter</h2>
-    <p class="seo-p">This converter transforms temperature differences (deltas) between Celsius, Fahrenheit, Kelvin, and Rankine scales in real time.</p>
+    <p class="seo-p">A recipe says to increase the oven temperature by 25 degrees Celsius, but your oven dial reads Fahrenheit. A physics lab report measures a temperature rise of 15 Kelvin but the journal requires Celsius degrees. A temperature interval is the gap between two temperatures, not an absolute reading — and the conversion math is different. Enter the delta, pick the source unit, and see the equivalent interval in all four scales.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Temperature Difference</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Input the delta temperature value and select the source unit from the dropdown menu. The converter accepts any positive or negative number.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">HVAC engineers sizing heating and cooling equipment</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A commercial building needs to cool air from 32 degrees C to 22 degrees C — a 10 degree C delta. Enter 10 in Celsius and the converter shows 10 K, 18 degrees F, and 18 degrees R. The equipment specification requires BTU calculations using Fahrenheit deltas, so the 18 degrees F figure goes straight into the load calculation.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Unit</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the temperature difference unit you want to convert from. Available options include Kelvin, Celsius degree, Fahrenheit degree, and Rankine.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Chemistry students converting enthalpy temperature ranges</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A calorimetry experiment measures a temperature rise of 4.7 Kelvin. The lab partner working in Fahrenheit needs the equivalent. Enter 4.7 in Kelvin and the result shows 4.7 degrees C and 8.46 degrees F. The 1:1 ratio between Kelvin and Celsius intervals makes this conversion straightforward.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">View All Results</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See the delta value converted into every other temperature interval unit instantly. Results update as you type or change the source unit.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Meteorologists comparing temperature swings across regions</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A weather station reports a daily temperature swing of 18 degrees Fahrenheit. An international climate database requires Kelvin. Enter 18 in Fahrenheit and the converter shows 10 K. This matters because climate scientists comparing diurnal temperature ranges across hemispheres need a consistent unit.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click any Copy button to copy that unit's converted value to your clipboard for easy pasting into documents, code, or messages.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Mechanical engineers calculating thermal expansion</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A steel bridge experiences a temperature change of 40 degrees Rankine between winter night and summer afternoon. The structural analysis uses Kelvin. Enter 40 in Rankine and the result shows 22.22 K. The 5/9 ratio between Rankine and Kelvin intervals is applied automatically.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the Temperature Interval Converter Works</h2>
-    <p class="seo-p">This tool converts between temperature differences (deltas) using direct linear scaling factors. Unlike absolute temperature conversions, no offset is involved because intervals measure the gap between two temperatures, not a specific point on a scale.</p>
-    <h3 class="font-display seo-h3-sm">Temperature Interval vs Absolute Temperature</h3>
-    <p class="seo-p">A temperature interval (or delta) represents the difference between two temperatures. For example, a rise from 20°C to 30°C is a delta of 10°C. Because the Celsius and Kelvin scales have identical degree sizes, a 1°C interval equals exactly 1 K. However, a 1°F interval equals only 5/9 K because the Fahrenheit degree is smaller. This is fundamentally different from converting absolute temperatures (e.g., 25°C to 77°F), which requires adding or subtracting offset constants like <code class="inline-code">+32</code> or <code class="inline-code">-273.15</code>.</p>
-    <h3 class="font-display seo-h3-sm">Conversion Factors</h3>
-    <p class="seo-p">All conversions route through Kelvin intervals as the reference unit. The exact ratios are: 1°C delta = 1 K, 1°F delta = 5/9 K, and 1°R delta = 5/9 K. The formula is <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>. For example, converting 10°F delta to Celsius: 10 × (5/9) ÷ 1 = 5.556°C delta. These are pure multiplicative ratios with no additive offset.</p>
-    <h3 class="font-display seo-h3-sm">Common Use Cases</h3>
-    <p class="seo-p">Temperature interval conversions are essential in <strong>HVAC engineering</strong> for calculating heating and cooling loads, in <strong>chemistry</strong> for expressing enthalpy changes and reaction temperature ranges, and in <strong>mechanical engineering</strong> for thermal expansion calculations. Meteorologists also use deltas when reporting daily temperature swings or climate anomalies across different measurement systems.</p>
+    <p class="seo-p">The converter uses direct linear scaling factors with no additive offset. Temperature intervals measure the gap between two temperatures, not a specific point on a scale, so the zero-point difference between scales is irrelevant.</p>
+    <h3 class="font-display seo-h3-sm">Interval vs Absolute Conversion</h3>
+    <p class="seo-p">Absolute temperature conversions use formulas with offset constants — for example, degrees F equals degrees C times 9/5 plus 32. Interval conversions use only multiplication. A 10 degree C rise equals a 50 degree F rise, but 10 degrees C as an absolute temperature equals 50 degrees F. This tool handles only the interval case, which keeps the math simple and error-free for engineering and scientific calculations.</p>
+    <h3 class="font-display seo-h3-sm">Conversion Factors Through Kelvin</h3>
+    <p class="seo-p">All conversions route through Kelvin intervals as the reference. The exact ratios are: 1 degree C delta equals 1 K, 1 degree F delta equals 5/9 K, and 1 degree R delta equals 5/9 K. The formula is Result = Input x (FromFactor / ToFactor). Converting 18 degrees F delta to Celsius gives 18 x (5/9) / 1 = 10 degrees C. These are pure multiplicative ratios with no additive terms.</p>
+    <h3 class="font-display seo-h3-sm">Why Kelvin and Celsius Intervals Are Identical</h3>
+    <p class="seo-p">The Celsius and Kelvin scales have the same degree size — they differ only in their zero points (0 K equals minus 273.15 degrees C). Because interval conversion ignores absolute zero, a 1 degree C change is physically the same temperature change as 1 K. This equivalence does not hold for Fahrenheit, where the degree is 5/9 the size of a Kelvin degree.</p>
+    <h3 class="font-display seo-h3-sm">Rankine Interval Equivalence</h3>
+    <p class="seo-p">Rankine is the absolute scale based on Fahrenheit. A Rankine interval has the same size as a Fahrenheit interval — 1 degree R delta equals 1 degree F delta. Both are 5/9 the size of a Kelvin interval. The converter stores Rankine and Fahrenheit with the same factor (5/9) to reflect this equivalence.</p>
   </div>
 
   <div slot="faq">

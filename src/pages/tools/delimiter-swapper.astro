@@ -74,23 +74,23 @@ const tool = tools.find(t => t.slug === 'delimiter-swapper')!;
   ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the Delimiter Swapper</h2>
-    <p class="seo-p">Swap delimiters in any delimited dataset by pasting your values and choosing the target delimiter format. The output updates instantly as you type.</p>
+    <p class="seo-p">Data arrives in many formats, and each system has its own delimiter expectations. When a spreadsheet export gives you comma-separated values but your SQL query needs an IN clause with single quotes, manual retyping wastes time and invites errors. Delimiter Swapper converts between any delimiter combination in seconds, whether you are preparing a 50-row product list for a database import or restructuring a 200-line log file for analysis.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Your Text</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter your delimited data into the input panel. Each value should appear on its own line — the tool also accepts tab or comma-delimited text that it will split automatically.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Preparing SQL IN Clauses</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A database developer extracting 150 customer IDs from a CSV export needs to build a WHERE IN clause for a query. Pasting the list into Delimiter Swapper and selecting the SQL IN format wraps each value in single quotes and formats the entire list in one step. The developer saves roughly 20 minutes of manual formatting compared to editing each row individually in a text editor.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Set Delimiters</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the input delimiter that matches your source data and the output delimiter you want. Supported options include comma, semicolon, pipe, tab, and custom characters.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Converting Legacy Data Exports</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A data analyst receives a 3,000-row sales report exported as a pipe-delimited file from a legacy system. The downstream dashboard tool requires comma-separated values with double-quoted fields. Using Delimiter Swapper with the CSV output format and double-quote option enabled, the analyst converts the entire dataset without opening a spreadsheet application or writing a conversion script.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Configure Options</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Set the maximum number of columns, toggle whitespace trimming, and choose whether to preserve or discard empty fields between consecutive delimiters.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Building Documentation Tables</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A technical writer building a product catalog needs to convert a list of 75 feature names into a Markdown table for the project wiki. After pasting the values, the Markdown Table format generates a properly aligned two-column table with row numbers. The writer avoids manually formatting each column width and gets a copy-paste-ready result in under a second.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Results</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button to grab the reformatted output, or use the download option to save it directly as a file for use in spreadsheets, scripts, or databases.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Migrating Configuration Files</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A system administrator migrating a 500-line firewall rule set from semicolon-delimited CSV to pipe-delimited format for a new security appliance. Delimiter Swapper handles the conversion with whitespace trimming enabled, producing clean output that loads directly into the target system without additional cleanup steps.</p>
       </div>
     </div>
   </div>
@@ -100,13 +100,13 @@ const tool = tools.find(t => t.slug === 'delimiter-swapper')!;
   ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the Delimiter Swapper Works</h2>
-    <p class="seo-p">The Delimiter Swapper parses your input text, tokenises each row by the chosen input delimiter, and then reassembles the tokens using the target delimiter to produce the swapped output.</p>
+    <p class="seo-p">Delimiter Swapper reads each line of your input, splits it into individual values using the delimiter you specify, and then joins those values back together with your chosen output delimiter. The entire transformation runs locally in your current session, so your data never leaves your device.</p>
     <h3 class="font-display seo-h3-sm">Delimiter Detection and Tokenization</h3>
-    <p class="seo-p">Each line of input is split by the selected <code class="inline-code">input delimiter</code>. The tool supports single-character and multi-character delimiters. Leading and trailing whitespace on each token can optionally be trimmed, ensuring clean output regardless of source formatting.</p>
+    <p class="seo-p">Each line of input is split by the selected <code class="inline-code">input delimiter</code>. The tool supports single-character delimiters like commas and pipes as well as multi-character strings such as ':::' or '|||'. Leading and trailing whitespace on each token can optionally be trimmed, ensuring clean output regardless of source formatting. For example, with a comma input delimiter, the line '  apple , banana , cherry  ' splits into three tokens: 'apple', 'banana', and 'cherry' after trimming. The max columns option lets you cap how many tokens are retained per row, so trailing empty delimiters do not inflate your output.</p>
     <h3 class="font-display seo-h3-sm">Column Mapping and Swapping</h3>
-    <p class="seo-p">After tokenization, the resulting columns are joined back together using the chosen <code class="inline-code">output delimiter</code>. This lets you convert between CSV, TSV, pipe-delimited, semicolon-delimited, or any custom format in a single pass without manual find-and-replace.</p>
+    <p class="seo-p">After tokenization, the resulting columns are joined back together using the chosen <code class="inline-code">output delimiter</code>. This lets you convert between CSV, TSV, pipe-delimited, semicolon-delimited, or any custom format in a single pass without manual find-and-replace. Consider converting a three-column TSV row 'name\tage\temail' to pipe-delimited output: the tool splits on tab, produces three tokens, and joins them as 'name|age|email' with the pipe character as the new separator. The deduplication option can remove duplicate values before joining, which is useful when consolidating lists from multiple sources.</p>
     <h3 class="font-display seo-h3-sm">Edge Case Handling</h3>
-    <p class="seo-p">Empty fields between consecutive delimiters are preserved by default or skipped depending on your settings. Escaped quotes and nested delimiters are handled gracefully — the tool respects standard CSV quoting rules so values containing the delimiter character are not split incorrectly.</p>
+    <p class="seo-p">Empty fields between consecutive delimiters are preserved by default or skipped depending on your settings. Escaped quotes and nested delimiters are handled gracefully — the tool respects standard CSV quoting rules so values containing the delimiter character are not split incorrectly. When a value like 'New York, NY' appears in a comma-delimited file, the tool recognizes the surrounding quotes and keeps it as a single token rather than splitting it into 'New York' and 'NY'. Case conversion options let you standardize values to uppercase or lowercase during the transformation, eliminating the need for a separate cleanup step.</p>
   </div>
 
   <!-- ══════════════════════════════════════════════
@@ -118,37 +118,55 @@ const tool = tools.find(t => t.slug === 'delimiter-swapper')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What delimiters does the Delimiter Swapper support?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">The tool supports comma, semicolon, pipe, tab, and custom single or multi-character delimiters. You can enter any character or string as both the input and output delimiter, giving you full flexibility for non-standard data formats.</p>
+          <p itemprop="text" class="seo-faq-a">The tool supports comma, semicolon, pipe, tab, and custom single or multi-character delimiters. You can enter any character or string as both the input and output delimiter, giving you full flexibility for non-standard data formats. Common use cases include converting between CSV and TSV files, preparing pipe-delimited data for SQL queries, or restructuring configuration files that use unusual separators like ':::' or '|||'. The custom delimiter option accepts any sequence of characters, so you are not limited to single-byte separators.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Can I limit the number of output columns?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. Set the max columns option to a specific number and any tokens beyond that count will be dropped from the output. This is useful when your source data has trailing empty delimiters that you want to discard cleanly.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. Set the max columns option to a specific number and any tokens beyond that count will be dropped from the output. This is useful when your source data has trailing empty delimiters that you want to discard cleanly. For example, if your CSV has 10 columns but you only need the first 3, setting max columns to 3 produces output with exactly 3 values per row.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How do I handle empty fields between delimiters?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">By default empty fields are preserved so the column structure stays intact. Toggle the empty fields option to skip them if you want a cleaner output that only contains non-empty values between each delimiter.</p>
+          <p itemprop="text" class="seo-faq-a">By default empty fields are preserved so the column structure stays intact. Toggle the empty fields option to skip them if you want a cleaner output that only contains non-empty values between each delimiter. Preserving empty fields is important when the position of a value within a row carries meaning, such as in database exports where missing columns must remain as placeholders. Skipping empty fields is useful when building clean lists for imports or documentation.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Will the tool handle values that contain the delimiter character?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. If your input follows standard CSV quoting rules — where values containing the delimiter are wrapped in double or single quotes — the tool parses them correctly and does not split them into separate columns.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. If your input follows standard CSV quoting rules — where values containing the delimiter are wrapped in double or single quotes — the tool parses them correctly and does not split them into separate columns. For instance, a value like 'New York, NY' in a comma-delimited file remains as a single token because the surrounding quotes signal that the comma is part of the value. Unquoted values that contain the delimiter character will be split, so ensure your source data uses proper quoting for accurate results.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Can I convert between TSV and CSV?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Absolutely. Select tab as the input delimiter and comma as the output delimiter to convert TSV to CSV, or reverse the settings to go from CSV to TSV. This works for any delimiter combination in a single step.</p>
+          <p itemprop="text" class="seo-faq-a">Absolutely. Select tab as the input delimiter and comma as the output delimiter to convert TSV to CSV, or reverse the settings to go from CSV to TSV. This works for any delimiter combination in a single step. The conversion preserves all values and their order, so column alignment remains consistent across the transformation. You can also add quoting options to ensure the output matches the expectations of your target system.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Is there a size limit on the input data?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">There is no hard limit, but very large inputs with tens of thousands of rows may slow down the browser. For best results, process data in chunks of a few thousand rows at a time if you notice sluggishness in the output updates.</p>
+          <p itemprop="text" class="seo-faq-a">There is no hard limit, but very large inputs with tens of thousands of rows may slow down the output updates. For best results, process data in chunks of a few thousand rows at a time if you notice sluggishness. The tool processes each row independently, so memory usage scales linearly with the number of input lines. Most users find that inputs under 5,000 rows transform instantly without any perceptible delay.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does Delimiter Swapper compare to using find-and-replace in a text editor?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Find-and-replace in a text editor can handle simple delimiter swaps for small datasets, but it becomes error-prone with quoted values or multi-column data. Delimiter Swapper parses each row structurally, respecting CSV quoting rules and preserving column alignment across thousands of rows. The deduplication, case conversion, and max columns options provide capabilities that no text editor find-and-replace can match without custom scripting.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens if my input has inconsistent delimiters on different lines?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool applies the same input delimiter to every row, so lines with different delimiter characters will not split correctly. If your data mixes delimiters — for example, some rows use commas and others use semicolons — normalize the data first by converting all rows to a consistent format. You can accomplish this by running the tool twice: first with the most common delimiter as input, then with your desired output delimiter.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why would I need to swap delimiters instead of using a spreadsheet application?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Spreadsheet applications like Excel can open CSV and TSV files, but they often reinterpret values, strip leading zeros, or convert text to dates automatically. Delimiter Swapper preserves your data exactly as provided, treating every value as plain text throughout the transformation. For programmatic imports, database queries, or configuration files where exact formatting matters, a dedicated delimiter conversion avoids the silent data modifications that spreadsheets introduce.</p>
         </div>
       </div>
     </div>

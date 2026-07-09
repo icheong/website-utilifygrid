@@ -45,12 +45,12 @@ const tool = tools.find(t => t.slug === 'epub-to-pdf-formatter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2" >Document to Print-Ready PDF Overview</h2>
+    <h2 class="font-display seo-h2" >How to use the Document to Print-Ready PDF Formatter</h2>
     <p class="seo-p" >
-      This document-to-PDF formatter converts Markdown-formatted text into a clean, print-ready layout entirely within your browser. Built with modern vanilla JavaScript and the browser's native Print API, the tool processes your content locally using standard DOM APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your manuscripts, reports, and sensitive documents.
+      You have a 12-page report written in Markdown and need to send it to a client as a PDF. Instead of opening Word or fighting with Pandoc command-line flags, paste the Markdown into the text area, set a document title, pick a font size, and click Preview. A new window opens with your content already formatted — use Ctrl+P (or Cmd+P) and select Save as PDF.
     </p>
     <p class="seo-p" >
-      The formatter applies a lightweight Markdown parser that converts heading syntax and paragraph breaks into properly structured HTML. A print-specific CSS stylesheet then applies page margins, typography, and page-break rules appropriate for professional printed documents. The browser's native <code class="inline-code">window.print()</code> API handles the actual PDF generation through the operating system's print dialog, producing publication-quality output without requiring desktop software.
+      The formatter converts Markdown headings (# H1, ## H2, ### H3), bold text (**text**), and italic text (*text*) into properly structured HTML, then applies print-optimised CSS with A4 margins (2.5 cm), Georgia serif font, and justified text alignment. A 5,000-word manuscript renders cleanly with correct page breaks — no manual formatting needed.
     </p>
 
     <h3 class="font-display seo-h3-sm" >Real-World Applications and Use Cases</h3>
@@ -69,12 +69,12 @@ const tool = tools.find(t => t.slug === 'epub-to-pdf-formatter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2" >Deep-Dive: Markdown Parsing &amp; Print-Ready Rendering</h2>
+    <h2 class="font-display seo-h2" >How the Document to Print-Ready PDF Formatter works</h2>
     <p class="seo-p" >
-      The formatter employs a minimal, regex-based Markdown parser that transforms plain-text headings and paragraph breaks into semantically correct HTML. The parser operates in a single pass, applying three heading levels (<code class="inline-code"># H1</code>, <code class="inline-code">## H2</code>, <code class="inline-code">### H3</code>), inline bold (<code class="inline-code">**text**</code>) and italic (<code class="inline-code">*text*</code>) formatting, and paragraph detection via blank-line splitting. This approach prioritises speed and predictability over full Markdown specification compliance — tables, code blocks, images, and link syntax are intentionally excluded to keep the tool focused on document-style content.
+      The formatter uses a minimal regex-based Markdown parser that transforms plain-text headings and paragraph breaks into semantically correct HTML. The parser operates in a single pass, applying three heading levels (<code class="inline-code"># H1</code>, <code class="inline-code">## H2</code>, <code class="inline-code">### H3</code>), inline bold (<code class="inline-code">**text**</code>) and italic (<code class="inline-code">*text*</code>) formatting, and paragraph detection via blank-line splitting. This approach prioritises speed and predictability over full Markdown specification compliance — tables, code blocks, images, and link syntax are intentionally excluded to keep the tool focused on document-style content.
     </p>
 
-    <h3 class="font-display seo-h3-sm" >Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm" >Step-by-step conversion process</h3>
     <p class="seo-p-sm" >
       <strong>1. Heading detection:</strong> The parser uses the regex <code class="inline-code">/^### (.+)$/gm</code> (and equivalents for <code class="inline-code">##</code> and <code class="inline-code">#</code>) to identify heading lines. Each match is wrapped in the appropriate HTML heading tag (<code class="inline-code">&lt;h3&gt;</code>, <code class="inline-code">&lt;h2&gt;</code>, <code class="inline-code">&lt;h1&gt;</code>). The order of replacement matters — <code class="inline-code">###</code> is processed before <code class="inline-code">##</code> to prevent partial matching.
     </p>

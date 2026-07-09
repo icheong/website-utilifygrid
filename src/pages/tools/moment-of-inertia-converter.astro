@@ -117,20 +117,20 @@ const tool = tools.find(t => t.slug === 'moment-of-inertia-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Moment of Inertia Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Kg·m², Lb·Ft², and G·cm²</h2>
     <p class="seo-p">
-      This moment of inertia converter computes precise conversions between 9 units — kilogram-meters squared, gram-centimeters squared, kilogram-centimeters squared, slug-feet squared, slug-inches squared, pound-feet squared, pound-inches squared, ounce-inches squared, and ounce-feet squared — entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in mechanical engineering, aerospace, physics education, or rotational dynamics.
+      Your flywheel design specifies I = 0.35 kg·m². Your US supplier quotes in lb·ft². Type 0.35, select kg·m², and see that it equals 8.31 lb·ft², 3,500,000 g·cm², and 120.4 lb·in². The interactive visualisation shows how mass distribution affects the result.
     </p>
     <p class="seo-p">
-      Moment of inertia depends on both the <strong>mass</strong> and <strong>distribution</strong> of that mass relative to the rotation axis — the formula I = Σmr² shows that distance from the axis is squared, making mass distribution far more important than total mass. The interactive visualisation demonstrates this principle: the same mass m at distance 2r contributes four times more to the moment of inertia than at distance r. The converter handles values from microscopic (10⁻⁷ kg·m² for g·cm²) to astronomical (10³⁷ kg·m² for Earth), with dynamic formatting that adapts to each result's magnitude.
+      The converter handles 9 units: kg·m², g·cm², kg·cm², slug·ft², slug·in², lb·ft², lb·in², oz·in², and oz·ft². A physics student measuring a lab disk at 2,500 g·cm² sees it equals 0.00025 kg·m² and 0.00828 lb·ft². An aerospace engineer working with a satellite at 50 kg·m² sees it equals 3.74 slug·ft². The interactive demo shows three equal masses at distances r, 2r, and 3r contributing I, 4I, and 9I.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Why distance matters more than mass for flywheels</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Automotive and powertrain engineering`, `Engineers design flywheels, crankshafts, and drivetrain components with specific moment of inertia values to control rotational energy storage and vibration damping. A typical car flywheel has a moment of inertia of approximately 0.35 kg·m², while a Formula 1 flywheel might be as low as 0.05 kg·m² for faster engine response. Converting between lb·in² (common in US specifications) and kg·m² (common in SI design) is essential when sourcing components internationally.`],
-        [`Aerospace and satellite attitude control`, `Satellites use reaction wheels and control moment gyroscopes with precisely specified moments of inertia to manage orientation in space. A typical reaction wheel might have a moment of inertia of 0.01 kg·m², while the entire satellite might have a body moment of inertia of 50 kg·m². Converting between slug·ft² (legacy aerospace units) and kg·m² (modern SI) ensures compatibility between legacy control systems and modern specifications.`],
-        [`Physics education and laboratory experiments`, `University physics labs measure moment of inertia using rotational apparatus and verify it against calculated values for known shapes. A solid disk: I = ½mr², a thin hoop: I = mr², a solid sphere: I = ⅖mr². Students frequently need to convert between g·cm² (lab apparatus output) and kg·m² (textbook calculations) when comparing experimental results with theoretical predictions.`]
+        ['Flywheels store energy proportional to I', 'A flywheel stores rotational energy as E = 0.5 x I x ω². Doubling the moment of inertia doubles the stored energy. But I depends on mass distribution: a flywheel with mass at the rim has 2x the I of a solid disk of the same mass. This is why flywheels are designed with thick rims: maximum I for minimum mass.'],
+        ['Figure skater pulls arms in to spin faster', 'A skater spinning at 3 rev/s with arms extended (I = 4.0 kg·m²) pulls arms in and I drops to 1.0 kg·m². Angular momentum L = Iω is conserved, so ω increases from 3 to 12 rev/s. The skater spins 4x faster by reducing I to 1/4. This demonstrates the I = mr² relationship: halving the radius quarters the moment of inertia.'],
+        ['Car engine crankshaft must balance I across cylinders', 'A 4-cylinder engine has a crankshaft with I = 0.02 kg·m². Each piston contributes differently depending on its position in the firing order. The crankshaft must be balanced so that the total I is uniform through the rotation cycle. Uneven I causes vibration. Converting between lb·in² (US machining) and kg·m² (SI simulation) ensures the balance is correct.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -141,26 +141,22 @@ const tool = tools.find(t => t.slug === 'moment-of-inertia-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Moment of Inertia Converter Handles Kg·m² and Lb·Ft²</h2>
     <p class="seo-p">
-      All conversions use kilogram-meters squared (kg·m²) as the universal base unit. Each supported unit is defined by a fixed conversion factor relative to one kg·m². To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain kg·m², then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      All conversions pass through kilogram-meters squared (kg·m²). When you enter 0.35 kg·m² (a car flywheel), the tool divides by each target unit's factor: by 0.042140 for lb·ft², by 10^7 for g·cm², by 0.002926 for lb·in². The result: 0.35 kg·m² = 8.31 lb·ft² = 3,500,000 g·cm² = 120.4 lb·in².
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Why g·cm² is 10 million times smaller than kg·m²</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">kgm2</code>, <code class="inline-code">gcm2</code>, <code class="inline-code">lbft2</code>) to its conversion factor relative to kg·m². CGS units use powers of 10: <code class="inline-code">1 g·cm² = 10⁻⁷ kg·m²</code>. Imperial units use exact definitions: <code class="inline-code">1 lb·ft² = 0.042140 kg·m²</code> (derived from <code class="inline-code">1 lb = 0.45359237 kg</code> and <code class="inline-code">1 ft = 0.3048 m</code>).
+      1 g·cm² = (0.001 kg) x (0.01 m)² = 0.001 x 0.0001 = 10^-7 kg·m². The centi prefix (10^-2) is squared for the distance term, and the kilo-to-gram conversion (10^-3) applies to mass. So 1 g·cm² = 10^-7 kg·m², meaning kg·m² is 10 million times larger. This is why lab apparatus outputs in g·cm² look like huge numbers (2,500,000) while the same object in kg·m² is tiny (0.25).
     </p>
+
+    <h3 class="font-display seo-h3-sm">Shape formulas and how mass distribution affects I</h3>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion to kg·m²:</strong> The input value is multiplied by the source unit's factor. For example, converting 100 g·cm² to kg·m²: <code class="inline-code">100 × 10⁻⁷ = 0.00001 kg·m²</code>. Converting 30 lb·in² to kg·m²: <code class="inline-code">30 × 0.002926 ≈ 0.08778 kg·m²</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Target conversion from kg·m²:</strong> The kg·m² value is divided by the target unit's factor. Converting 0.35 kg·m² to lb·ft²: <code class="inline-code">0.35 / 0.042140 ≈ 8.31 lb·ft²</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Shape formulas:</strong> Common geometric shapes have standard moment of inertia formulas. Solid disk: <code class="inline-code">I = ½mr²</code>. Thin hoop: <code class="inline-code">I = mr²</code>. Solid sphere: <code class="inline-code">I = ⅖mr²</code>. Thin rod about centre: <code class="inline-code">I = ¹⁄₁₂ mL²</code>. The shape determines how mass is distributed — a hoop has twice the moment of inertia of a disk of the same mass and radius because all its mass is at the rim.
+      Solid disk: I = 0.5 x m x r². Thin hoop: I = m x r² (twice the disk because all mass is at the rim). Solid sphere: I = 0.4 x m x r². Thin rod about centre: I = (1/12) x m x L². For a 2 kg disk at 0.1 m radius: I = 0.5 x 2 x 0.01 = 0.01 kg·m². For a 2 kg hoop at the same radius: I = 2 x 0.01 = 0.02 kg·m². The hoop has 2x the I of the disk.
     </p>
     <p class="seo-p-none">
-      <strong>Exact conversion factors:</strong> All factors are derived from exact international definitions: <code class="inline-code">1 lb = 0.45359237 kg</code> (exactly), <code class="inline-code">1 ft = 0.3048 m</code> (exactly), <code class="inline-code">1 in = 0.0254 m</code> (exactly), <code class="inline-code">1 slug = 14.59390 kg</code> (derived from <code class="inline-code">1 lbf = 4.448221615 N</code>), and <code class="inline-code">1 oz = 0.028349523125 kg</code> (exactly 1/16 of a pound). These are all exact rational values, so the IEEE 754 approximations provide full double-precision accuracy.
+      The parallel axis theorem (I = I_cm + m x d²) lets you calculate I about any axis if you know I about the centre of mass. For a disk of I_cm = 0.01 kg·m² and mass 2 kg, shifted 0.05 m from centre: I = 0.01 + 2 x 0.0025 = 0.015 kg·m². This is widely used in engineering for compound shapes and assemblies.
     </p>
   </div>
 
@@ -169,32 +165,28 @@ const tool = tools.find(t => t.slug === 'moment-of-inertia-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is moment of inertia?",
-          a: "Moment of inertia (I) measures an object's resistance to changes in its rotational motion. It depends on both the total mass and how that mass is distributed relative to the rotation axis — the formula I = Σmr² shows that distance from the axis is squared, making mass distribution far more important than total mass alone. A hollow cylinder has higher moment of inertia than a solid cylinder of the same mass and radius."
+          q: "How do I convert 0.35 kg·m² to lb·ft²?",
+          a: "Divide by 0.042140: 0.35 / 0.042140 = 8.31 lb·ft². This is a typical car flywheel moment of inertia. For a quick estimate, multiply kg·m² by 23.73 to get lb·ft² (since 1/0.042140 = 23.73). The converter shows all units simultaneously so you can verify the relationships."
         },
         {
-          q: "How is moment of inertia different from mass?",
-          a: "Mass (m) is a scalar that resists linear acceleration (F = ma). Moment of inertia (I) is the rotational analog — it resists angular acceleration (τ = Iα). An object can have the same mass but different moments of inertia depending on how mass is distributed. A figure skater pulling their arms in reduces their moment of inertia and spins faster, conserving angular momentum."
+          q: "What affects moment of inertia more, mass or distance?",
+          a: "Distance, because I depends on r². Doubling the distance from the axis quadruples I. Doubling the mass only doubles I. A 1 kg mass at 2 m radius has I = 4 kg·m². A 4 kg mass at 1 m radius has I = 4 kg·m². Same I, but the 4 kg mass has 4x the weight. This is why flywheels put mass at the rim."
         },
         {
-          q: "What is the unit of moment of inertia?",
-          a: "The SI unit is kg·m² (kilogram-meter squared). In the imperial system, slug·ft² and lb·ft² are also used. In the CGS system, g·cm² is common. All of these can be converted using this tool. The unit is derived from mass × distance², reflecting the formula I = Σmr²."
+          q: "What is the moment of inertia of a solid disk vs a hoop?",
+          a: "Solid disk: I = 0.5 x m x r². Thin hoop: I = m x r². For the same mass and radius, the hoop has twice the moment of inertia because all its mass is at the maximum distance from the axis. A 2 kg disk at 0.1 m: I = 0.01 kg·m². A 2 kg hoop at 0.1 m: I = 0.02 kg·m². The hoop stores twice the rotational energy at the same speed."
         },
         {
-          q: "What are common moment of inertia values?",
-          a: "A tennis ball has approximately 0.000005 kg·m², a bicycle wheel approximately 0.1 kg·m², and a car flywheel approximately 0.35 kg·m². Earth has an enormous moment of inertia of approximately 8 × 10³⁷ kg·m². The wide range — over 40 orders of magnitude — illustrates why this tool supports both microgram-centimeter² and kilogram-meter² units."
+          q: "How does a figure skater spin faster by pulling arms in?",
+          a: "Angular momentum L = Iω is conserved. With arms extended, I = 4.0 kg·m² and ω = 3 rev/s. Pulling arms in reduces I to 1.0 kg·m². Since L is constant, ω must increase to 12 rev/s. The skater spins 4x faster by reducing I to 1/4. This demonstrates the I = mr² relationship."
         },
         {
           q: "What is the parallel axis theorem?",
-          a: "The parallel axis theorem states: <code class='inline-code'>I = I_cm + Md²</code>, where I_cm is the moment of inertia about the centre of mass, M is the total mass, and d is the distance between the two parallel axes. This lets you calculate the moment of inertia about any axis if you know it about the centre of mass. It is widely used in engineering to compute combined moments of inertia for complex assemblies."
+          a: "I = I_cm + m x d², where I_cm is the moment of inertia about the centre of mass, m is total mass, and d is the distance between axes. For a 2 kg disk with I_cm = 0.01 kg·m², shifted 0.05 m: I = 0.01 + 2 x 0.0025 = 0.015 kg·m². This theorem is essential for calculating I of complex assemblies and compound shapes."
         },
         {
-          q: "Why does distance matter more than mass?",
-          a: "Because moment of inertia depends on the square of the distance from the axis (I = mr²), doubling the distance quadruples the moment of inertia, while doubling the mass only doubles it. This is why flywheels are designed with mass concentrated at the rim — it maximises energy storage for a given total mass. The interactive visualisation on this page demonstrates this principle with three equal masses at different distances."
-        },
-        {
-          q: "How do I calculate moment of inertia for a complex shape?",
-          a: "For composite shapes, use the summation principle: I_total = I₁ + I₂ + I₃ + ... for each component. Apply the parallel axis theorem to shift each component's moment of inertia to the common axis. Common formulas: solid disk I = ½mr², thin hoop I = mr², solid sphere I = ⅖mr², thin rod about centre I = ¹⁄₁₂ mL². This tool converts the final result to any desired unit."
+          q: "What is the moment of inertia of Earth?",
+          a: "Earth has I = 8.04 x 10^37 kg·m². It is approximately a solid sphere with mass 5.97 x 10^24 kg and radius 6.371 x 10^6 m. I = 0.4 x m x r² = 0.4 x 5.97e24 x (6.371e6)^2 = 8.04e37 kg·m². Earth's rotation rate changes slightly due to tidal friction, which changes its moment of inertia by about 10^-8 per century."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

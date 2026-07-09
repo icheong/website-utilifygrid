@@ -36,20 +36,20 @@ const tool = tools.find(t => t.slug === 'pdf-organize')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Organize PDF Overview</h2>
+    <h2 class="font-display seo-h2">How to Reorder, Duplicate, and Delete PDF Pages Visually</h2>
     <p class="seo-p">
-      This PDF organize tool gives you a visual drag-and-drop workspace to reorder, duplicate, and delete pages within a PDF document — entirely within your browser. Built with <strong>pdf-lib</strong> (for page manipulation) and <strong>PDF.js</strong> (for thumbnail rendering), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are rearranging chapters in a report, removing unwanted pages from a scan, or duplicating key pages for a presentation, the organize operation is performed client-side with full lossless quality preservation.
+      A quarterly report arrives with the appendix before the executive summary. Drag page 25 (the summary) to position 1. Delete the 3 blank pages from the scan. Duplicate the signature page so it appears in both the contract and the amendment. The thumbnail grid shows every page with drag handles, duplicate buttons, and delete buttons. The undo stack reverts any mistake.
     </p>
     <p class="seo-p">
-      Every page is rendered as a thumbnail card with drag-and-drop reordering, inline duplicate and delete buttons, and an undo stack for reverting changes. The page count updates dynamically as you modify the document. The final download produces a new PDF with pages in your specified order, preserving all original content byte-for-byte.
+      The organize tool renders every page as a thumbnail card. Drag to reorder, click duplicate to copy a page, click delete to remove it. The page count updates as you work. An undo stack stores up to 50 actions. The final download produces a new PDF with pages in your specified order, preserving all original content byte-for-byte.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Fixing documents that arrive in the wrong order</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Report and document restructuring`, `Business teams frequently receive reports where sections are out of order — for example, a quarterly review with the appendix before the executive summary. The drag-and-drop interface lets you visually rearrange pages into the correct sequence without technical knowledge. The undo button provides safety for experimentation, and the page count updates in real time as you work.`],
-        [`Scan cleanup and page removal`, `When scanning physical documents, blank pages, upside-down scans, or duplicate captures are common. The delete button removes unwanted pages instantly, and the duplicate button lets you replicate key pages (e.g., a signature page that needs to appear in multiple sections). The thumbnail preview helps you identify which pages to keep or remove before committing to the download.`],
-        [`Presentation and handout assembly`, `Trainers and presenters assemble custom handouts by combining specific pages from multiple source PDFs. After merging source documents with the PDF merge tool, this organize tool lets you reorder the combined pages into the correct presentation sequence, remove irrelevant pages, and duplicate frequently referenced pages. The visual workspace makes it easy to see the final document flow before downloading.`]
+        ['Scanned reports often have mixed-up pages', 'A 40-page scanned report has pages 15-18 upside down, pages 22-23 are blank, and the table of contents is at the end instead of the beginning. The organize tool lets you delete the blank pages, move the table of contents to position 1, and the undo button lets you experiment without fear. The thumbnail preview shows the current state of every page.'],
+        ['Legal documents need specific page sequences', 'A contract has the signature page on page 30, but it needs to appear after the terms (page 15) and before the exhibits (pages 16-25). Duplicate the signature page, drag the copy to position 16, then delete the original from position 30. The document now flows: terms, signature, exhibits. The undo stack lets you revert if you make a mistake.'],
+        ['Training handouts combine pages from multiple sources', 'After merging 3 PDFs into one, the pages are in source order: Part A (pages 1-10), Part B (pages 11-20), Part C (pages 21-30). You need interleaved order: Part A page 1, Part B page 1, Part C page 1, Part A page 2, and so on. The drag-and-drop interface lets you rearrange the 30 pages into any sequence you need.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -60,26 +60,22 @@ const tool = tools.find(t => t.slug === 'pdf-organize')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Organize Process</h2>
+    <h2 class="font-display seo-h2">How the PDF Organize Tool Rearranges Pages Without Upload</h2>
     <p class="seo-p">
-      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla's PDF renderer) handles page thumbnail rendering by drawing each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual reorganisation by copying page objects from the source document into a new document in the specified order. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+      When you drop a PDF, every page is rendered as a thumbnail card at 30% scale. Each card has a drag handle, a duplicate button, and a delete button. The internal items array tracks the current page order. When you drag a page to a new position, the array is spliced and re-rendered. When you click Download, pdf-lib creates a new PDF with pages in your specified order.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Organize Process</h3>
+    <h3 class="font-display seo-h3-sm">The undo stack and how it protects your work</h3>
     <p class="seo-p-sm">
-      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. The file data is held in browser memory — no network requests are made. Each page is assigned a unique ID and an initial index mapping to the source document.
+      Every action (reorder, duplicate, delete) pushes a snapshot of the items array onto the undo stack. The stack stores up to 50 levels. Clicking Undo restores the previous snapshot and re-renders the grid. This means you can experiment freely: drag pages around, delete some, duplicate others, and undo everything back to the original order if needed.
     </p>
+
+    <h3 class="font-display seo-h3-sm">How duplicate and delete work with the page array</h3>
     <p class="seo-p-sm">
-      <strong>2. Thumbnail generation:</strong> PDF.js renders every page at 30% scale onto temporary Canvas elements, converting them to inline thumbnail cards. Each card displays a numbered badge, a drag handle, and duplicate/delete action buttons. The visual workspace provides instant feedback without uploading anything.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Drag-and-drop reordering:</strong> The page grid uses HTML5 Drag and Drop API. When a page card is dropped onto a new position, the internal items array is spliced and re-ordered. The grid re-renders to reflect the new sequence with updated page numbers. An undo stack (up to 50 levels) records each action for reverting.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Duplicate and delete:</strong> The duplicate button inserts a copy of the page (with a new unique ID) immediately after the current position. The delete button removes the page from the items array. Both operations trigger a history snapshot for undo support. The page count label updates dynamically.
+      Duplicate inserts a copy of the page (with a new unique ID) immediately after the current position. The page count increases by one. Delete removes the page from the items array. The page count decreases by one. Both operations trigger an undo snapshot. The final download iterates through the items array and copies each page from the source document using copyPages().
     </p>
     <p class="seo-p-none">
-      <strong>5. Download execution:</strong> When the user clicks "Download Organized PDF", pdf-lib creates a new empty <code class="inline-code">PDFDocument</code>. For each item in the items array, it copies the corresponding page from the source document using <code class="inline-code">copyPages()</code>, applies any rotation, and adds it to the new document. The merged PDF is serialised to bytes and offered as a download via a Blob URL.
+      The download step creates a new PDFDocument, copies pages in the current array order, and serializes to bytes. Bookmarks and annotations from the source are preserved on each page. The original file is never modified. The organized PDF has the same visual quality as the source because pages are copied byte-for-byte.
     </p>
   </div>
 
@@ -88,32 +84,28 @@ const tool = tools.find(t => t.slug === 'pdf-organize')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "Is my file uploaded to a server?",
-          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device — there is no server upload at any point. This provides complete privacy for confidential documents."
+          q: "Can I undo a page deletion?",
+          "a": "Yes. The undo button restores the last 50 actions. If you deleted a page by mistake, click Undo and it reappears in its original position. The undo stack records every reorder, duplicate, and delete action."
         },
         {
-          q: "Can I undo changes?",
-          a: "Yes. Click the Undo button to revert the last action (reorder, duplicate, or delete). The undo stack stores up to 50 levels of history, so you can undo multiple times to restore earlier states."
+          q: "How many pages can I organize at once?",
+          a: "There is no limit on page count. Very large documents (500+ pages) may slow down thumbnail rendering because PDF.js must draw each page onto a Canvas element. Most devices handle 100-200 pages comfortably. The organize operation itself is fast because it only changes the page order."
         },
         {
-          q: "Does organizing reduce PDF quality?",
-          a: "No. Pages are copied losslessly — text, vectors, images, and bookmarks are preserved byte-for-byte. There is no re-encoding, recompression, or rasterisation. The organized PDF has exactly the same visual quality as the original."
+          q: "Can I duplicate a page and move the copy?",
+          a: "Yes. Click Duplicate to create a copy immediately after the original. Then drag the copy to any position. The copy is independent — editing or deleting it does not affect the original. You can duplicate a page as many times as needed."
         },
         {
-          q: "Can I duplicate the same page multiple times?",
-          a: "Yes. Each click of the Duplicate button creates an independent copy of the page. You can duplicate a page as many times as needed — for example, to include a signature page in multiple sections of a document."
+          q: "Does reordering change the page content?",
+          a: "No. Pages are copied byte-for-byte from the source. The only change is the order in which they appear in the output PDF. Text, images, vector graphics, and fonts are preserved exactly. The output looks identical to the source, just with pages in a different sequence."
         },
         {
-          q: "Is there a limit to how many pages I can organize?",
-          a: "There is no artificial limit. You can organize PDFs with any number of pages. However, very large documents (hundreds of pages) may slow down thumbnail rendering because PDF.js must draw each page onto a Canvas element. Most devices handle 100-200 pages comfortably."
+          q: "What happens to the page numbers?",
+          a: "The output PDF renumbers pages starting from 1. If you move page 25 to position 1, it becomes page 1 in the output. Internal links and bookmarks may break if they reference page numbers that changed. For complex navigation, you may need to edit bookmarks in a dedicated PDF editor."
         },
         {
-          q: "Can I rotate pages while organizing?",
-          a: "The current interface focuses on reordering, duplicating, and deleting pages. Page rotation is applied during the download step if any rotation metadata exists in the source PDF. For dedicated rotation operations, use the separate Rotate PDF tool."
-        },
-        {
-          q: "What happens to bookmarks and annotations?",
-          a: "Bookmarks and annotations from the source PDF are preserved where the source structure allows. However, because the organize operation creates a new PDF document, the bookmark hierarchy may need manual adjustment in a dedicated PDF editor if you require a unified table of contents."
+          q: "Can I organize a scanned PDF?",
+          a: "Yes. Scanned PDFs are regular PDFs with image content. The tool handles them identically: thumbnails render, drag-and-drop works, and the download copies pages byte-for-byte. A 50-page scanned document organizes just as easily as a text-based PDF."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

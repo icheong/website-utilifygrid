@@ -83,41 +83,40 @@ const tool = tools.find(t => t.slug === 'json-diff-patch-comparer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">JSON Diff and Patch Comparer Overview</h2>
-    <p class="seo-p">
-      This JSON diff tool compares two JSON documents side-by-side and highlights every addition, deletion, and modification with distinct colour coding. Paste your original (source) JSON and your modified (target) JSON, click Compare, and instantly visualise the differences. The tool runs entirely in your browser using vanilla JavaScript — no data is uploaded to any server, ensuring sensitive payloads remain private.
-    </p>
-    <p class="seo-p">
-      Three viewing modes are available: Side by Side presents the changes in parallel panels; Unified view renders all changes as a single annotated diff stream with colour-coded lines; JSON Patch view generates a standard RFC 6902 patch document that describes exactly how to transform the source into the target using operations like <code class="inline-code">add</code>, <code class="inline-code">remove</code>, and <code class="inline-code">replace</code>. A stats row displays the total count of each operation type.
-    </p>
-
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <h2 class="font-display seo-h2">How to Use the JSON Diff and Patch Comparer</h2>
+    <p class="seo-p">A backend developer pushes a refactoring commit that changes the structure of a REST API response. The mobile app team reports broken screens after pulling the update. Open this tool, paste the old API response schema into the Original panel, paste the new schema into the Modified panel, and click Compare. The Side by Side view highlights every added field in green, removed field in red, and modified value in yellow. Switch to JSON Patch view to get a standard RFC 6902 patch document that the mobile team can apply to handle both old and new formats during the transition period.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['API schema migration audits', 'A backend developer refactoring a REST API can diff the old and new response schemas to identify every field change before deploying. The JSON Patch output can be used directly in PATCH endpoints to apply changes incrementally, reducing the risk of breaking clients that depend on specific fields.'],
-        ['Configuration file comparison', 'A DevOps engineer troubleshooting a deployment can diff the current and previous versions of a JSON configuration file to pinpoint exactly which values changed. The unified view provides a single scrollable changelog, making it easy to spot unintended modifications.'],
-        ['Database document migration', 'A developer migrating MongoDB documents to a new schema can compare sample documents before and after transformation. The deep recursive diff catches changes at any nesting depth, including nested array reordering and embedded object field additions.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm">
-          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">DevOps troubleshooting config drift</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A DevOps engineer suspects that a production Kubernetes ConfigMap has drifted from the version in Git. Export the current ConfigMap as JSON, paste it alongside the Git version, and click Compare. The Unified view shows every changed value as a scrollable diff stream, making it easy to spot the one environment variable that was manually changed in production without going through the deployment pipeline.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Data migration validation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A data engineer migrates MongoDB documents from one schema to another and needs to verify that the transformation logic is correct. Paste a sample original document and its transformed version, then click Compare. The tool detects nested field additions, removals, and value changes at any depth. The stats row shows the exact count of each operation type, confirming whether the migration script added, removed, or modified the expected fields.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">API contract review</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A product manager reviews two versions of an API contract before approving a breaking change. Paste the current and proposed response schemas, click Compare, and review the JSON Patch output. Each operation in the patch array describes exactly what changes, allowing the team to discuss whether each modification is backward-compatible or requires a version bump.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Testing expected API responses</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A QA engineer validates that an API response matches the expected schema by diffing the actual response against the expected template. Paste both JSON documents, click Compare, and verify that the stats row shows zero differences. If there are unexpected changes, the Unified view pinpoints exactly which fields deviate from the expected structure.</p>
+      </div>
     </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Recursive Diff Algorithm and JSON Patch Generation</h2>
+    <h2 class="font-display seo-h2">How the JSON Diff Engine Works</h2>
     <p class="seo-p">
-      The diff engine performs a recursive deep comparison of the two JSON trees. The algorithm starts by parsing both inputs with <code class="inline-code">JSON.parse()</code>, then traverses the resulting object graphs simultaneously using a depth-first strategy. At each node, it compares types and values using strict equality (<code class="inline-code">===</code>) for primitives and structural equality for objects and arrays.
+      The tool needs to tell you exactly what changed between two JSON documents without you manually comparing them line by line. It does this by building a recursive tree walk of both documents simultaneously, comparing every value at every level of nesting. For each difference found, it generates a structured operation object that describes what happened.
     </p>
-    <h3 class="seo-h3-sm">Change Detection Rules</h3>
+    <h3 class="seo-h3-sm">Comparing Keys and Values at Every Level</h3>
     <p class="seo-p">
-      When comparing two objects, the algorithm computes the union of all keys from both source and target. For each key: if present only in the source, it is recorded as a <code class="inline-code">remove</code> operation; if present only in the target, it is recorded as an <code class="inline-code">add</code> operation; if present in both but with different values, the algorithm recurses into the values or records a <code class="inline-code">replace</code> for primitive mismatches. Arrays are compared element-by-element by index rather than by value identity, which means reordered elements produce remove+add pairs rather than modifications.
+      For each object node, the algorithm collects every key that appears in either the source or the target. A key present only in the source becomes a remove operation. A key present only in the target becomes an add operation. A key present in both but with different values either recurses deeper (if both values are objects) or records a replace operation for primitive mismatches. This means a change to a nested field like <code class="inline-code">data.users[0].address.city</code> is detected and reported with its exact path.
     </p>
-    <h3 class="seo-h3-sm">JSON Pointer Path Construction</h3>
-    <p class="seo-p-none">
-      Each detected change is annotated with its JSON Pointer (RFC 6901) path, built incrementally during the recursive traversal. For example, a change in <code class="inline-code">data.users[0].address.city</code> produces the pointer <code class="inline-code">/data/users/0/address/city</code>. The final patch output is a JSON array of operation objects, each containing the <code class="inline-code">op</code>, <code class="inline-code">path</code>, and (for add/replace) <code class="inline-code">value</code> fields, fully compliant with the RFC 6902 specification.
+    <h3 class="seo-h3-sm">Array Comparison and Index Tracking</h3>
+    <p class="seo-p">
+      Arrays are compared element by element using index positions rather than value identity. If two arrays contain the same elements in a different order, the tool reports removals at the original indices and additions at the new indices rather than claiming the values were modified. This matters because the RFC 6902 JSON Patch format operates on array indices, so the patch output must reflect where elements actually sit in each array. The stats row shows the exact count of each operation type, giving you a quick summary of how much changed between the two documents.
     </p>
   </div>
 
@@ -127,41 +126,41 @@ const tool = tools.find(t => t.slug === 'json-diff-patch-comparer')!;
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">What is RFC 6902?</h3>
+        <h3 itemprop="name" class="seo-faq-q">What is the JSON Patch format used for?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">RFC 6902 is the IETF standard that defines JSON Patch — a JSON document format describing a sequence of operations (add, remove, replace, move, copy, test) to transform one JSON document into another. It is widely used in REST APIs for partial updates via the HTTP PATCH method, allowing clients to send only the changes rather than the entire document.</p>
+          <p itemprop="text" class="seo-faq-a">RFC 6902 JSON Patch is a standard format for describing changes between two JSON documents as a list of operations. Instead of sending an entire 200-line configuration document over HTTP PATCH, a client can send a 3-line patch that says "change this one field." Libraries like fast-json-patch in JavaScript and json-patch in Python can apply these operations to transform the original document into the target.</p>
         </div>
       </div>
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">Does order of array elements matter?</h3>
+        <h3 itemprop="name" class="seo-faq-q">Why does reordering array elements show as add and remove instead of modify?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. Arrays are compared element-by-element by their index position. If elements are reordered, the diff will show deletions at the original indices and additions at the new indices rather than modifications to the elements themselves. This is because JSON Patch operates on array indices as paths, and reordering cannot be expressed as a single replace operation.</p>
+          <p itemprop="text" class="seo-faq-a">JSON Patch identifies array elements by their index position, not by their value. If you move an item from index 0 to index 2, the patch cannot say "move element" because the RFC 6902 move operation only works within a single document. Instead, the tool correctly reports a removal at index 0 and an addition at index 2, which is how any RFC 6902-compliant library would interpret the change.</p>
         </div>
       </div>
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">Can it handle deeply nested changes?</h3>
+        <h3 itemprop="name" class="seo-faq-q">How deeply can it compare nested objects?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. The diff algorithm recursively walks the entire JSON tree to any depth and generates JSON Pointer paths for every change, no matter how deeply nested. A change to a field five levels deep will produce a path like <code class="inline-code">/a/b/0/c/d</code>, making it trivial to locate and apply the exact change.</p>
+          <p itemprop="text" class="seo-faq-a">There is no depth limit. The algorithm recursively walks every level of both JSON trees. A change at path <code class="inline-code">/data/users/0/address/city</code> is detected and reported just as accurately as a change at the root level. The JSON Pointer paths in the patch output make it easy to locate exactly where each change occurred, even in deeply nested structures.</p>
         </div>
       </div>
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">Is the patch output valid for use in production?</h3>
+        <h3 itemprop="name" class="seo-faq-q">Can I use the patch output in production code?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. The generated patch follows RFC 6902 exactly and can be used with any compliant JSON Patch library, such as <code class="inline-code">json-patch</code> in Python, <code class="inline-code">fast-json-patch</code> in JavaScript, or <code class="inline-code">java-json-patch</code> in Java. The output is a plain JSON array of operation objects that can be directly serialised into an HTTP PATCH request body.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. The patch array is valid RFC 6902 JSON and works with any compliant library. In a Node.js API, you can apply it with <code class="inline-code">fast-json-patch.applyPatch()</code>. In Python, use <code class="inline-code">jsonpatch.JsonPatch.from_string()</code>. The output is a plain JSON array that serialises directly into an HTTP PATCH request body with content type application/json-patch+json.</p>
         </div>
       </div>
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">What if the source and target are identical?</h3>
+        <h3 itemprop="name" class="seo-faq-q">What happens when both documents are identical?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">If both JSON documents are structurally and semantically identical, the tool reports "No differences found" in all views. The stats row shows zero for all operation types, and the JSON Patch output is an empty array — confirming that no transformations are needed to reconcile the two documents.</p>
+          <p itemprop="text" class="seo-faq-a">The tool displays "No differences found" in all three views. The stats row shows zero adds, zero removals, and zero modifications. The JSON Patch output is an empty array, which means applying it to the source document produces no changes — confirming the two documents are equivalent.</p>
         </div>
       </div>
 

@@ -65,20 +65,20 @@ const tool = tools.find(t => t.slug === 'pdf-alternate-merge')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Alternate Merge Overview</h2>
+    <h2 class="font-display seo-h2">Combine Front and Back Scans Into Correct Reading Order</h2>
     <p class="seo-p">
-      This PDF alternate merge tool interleaves pages from two PDF documents into a single file — entirely within your browser. Built with <strong>pdf-lib</strong> (for page interleaving) and <strong>PDF.js</strong> (for thumbnail preview), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. The primary use case is combining front/back double-sided scans: when you scan the fronts of all pages into one PDF and the backs into another, this tool merges them into the correct reading order (A1, B1, A2, B2, …).
+      You scanned a 20-page double-sided document with an auto-feed scanner. The fronts went into one PDF (odd pages 1, 3, 5, ... 19) and the backs into another (even pages 2, 4, 6, ... 20). Now you have two files that need to become one document in the right sequence. Drop both PDFs into the alternate merge tool, verify the preview shows A1, B1, A2, B2, ... and click Merge and Download.
     </p>
     <p class="seo-p">
-      The tool supports two merge orders (A-first or B-first) and two length-handling modes (append remaining pages or truncate to the shorter document). A live preview shows the first 10 pages of the interleaved result with color-coded borders (blue for PDF A, green for PDF B) so you can verify the merge pattern before downloading.
+      The tool supports two merge orders (A-first or B-first) and two length-handling modes. When both PDFs have the same page count, the interleaving is straightforward. When they differ -- say PDF A has 15 pages and PDF B has 12 -- you choose whether to append the remaining 3 pages from A or truncate to the shorter document. A live preview of the first 10 pages shows colour-coded borders (blue for A, green for B) so you verify the pattern before downloading.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Common scenarios for alternate merging</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Double-sided scan reassembly`, `The most common use case is combining separately scanned front and back pages. When you scan a 20-page double-sided document with an auto-feed scanner, the scanner produces two separate PDFs: one with odd pages (1, 3, 5, … 19) and one with even pages (2, 4, 6, … 20). This tool interleaves them into the correct order: A1, B1, A2, B2, … A10, B10. The preview lets you confirm the pattern before downloading.`],
-        [`Deck and handout assembly`, `Presenters sometimes create slide decks in two parts — content slides and speaker notes, or main slides and supplementary materials. The alternate merge combines them into a single interleaved document where each content page is followed by its corresponding note or supplement. The B-first order option is useful when the supplementary material should appear before the main content.`],
-        [`Parallel document comparison`, `Legal and research teams use alternate merge to create interleaved comparison documents. By placing the original document in PDF A and the revised version in PDF B, the merged output alternates between original and revised pages, making side-by-side comparison straightforward when printed or viewed in a two-page spread layout.`]
+        ['Double-sided scan reassembly', 'A 30-page contract scanned with a Fujitsu ScanSnap produces two PDFs: one with odd pages (fronts) and one with even pages (backs). The alternate merge combines them into A1, B1, A2, B2, ... A15, B15. The preview shows the first 10 interleaved pages so you confirm the pattern before downloading.'],
+        ['Parallel document comparison', 'An original report (PDF A) and its revision (PDF B) are interleaved into a single document. Each original page is followed by its revised counterpart, making side-by-side comparison straightforward when printed in duplex or viewed in two-page spread mode.'],
+        ['Deck and handout assembly', 'A presentation has content slides (PDF A) and speaker notes (PDF B). The alternate merge interleaves them so each content page is followed by its corresponding notes page. The B-first option places notes before content when the supplementary material should appear first.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -89,26 +89,25 @@ const tool = tools.find(t => t.slug === 'pdf-alternate-merge')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Interleave Algorithm</h2>
+    <h2 class="font-display seo-h2">How the Interleave Algorithm Builds the Merged Page Sequence</h2>
     <p class="seo-p">
-      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla’s PDF renderer) handles thumbnail preview rendering, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual interleaving by copying pages from both source documents in an alternating sequence. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+      The tool loads both PDFs and builds a page index array by alternating between them. For A-first order with a 10-page PDF A and an 8-page PDF B, the algorithm produces: A1, B1, A2, B2, A3, B3, A4, B4, A5, B5, A6, B6, A7, B7, A8, B8, A9, A10. The last two pages from A are appended because B ran out first.
     </p>
 
-    <h3 class="font-display seo-h3-sm">The Interleave Algorithm</h3>
+    <h3 class="font-display seo-h3-sm">Append versus truncate mode</h3>
     <p class="seo-p-sm">
-      The core algorithm builds a page index array by alternating between the two source documents. For the A-first order with append mode, the algorithm iterates up to the maximum page count of either document. At each index <code class="inline-code">i</code>, it adds a page from PDF A (if <code class="inline-code">i &lt; pagesA</code>) followed by a page from PDF B (if <code class="inline-code">i &lt; pagesB</code>). For the truncate mode, it iterates only up to the minimum page count, discarding excess pages from the longer document.
+      In append mode (the default), the algorithm iterates up to the maximum page count of either document. At each index, it adds a page from PDF A (if that index exists in A) followed by a page from PDF B (if that index exists in B). Excess pages from the longer document appear at the end. In truncate mode, the algorithm iterates only up to the minimum page count, discarding excess pages from the longer document entirely.
     </p>
     <p class="seo-p-sm">
-      <strong>1. File ingestion:</strong> Each PDF is loaded via drag-and-drop or file browse. PDF.js parses each document to extract the page count. The raw <code class="inline-code">ArrayBuffer</code> data is stored for later processing. The tool displays the file name and page count for each input.
+      For a concrete example: PDF A has 20 pages, PDF B has 15 pages. In append mode, the output is 35 pages (A1-B1 through A15-B15, then A16-A20). In truncate mode, the output is 30 pages (A1-B1 through A15-B15). The append mode is correct for double-sided scans where the front PDF may have one extra page if the document has an odd total page count.
     </p>
+
+    <h3 class="font-display seo-h3-sm">How the preview works</h3>
     <p class="seo-p-sm">
-      <strong>2. Preview generation:</strong> When both files are loaded, the tool generates a preview of the first 10 interleaved pages. For each page in the index array, PDF.js renders a thumbnail at 20% scale. Blue-bordered thumbnails represent pages from PDF A, green-bordered thumbnails represent pages from PDF B. The source label (A1, B1, etc.) appears below each thumbnail.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Merge execution:</strong> When the user clicks “Merge &amp; Download”, pdf-lib loads both source documents, iterates through the full page index array, copies each page from its source document using <code class="inline-code">copyPages()</code>, and adds it to the merged document. The resulting PDF is serialised to bytes and offered as a download.
+      When both files are loaded, the tool generates thumbnails of the first 10 interleaved pages. For each page in the index array, PDF.js renders a thumbnail at 20% scale. Blue-bordered thumbnails represent pages from PDF A, green-bordered thumbnails represent pages from PDF B. The source label (A1, B1, etc.) appears below each thumbnail. Changing the merge order or length mode updates the preview in real time.
     </p>
     <p class="seo-p-none">
-      <strong>Feature preservation:</strong> Pages are copied byte-for-byte from the source documents, preserving text, images, vectors, bookmarks, and annotations. Embedded fonts are kept without re-encoding. The merge is a pure interleaving operation — it changes the page sequence without modifying any page content.
+      Pages are copied byte-for-byte from the source documents using copyPages(). Text, images, vectors, bookmarks, and annotations transfer without modification. The merge changes only the page sequence -- nothing on any individual page is altered. The output file size is approximately the sum of both input files.
     </p>
   </div>
 
@@ -118,37 +117,37 @@ const tool = tools.find(t => t.slug === 'pdf-alternate-merge')!;
       {[
         {
           q: "What is alternate merge used for?",
-          a: "Alternate merge is ideal for combining front/back double-sided scans. If you scanned the fronts of all pages into one PDF and the backs into another, this tool interleaves them into the correct reading order. It is also useful for assembling parallel documents, combining content with speaker notes, or creating interleaved comparison documents."
+          a: "The most common use is combining front and back scans from a double-sided document. When you scan the fronts into one PDF and the backs into another, alternate merge interleaves them into correct reading order: A1, B1, A2, B2, ... It also works for parallel document comparison, combining content with speaker notes, or any scenario where two page sequences need to be woven together."
         },
         {
           q: "What if the PDFs have different numbers of pages?",
-          a: "You can choose between two modes: 'Append remaining' adds the extra pages from the longer PDF at the end of the merged document. 'Truncate to shorter' cuts both PDFs to the length of the shorter one, discarding excess pages. The append mode is the default and most common choice."
+          a: "In append mode (default), the extra pages from the longer PDF are added at the end. For example, if A has 15 pages and B has 12, the output is A1-B1 through A12-B12, then A13-A15. In truncate mode, both PDFs are cut to the length of the shorter one, so the output is A1-B1 through A12-B12 only."
         },
         {
           q: "Are my files uploaded to a server?",
-          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your files never leave your device — there is no server upload at any point. This provides complete privacy for confidential documents."
+          a: "No. All processing happens in your browser. Your files never leave your device -- there is no server upload. This matters for confidential documents like legal filings or financial statements."
         },
         {
           q: "Does interleaving reduce PDF quality?",
-          a: "No. Pages are copied losslessly from both source documents — text, vectors, images, and bookmarks are preserved byte-for-byte. There is no re-encoding, recompression, or rasterisation. The merged PDF has exactly the same visual quality as the originals."
+          a: "No. Pages are copied byte-for-byte from both source documents -- text, vectors, images, and fonts transfer without re-encoding. The merged PDF has exactly the same visual quality as the originals. The operation changes only the page sequence."
         },
         {
           q: "Can I merge more than two PDFs?",
-          a: "This tool is designed for interleaving exactly two PDFs. To merge more than two PDFs, use the standard PDF Merge tool for sequential concatenation, or use this tool in multiple passes — first merge two files, then merge the result with the third file."
+          a: "This tool is designed for interleaving exactly two PDFs. To merge more than two, use the standard PDF Merge tool for sequential concatenation, or use this tool in multiple passes -- first merge two files, then merge the result with the third."
         },
         {
           q: "What is the difference between A-first and B-first order?",
-          a: "A-first (A, B, A, B, …) places a page from PDF A first, then PDF B, alternating. B-first (B, A, B, A, …) places a page from PDF B first, then PDF A. Choose B-first when the back pages (PDF B) should appear before the front pages in the merged output."
+          a: "A-first (A, B, A, B, ...) places a page from PDF A first, then B, alternating. B-first (B, A, B, A, ...) places B first, then A. Choose B-first when the back pages (PDF B) should appear before the front pages in the merged output."
         },
         {
           q: "Can I preview the result before downloading?",
-          a: "Yes. The tool displays a preview of the first 10 interleaved pages with color-coded borders (blue for PDF A, green for PDF B). The source label (A1, B1, etc.) appears below each thumbnail. The preview updates automatically when you change the merge order or length-handling mode."
+          a: "Yes. The tool shows the first 10 interleaved pages with colour-coded borders (blue for A, green for B). The source label (A1, B1, etc.) appears below each thumbnail. Changing the merge order or length mode updates the preview immediately."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
             <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>

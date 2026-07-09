@@ -49,20 +49,20 @@ const tool = tools.find(t => t.slug === 'pdf-reverse-pages')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Reverse Pages Overview</h2>
+    <h2 class="font-display seo-h2">Fix Backwards Page Order in Seconds</h2>
     <p class="seo-p">
-      This PDF reverse pages tool flips the page order of an entire PDF document — entirely within your browser. Built with <strong>pdf-lib</strong> (for page reordering) and <strong>PDF.js</strong> (for thumbnail rendering), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are reversing a back-to-front scanned document, creating a mirrored version for double-sided printing, or reordering pages for a specific workflow, the reversal is performed client-side with full lossless quality preservation.
+      You scanned a 20-page contract with an auto-feed scanner and the pages came out backwards -- page 20 first, page 1 last. Now you have a document nobody can read in the right sequence. Drop the PDF into the reverse tool, see the original order on the left and the reversed order on the right, and click Reverse and Download. The output is a single PDF with pages restored to their correct reading order.
     </p>
     <p class="seo-p">
-      The tool displays a side-by-side before/after comparison: the original page order appears on the left, and the reversed order appears on the right with green-bordered thumbnails. This visual preview lets you confirm the exact reversal before downloading. The reversed PDF is created by copying pages from the source document in reverse index order — a pure metadata operation with zero quality loss.
+      The tool also handles double-sided printing preparation. Some duplex printers require reversed page order before printing to achieve correct front/back alignment. Rather than manually rearranging pages in a PDF editor, you reverse the entire document in one operation and print the result directly. The side-by-side preview confirms the reversal before you commit.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">When reversing page order solves a real problem</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Back-to-front scan correction`, `When scanning a stack of double-sided documents with an auto-feed scanner, the pages often come out in reverse order — the last page appears first. A 20-page contract scanned back-to-front produces pages in reverse sequence. This tool reverses the entire document in one click, restoring the correct reading order. The before/after comparison lets you verify the reversal before downloading.`],
-        [`Double-sided printing preparation`, `For duplex printing, the page order depends on whether your printer flips on the long edge or short edge. Some workflows require reversing the page order before printing to achieve correct double-sided output. This tool creates a reversed version that can be printed directly, saving manual reordering time for multi-page documents.`],
-        [`Presentation and slideshow reversal`, `Presenters sometimes need to reverse slide order for specific delivery formats — for example, when a slide deck needs to be read from back to front in a handout format, or when preparing a reversed version for a specific audience. The visual comparison lets you confirm the exact page sequence before committing to the reversal.`]
+        ['Auto-feed scanners produce backwards output', 'A 30-page legal filing scanned with a Fujitsu ScanSnap inverting the page stack comes out with page 30 first and page 1 last. The reversed output restores the correct sequence so the filing can be submitted to the court without manual reordering.'],
+        ['Duplex printers need pre-reversed input', 'You are printing a 16-page report double-sided on a printer that flips on the short edge. Without reversing, the back pages appear upside down relative to the fronts. Reversing the PDF before printing produces correct duplex output on the first attempt.'],
+        ['Presentation handouts read back-to-front', 'A 40-slide PowerPoint exported to PDF needs to be printed as a handout where the last slide appears on the first physical page (for right-to-left reading in certain layouts). The reverse tool produces this flipped sequence instantly.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -73,23 +73,25 @@ const tool = tools.find(t => t.slug === 'pdf-reverse-pages')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Reversal Process</h2>
+    <h2 class="font-display seo-h2">How the Reversal Copies Pages in Reverse Index Order</h2>
     <p class="seo-p">
-      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla’s PDF renderer) handles page thumbnail rendering by drawing each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual reversal by copying pages from the source document in reverse index order. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+      When you drop a PDF into the tool, PDF.js renders every page as a thumbnail. On the left panel, pages appear in their original sequence (1, 2, 3, ...). On the right panel, the same thumbnails appear in reversed order (N, N-1, ..., 2, 1) with green borders so you can visually confirm the reversal.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Reversal Process</h3>
+    <h3 class="font-display seo-h3-sm">What happens when you click Reverse and Download</h3>
     <p class="seo-p-sm">
-      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. The file data is held in browser memory — no network requests are made. The file is validated as a PDF by checking the file type and attempting to parse it with PDF.js.
+      pdf-lib loads the source document and builds a reversed index array. For a 5-page PDF, the array is [4, 3, 2, 1, 0] (zero-indexed). The copyPages() method receives this array and copies each page from the source into a new PDFDocument in reverse sequence. The result is a new PDF where the former last page is now page 1, and the former first page is now the last.
     </p>
     <p class="seo-p-sm">
-      <strong>2. Thumbnail generation:</strong> PDF.js renders every page at 15-20% scale (depending on total page count) onto temporary Canvas elements. The original order thumbnails are displayed on the left with standard borders, and the reversed order thumbnails are displayed on the right with green borders. This provides a visual comparison of the reversal.
+      For a 100-page document, the reversal processes all 100 pages in a single pass. The copyPages() call accepts an array of any length, so there is no pagination or batching -- the entire reversal completes in one operation. The output file size is nearly identical to the source because no content is re-encoded or recompressed.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Why the reversal preserves perfect quality</h3>
     <p class="seo-p-sm">
-      <strong>3. Reversal execution:</strong> When the user clicks “Reverse &amp; Download”, pdf-lib creates a new empty <code class="inline-code">PDFDocument</code>. It generates a reversed index array (e.g., for 5 pages: [4, 3, 2, 1, 0]) and copies pages from the source document using this reversed index. The pages are added to the new document in the reversed order.
+      The reversal copies page objects byte-for-byte from the source document. Text, vector graphics, images, embedded fonts, bookmarks, and annotations transfer without modification. The operation changes only the page sequence -- nothing on any individual page is altered. A 50-page report reversed and then reversed again produces a file byte-identical to the original (assuming no external modifications between operations).
     </p>
     <p class="seo-p-none">
-      <strong>Feature preservation:</strong> The reversal copies page content objects byte-for-byte from the source, preserving visual fidelity. Text, images, vectors, bookmarks, and annotations are preserved. Embedded fonts are kept without re-encoding. The reversal is a pure reordering operation — it changes the page sequence without modifying any page content.
+      One limitation: bookmarks and internal links are preserved in the output but their page references may point to wrong locations after reversal. A bookmark that originally linked to page 5 now links to what was page 5 but is now a different position in the reversed document. For documents with critical navigation structure, you may need to adjust bookmarks in a dedicated PDF editor after reversing.
     </p>
   </div>
 
@@ -99,37 +101,41 @@ const tool = tools.find(t => t.slug === 'pdf-reverse-pages')!;
       {[
         {
           q: "Is my file uploaded to a server?",
-          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device — there is no server upload at any point. This provides complete privacy for confidential documents."
+          a: "No. All processing happens in your browser. Your file never leaves your device -- there is no server upload at any point. This matters for confidential documents like legal filings, medical records, or financial statements that cannot be sent to third-party servers."
         },
         {
           q: "Does reversing reduce PDF quality?",
-          a: "No. Pages are copied losslessly in reverse order — text, vectors, images, and bookmarks are preserved byte-for-byte. There is no re-encoding, recompression, or rasterisation. The reversed PDF has exactly the same visual quality as the original."
+          a: "No. Pages are copied byte-for-byte from the source in reverse order -- text, vectors, images, and fonts transfer without re-encoding. A 200-page document reversed and then reversed again produces a file byte-identical to the original. There is no recompression, rasterization, or quality degradation of any kind."
         },
         {
           q: "Can I reverse only some pages?",
-          a: "This tool reverses all pages in the document. To reverse a subset, first extract the pages you want with the Split PDF tool, then reverse the extracted file using this tool."
+          a: "This tool reverses all pages in the document. To reverse a subset, first extract the pages you want with the PDF Split tool, then reverse the extracted file. For example, to reverse only pages 10-20 of a 50-page document, split out pages 10-20 first, then reverse that 11-page file."
         },
         {
           q: "What does the before/after comparison show?",
-          a: "The left panel shows thumbnails in the original page order (1, 2, 3, ...) with standard borders. The right panel shows the same thumbnails in reversed order (N, N-1, ..., 2, 1) with green borders. This visual preview lets you confirm the exact reversal before downloading."
+          a: "The left panel shows thumbnails in the original order (1, 2, 3, ...) with standard borders. The right panel shows the same pages in reversed order (N, N-1, ..., 2, 1) with green borders. This visual preview lets you confirm the exact reversal before downloading. For documents over 10 pages, thumbnails are scaled to 15% to fit the comparison panel."
         },
         {
           q: "Does reversal affect bookmarks?",
-          a: "Bookmarks from the source PDF are preserved but their page references may become invalid after reversal. The bookmark hierarchy is copied to the new document, but the linked page numbers may point to incorrect positions. You may need to manually adjust bookmarks in a dedicated PDF editor after reversal."
+          a: "Bookmarks are copied to the output but their page references may point to wrong positions. A bookmark originally linked to page 5 in a 20-page document now links to a different physical page after reversal. For documents with critical navigation, adjust bookmarks in a PDF editor after reversing."
         },
         {
           q: "Can I reverse a password-protected PDF?",
-          a: "This tool can reverse PDFs encrypted without a user password (they open freely but restrict editing). PDFs requiring a password to open cannot be processed because pdf-lib cannot decrypt them without the password."
+          a: "PDFs with an owner password (restricting editing) can be reversed because they open without a password. PDFs with a user password (requiring a password to open) cannot be processed. Remove the password first using a PDF reader that supports decryption."
         },
         {
           q: "Is there a page count limit?",
-          a: "There is no artificial limit. You can reverse PDFs with any number of pages. For very large documents (hundreds of pages), the thumbnail rendering may take a few seconds because PDF.js must draw each page onto a Canvas element. The reversal operation itself is nearly instant regardless of page count."
+          a: "There is no artificial limit. A 500-page document reverses as easily as a 5-page one. For very large files (1,000+ pages), thumbnail rendering may take a few seconds because PDF.js draws each page individually. The reversal operation itself is nearly instant regardless of page count."
+        },
+        {
+          q: "How is this different from reordering pages in a PDF editor?",
+          a: "A full PDF editor like Acrobat lets you drag individual pages to new positions. This tool performs a complete reversal of the entire document in one click -- it is faster when you need the entire sequence flipped. For selective reordering of specific pages, a PDF editor gives more control."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
             <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>

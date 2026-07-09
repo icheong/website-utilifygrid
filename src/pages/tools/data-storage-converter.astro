@@ -52,20 +52,20 @@ const tool = tools.find(t => t.slug === 'data-storage-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Data Storage Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Bytes, KB, MB, GB, and TB</h2>
     <p class="seo-p">
-      This data storage converter computes precise conversions between 16 data units covering bits, bytes, decimal (SI) prefixes, and binary (IEC) prefixes entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are provisioning cloud storage, comparing hard drive capacities, or analysing network transfer rates.
+      Your laptop has a 512 GB SSD. You want to know how many GiB that actually is. Type 512, select GB, and see that it equals 476.8 GiB. The SSD manufacturer used decimal (SI) where 1 GB = 1,000,000,000 bytes, but your operating system uses binary (IEC) where 1 GiB = 1,073,741,824 bytes. The difference is about 7%, which is why a "512 GB" drive shows as 476.8 GiB in Windows.
     </p>
     <p class="seo-p">
-      The converter supports two distinct prefix systems that are frequently confused: <strong>decimal (SI)</strong> units use powers of 1000 (KB, MB, GB, TB, PB) as used by storage manufacturers, while <strong>binary (IEC)</strong> units use powers of 1024 (KiB, MiB, GiB, TiB, PiB) as used by operating systems. It also includes <strong>bit-level</strong> units (bit, kb, Mb, Gb, Tb) essential for network speed calculations. The critical difference — why a 1 TB hard drive appears as approximately 931 GiB in your operating system — is explained in the deep-dive section below.
+      The converter handles 16 units: bit, kilobit, megabit, gigabit, terabit (for network speeds), byte, KB, MB, GB, TB, PB (decimal/SI), and KiB, MiB, GiB, TiB, PiB (binary/IEC). A network engineer calculating download time for a 4.7 GB DVD image at 50 Mbps gets 37.6 Gb, which takes about 752 seconds (12.5 minutes). The quick-reference row shows real objects: plain text page at 2 KB, MP3 song at 4 MB, HD movie at 4.5 GB, Blu-ray disc at 50 GB.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Why your hard drive appears smaller than advertised</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Cloud storage provisioning and cost estimation`, `Cloud providers like AWS, Azure, and Google Cloud charge based on stored data using decimal (SI) units. A 500 GB AWS S3 bucket holds 500 × 10⁹ bytes, but when accessed from a Linux instance, the OS reports approximately 465 GiB. Understanding this distinction prevents under-provisioning: if your application needs 1 TiB of usable space, you must allocate at least 1.1 TB (SI) from the provider. This tool converts between the two systems instantly, helping you calculate exact storage requirements and avoid unexpected overage charges.`],
-        [`Network speed and file transfer calculations`, `Internet speeds are advertised in megabits per second (Mbps), but file sizes are measured in megabytes (MB). A 100 Mbps connection transfers approximately 12.5 MB per second (100 ÷ 8 = 12.5). Converting a 4.7 GB DVD image to transfer time at 50 Mbps: 4.7 GB = 37.6 Gb, which takes approximately 752 seconds (about 12.5 minutes). This tool helps network engineers and users quickly convert between bit-based speed measurements and byte-based file sizes.`],
-        [`Forensic analysis and data recovery`, `Digital forensics requires precise byte-level calculations when imaging drives, estimating recovery timelines, or reporting evidence sizes. A forensic image of a 256 GB SSD contains exactly 256 × 10⁹ bytes (SI), which is approximately 238.4 GiB. When testifying, investigators must specify which unit system they used. The converter's support for all 16 units ensures accurate cross-referencing between manufacturer specifications, OS reports, and legal documentation.`]
+        ['Manufacturers use decimal, operating systems use binary', 'A 1 TB hard drive stores 1,000,000,000,000 bytes (decimal). Your OS divides by 1,073,741,824 (binary) and reports 931.3 GiB. This is not a defect or missing space. Both numbers describe the same physical storage. The discrepancy compounds at larger scales: 4 TB = 3,637.9 GiB. Cloud providers charge for decimal GB, but your VM reports binary GiB. Always convert before provisioning.'],
+        ['Network speeds use bits, file sizes use bytes', 'Your internet plan is 100 Mbps (megabits per second). To convert to megabytes per second: divide by 8. You get 12.5 MB/s. A 4.7 GB file = 37.6 Gb. At 100 Mbps, the download takes 376 seconds (about 6.3 minutes). If someone advertises "12.5 MB/s" and you think they mean megabits, you would overestimate your speed by 8x.'],
+        ['One DVD, two different numbers', 'A standard DVD holds 4.7 GB (decimal). In binary, that is 4.38 GiB. The disc contains exactly 4,700,000,000 bytes. Your OS divides by 1,073,741,824 and reports 4.38 GiB. The same 4.7 GB equals 37.6 Gb (gigabits) because 1 byte = 8 bits. This converter shows all three values simultaneously so you can verify which unit someone is quoting.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -76,26 +76,25 @@ const tool = tools.find(t => t.slug === 'data-storage-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and the SI vs. IEC Distinction</h2>
+    <h2 class="font-display seo-h2">How the Data Storage Converter Handles Bytes, KB, and GiB</h2>
     <p class="seo-p">
-      The converter employs a hub-and-spoke conversion model using bytes as the universal base unit. Every supported data storage unit is defined by a fixed conversion factor relative to one byte. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain bytes, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      All conversions pass through a single base unit: bytes. When you enter 1 TB, the tool multiplies by 1,000,000,000,000 (10^12) to get bytes, then divides by each target unit's factor. For GiB, it divides by 1,073,741,824 (2^30) and gets 931.3 GiB. For bits, it multiplies by 8 and gets 8,000,000,000,000 bits.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Two prefix systems that cause confusion</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">bit</code>, <code class="inline-code">kb2</code>, <code class="inline-code">gib</code>) to its factor in bytes. Bit-level units divide by 8 (e.g. <code class="inline-code">1 kb = 125 bytes</code>). Decimal byte units use powers of 1000 (e.g. <code class="inline-code">1 MB = 1,000,000 bytes</code>). Binary byte units use powers of 1024 (e.g. <code class="inline-code">1 MiB = 1,048,576 bytes</code>).
+      Decimal (SI) prefixes use powers of 1000: 1 KB = 1,000 bytes, 1 MB = 1,000,000 bytes, 1 GB = 1,000,000,000 bytes. Binary (IEC) prefixes use powers of 1024: 1 KiB = 1,024 bytes, 1 MiB = 1,048,576 bytes, 1 GiB = 1,073,741,824 bytes. Storage manufacturers use decimal because the numbers look bigger. Operating systems use binary because memory is addressed in powers of 2. This is why a 1 TB drive shows as 931.3 GiB.
     </p>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion to bytes:</strong> The input value is multiplied by the source unit's factor to convert to bytes. For example, converting 1 TB to bytes: <code class="inline-code">1 × 1,000,000,000,000 = 10¹² bytes</code>. Converting 1 TiB to bytes: <code class="inline-code">1 × 1,099,511,627,776 = 2⁴⁰ bytes</code>. This intermediate result is an IEEE 754 double-precision floating-point number.
+      The difference compounds at each tier. At KB/KiB, the gap is 2.4%. At MB/MiB, it is 4.9%. At GB/GiB, it is 7.4%. At TB/TiB, it is 9.1%. At PB/PiB, it reaches 11.3%. The ratio at each tier is 1000/1024 = 0.9765625, which compounds as you move up. This is why the gap between a 1 TB drive and its GiB equivalent is larger than the gap between a 1 KB file and its KiB equivalent.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Bits vs bytes for network calculations</h3>
     <p class="seo-p-sm">
-      <strong>3. Target conversion from bytes:</strong> The byte value is divided by the target unit's factor. Converting 10¹² bytes to GiB: <code class="inline-code">10¹² / 1,073,741,824 ≈ 931.3 GiB</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (10¹⁸ or greater) use scientific notation. Values between 10¹⁵ and 10¹⁸ use locale-formatted numbers with 2 decimal places. Values between 1,000 and 10¹⁵ use 2 to 4 decimal places. Values below 1 use 6 to 8 decimal places. This ensures readability across the full range from bits to pebibytes.
+      Network speeds use bits: 100 Mbps = 100 megabits per second. File sizes use bytes: 1 GB = 1,000,000,000 bytes. To convert between them, divide bits by 8 to get bytes. A 100 Mbps connection transfers 12.5 MB/s. A 1 Gbps connection transfers 125 MB/s. The converter handles bit-level units (bit, kb, Mb, Gb, Tb) alongside byte-level units, so you can convert a 4.7 GB DVD image to gigabits (37.6 Gb) and calculate download time at your connection speed.
     </p>
     <p class="seo-p-none">
-      <strong>Exact conversion factors:</strong> All factors are exact by definition: <code class="inline-code">1 KB = 10³ bytes</code>, <code class="inline-code">1 KiB = 2¹⁰ bytes = 1,024 bytes</code>, <code class="inline-code">1 MB = 10⁶ bytes</code>, <code class="inline-code">1 MiB = 2²⁰ bytes = 1,048,576 bytes</code>, and so on. The ratio between SI and IEC units at each tier is approximately 1.024 (e.g. <code class="inline-code">1 GB / 1 GiB = 10⁹ / 2³⁰ ≈ 0.9313</code>). This means a 1 TB drive has approximately 93.1% of the capacity that an IEC-based system would report as 1 TiB.
+      All conversion factors are exact by definition: 1 KB = 10^3 bytes, 1 KiB = 2^10 bytes = 1,024 bytes, 1 MB = 10^6 bytes, 1 MiB = 2^20 bytes = 1,048,576 bytes. The factors are stored as JavaScript numbers, which provide 15-17 significant digits of precision. This is far more precision than any real-world storage measurement, which typically has uncertainty of 1-5% depending on formatting, partitioning, and filesystem overhead.
     </p>
   </div>
 
@@ -104,32 +103,28 @@ const tool = tools.find(t => t.slug === 'data-storage-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "Why does my 1 TB hard drive show as 931 GB?",
-          a: "Manufacturers use decimal (SI) prefixes where 1 TB = 10¹² bytes. Your operating system uses binary (IEC) where 1 GiB = 2³⁰ bytes = 1,073,741,824 bytes. Dividing 10¹² by 1,073,741,824 gives approximately 931.3 GiB. The actual storage capacity is identical — only the labeling convention differs. This discrepancy has caused consumer confusion since the early days of personal computing."
+          q: "Why does my 1 TB hard drive show as 931 GiB?",
+          a: "The drive stores 1,000,000,000,000 bytes (decimal). Your OS divides by 1,073,741,824 (2^30) and reports 931.3 GiB. Both numbers describe the same physical storage. The difference comes from manufacturers using powers of 1000 while operating systems use powers of 1024. This is not a defect or missing space."
         },
         {
-          q: "What is the difference between a bit and a byte?",
-          a: "A bit is the smallest unit of data: a single binary digit (0 or 1). A byte is exactly 8 bits. Network speeds are measured in bits per second (Mbps, Gbps), while file sizes and storage capacities are measured in bytes (KB, MB, GB). To convert between them, divide bits by 8 to get bytes, or multiply bytes by 8 to get bits."
+          q: "How do I convert MB to MiB?",
+          a: "Multiply by 0.95367431640625 (which is 1,000,000 / 1,048,576). So 100 MB = 95.37 MiB. Or divide MB by 1.048576 to get MiB. The difference grows at larger scales: 1 TB = 931.3 GiB, while 1 PB = 931.3 TiB. The ratio is always the same because it compounds at each power of 1024."
         },
         {
-          q: "What is a kibibyte?",
-          a: "A kibibyte (KiB) is a binary unit equal to exactly 1,024 bytes (2¹⁰). It was defined by the International Electrotechnical Commission (IEC) in 1998 to distinguish from the kilobyte (KB), which is exactly 1,000 bytes under the SI system. The IEC also defined mebibyte (MiB), gibibyte (GiB), tebibyte (TiB), and pebibyte (PiB) as binary equivalents of their SI counterparts."
+          q: "What is the difference between Mbps and MBps?",
+          a: "Mbps = megabits per second. MBps = megabytes per second. Since 1 byte = 8 bits, divide Mbps by 8 to get MBps. A 100 Mbps connection = 12.5 MBps. A 1 Gbps connection = 125 MBps. Internet providers advertise in Mbps (the bigger number) while file managers show MBps (the practical transfer rate)."
         },
         {
-          q: "How many bits are in a byte?",
-          a: "There are exactly 8 bits in one byte. This has been the universal standard since the 1960s. A single byte can represent 2⁸ = 256 distinct values (0 to 255), which is sufficient to encode one ASCII character. Early computers used different byte sizes (5, 6, 7, or 9 bits), but 8 bits became the industry standard."
+          q: "How many bytes are in a 4.7 GB DVD?",
+          a: "Exactly 4,700,000,000 bytes (decimal). In binary, that is 4.38 GiB. In bits, it is 37.6 Gb. A 100 Mbps connection takes about 376 seconds (6.3 minutes) to download. At 1 Gbps, it takes 37.6 seconds. The quick-reference below the results shows this conversion along with other common file sizes."
         },
         {
-          q: "How much storage does a 2-hour movie need?",
-          a: "A compressed 1080p movie typically requires 2 to 5 GB (decimal). A 4K movie requires 15 to 50 GB. A Blu-ray disc holds 25 to 50 GB. The exact size depends on the video codec (H.264, H.265/HEVC, AV1), bitrate, resolution, audio format, and any bonus features included on the disc."
+          q: "Is a petabyte a lot of storage?",
+          a: "A petabyte (PB) = 1,000,000,000,000,000 bytes = 1,000 TB. That is about 13.3 years of HD video, or 250 million pages of text, or 500 billion pages of plain text. A typical consumer might use 1-2 TB per year. Data centres handle petabytes routinely. Google processes about 40,000 PB of searches per year."
         },
         {
-          q: "Why do network speeds use bits but file sizes use bytes?",
-          a: "This is a historical convention from telecommunications. Early modems transmitted data one bit at a time over serial lines, so speeds were naturally measured in bits per second. File systems, however, group bits into bytes for efficient storage and addressing. The convention persists today: a 1 Gbps Ethernet connection transfers approximately 125 MB per second."
-        },
-        {
-          q: "What is the difference between KB and KiB in practice?",
-          a: "1 KB = 1,000 bytes (decimal/SI) while 1 KiB = 1,024 bytes (binary/IEC). The difference is small at the kilobyte level (2.4%) but compounds at larger scales: 1 MB vs 1 MiB differs by about 4.9%, and 1 GB vs 1 GiB differs by about 7.4%. At the terabyte level, the difference is approximately 10%, which is why a 1 TB drive shows as roughly 931 GiB."
+          q: "Why do SSDs use decimal while RAM uses binary?",
+          a: "SSDs and hard drives are marketed using decimal (SI) because the numbers look larger. RAM is addressed in powers of 2 because memory controllers work with binary addressing. A 16 GB RAM stick actually has 16 x 1,073,741,824 = 17,179,869,184 bytes. But it is sold as '16 GB' because that is the standard marketing convention."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

@@ -193,12 +193,12 @@ const tool = tools.find(t => t.slug === 'pdf-enhance')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Enhance PDF — Overview</h2>
+    <h2 class="font-display seo-h2">How to use the Enhance PDF tool</h2>
     <p class="seo-p">
-      This tool adds watermarks, headers and footers with page numbering, Bates stamps, and crop margins to any PDF document — entirely in your browser. It combines PDF.js for high-fidelity canvas rendering with pdf-lib for lossless PDF manipulation, so no file ever leaves your device. Whether you need to brand confidential documents with a diagonal watermark, add page numbers to a legal brief, apply sequential Bates numbering for e-discovery, or trim excess margins before printing, the entire workflow runs client-side with zero server uploads and zero latency.
+      A 40-page legal brief needs a "CONFIDENTIAL" watermark on every page, page numbers in the footer, and 72pt margins trimmed before filing. Drop the PDF into the tool, click the Watermark tab, type CONFIDENTIAL, set the rotation to -45 degrees and opacity to 30%, and click Place on Page. Switch to Header and Footer, enter the document title in the header-left field, type {"{{page}}"} in the footer-center, and click Place on Page. Switch to Crop, enter 72 for all four edges, and click Save PDF. The enhanced document downloads in about 5 seconds for a 40-page file.
     </p>
     <p class="seo-p">
-      Every placed element — text watermarks, image overlays, header rows, footer rows, and Bates stamps — is rendered on an interactive SVG layer that sits directly over the PDF canvas. You can drag elements to reposition them, drag corner handles to scale them, and use Undo/Redo to step through your edit history. The crop tool provides preset margins for standard paper sizes (Letter, A4) or lets you enter exact point values for each edge, with a live dim-overlay preview of the cropped region.
+      Every placed element is draggable and resizable. The Undo and Redo buttons step through your edit history, so experimentation is safe. Bates numbering follows the same workflow — enter a prefix like CASE-, set the starting number and digit count, and click Place on Page to stamp every page with a sequential identifier like CASE-000001.
     </p>
 
     <h3 class="font-display seo-h3-sm">Real-World Applications &amp; Use Cases</h3>
@@ -219,24 +219,24 @@ const tool = tools.find(t => t.slug === 'pdf-enhance')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: PDF Enhancement Pipeline</h2>
+    <h2 class="font-display seo-h2">How the Enhance PDF tool works</h2>
 
-    <h3 class="font-display seo-h3-sm">PDF Rendering via PDF.js</h3>
+    <h3 class="font-display seo-h3-sm">PDF rendering via PDF.js</h3>
     <p class="seo-p">
       When a user drops or selects a PDF file, the raw bytes are read into an <code class="inline-code">ArrayBuffer</code> and passed to PDF.js (<code class="inline-code">pdfjsLib.getDocument</code>). PDF.js parses the PDF object tree, resolves font dictionaries, image XObjects, and content streams, then rasterizes the selected page to an HTML5 canvas at a calculated scale factor. The scale is derived from the container width divided by the unscaled viewport width, capped at 2x to prevent pixel overflow on high-DPI displays. The canvas dimensions and the SVG overlay's <code class="inline-code">viewBox</code> are synchronised to match the viewport size, ensuring pixel-accurate element placement.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Interactive SVG Overlay</h3>
+    <h3 class="font-display seo-h3-sm">Interactive SVG overlay</h3>
     <p class="seo-p">
       Placed elements — watermarks, headers, footers, and Bates stamps — are not drawn onto the canvas directly. Instead, each element is rendered as SVG primitives (<code class="inline-code">&lt;text&gt;</code>, <code class="inline-code">&lt;image&gt;</code>, <code class="inline-code">&lt;rect&gt;</code>) on an absolutely-positioned SVG layer that overlays the canvas. This separation preserves the original PDF rendering while enabling interactive drag-and-resize. The SVG uses a coordinate system that maps PDF points to viewport pixels via the formula <code class="inline-code">vpX = pdfX * (vpW / pdfPageW)</code>, with the Y-axis inverted because PDF coordinates originate at the bottom-left while SVG coordinates originate at the top-left.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Baking Elements into PDF via pdf-lib</h3>
+    <h3 class="font-display seo-h3-sm">Baking elements into PDF via pdf-lib</h3>
     <p class="seo-p">
       On "Save PDF", the tool loads the original PDF bytes into pdf-lib (<code class="inline-code">PDFDocument.load</code>), embeds a Helvetica font (<code class="inline-code">StandardFonts.Helvetica</code>), and iterates over every page's element array. For each element, pdf-lib's <code class="inline-code">page.drawText</code> or <code class="inline-code">page.drawImage</code> is called with the element's coordinates, size, colour (converted from hex to RGB via <code class="inline-code">parseColor</code>), opacity, and rotation. Text placeholders like <code class="inline-code">{'{{page}}'}</code> and <code class="inline-code">{'{{total}}'}</code> are resolved at bake time using <code class="inline-code">replacePlaceholders</code>, so each page receives its correct page number. The modified document is serialised via <code class="inline-code">libDoc.save()</code> and downloaded as a new PDF blob.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Crop Margin Calculation</h3>
+    <h3 class="font-display seo-h3-sm">Crop margin calculation</h3>
     <p class="seo-p">
       The crop feature modifies each page's MediaBox and CropBox — the PDF standard's rectangle descriptors that define visible and printable areas. When the user specifies left, right, top, and bottom margins in points (1 pt = 1/72 inch), the tool calculates the new origin and dimensions: <code class="inline-code">newX = szX + cropL</code>, <code class="inline-code">newY = szY + cropB</code>, <code class="inline-code">newW = width - cropL - cropR</code>, <code class="inline-code">newH = height - cropT - cropB</code>. The crop can be applied to all pages, only even/odd pages, or the current page, and the dim-overlay preview updates in real time as values change.
     </p>

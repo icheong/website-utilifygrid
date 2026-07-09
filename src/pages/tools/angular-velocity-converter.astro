@@ -75,20 +75,20 @@ const tool = tools.find(t => t.slug === 'angular-velocity-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Angular Velocity Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between RPM, Rad/s, and Hz</h2>
     <p class="seo-p">
-      This angular velocity converter computes precise conversions between 8 rotational speed units — radians per second, degrees per second, revolutions per minute, revolutions per second, hertz, degrees per minute, degrees per hour, and arcseconds per second — entirely within your browser. Built with modern vanilla JavaScript and SVG animation APIs, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in mechanical engineering, physics, astronomy, or signal processing.
+      A motor spec sheet says 3,600 RPM. Your physics formula needs rad/s. Type 3600, select RPM, and see that it equals 376.99 rad/s, 60 Hz, and 21,600 degrees per second. The live rotating diagram speeds up or slows down to match your input, giving you visual confirmation that the number makes sense.
     </p>
     <p class="seo-p">
-      The converter features a live rotating SVG diagram that visually demonstrates the entered angular velocity, providing immediate intuitive feedback on the speed being converted. The tool handles the full range from extremely slow astronomical rotations (arcseconds per hour) to extremely fast centrifuge speeds (50,000+ RPM), with dynamic formatting that adapts to the magnitude of each result. The quick-reference section provides real-world benchmarks from clock hands to jet turbines for context.
+      The converter handles 8 units: rad/s, degrees/s, RPM, rev/s, Hz, degrees/min, degrees/hr, and arcsec/s. An astronomy student calculating Earth's rotation rate enters 15 degrees/hr and sees it equals 0.004167 deg/s, 7.27e-5 rad/s, or 0.000417 RPM. A vibration engineer measuring 120 Hz on a motor sees it equals 7,200 RPM and 753.98 rad/s. The quick-reference row shows clock hands, vinyl records, washing machines, and jet turbines for context.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Why the wrong unit gives wrong answers in formulas</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Mechanical engineering and motor specification`, `Engineers specifying motors, gearboxes, and rotating machinery must convert between RPM (the standard motor rating), rad/s (used in torque and power calculations), and Hz (used in vibration analysis). A motor rated at 3,600 RPM operates at 60 Hz and 377 rad/s. When calculating angular momentum (L = Iω), the angular velocity must be in rad/s — using RPM directly produces incorrect results. This tool provides instant conversion between all commonly used units.`],
-        [`Astronomical observation and telescope tracking`, `Astronomers measure celestial object rotations and telescope tracking rates in arcseconds per second or degrees per hour. Earth rotates at approximately 15°/hr (360° in 24 hours), which equals 0.004167°/s or 7.27 × 10⁻⁵ rad/s. Telescope mounts must track at precisely this rate to compensate for Earth's rotation. Converting between arcsec/s (observation) and rad/s (mount motor control) is essential for accurate celestial tracking.`],
-        [`Physics education and rotational dynamics`, `Students learning rotational mechanics need to convert between angular velocity units to apply formulas correctly. The relationship v = rω (linear velocity equals radius times angular velocity) requires ω in rad/s. A flywheel spinning at 600 RPM has an angular velocity of 62.83 rad/s. Converting to Hz gives 10 Hz, meaning it completes 10 full revolutions per second. The live rotating diagram helps students visualise these relationships.`]
+        ['Angular momentum requires rad/s', 'The formula L = Iω (angular momentum = moment of inertia x angular velocity) only works when ω is in rad/s. A flywheel with I = 2 kg*m² spinning at 600 RPM does NOT have L = 2 x 600 = 1200. You must convert first: 600 RPM = 62.83 rad/s. Then L = 2 x 62.83 = 125.66 kg*m²/s. Using RPM directly gives an answer that is 9.55x too large.'],
+        ['Vibration analysis uses Hz, not RPM', 'A motor vibrates at 120 Hz. To convert to RPM: multiply by 60 = 7,200 RPM. To convert to rad/s: multiply by 2π = 753.98 rad/s. If you use 120 in a formula that expects rad/s, you are off by a factor of 6.28. If you use 7,200 in a formula that expects Hz, you are off by a factor of 60.'],
+        ['Telescope tracking needs arcsec/s precision', 'Earth rotates at 15 degrees per hour. In arcsec/s: 15 x 3600 / 3600 = 15 arcsec/s. A telescope mount must track at exactly this rate. If you program the mount motor using degrees/hr (15) instead of arcsec/s (15), the units are numerically equal but the conversion factor is wrong if you mix them. The converter eliminates this ambiguity.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -99,26 +99,22 @@ const tool = tools.find(t => t.slug === 'angular-velocity-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Angular Velocity Converter Handles RPM, Rad/s, and Hz</h2>
     <p class="seo-p">
-      All conversions use radians per second (rad/s) as the universal base unit. Each supported angular velocity unit is defined by a fixed conversion factor relative to one rad/s. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain rad/s, then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      All conversions pass through radians per second (rad/s). When you enter 60 RPM, the tool multiplies by (2π)/60 = π/30 = 0.10472 to get 6.2832 rad/s. Then it divides by each target unit's factor: by 1 for rad/s, by π/180 for degrees/s, by 2π for Hz, by 1/60 for rev/s. The result: 60 RPM = 6.2832 rad/s = 360 deg/s = 1 Hz = 1 rev/s.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Conversion factors derived from one revolution = 2π radians</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">rads</code>, <code class="inline-code">rpm</code>, <code class="inline-code">hz</code>) to its conversion factor relative to rad/s. The radian is the natural angular unit, so its factor is exactly 1. Degree-based units use <code class="inline-code">π/180</code> per degree. Revolution-based units use <code class="inline-code">2π</code> per revolution.
+      The fundamental relationship is: 1 revolution = 2π radians = 360 degrees = 1 Hz (if per second). From this: rad/s to RPM multiply by 60/(2π) = 9.5493. RPM to Hz divide by 60. Degrees/s to rad/s multiply by π/180 = 0.01745. Arcsec/s to rad/s multiply by π/648,000 = 4.8481e-6. All factors are irrational (involving π), so they are stored as IEEE 754 double-precision approximations with 15-17 significant digits.
     </p>
+
+    <h3 class="font-display seo-h3-sm">The live SVG animation and its timing</h3>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion to rad/s:</strong> The input value is multiplied by the source unit's factor. For example, converting 60 RPM to rad/s: <code class="inline-code">60 × (2π/60) = 2π ≈ 6.2832 rad/s</code>. Converting 360°/s: <code class="inline-code">360 × (π/180) = 2π ≈ 6.2832 rad/s</code>. The key relationship is that 1 revolution = 2π radians = 360° = 1 Hz × 2π.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Target conversion from rad/s:</strong> The rad/s value is divided by the target unit's factor. Converting 2π rad/s to Hz: <code class="inline-code">2π / (2π) = 1 Hz</code>. Converting to arcsec/s: <code class="inline-code">2π / (π/648000) = 1,296,000 arcsec/s</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Live SVG animation:</strong> The rotating diagram uses <code class="inline-code">requestAnimationFrame</code> to update the arm position at the display refresh rate. The angular increment per frame is calculated as <code class="inline-code">ω × dt</code>, where <code class="inline-code">dt</code> is the time delta between frames in seconds. The arm length is 75 SVG units from the centre, and the arc path is computed using standard parametric circle equations.
+      The rotating arm uses requestAnimationFrame to update at 60 fps. Each frame calculates the time delta dt in seconds, then adds ω × dt to the current angle. The arm tip coordinates are computed using standard parametric circle equations: x = cx + r × sin(θ), y = cy - r × cos(θ). The animation speed is capped at 200 rad/s to prevent the arm from spinning too fast to see. The arc path shows the swept angle as a blue curve.
     </p>
     <p class="seo-p-none">
-      <strong>Exact conversion factors:</strong> All factors are derived from exact mathematical definitions: <code class="inline-code">1 revolution = 2π radians = 360°</code>. The radian factor is exactly 1. The degree factor is exactly <code class="inline-code">π/180</code>. The RPM factor is exactly <code class="inline-code">2π/60 = π/30</code>. The Hz factor is exactly <code class="inline-code">2π</code>. The arcsecond factor is exactly <code class="inline-code">π/648000</code> (since 1 arcsecond = 1/3600 of a degree, and 1 degree = π/180 radians). These are irrational values (involving π), so the JavaScript factors are IEEE 754 double-precision approximations providing approximately 15 to 17 significant decimal digits of precision.
+      The converter handles the full range from arcsec/s (for astronomical tracking) to 50,000+ RPM (for centrifuges). Very small values use scientific notation (e.g., 7.27e-5 rad/s for Earth's rotation). Very large values use locale-formatted numbers. The dynamic formatting ensures readability whether you are working with clock hands (0.0001454 rad/s) or jet turbines (4,188.79 rad/s).
     </p>
   </div>
 
@@ -127,32 +123,28 @@ const tool = tools.find(t => t.slug === 'angular-velocity-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is angular velocity?",
-          a: "Angular velocity is the rate of change of angular position — how fast something rotates around an axis. It is measured as the angle swept per unit time. Common units include radians per second (rad/s) for physics calculations, revolutions per minute (RPM) for motor ratings, and hertz (Hz) for frequency of rotation. Angular velocity is a vector quantity; its magnitude is the angular speed, and its direction follows the right-hand rule."
+          q: "How do I convert 3000 RPM to rad/s?",
+          a: "Multiply by π/30: 3000 x π/30 = 314.16 rad/s. Or divide by 9.5493: 3000 / 9.5493 = 314.16 rad/s. In Hz: 3000 / 60 = 50 Hz. This is a typical car engine speed. At 50 Hz, the engine completes 50 full revolutions per second, with each cylinder firing every other revolution."
         },
         {
-          q: "What is the difference between RPM and Hz?",
-          a: "RPM (revolutions per minute) counts full rotations per minute. Hz (hertz) counts full rotations per second. The conversion is straightforward: 1 Hz = 60 RPM, so divide RPM by 60 to get Hz. A washing machine spin cycle at 1200 RPM equals 20 Hz. A 60 Hz AC power supply rotates at 3600 RPM. In physics formulas, always convert to rad/s first."
+          q: "What is the angular velocity of a clock's second hand?",
+          a: "The second hand completes one revolution (2π radians) in 60 seconds. So its angular velocity is 2π/60 = 0.1047 rad/s = 1 RPM = 0.0167 Hz. The minute hand is 60x slower: 0.001745 rad/s = 1/60 RPM. The hour hand is 12x slower than the minute hand: 0.0001454 rad/s = 1/720 RPM."
         },
         {
-          q: "How many radians are in a revolution?",
-          a: "One full revolution equals exactly 2π radians (approximately 6.28319 rad). This is because the circumference of a circle is 2πr, and the angle swept when traveling the full circumference divided by the radius equals 2π. This relationship is the foundation of radian measure and is used in virtually all rotational physics formulas."
+          q: "Why must physics formulas use rad/s instead of RPM?",
+          a: "Radian is a dimensionless ratio (arc length / radius). This makes rad/s compatible with formulas like torque (τ = Iα), angular momentum (L = Iω), and power (P = τω). If you use RPM directly, you get wrong answers. For example: P = τ × ω. If τ = 10 N*m and ω = 100 RPM, you cannot just multiply. Convert first: 100 RPM = 10.47 rad/s. Then P = 10 x 10.47 = 104.7 W."
         },
         {
-          q: "What is a radian?",
-          a: "A radian is the angle subtended at the centre of a circle by an arc whose length equals the radius. One full circle equals 2π radians. Radians are dimensionless (the radius cancels out) and are the standard angular unit in mathematics and physics because they simplify derivatives and integrals of trigonometric functions. For example, d/dx sin(x) = cos(x) only when x is in radians."
+          q: "What is the relationship between Hz and RPM?",
+          a: "1 Hz = 60 RPM. So divide RPM by 60 to get Hz. A 60 Hz motor spins at 3600 RPM. A 50 Hz motor spins at 3000 RPM. A washing machine at 1200 RPM = 20 Hz. A centrifuge at 50,000 RPM = 833.3 Hz. In the US, mains electricity is 60 Hz = 3600 RPM. In Europe, it is 50 Hz = 3000 RPM."
         },
         {
-          q: "What is the angular velocity of a clock's hour hand?",
-          a: "The hour hand completes one full revolution (2π radians) in 12 hours = 43,200 seconds. Its angular velocity is 2π/43200 ≈ 0.0001454 rad/s, or about 0.00833 RPM. The minute hand is 12× faster at approximately 0.1 RPM (0.01745 rad/s). The second hand rotates at exactly 1 RPM (0.1047 rad/s)."
+          q: "How do I calculate linear velocity from angular velocity?",
+          a: "Use v = rω, where ω is in rad/s. A point on the rim of a 0.5 m radius disk spinning at 600 RPM has: ω = 62.83 rad/s, v = 0.5 x 62.83 = 31.42 m/s = 113 km/h. For a car wheel with 0.35 m radius at 60 km/h: v = 16.67 m/s, so ω = v/r = 16.67 / 0.35 = 47.62 rad/s = 454.8 RPM."
         },
         {
-          q: "Why is rad/s preferred over RPM in physics?",
-          a: "The radian is a dimensionless unit that directly relates arc length to radius (s = rθ). This makes rad/s the natural unit for rotational kinematics and dynamics. Formulas like torque (τ = Iα), angular momentum (L = Iω), and rotational kinetic energy (KE = ½Iω²) all require ω in rad/s. Using RPM in these formulas produces incorrect results and requires additional conversion factors."
-        },
-        {
-          q: "What is the relationship between angular velocity and linear velocity?",
-          a: "Linear velocity equals radius times angular velocity: v = rω, where ω must be in rad/s. For a point on the rim of a disk with radius 0.5 m spinning at 600 RPM (62.83 rad/s), the linear velocity is 0.5 × 62.83 = 31.42 m/s (approximately 113 km/h). This relationship connects rotational and translational motion and is fundamental in mechanical engineering."
+          q: "What is Earth's rotation rate in different units?",
+          a: "Earth rotates 360 degrees in 24 hours = 15 deg/hr = 0.004167 deg/s = 7.27e-5 rad/s = 0.000417 RPM = 1.157e-5 Hz. In arcsec/s: 15 arcsec/s (since 15 deg/hr = 15 x 3600 arcsec / 3600 sec = 15 arcsec/s). Telescope mounts must track at exactly this rate to compensate for Earth's rotation."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

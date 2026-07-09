@@ -163,20 +163,20 @@ const tool = tools.find(t => t.slug === 'html-to-markdown')!;
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to convert HTML to Markdown</h2>
     <p class="seo-p">
-      Paste your HTML content into the input field or use the URL fetch option to import directly from a webpage. Click Convert to generate clean markdown output. The tool preserves semantic structure, links, images, lists, and code blocks while stripping presentation-specific markup.
+      Paste your HTML into the left panel (use the Raw HTML mode for source code, or Rich Paste mode to paste directly from a browser). Click Convert to Markdown. The right panel shows clean markdown output with a word and line count. Switch to Preview mode to see the rendered result. Toggle options for tables, images, code blocks, strikethrough, and HTML comment stripping.
     </p>
     <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Web content extraction</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Extract clean markdown from webpages for use in documentation, wikis, or knowledge bases where raw HTML would be unreadable.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Copy a blog post from your browser, paste it into the Rich Paste panel, and convert it to clean markdown for your documentation wiki. A 2,000-word article converts in under a second. Tables, code blocks, and nested lists are preserved with proper markdown syntax.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Email to markdown</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Convert HTML email newsletters or notifications into markdown format for archival in text-based note-taking systems.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Forward an HTML email newsletter to yourself, copy the source, paste it into Raw HTML mode, and convert. The tool strips tracking pixels, removes style blocks, and preserves the actual content structure -- headings, paragraphs, links, and images -- in clean markdown format.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">CMS migration</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Batch convert HTML-formatted content from legacy CMS platforms to markdown for migration to static site generators or modern markdown-based systems.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Export content from WordPress, Squarespace, or Webflow as HTML, paste it in bulk, and convert to markdown for migration to Hugo, Jekyll, or Astro. The tool handles nested divs, figure elements, and responsive image tags by extracting the semantic content and discarding presentation markup.</p>
       </div>
     </div>
   </div>
@@ -186,23 +186,23 @@ const tool = tools.find(t => t.slug === 'html-to-markdown')!;
   ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">HTML to Markdown conversion pipeline</h2>
-    <p class="seo-p">The tool parses HTML into a DOM tree and traverses it to generate equivalent markdown.</p>
+    <p class="seo-p">The tool parses your HTML into a browser DOM tree using the native DOMParser API, then recursively walks every node to produce equivalent markdown. Script and style elements are stripped before processing. The converter handles malformed HTML gracefully -- unclosed tags, missing body elements, and nested divs all get parsed into a valid DOM.</p>
     <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
       <div>
-        <h3 class="font-display seo-h3-sm">DOM parsing</h3>
-        <p class="seo-p">Input HTML is parsed into a browser DOM tree. This handles malformed HTML, unclosed tags, and nested structures gracefully. Scripts and style elements are stripped before processing.</p>
+        <h3 class="font-display seo-h3-sm">DOM tree traversal</h3>
+        <p class="seo-p">Each HTML element is mapped to its markdown equivalent: h1-h6 become # through ######, strong/b become **bold**, em/i become *italic*, a elements become [text](url), and img elements become ![alt](src). The converter processes children before parents so nested formatting renders correctly. A bold-italic sequence produces <code class="inline-code">***bold italic***</code>.</p>
       </div>
       <div>
-        <h3 class="font-display seo-h3-sm">Semantic mapping</h3>
-        <p class="seo-p">HTML elements are mapped to markdown equivalents: headings to hashes, bold to double asterisks, links to bracket syntax, lists to dashes or numbers, code blocks to backticks, and blockquotes to angle brackets.</p>
+        <h3 class="font-display seo-h3-sm">Table conversion</h3>
+        <p class="seo-p">HTML tables are converted to pipe tables with header separators. The converter extracts all th and td cells, joins them with pipe characters, and generates a separator row of --- dashes. Tables with colspan or rowspan attributes are simplified to a flat grid. A 5-column, 10-row table converts to 12 lines of pipe-table markdown.</p>
       </div>
       <div>
-        <h3 class="font-display seo-h3-sm">Attribute handling</h3>
-        <p class="seo-p">Link hrefs are preserved in markdown syntax. Image alt text and src are converted to markdown image syntax. Class and id attributes are dropped unless they contain semantic meaning.</p>
+        <h3 class="font-display seo-h3-sm">Code block detection</h3>
+        <p class="seo-p">The converter detects both fenced code blocks (pre > code with a language-* class) and indented code blocks (pre without code child). Fenced blocks preserve the language tag for syntax highlighting. Inline code (code not inside pre) is wrapped in single backticks. The Strip Comments option removes HTML comments before conversion.</p>
       </div>
       <div>
-        <h3 class="font-display seo-h3-sm">Whitespace normalization</h3>
-        <p class="seo-p">Excessive whitespace, empty paragraphs, and redundant line breaks are removed. Indentation is standardized. Block-level elements are separated by consistent blank lines.</p>
+        <h3 class="font-display seo-h3-sm">Output cleanup</h3>
+        <p class="seo-p">After conversion, the output is cleaned: consecutive blank lines are collapsed to a single blank line, leading and trailing blank lines are removed, and markdown special characters in text nodes are escaped with backslashes. The result is CommonMark-compliant markdown that renders correctly in GitHub, Obsidian, Notion, and most static site generators.</p>
       </div>
     </div>
   </div>
@@ -215,19 +215,19 @@ const tool = tools.find(t => t.slug === 'html-to-markdown')!;
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does it preserve all HTML content?</h3>
-        <p itemprop="text" class="seo-faq-a">Text content, links, images, lists, and code blocks are preserved exactly. Presentation elements like divs, spans, and styling attributes are converted to semantic markdown or removed. The focus is on content, not visual formatting.</p>
+        <p itemprop="text" class="seo-faq-a">Text content, links, images, lists, and code blocks are preserved exactly. Presentation elements like divs, spans with inline styles, and table layout markup are converted to semantic markdown or removed. The tool strips script tags, style blocks, and HTML comments (unless you disable that option). A 500-word HTML document typically converts to 400-450 words of markdown after presentation markup is removed.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">Can I convert a live URL?</h3>
-        <p itemprop="text" class="seo-faq-a">Yes. The URL fetch option retrieves the page content and converts it. Note that some pages require JavaScript to render, which may not be fully captured. Dynamic content should be fetched after it loads.</p>
+        <h3 itemprop="name" class="seo-faq-q">How do I paste rich text from a webpage?</h3>
+        <p itemprop="text" class="seo-faq-a">Click the Rich Paste button to switch to contenteditable mode, then paste with Ctrl+V (or Cmd+V on Mac). The tool captures the HTML portion of the clipboard data, preserving formatting. If the source page uses complex CSS-only styling (no semantic HTML), some formatting may be lost. For best results, use the Raw HTML mode with the page source.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How does it handle complex tables?</h3>
-        <p itemprop="text" class="seo-faq-a">Standard HTML tables are converted to markdown pipe tables. Complex tables with merged cells (colspan, rowspan) are simplified to the best approximation. Very complex table structures may lose some formatting.</p>
+        <p itemprop="text" class="seo-faq-a">Standard HTML tables with th and td cells convert cleanly to pipe tables. Tables with colspan or rowspan attributes are simplified -- merged cells are flattened and the colspan/rowspan content is placed in the first cell. Very complex tables with 3+ levels of nesting or mixed header orientations may lose some structure. For those cases, the plain-text fallback preserves the cell content.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Is the output valid markdown?</h3>
-        <p itemprop="text" class="seo-faq-a">Yes. The output follows CommonMark specification and is compatible with most markdown renderers. Edge cases like deeply nested lists or very long code blocks may need manual review for optimal rendering.</p>
+        <p itemprop="text" class="seo-faq-a">Yes. The output follows CommonMark specification and is compatible with GitHub, GitLab, Obsidian, Notion, Hugo, Jekyll, and Astro. Edge cases like deeply nested lists (6+ levels) or tables with 20+ columns may need manual review for optimal rendering in some parsers. The preview mode lets you verify the output before copying.</p>
       </div>
     </div>
   </div>

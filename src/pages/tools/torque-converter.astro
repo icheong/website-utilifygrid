@@ -36,36 +36,36 @@ const tool = tools.find(t => t.slug === 'torque-converter')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the Torque Converter</h2>
-    <p class="seo-p">Enter a torque value, pick your source unit, and instantly see the converted result across all supported units.</p>
+    <p class="seo-p">An engine spec sheet lists 320 Newton meters, but your torque wrench only reads in foot-pounds. A bicycle pedal manual specifies 25 pound-feet, but you need to know the Newton meter equivalent for a metric bolt. Enter the value, pick the source unit, and the converter shows the equivalent in all nine supported torque units simultaneously.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Torque Value</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Type the torque amount into the numeric input field and select the correct source unit from the dropdown.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Mechanics tightening lug nuts to spec</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A car service manual specifies 110 N·m for wheel lug nuts but your torque wrench reads in pound-feet. Enter 110, select Newton Meter, and the tool shows 81.07 lbf·ft so you can set your wrench correctly. The Copy button puts the number on your clipboard for quick reference in the garage.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Unit</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the unit you want to convert to from the dropdown menu. The converter supports SI, metric gravitational, and imperial torque units.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Engineers comparing international motor specifications</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A German automotive supplier lists peak torque as 450 N·m, while a Japanese supplier quotes 45.9 kgf·m for the same class of motor. Enter each value and compare side by side. The converter also shows kilonewton meters (0.45 kN·m) and ounce-force inches (3,983 ozf·in) for specifications across different industries.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">View Results</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">The converted value appears instantly, along with every equivalent unit displayed in the results grid for quick comparison.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Cyclists adjusting pedal and bolt torque</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A carbon seatpost clamp requires 5 N·m, but your torque wrench is calibrated in inch-pounds. Enter 5, select Newton Meter, and the result shows 44.27 lbf·in. The tool handles these small values with up to 8 decimal places of precision, so you get an accurate reading even for delicate bicycle components.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Copy or Swap</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button next to any result to copy it to your clipboard, or change the source unit to swap the conversion direction.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Physics students converting between SI and CGS units</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A textbook problem asks you to express 10 N·m in dyne-meters and poundal-feet. Enter 10, select Newton Meter, and the converter shows 100,000,000 dyn·m and 237.30 pdl·ft. The poundal-foot result demonstrates why the CGS system is rarely used in engineering — the numbers become unwieldy fast.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the Torque Converter Works</h2>
-    <p class="seo-p">The converter normalizes every torque unit to a common base, applies the exact conversion ratio, and outputs the result — all client-side in your browser.</p>
+    <p class="seo-p">The converter normalizes every torque unit to a common base unit (Newton meter) using stored conversion factors, then converts from that base to the target unit.</p>
     <h3 class="font-display seo-h3-sm">Torque Unit Definitions</h3>
-    <p class="seo-p">The <code class="inline-code">Newton meter (N·m)</code> is the SI derived unit of torque, representing one newton of force applied at a lever arm of one meter. <code class="inline-code">Foot-pounds (lbf·ft)</code> express torque in imperial units as one pound-force applied at a one-foot lever arm. <code class="inline-code">Inch-pounds (lbf·in)</code> scale that down to an inch lever arm, useful for smaller fasteners. <code class="inline-code">Kilogram-force centimeter (kgf·cm)</code> uses gravitational force at one kilogram applied at one centimeter, common in Japanese and European automotive specs.</p>
-    <h3 class="font-display seo-h3-sm">Conversion Factor Mathematics</h3>
-    <p class="seo-p">Each unit stores a factor relative to <code class="inline-code">N·m</code>. Converting from unit A to unit B follows the formula: <code class="inline-code">Result = Input × (FactorA / FactorB)</code>. For example, converting 100 lbf·ft to N·m computes <code class="inline-code">100 × (1.355818 / 1) = 135.5818 N·m</code>. All nine supported units convert through this single-ratio approach with no intermediate rounding.</p>
-    <h3 class="font-display seo-h3-sm">Precision and Rounding</h3>
-    <p class="seo-p">Results use adaptive decimal formatting: large values display up to two decimal places, mid-range values show up to six, and small values render up to ten decimal places. Values outside the 10⁻⁶ to 10⁹ range switch to scientific notation with four significant figures, ensuring readability across all scales.</p>
+    <p class="seo-p">The Newton meter (N·m) is the SI derived unit of torque, representing one newton of force applied at a lever arm of one meter. One lbf·ft equals approximately 1.35582 N·m, which is why car engine torque in the US (measured in pound-feet) always has a smaller number than the same engine in metric markets. The kilogram-force centimeter (kgf·cm) is common in Japanese and European automotive torque specs — one kgf·cm equals 0.0980665 N·m, so a spec of 500 kgf·cm translates to roughly 49 N·m.</p>
+    <h3 class="font-display seo-h3-sm">Single-Ratio Conversion Formula</h3>
+    <p class="seo-p">Each unit stores a factor relative to N·m. Converting from unit A to unit B follows the formula: Result = Input × (FactorA ÷ FactorB). For example, converting 100 lbf·ft to N·m computes 100 × (1.355818 ÷ 1) = 135.5818 N·m. Converting the same 100 lbf·ft to kgf·cm computes 100 × (1.355818 ÷ 0.0980665) = 1,382.55 kgf·cm. All nine supported units convert through this single-ratio approach with no intermediate rounding.</p>
+    <h3 class="font-display seo-h3-sm">Adaptive Precision Display</h3>
+    <p class="seo-p">Results use adaptive decimal formatting to stay readable across scales. Values above 1,000 show up to 2 decimal places (e.g., 135,581.80 for large N·m inputs). Mid-range values show up to 6 decimal places. Small values like 0.001 dyn·m show up to 10 decimal places. Values outside the 10⁻⁶ to 10⁹ range switch to scientific notation with four significant figures, ensuring you can read the result whether it is 0.0000001 or 1,000,000,000.</p>
   </div>
 
   <div slot="faq">
@@ -86,7 +86,7 @@ const tool = tools.find(t => t.slug === 'torque-converter')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How do I convert between metric and imperial torque units?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">To convert metric to imperial, multiply the N·m value by the appropriate factor — for example, divide by 1.355818 to get lbf·ft. To convert imperial to metric, multiply by the inverse factor. This tool handles the math automatically for all unit pairs without manual calculation.</p>
+          <p itemprop="text" class="seo-faq-a">To convert metric to imperial, divide the N·m value by 1.355818 to get lbf·ft. To convert imperial to metric, multiply by the inverse factor. This tool handles the math automatically for all unit pairs without manual calculation, and the results grid shows every unit simultaneously.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
@@ -98,7 +98,7 @@ const tool = tools.find(t => t.slug === 'torque-converter')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Why does this converter support so many torque units?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Different industries and regions prefer different torque units. Automotive shops use lbf·ft or N·m, aerospace engineers may work in in-lb, and physics problems sometimes reference dyn·m or pdl·ft. Supporting all nine common units means you can convert between any pair without looking up conversion tables.</p>
+          <p itemprop="text" class="seo-faq-a">Different industries and regions prefer different torque units. Automotive shops use lbf·ft or N·m, aerospace engineers may work in ozf·in, and physics problems sometimes reference dyn·m or pdl·ft. Supporting all nine common units means you can convert between any pair without looking up conversion tables.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">

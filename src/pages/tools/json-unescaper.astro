@@ -143,23 +143,23 @@ const tool = tools.find(t => t.slug === 'json-unescaper')!;
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the JSON Un-escaper</h2>
-    <p class="seo-p">Paste your escaped JSON string into the input field and click Un-escape to strip every layer of backslash escaping in one click.</p>
+    <p class="seo-p">You have copied a JSON payload from a log file, an API error message, or a Slack message, and every quote is backslash-escaped. The string is wrapped in extra layers of escaping and you cannot paste it into your code editor without fixing it first. This tool peels every escape layer in one click and gives you clean, formatted JSON.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Escaped JSON</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter a JSON string containing escape sequences — with or without surrounding double quotes — into the input area. Use the sample buttons to load single, double, or triple-escaped examples.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Debugging API error responses</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A REST API returns an error body where every quote is backslash-escaped — the kind of double-escaped JSON string you get from log files or Slack messages. Paste it, enable Strip outer quotes, and the tool outputs the nested object with proper indentation so you can read the error path at a glance.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Unescape Mode</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Toggle options like Strip outer quotes, Pretty print, and Auto-peel all layers to control how aggressively the tool resolves each escape pass.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Extracting data from double-escaped database fields</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Some databases store JSON as a string and escape it again on read. A MySQL JSON column might return a doubly-escaped string where every quote has a backslash, then another backslash wraps the whole thing. Enable Auto-peel all layers and the tool recursively unwraps every pass until it reaches the clean object with name: Alice.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Preview Output</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">View the unescaped JSON in real time with syntax highlighting. The pipeline display shows each intermediate layer as it is peeled back.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Cleaning up terminal output for documentation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A CLI tool prints escaped JSON to stdout and you need to include the output in a Markdown document. Paste it into the tool, enable Pretty print with 2-space indentation, and copy the highlighted result directly into your documentation.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Clean JSON</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Copy the formatted, unescaped output to your clipboard with one click, or re-escape it for another round-trip.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Inspecting triple-escaped strings in environment configs</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Docker Compose and some CI systems triple-escape JSON values in YAML files. Use the sample x3 button to see how the tool peels three layers, then paste your own triple-escaped string to get the clean result. The pipeline display shows each intermediate step so you can verify the tool stopped at the right depth.</p>
       </div>
     </div>
   </div>
@@ -167,13 +167,15 @@ const tool = tools.find(t => t.slug === 'json-unescaper')!;
   <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the JSON Un-escaper Works</h2>
-    <p class="seo-p">The tool resolves every layer of backslash escaping in your input using sequential parse passes and character-by-character analysis.</p>
+    <p class="seo-p">The tool resolves every layer of backslash escaping in your input using sequential parse passes. Each pass calls JSON.parse on the current string, and if the result is still a string, another pass is triggered.</p>
     <h3 class="font-display seo-h3-sm">Escape Sequence Detection</h3>
-    <p class="seo-p">The input string is scanned for backslash sequences using a sequential parser that identifies standard JSON escape characters. It detects <code class="inline-code">\"</code> (escaped double quote), <code class="inline-code">\\</code> (escaped backslash), <code class="inline-code">\n</code> (newline), <code class="inline-code">\t</code> (tab), <code class="inline-code">\r</code> (carriage return), <code class="inline-code">\/</code> (forward slash), and <code class="inline-code">\b</code> / <code class="inline-code">\f</code> (backspace and form feed). Each detection pass peels one layer of escaping by calling <code class="inline-code">JSON.parse()</code> on the current string.</p>
+    <p class="seo-p">The input string is scanned for backslash sequences. Standard JSON escapes include the escaped double quote, escaped backslash, newline, tab, carriage return, forward slash, backspace, and form feed. Each detection pass peels one layer of escaping by calling JSON.parse on the current string. For example, a string where every quote has a backslash in front of it — the kind produced by JSON.stringify — becomes a clean JSON object after one pass because the backslash-quote sequences are resolved into plain quote characters.</p>
     <h3 class="font-display seo-h3-sm">Unicode and Entity Decoding</h3>
-    <p class="seo-p">The parser handles <code class="inline-code">\uXXXX</code> Unicode escape sequences natively through <code class="inline-code">JSON.parse()</code>, converting them to their actual characters — so <code class="inline-code">\u0041</code> becomes <code class="inline-code">A</code> and surrogate pairs like <code class="inline-code">\uD83D\uDE00</code> render as emoji. When the Auto-peel option is enabled, the tool recursively unwraps every JSON stringification layer until a non-string value is reached, regardless of depth.</p>
-    <h3 class="font-display seo-h3-sm">Validation and Error Handling</h3>
-    <p class="seo-p">After each unescape pass, the tool validates the result to determine if it is a complete JSON value or still a string needing another pass. If the input is malformed — such as mismatched brackets, unterminated strings, or invalid escape sequences — an error banner is displayed with the specific parse error and the layer at which it occurred.</p>
+    <p class="seo-p">The parser handles Unicode escape sequences natively through JSON.parse, converting them to their actual characters. A sequence like u0041 becomes A, and surrogate pairs like uD83DuDE00 render as a single emoji character. When the Auto-peel option is enabled, the tool recursively unwraps every JSON stringification layer until a non-string value is reached, regardless of depth.</p>
+    <h3 class="font-display seo-h3-sm">Pipeline Depth Visualisation</h3>
+    <p class="seo-p">After each unescape pass, the tool records the layer number, the raw input at that layer, and the parsed result. The pipeline display shows each step with a type indicator — string with an arrow means another layer is expected, while a checkmark means the final value has been reached. This lets you verify that the tool stopped at the correct depth, which matters when you have intentionally nested JSON strings.</p>
+    <h3 class="font-display seo-h3-sm">Error Handling for Malformed Input</h3>
+    <p class="seo-p">After each pass the tool validates whether the result is parseable as JSON. If the input contains mismatched brackets, unterminated strings, or invalid escape sequences, an error banner displays the specific parse failure and the layer number where it occurred. For instance, a string that starts with an opening brace but never closes it will fail at layer 1 with an unterminated string error.</p>
   </div>
 
   <!-- FAQ ─────────────────────────────────────── -->
@@ -183,19 +185,19 @@ const tool = tools.find(t => t.slug === 'json-unescaper')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What escape sequences does the JSON Un-escaper support?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">The tool handles all standard JSON escape sequences: <code class="inline-code">\"</code> (double quote), <code class="inline-code">\\</code> (backslash), <code class="inline-code">\n</code> (newline), <code class="inline-code">\t</code> (tab), <code class="inline-code">\r</code> (carriage return), <code class="inline-code">\/</code> (forward slash), <code class="inline-code">\b</code> (backspace), <code class="inline-code">\f</code> (form feed), and <code class="inline-code">\uXXXX</code> Unicode escape sequences. Non-standard escapes may cause a parse error.</p>
+          <p itemprop="text" class="seo-faq-a">The tool handles all standard JSON escape sequences: the escaped double quote, escaped backslash, newline, tab, carriage return, forward slash, backspace, form feed, and Unicode escape sequences like u0041. Non-standard escapes may cause a parse error, which the tool will report with the layer number where the failure occurred.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How does the tool handle double-escaped or triple-escaped strings?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Each escape layer wraps the previous output in another round of <code class="inline-code">JSON.stringify()</code>. The tool peels one layer per pass by calling <code class="inline-code">JSON.parse()</code>. When Auto-peel is enabled, it recursively unwraps every layer until it reaches a non-string JSON value like an object or array.</p>
+          <p itemprop="text" class="seo-faq-a">Each escape layer wraps the previous output in another round of JSON.stringify. The tool peels one layer per pass by calling JSON.parse. When Auto-peel is enabled, it recursively unwraps every layer until it reaches a non-string JSON value like an object or array. A triple-escaped string — where the JSON was stringified three times — takes three parse passes to reach the clean object with name: Alice.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How is this different from just calling JSON.parse?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">A single <code class="inline-code">JSON.parse()</code> call only removes one escape layer. If the JSON was stringified twice, one parse pass produces another string rather than an object. This tool runs multiple passes automatically, displays each intermediate step in a pipeline, and includes pretty printing and syntax highlighting — things a raw parse call does not provide.</p>
+          <p itemprop="text" class="seo-faq-a">A single JSON.parse call only removes one escape layer. If the JSON was stringified twice, one parse pass produces another string rather than an object. This tool runs multiple passes automatically, displays each intermediate step in a pipeline, and includes pretty printing and syntax highlighting — things a raw parse call does not provide.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
@@ -213,7 +215,7 @@ const tool = tools.find(t => t.slug === 'json-unescaper')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Is my JSON data sent to a server?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">No. All parsing is performed entirely in the browser using the built-in <code class="inline-code">JSON.parse()</code> function and the Clipboard API. Your JSON data never leaves your device, and no server-side processing or analytics are involved.</p>
+          <p itemprop="text" class="seo-faq-a">No. All parsing is performed entirely in the browser using the built-in JSON.parse function and the Clipboard API. Your JSON data never leaves your device, and no server-side processing or analytics are involved.</p>
         </div>
       </div>
     </div>

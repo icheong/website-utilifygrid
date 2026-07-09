@@ -55,33 +55,44 @@ const tool = tools.find(t => t.slug === 'htaccess-nginx-redirect-builder')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to use the Redirect Rule Builder</h2>
-    <p class="seo-p">Enter the source path and destination URL. Select 301 for permanent or 302 for temporary redirect. Toggle between .htaccess (Apache) and Nginx config output. For wildcard redirects, use regex capture groups in the source and reference captures with $1 in the destination.</p>
+    <p class="seo-p">You are migrating your blog from /blog/old-post to /articles/new-post and need visitors and search engines to find the new URL automatically. Enter /blog/old-post in the Source URL field and /articles/new-post in the Destination field. Select 301 Permanent from the dropdown. The tool generates the exact .htaccess or Nginx config line. Click Copy, paste it into your server config, and test with curl -I to verify the 301 response.</p>
     <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Site migration redirects</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">When restructuring URLs or migrating to a new domain, generate bulk 301 redirects to preserve SEO link equity and ensure visitors reach the correct pages.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">When restructuring URLs or migrating to a new domain, generate bulk 301 redirects to preserve SEO link equity. For a blog with 50 posts, create 50 individual redirect rules, or use a single wildcard pattern like /blog/(.*) to redirect all posts at once. Each rule generates in under a second.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Apache to Nginx conversion</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Switching web servers? Generate both .htaccess and Nginx config for the same redirect rules to compare syntax and ensure parity during migration.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Switching from Apache to Nginx? Enter the same source and destination, then toggle between .htaccess and Nginx to see both syntaxes. The Apache rule uses RewriteEngine and RewriteRule with flag parameters; the Nginx rule uses a location block with a return directive. Both achieve the same redirect but in completely different syntax.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Campaign URL management</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Create temporary 302 redirects for marketing campaigns, A/B tests, or maintenance pages that automatically expire when the campaign ends.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Create temporary 302 redirects for marketing campaigns, A/B tests, or maintenance pages. A 302 tells search engines to keep the original URL indexed while the campaign runs. When the campaign ends, delete the redirect rule -- the original URL retains its ranking because search engines never stopped indexing it.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">301 vs 302 redirects explained</h2>
-    <h3 class="font-display seo-h3-sm">301 Permanent</h3>
-    <p class="seo-p">Tells browsers and search engines the page has moved permanently. Search engines transfer link equity to the new URL and update their index. Use for site migrations, URL restructures, and domain changes.</p>
-    <h3 class="font-display seo-h3-sm">302 Temporary</h3>
-    <p class="seo-p">Tells browsers the page has temporarily moved. Search engines keep the original URL indexed and do not transfer link equity. Use for A/B tests, maintenance pages, and temporary campaigns.</p>
-    <h3 class="font-display seo-h3-sm">Query strings</h3>
-    <p class="seo-p">To preserve query strings in .htaccess, add the QSA (query string append) flag. The generated code includes this where appropriate.</p>
-    <h3 class="font-display seo-h3-sm">Server configuration</h3>
-    <p class="seo-p">Apache .htaccess rules go in the site's root file inside an IfModule mod_rewrite.c block. Nginx rules go inside the server block in your site configuration, usually in /etc/nginx/sites-available/.</p>
+    <h2 class="font-display seo-h2">301 vs 302 redirects and config syntax</h2>
+    <p class="seo-p">The tool generates redirect rules for two server environments: Apache (using .htaccess files with mod_rewrite) and Nginx (using location blocks in server config). Both support exact path matching and regex pattern matching with capture groups.</p>
+    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-top:0.5rem;">
+      <div>
+        <h3 class="font-display seo-h3-sm">301 Permanent redirect</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0; color:var(--text-secondary);">Tells browsers and search engines the page has moved permanently. Search engines transfer approximately 99% of link equity to the new URL and update their index within days to weeks. Use for site migrations, URL restructures, and domain changes. The browser caches 301 redirects aggressively, so test carefully before deploying.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">302 and 307 Temporary redirects</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0; color:var(--text-secondary);">302 tells search engines the page has temporarily moved and they should keep the original URL indexed. 307 is the HTTP/1.1 equivalent that preserves the request method (POST stays POST). Use 302 for A/B tests and maintenance pages. Use 307 when you need to guarantee the browser does not convert a POST to a GET on redirect.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Apache .htaccess syntax</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0; color:var(--text-secondary);">Rules use RewriteEngine On followed by RewriteRule with a source pattern, destination, and flags. The [R=301,L] flag means permanent redirect and last rule. [QSA] appends query strings. Regex patterns use standard PCRE syntax. Rules are processed in order, so place specific rules before catch-all patterns.</p>
+      </div>
+      <div>
+        <h3 class="font-display seo-h3-sm">Nginx location syntax</h3>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0; color:var(--text-secondary);">Exact matches use <code class="inline-code">location = /path &#123; return 301 destination; &#125;</code>. Regex patterns use <code class="inline-code">location ~ ^pattern$ &#123; return 301 destination; &#125;</code>. Nginx rules go inside the server block in <code class="inline-code">/etc/nginx/sites-available/</code> or <code class="inline-code">/etc/nginx/conf.d/</code>. Run <code class="inline-code">nginx -t</code> to test syntax before reloading.</p>
+      </div>
+    </div>
   </div>
 
   <div slot="faq">
@@ -89,19 +100,23 @@ const tool = tools.find(t => t.slug === 'htaccess-nginx-redirect-builder')!;
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Where do I put the .htaccess redirect rules?</h3>
-        <p itemprop="text" class="seo-faq-a">Place them in your site's root .htaccess file inside an IfModule mod_rewrite.c block. Rules are processed in order, so more specific rules should come before catch-all rules.</p>
+        <p itemprop="text" class="seo-faq-a">Place them in your site root .htaccess file (the same directory as your index.html or WordPress wp-config.php). Rules are processed in order from top to bottom, so place specific redirect rules before any catch-all or rewrite rules. If your site already has a RewriteEngine On line, do not add a second one -- just add the RewriteRule lines after the existing block.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Will a 301 redirect hurt my SEO?</h3>
-        <p itemprop="text" class="seo-faq-a">A properly implemented 301 preserves approximately 99% of link equity. Search engines update their index within days to weeks. Avoid redirect chains; always redirect directly to the final destination.</p>
+        <p itemprop="text" class="seo-faq-a">A properly implemented 301 preserves approximately 99% of link equity according to Google. Search engines update their index within days to weeks. The main risk is redirect chains -- if /old redirects to /intermediate which redirects to /new, equity is lost at each hop. Always redirect directly to the final destination in a single hop.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How do I redirect an entire domain?</h3>
-        <p itemprop="text" class="seo-faq-a" set:html="For Apache: use RewriteCond %{HTTP_HOST} matching the old domain and RewriteRule to the new domain. For Nginx: add a server block with server_name set to the old domain and a return 301 directive." />
+        <p itemprop="text" class="seo-faq-a">For Apache, use a RewriteCond that matches the old domain name followed by a RewriteRule that redirects to the new domain. For Nginx, add a new server block with server_name set to the old domain and a return 301 directive pointing to the new domain. Both approaches redirect all pages on the old domain to their equivalents on the new domain.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How do I test my redirects?</h3>
-        <p itemprop="text" class="seo-faq-a">Use curl -I to check the HTTP response headers, or browser developer tools Network tab. Verify the correct status code (301/302) and Location header point to the intended destination.</p>
+        <p itemprop="text" class="seo-faq-a">Use curl -I https://old-domain.com/page to check the HTTP response headers. Look for the 301 or 302 status code and the Location header pointing to your intended destination. You can also use browser developer tools (Network tab) to see the redirect chain. For testing multiple rules, tools like Screaming Frog can crawl and verify hundreds of redirects at once.</p>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is the difference between 302 and 307?</h3>
+        <p itemprop="text" class="seo-faq-a">Both are temporary redirects. The key difference is that 307 guarantees the request method is preserved -- a POST request will remain POST after the redirect. A 302 historically allowed browsers to change POST to GET, which can break form submissions. Use 307 when you need method preservation, 302 for simple page redirects.</p>
       </div>
     </div>
   </div>

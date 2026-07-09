@@ -68,57 +68,68 @@ const tool = tools.find(t => t.slug === 'cpm-ad-spend-calculator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="seo-h2" >Overview and Technical Context</h2>
-    <p class="seo-p" >
-      The CPM Ad Spend Calculator is a client-side budgeting tool that projects key advertising metrics — impressions, clicks, cost per click, conversions, and cost per acquisition — from four simple inputs: total budget, CPM rate, expected click-through rate, and conversion rate. Built with vanilla JavaScript and running entirely in the browser, it requires no server calls and stores no data, making it safe for planning sensitive campaign budgets.
+    <h2 class="seo-h2">Turn your ad budget into concrete projections</h2>
+    <p class="seo-p">
+      You have $5,000 to spend on display ads and three networks quoting different CPM rates. Which one actually gives you the most conversions for your money? This calculator takes your budget, CPM rate, click-through rate, and conversion rate, then projects exactly how many impressions, clicks, and conversions you can expect — so you can compare offers on cost per acquisition rather than headline CPM.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
-    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['Comparing CPM quotes from multiple ad networks', 'When evaluating offers from Google Display, Meta Audience Network, and programmatic DSPs, each network quotes a different CPM. Pasting each quote into the calculator reveals the true cost per click and cost per acquisition, enabling an apples-to-apples comparison beyond the headline CPM number.'],
-        ['Forecasting campaign ROI before launch', 'A marketing manager allocating a $20,000 quarterly budget needs to justify the spend to finance. The calculator produces concrete projections — expected impressions, clicks, and conversions — that can be inserted directly into a budget proposal or media plan document.'],
-        ['Optimising landing page conversion impact', 'A performance marketer testing whether a landing page improvement from 2% to 3.5% conversion rate justifies the redesign cost. By adjusting the conversion rate input, the calculator shows the exact CPA reduction and how many additional conversions the same budget would generate.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm" >
-          <strong style="color:#0F172A; font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
-    </div>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 1: Enter your total budget</h3>
+    <p class="seo-p">
+      Type the total amount you plan to spend on this campaign. For a quarterly allocation of $20,000, enter 20000. The calculator uses this as the base for every downstream metric — impressions, clicks, conversions, and cost per acquisition all scale linearly with budget.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 2: Set the CPM rate</h3>
+    <p class="seo-p">
+      CPM is the cost per thousand impressions. Google Display typically quotes $2 to $8, Meta ranges from $5 to $25 depending on audience targeting, and LinkedIn can exceed $50 for professional audiences. Enter the CPM your network quoted — the calculator divides your budget by this rate to project total impressions.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 3: Enter your expected CTR</h3>
+    <p class="seo-p">
+      Click-through rate is the percentage of impressions that result in a click. Standard display ads average 0.1% to 0.5%. Retargeting campaigns often reach 1% to 3%. If you have historical data from a previous campaign, use that number. If not, 0.3% is a reasonable starting point for cold display traffic.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 4: Set your conversion rate</h3>
+    <p class="seo-p">
+      Conversion rate is the percentage of clicks that complete your desired action — a purchase, sign-up, or form submission. E-commerce landing pages typically convert at 1% to 3%. SaaS sign-up pages often reach 3% to 8%. The calculator multiplies your clicks by this rate to project total conversions, then divides your budget by conversions to show your cost per acquisition.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 5: Compare and decide</h3>
+    <p class="seo-p">
+      The output panel shows five metrics: total impressions, expected clicks, cost per click, estimated conversions, and cost per acquisition. Run the calculator once for each network quote. A $6 CPM with a 0.4% CTR and 2.5% conversion rate might produce a $30 CPA, while a $4 CPM with a 0.2% CTR and 1.8% conversion rate produces a $44 CPA. The cheaper CPM is not always the cheaper customer.
+    </p>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="seo-h2" >Deep-Dive Technical Mechanics</h2>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Impression and Click Calculation</h3>
-    <p class="seo-p" >
-      Impressions are derived by dividing the total budget by the CPM rate and multiplying by 1,000. This follows the standard industry definition: CPM is the cost per one thousand impressions. The expected click count is then impressions multiplied by the click-through rate divided by 100. These two formulas form the foundation of display advertising planning and are used universally across Google Ads, Meta Ads Manager, and programmatic platforms.
+    <h2 class="seo-h2">How the CPM Ad Spend Calculator projects your results</h2>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">The impression formula follows the industry standard</h3>
+    <p class="seo-p">
+      Impressions are calculated as budget divided by CPM, multiplied by 1,000. This follows the standard industry definition: CPM is the cost per one thousand impressions. A $5,000 budget at a $10 CPM produces 500,000 impressions. This is the same formula used in Google Ads, Meta Ads Manager, and every programmatic platform — there is no hidden markup or adjustment.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Cost Efficiency Metrics</h3>
-    <p class="seo-p" >
-      Cost per click (CPC) is calculated as total budget divided by expected clicks. This metric tells you how much each visitor costs on average, regardless of whether they convert. Cost per acquisition (CPA) goes further: it divides total budget by the number of conversions (clicks multiplied by conversion rate). CPA is the most critical metric for performance advertisers because it directly measures the cost of acquiring a customer — the number that determines campaign profitability.
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Clicks cascade from impressions through your CTR</h3>
+    <p class="seo-p">
+      Expected clicks equal impressions multiplied by CTR divided by 100. If your 500,000 impressions have a 0.3% CTR, that produces 1,500 clicks. The click-through rate is the single highest-leverage input in this calculator. A 0.5% improvement in CTR (from 0.3% to 0.8%) on the same budget doubles your clicks from 1,500 to 4,000 — without spending an extra dollar. This is why experienced marketers focus on ad creative and audience targeting before negotiating CPM rates.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Conversion Funnel Modelling</h3>
-    <p class="seo-p" >
-      The calculator models a linear advertising funnel: budget buys impressions, impressions generate clicks at the CTR rate, and clicks produce conversions at the conversion rate. Each stage is multiplicative — a small improvement at the top of the funnel (higher CTR) cascades through to more clicks and more conversions at the bottom. This is why a 0.5% CTR improvement can be worth more than a 10% CPM reduction in practice. All calculations run instantly in the browser with zero latency.
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Cost per click is derived, not entered</h3>
+    <p class="seo-p">
+      CPC is calculated as total budget divided by expected clicks. At $5,000 and 1,500 clicks, your CPC is $3.33. This metric tells you how much each visitor costs regardless of whether they convert. It is useful for comparing traffic quality across networks — a $2 CPC from a niche publisher often converts better than a $0.50 CPC from a broad display network.
     </p>
-    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.5rem">
-      {[
-        ['Impressions', 'Budget ÷ CPM × 1,000. The total number of times your ad will be shown to users across the campaign.'],
-        ['Expected Clicks', 'Impressions × (CTR ÷ 100). The estimated number of clicks based on your click-through rate assumption.'],
-        ['Cost Per Click (CPC)', 'Budget ÷ Clicks. How much each click costs you on average across the entire campaign.'],
-        ['Conversions', 'Clicks × (Conversion Rate ÷ 100). Estimated completed actions such as purchases, sign-ups, or form submissions.'],
-        ['Cost Per Acquisition (CPA)', 'Budget ÷ Conversions. Your effective cost for each conversion — the key profitability metric.'],
-      ].map(([label, desc]) => (
-        <div class="border-theme surface-2" style="border-radius:0.625rem; padding:0.875rem 1rem">
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem">{label}</div>
-          <p style="font-size:0.82rem; line-height:1.6; margin:0">{desc}</p>
-        </div>
-      ))}
-    </div>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Conversions and CPA complete the funnel</h3>
+    <p class="seo-p">
+      Conversions equal clicks multiplied by conversion rate divided by 100. At 1,500 clicks and a 2.5% conversion rate, you get 37.5 conversions (rounded to 38). Cost per acquisition is budget divided by conversions — $5,000 divided by 38 gives a $131.58 CPA. This is the number that determines campaign profitability. If your product sells for $200 and your CPA is $131, you are making $69 per acquisition before other costs. If your CPA exceeds your customer lifetime value, the campaign loses money.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Why small input changes produce large output shifts</h3>
+    <p class="seo-p">
+      The funnel is multiplicative at every stage. A 0.5% CTR improvement cascades through to more clicks, which cascade through to more conversions, which reduce your CPA. On a $10,000 campaign, improving CTR from 0.3% to 0.8% while holding CPM and conversion rate constant changes your CPA from $266 to $100 — a 62% reduction without changing your budget, ad placements, or landing page. This is why the calculator updates instantly as you adjust any input — you can see the cascading effect in real time.
+    </p>
   </div>
 
   <div slot="faq">
-    <h2 class="seo-h2-faq" >Frequently asked questions</h2>
+    <h2 class="seo-h2-faq">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
@@ -127,7 +138,7 @@ const tool = tools.find(t => t.slug === 'cpm-ad-spend-calculator')!;
         },
         {
           q: 'What is a good CPM rate?',
-          a: 'A good CPM varies significantly by channel, audience, and targeting precision. Display ads typically range from $2 to $10, social media CPMs range from $5 to $30, and LinkedIn can exceed $50 due to its professional audience data. Lower CPMs are not always better — a targeted audience with a higher CPM often yields better ROI than a cheap, untargeted one.',
+          a: 'A good CPM varies by channel and audience. Display ads typically range from $2 to $10. Social media CPMs range from $5 to $30. LinkedIn can exceed $50. Lower CPMs are not always better — a targeted audience with a higher CPM often yields better ROI than a cheap, untargeted one.',
         },
         {
           q: 'What is a typical CTR for display ads?',
@@ -143,7 +154,15 @@ const tool = tools.find(t => t.slug === 'cpm-ad-spend-calculator')!;
         },
         {
           q: 'Should I optimise for CPM or CPC?',
-          a: 'Neither in isolation. Optimise for CPA (cost per acquisition) or ROAS (return on ad spend) — the metrics that directly impact profitability. A low CPM with poor targeting wastes budget on irrelevant impressions. A low CPC with low conversion rates wastes budget on clicks that do not convert. The calculator helps you see how all four metrics interact so you can find the most profitable balance.',
+          a: 'Neither in isolation. Optimise for CPA (cost per acquisition) or ROAS (return on ad spend) — the metrics that directly impact profitability. A low CPM with poor targeting wastes budget on irrelevant impressions. A low CPC with low conversion rates wastes budget on clicks that do not convert. The calculator helps you see how all four metrics interact.',
+        },
+        {
+          q: 'How accurate are CPM projections for a new campaign?',
+          a: 'For a brand-new campaign with no historical data, your CTR and conversion rate assumptions are estimates. Industry benchmarks give you a starting point — 0.3% CTR for cold display traffic, 2% conversion rate for a typical landing page — but actual performance varies by audience, creative quality, and landing page experience. Run the calculator with conservative estimates and adjust after your first 1,000 impressions.',
+        },
+        {
+          q: 'Does this calculator account for ad fatigue?',
+          a: 'No. The calculator uses a single CTR and conversion rate for the entire campaign. In practice, ad fatigue causes CTR to decline as the same audience sees your ad repeatedly. For campaigns running longer than two weeks, consider reducing your CTR assumption by 20% to 30% to account for fatigue, or plan for creative refreshes at regular intervals.',
         },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
@@ -179,6 +198,16 @@ const tool = tools.find(t => t.slug === 'cpm-ad-spend-calculator')!;
           "@type": "Question",
           "name": "Should I optimise for CPM or CPC?",
           "acceptedAnswer": { "@type": "Answer", "text": "Optimise for CPA or ROAS instead. A low CPM with poor targeting wastes budget. A low CPC with low conversion rates wastes budget. The calculator helps you see how all metrics interact." }
+        },
+        {
+          "@type": "Question",
+          "name": "How accurate are CPM projections for a new campaign?",
+          "acceptedAnswer": { "@type": "Answer", "text": "For a new campaign, CTR and conversion rate assumptions are estimates. Industry benchmarks give a starting point but actual performance varies. Run the calculator with conservative estimates and adjust after your first 1,000 impressions." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this calculator account for ad fatigue?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The calculator uses a single CTR and conversion rate for the entire campaign. For campaigns running longer than two weeks, consider reducing your CTR assumption by 20% to 30% to account for fatigue." }
         }
       ]
     })} />

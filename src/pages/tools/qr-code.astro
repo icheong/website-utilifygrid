@@ -129,12 +129,12 @@ const tool = tools.find(t => t.slug === 'qr-code')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">QR Code Generator &amp; Scanner Overview</h2>
+    <h2 class="font-display seo-h2">How to use the QR Code Generator and Scanner</h2>
     <p class="seo-p">
-      This QR code tool provides a complete, privacy-first solution for generating and decoding QR codes without any server dependency. Every operation — from encoding text into a QR matrix to decoding scanned images — runs entirely within your browser using modern vanilla JavaScript and standard browser APIs. No images, text, or metadata ever leave your device, and zero cookies or tracking scripts are involved. The 100% client-side architecture ensures zero server latency and complete data privacy for sensitive URLs, contact information, or proprietary text.
+      You are designing a flyer for a weekend market stall and need a QR code that links to your online store. Type the URL into the text area, pick your brand colours using the dot and background colour pickers, set the error correction to High so the code stays scannable even if a sticker is partially peeled, and click Download PNG. The 300px code downloads in under a second, ready to drop into your design tool.
     </p>
     <p class="seo-p">
-      The generator encodes your input using the qrcode library into a two-dimensional matrix of dark and light modules, then renders the result to an HTML5 Canvas with configurable dot and background colours, error correction levels, and output dimensions. The scanner reads QR codes from uploaded image files via an offscreen Canvas or from a live camera feed using the getUserMedia API and the jsQR decoding library. Both workflows are entirely synchronous within the browser, with no network round-trips required.
+      On the scanner side, a restaurant owner receiving a QR-based payment confirmation can click Start Camera, point the rear camera at the code, and see the decoded URL appear instantly — or drag a screenshot of the code into the drop zone. The scanner handles codes at angles up to roughly 30 degrees, with moderate blur, and at sizes as small as 2cm on screen.
     </p>
 
     <h3 class="seo-h3-sm">Real-World Applications and Use Cases</h3>
@@ -153,12 +153,12 @@ const tool = tools.find(t => t.slug === 'qr-code')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: QR Code Encoding &amp; Decoding Mechanics</h2>
+    <h2 class="font-display seo-h2">How QR code encoding and decoding works</h2>
     <p class="seo-p">
       A QR (Quick Response) code is a two-dimensional matrix barcode defined by the ISO/IEC 18004 standard. It encodes data using a grid of black and white modules arranged in a square pattern, with specific finder patterns, timing patterns, and alignment patterns that allow scanners to locate and orient the code regardless of rotation or angle. The encoding process involves several discrete stages, each of which this tool executes entirely within the browser.
     </p>
 
-    <h3 class="seo-h3-sm">Generator Pipeline: Text to Rendered Matrix</h3>
+    <h3 class="seo-h3-sm">Generator pipeline: text to rendered matrix</h3>
     <p class="seo-p-sm">
       When you enter text or a URL, the qrcode library first analyzes the input to determine the optimal QR version (1 through 40, where higher versions hold more data) and the most efficient data encoding mode — numeric, alphanumeric, byte, or kanji. The input is then encoded into a binary data stream and protected with Reed-Solomon error correction, which appends calculated redundancy symbols. The error correction level you select directly controls how many symbols are added: <code class="inline-code">L</code> (7% recovery), <code class="inline-code">M</code> (15%), <code class="inline-code">Q</code> (25%), or <code class="inline-code">H</code> (30%).
     </p>
@@ -166,7 +166,7 @@ const tool = tools.find(t => t.slug === 'qr-code')!;
       The resulting data stream is placed into the matrix according to a fixed placement pattern: data modules fill the matrix in a zigzag pattern from the bottom-right corner, while function patterns (finder, separator, timing, format information, and version information) occupy predetermined positions. Once the matrix is populated, a mask pattern is applied to均衡 the distribution of dark and light modules, improving scannability. The final matrix is then rendered to an HTML5 Canvas at your specified dimensions, using your chosen dot and background colours.
     </p>
 
-    <h3 class="seo-h3-sm">Scanner Pipeline: Image to Decoded String</h3>
+    <h3 class="seo-h3-sm">Scanner pipeline: image to decoded string</h3>
     <p class="seo-p-sm">
       <strong>Image upload:</strong> When you drop or select an image file, the tool draws it onto an offscreen Canvas element, extracting the raw RGBA pixel data via <code class="inline-code">getImageData()</code>. The jsQR library then analyzes this pixel array to locate the three finder patterns (the large squares in the corners), determine the code boundaries, sample the module grid, and apply the reverse mask to recover the original data stream. Reed-Solomon decoding corrects any minor damage or noise in the image, and the decoded text or URL is returned as a UTF-8 string.
     </p>
@@ -174,7 +174,7 @@ const tool = tools.find(t => t.slug === 'qr-code')!;
       <strong>Camera scanning:</strong> Clicking "Start Camera" invokes <code class="inline-code">navigator.mediaDevices.getUserMedia()</code> with a preference for the rear-facing camera (<code class="inline-code">facingMode: 'environment'</code>). A <code class="inline-code">requestAnimationFrame</code> loop continuously reads video frames from the live stream, draws each frame to the offscreen Canvas, and passes the pixel data to jsQR. When a valid QR code is detected in any frame, the loop pauses, the camera stream is stopped, and the decoded result is displayed. This frame-by-frame approach ensures responsive scanning without blocking the main thread.
     </p>
 
-    <h3 class="seo-h3-sm">Edge Cases and Technical Constraints</h3>
+    <h3 class="seo-h3-sm">Edge cases and technical constraints</h3>
     <p class="seo-p-sm">
       The generator gracefully handles empty input (displaying a blank canvas), maximum-length data strings (up to the QR standard's capacity for the selected version and error level), and extremely small or large output sizes (clamped between 100px and 1000px). Floating-point colour values are handled as hex strings conforming to the CSS colour specification. The scanner tolerates moderate image distortion, partial occlusion (up to the selected error correction threshold), and non-square aspect ratios, though extremely skewed or low-resolution images may fail to decode.
     </p>

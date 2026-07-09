@@ -48,20 +48,20 @@ const tool = tools.find(t => t.slug === 'time-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Time Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Seconds, Hours, Days, Weeks, and Other Time Units</h2>
     <p class="seo-p">
-      This time converter computes precise conversions between 12 time units ranging from nanoseconds to centuries entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in computing, project planning, physics, or everyday scheduling.
+      Your project manager says the migration will take 500 hours. The client wants to know the deadline in weeks. Converting 500 hours gives 20.83 days or about 2.98 weeks — roughly three calendar weeks if the team works weekends. Enter 500, select hours, and every other time unit appears instantly. The copy button lets you paste "20.83 days" straight into the project timeline document.
     </p>
     <p class="seo-p">
-      The converter supports the most commonly used time units across scientific, computing, and everyday contexts: nanoseconds, microseconds, and milliseconds for high-precision timing; seconds, minutes, hours, and days for standard timekeeping; weeks, months, years, decades, and centuries for longer durations. Months and years use astronomical averages (365.25 days per year, 30.44 days per month) to provide consistent conversions across calendar variations.
+      The converter covers 12 units from nanoseconds to centuries. A software engineer debugging a performance issue finds a function takes 2.5 milliseconds. Converting to microseconds shows 2,500 μs — useful for comparing against a specification requiring sub-1,000 μs response. A historian converting the age of the pyramids (4,500 years) to seconds gets 1.42 × 10¹¹ s, helping contextualise the timescale in a physics lecture. The quick-reference row shows everyday durations: a heartbeat at 0.8 s, a song at 240 s, a transatlantic flight at 28,800 s.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Project scheduling where hours and days create confusion</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        ['Computing and network latency', 'Computer scientists measure processor cycle times in nanoseconds — a modern CPU operates at about 3 GHz, meaning each cycle takes roughly 0.33 ns. Network latency is typically measured in milliseconds: a fast internet connection to a nearby server has about 10 ms ping, while a transatlantic connection might have 80 ms. Converting between these scales helps engineers understand relative performance and optimize system response times.'],
-        ['Project management and scheduling', 'Project managers convert between hours, days, and weeks when estimating task durations. A task estimated at 40 hours of work equals exactly 1 standard work week (5 days × 8 hours). Converting 200 hours to days gives 8.33 days, helping managers allocate resources across multi-week sprints. The quick-reference section helps visualise everyday durations like a heartbeat (0.8 s), a song track (240 s), or a NYC-to-London flight (28,800 s) for intuitive scale comparison.'],
-        ['Physics and scientific research', 'Physicists work across extreme time scales: atomic vibrations occur in femtoseconds (10⁻¹⁵ s), radioactive decay half-lives range from nanoseconds to billions of years, and astronomical observations span millennia. Converting 1 ns to microseconds gives 0.001 μs, while converting 1 century to nanoseconds yields 3.156 × 10¹⁸ ns. This tool handles the full 27-order-of-magnitude range from nanoseconds to centuries with IEEE 754 double-precision accuracy.']
+        ['Converting work hours to calendar days', 'A contractor estimates 120 hours of labour for a renovation. At 8 hours per working day, that is 15 working days — but the client asked for calendar days. Including weekends, 15 working days spans 21 calendar days (3 weeks). The converter shows both: enter 120 hours, see 5 days, 15 working days (if you account for weekends separately), or 0.833 weeks. This prevents the common misunderstanding where "3 weeks" means 15 working days to the contractor but 21 calendar days to the client.'],
+        ['Computing latency benchmarks', 'A developer profiles a database query and finds it takes 450 microseconds. The SLA requires sub-5ms response. Converting 450 μs to ms shows 0.45 ms — well within the 5 ms target. But if the developer misreads the unit and thinks 450 ms, they might waste time optimising a query that is already fast enough. The converter makes the magnitude comparison explicit: 450 μs = 0.45 ms = 0.00045 s.'],
+        ['Scientific half-life conversions', 'A physics student reads that carbon-14 has a half-life of 5,730 years. Converting to seconds: 5,730 × 31,557,600 = 1.808 × 10¹¹ s. Converting to days: 2,091,450 days. These different representations help the student understand the same timescale from different perspectives — the seconds figure is useful for rate equations, while the days figure is more intuitive for archaeological dating.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -72,26 +72,25 @@ const tool = tools.find(t => t.slug === 'time-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Time Converter Handles Nanoseconds, Hours, Days, and Years</h2>
     <p class="seo-p">
-      The converter employs a hub-and-spoke conversion model using seconds as the universal base unit. Every supported time unit is defined by a fixed conversion factor relative to one second. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain seconds, then divides by B's factor to obtain the target value. This approach guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      Every unit in the converter is stored as a multiple of one second. When you enter 500 hours, the tool multiplies by 3,600 to get 1,800,000 seconds, then divides by each target unit's factor. The conversion to days gives 20.83 days. The conversion to weeks gives 2.98 weeks. Because all conversions pass through seconds in one step, there is no rounding drift from chaining through intermediate units.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Why months and years use fractional days</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">ns</code>, <code class="inline-code">hr</code>, <code class="inline-code">year</code>) to its exact factor in seconds. Small units use powers of 10 (e.g. <code class="inline-code">1 ms = 0.001 s</code>, <code class="inline-code">1 μs = 0.000001 s</code>), while larger units use standard definitions.
+      The converter defines a year as exactly 365.25 days (the Julian year) and a month as exactly 1/12 of a year (30.4375 days). This is an astronomical average, not a calendar definition. Actual calendar months range from 28 to 31 days, and actual years are 365 or 366 days. The Julian year is used in astronomy and science because it averages leap years over a 4-year cycle. The Gregorian calendar's century rule (no leap year on years divisible by 100 unless also divisible by 400) makes the true average 365.2425 days — a 0.002% difference from the Julian year.
     </p>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion:</strong> The input value is multiplied by the source unit's factor to convert to seconds. For example, converting 2 hours to seconds: <code class="inline-code">2 × 3600 = 7200 s</code>. This intermediate result is an IEEE 754 double-precision floating-point number, which provides approximately 15 to 17 significant decimal digits of precision.
+      The standard time units are exact by definition: 1 minute = 60 seconds, 1 hour = 3,600 seconds, 1 day = 86,400 seconds, 1 week = 604,800 seconds. These are exact because the second is defined by the cesium-133 atom (9,192,631,770 cycles), and the other units are defined as exact multiples of the second. The only approximate conversions are month ↔ second and year ↔ second, which depend on the Julian year model.
     </p>
+
+    <h3 class="font-display seo-h3-sm">How nanoseconds relate to the speed of light</h3>
     <p class="seo-p-sm">
-      <strong>3. Target conversion:</strong> The second value is divided by the target unit's factor. Converting 7200 s to minutes: <code class="inline-code">7200 / 60 = 120 min</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (1 quadrillion or greater) use scientific notation. Values between 1 trillion and 1 quadrillion use locale-formatted numbers with 2 decimal places. Values between 1,000 and 1 trillion use 2 to 4 decimal places. Values between 0.001 and 1,000 use 6 to 8 decimal places. Values below 0.001 use scientific notation. This ensures readability across the full range from nanoseconds to centuries.
+      Light travels about 30 centimetres (1 foot) in one nanosecond. This is not just a curiosity — it determines the maximum speed of computer processors. A signal can travel only 30 cm in a 1 ns CPU cycle, which means a 3 GHz processor (0.33 ns per cycle) can only move data about 10 cm on the circuit board per cycle. This is why cache memory is placed physically close to the CPU die: distance equals latency, and at nanosecond scales, even centimetres matter.
     </p>
     <p class="seo-p-none">
-      <strong>Exact vs. approximate factors:</strong> The small units (ns, μs, ms) and standard units (s, min, hr, day, week) are exact by definition: <code class="inline-code">1 min = 60 s</code>, <code class="inline-code">1 hr = 3600 s</code>, <code class="inline-code">1 day = 86,400 s</code>, <code class="inline-code">1 week = 604,800 s</code>. The month and year use astronomical averages: a year is defined as 365.25 days (the Julian year, accounting for leap years), making <code class="inline-code">1 year = 31,557,600 s</code> exact within this model. A month is defined as exactly 1/12 of a year, making <code class="inline-code">1 month = 2,629,746 s</code> exact within this model. Decades and centuries are exact multiples of the year.
+      The formatting thresholds handle the enormous range: nanoseconds display in scientific notation for very small values; seconds through days use 6-8 decimal places; weeks through centuries use 2-4 decimal places or locale-formatted numbers. A 4.5 billion year geological age converts to 1.42 × 10¹⁷ seconds, which displays in scientific notation because the number exceeds 1 quadrillion.
     </p>
   </div>
 
@@ -100,32 +99,24 @@ const tool = tools.find(t => t.slug === 'time-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "How many seconds are in a day?",
-          a: "There are exactly 86,400 seconds in a day (24 hours × 60 minutes × 60 seconds = 86,400). This is used as a base unit in many scientific and computing applications. A digital clock ticks 86,400 times per day, and a modern processor performs billions of operations in that span."
+          q: "How many hours is 500 minutes?",
+          a: "500 minutes equals 8 hours and 20 minutes (500 ÷ 60 = 8.333 hours). For a quick mental estimate, divide by 60 — 480 minutes is 8 hours, so 500 minutes is 8 hours 20 minutes. This conversion is useful for project management: a task estimated at 500 minutes spans a bit more than one working day."
         },
         {
-          q: "How many days are in a year?",
-          a: "A calendar year has 365 days (or 366 in a leap year). The astronomical average is 365.25 days, which is why this converter uses 365.25 days per year. Four years have 1,461 days, giving an average of 365.25. This Julian year definition is used in astronomy and science for consistent time calculations."
+          q: "How do I convert milliseconds to seconds?",
+          a: "Divide by 1,000. 500 ms = 0.5 s. 2,500 ms = 2.5 s. For a quick mental estimate, move the decimal point three places left. This conversion matters in computing: a database query taking 450 ms is well within a 2-second SLA, but 1,800 ms is borderline. The converter shows both values so you can compare directly."
         },
         {
-          q: "What is a nanosecond?",
-          a: "A nanosecond (ns) is one billionth of a second (10⁻⁹ s). Light travels about 30 cm (1 foot) in one nanosecond. Computer processors perform operations in nanoseconds, and it takes about 100 ns for a CPU cycle. A human eye blink takes about 300 million nanoseconds."
+          q: "What is a Julian year and why does this converter use it?",
+          a: "A Julian year is exactly 365.25 days (31,557,600 seconds). It averages leap years over a 4-year cycle, making it useful for scientific calculations like orbital mechanics and light-year definitions. The Gregorian calendar's true average is 365.2425 days — a 0.002% difference. For everyday conversions, the Julian year is close enough. For calendar-precise work (payroll, lease terms), use actual calendar days."
         },
         {
-          q: "Why are months considered 30.44 days?",
-          a: "This converter uses the average month length: 365.25 days ÷ 12 = 30.4375 days ≈ 30.44 days. Actual months range from 28 to 31 days. This average is useful for rough time conversions but not for calendar-precise calculations. For exact calendar calculations, you need to account for the specific month and year."
+          q: "How many seconds are in a typical human lifespan?",
+          a: "A person living to 80 years old experiences approximately 2.52 × 10⁹ seconds (80 × 31,557,600). That is 2.52 billion seconds. For perspective, a modern CPU performs about 3 × 10¹⁸ operations in that time — roughly a billion operations per second of a human life. The converter shows 80 years as 2.52 × 10⁹ s, 4,160 weeks, or 29,200 days."
         },
         {
-          q: "How many hours are in a week?",
-          a: "There are exactly 168 hours in a week (7 days × 24 hours = 168). A typical 40-hour work week represents about 23.8% of the total hours in a week. The remaining 128 hours include sleeping (about 56 hours for 8 hours per night), personal time, and weekends."
-        },
-        {
-          q: "How do I convert milliseconds to hours?",
-          a: "To convert milliseconds to hours, divide by 3,600,000 (the number of milliseconds in an hour). For example, 7,200,000 ms equals 2 hours. To convert hours to milliseconds, multiply by 3,600,000. A quick mental shortcut: divide milliseconds by 1,000 to get seconds, then divide by 3,600 to get hours."
-        },
-        {
-          q: "What is the difference between a Julian year and a calendar year?",
-          a: "A Julian year is defined as exactly 365.25 days (86,400 × 365.25 = 31,557,600 seconds). A calendar year alternates between 365 and 366 days (leap years). The Julian year averages out leap years over a 4-year cycle, making it useful for scientific calculations. The Gregorian calendar's century rule (no leap year on years divisible by 100 unless also divisible by 400) makes the true average 365.2425 days."
+          q: "Why does the converter show different results for months vs. calendar months?",
+          a: "This converter defines a month as 1/12 of a Julian year (30.4375 days). Actual calendar months range from 28 days (February) to 31 days (January, March, etc.). For rough time estimates — '3 months of development' or '6-month subscription' — the average is fine. For exact calendar dates, count the actual days in each specific month."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

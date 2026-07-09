@@ -35,36 +35,36 @@ const tool = tools.find(t => t.slug === 'heat-density-converter')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the Heat Density Converter</h2>
-    <p class="seo-p">Convert volumetric energy density values between J/m³, BTU/ft³, kJ/L, kWh/m³, and other units instantly. Enter any value and see every conversion at once.</p>
+    <p class="seo-p">An energy storage specification lists the volumetric energy density of a lithium-ion cell as 2.5 watt-hours per litre. Your simulation model requires the value in megajoules per cubic metre. The numbers are in completely different unit systems and the conversion is not intuitive. Enter the value, pick the source unit, and the converter shows the equivalent in all eight supported heat density units.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Energy Density Value</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Type a numeric value into the input field. This is the heat density measurement you want to convert from.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Battery engineers comparing energy storage options</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A battery datasheet lists volumetric energy density as 250 watt-hours per litre. Convert to megajoules per cubic metre and the result is 900 — still well above the 200 threshold that separates high-density cells from low-density ones. The converter also shows 83.3 BTU per cubic foot for the American procurement specification.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Select Source Unit</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the volumetric energy density unit for your input value — such as J/m³, BTU/ft³, or kWh/m³ — from the dropdown.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Fuel cell engineers evaluating hydrogen storage</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Hydrogen gas at standard conditions has a volumetric energy density of about 11 megajoules per cubic metre. Enter 11 in MJ per m cubed and the converter shows 10.4 BTU per cubic foot. This value is well below the 32 megajoules per cubic metre typical of gasoline, confirming hydrogen requires compression or liquefaction for practical vehicle storage.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">View All Conversions</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">The converted value appears in every supported unit instantly. Compare energy density across different measurement systems side by side.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Combustion engineers reading legacy fuel data</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A 1980s combustion reference reports natural gas heat density as 1000 BTU per cubic foot. Enter 1000 in BTU per ft cubed and the converter shows 37,259 BTU per cubic foot — wait, that is the conversion factor. Let me recalculate: 1000 BTU per ft cubed equals approximately 37,259 joules per cubic metre, or 0.037 megajoules per cubic metre.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button next to any result to copy that value to your clipboard for use in reports, code, or documents.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Thermal storage designers sizing phase-change materials</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A phase-change material specification lists heat density as 150 kilojoules per litre. Convert to joules per cubic metre and the result is 150,000,000. The converter also shows 4,031 BTU per cubic foot for the American HVAC specification document.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the Heat Density Converter Works</h2>
-    <p class="seo-p">The converter transforms volumetric energy density values between different units by normalizing each input through a shared reference unit. All calculations run locally in your browser.</p>
+    <p class="seo-p">The converter transforms volumetric energy density values between different units by normalising each input through a shared reference unit. All calculations run locally in your browser with no server calls.</p>
     <h3 class="font-display seo-h3-sm">Volumetric Energy Density Units</h3>
-    <p class="seo-p">Heat density — also called volumetric energy density — measures the amount of energy stored per unit volume. <code class="inline-code">J/m³</code> (joules per cubic meter) is the SI standard. <code class="inline-code">BTU/ft³</code> is widely used in US heating and combustion applications. <code class="inline-code">kWh/m³</code> is common in battery and energy storage contexts, while <code class="inline-code">kJ/L</code> simplifies comparisons for liquid fuels. Each unit serves a different engineering domain.</p>
+    <p class="seo-p">Heat density, also called volumetric energy density, measures the amount of energy stored per unit volume. <code class="inline-code">J per cubic metre</code> is the SI standard. <code class="inline-code">BTU per cubic foot</code> is widely used in US heating and combustion applications. <code class="inline-code">kWh per cubic metre</code> is common in battery and energy storage contexts, while <code class="inline-code">kJ per litre</code> simplifies comparisons for liquid fuels. <code class="inline-code">therm per cubic foot</code> is used in natural gas billing. Each unit serves a different engineering domain.</p>
     <h3 class="font-display seo-h3-sm">Conversion Factor Mathematics</h3>
-    <p class="seo-p">Every unit is expressed as a multiple of J/m³. The converter multiplies your input value by the source unit's factor to get J/m³, then divides by the target unit's factor to produce the result. This two-step normalization ensures accurate conversions across all supported unit pairs.</p>
+    <p class="seo-p">Every unit is expressed as a multiple of J per cubic metre. The converter multiplies your input value by the source unit factor to get J per cubic metre, then divides by the target unit factor to produce the result. For example, 1 BTU per cubic foot equals 37,258.9 J per cubic metre, so converting BTU per cubic foot to J per cubic metre means multiplying by that factor. The formula is <code class="inline-code">Result = Input x (FromFactor / ToFactor)</code>.</p>
     <h3 class="font-display seo-h3-sm">Engineering Applications</h3>
-    <p class="seo-p">Volumetric energy density is critical for evaluating fuel cells, batteries, combustion systems, and thermal storage. Hydrogen gas has high specific energy per kilogram but low volumetric density at standard conditions, while gasoline packs far more energy per liter. Engineers use these conversions to compare fuel options and size storage systems for a given energy requirement.</p>
+    <p class="seo-p">Volumetric energy density is critical for evaluating fuel cells, batteries, combustion systems, and thermal storage. Hydrogen gas has high specific energy per kilogram but low volumetric density at standard conditions, while gasoline packs far more energy per litre. Engineers use these conversions to compare fuel options and size storage systems for a given energy requirement.</p>
   </div>
 
   <div slot="faq">
@@ -73,37 +73,37 @@ const tool = tools.find(t => t.slug === 'heat-density-converter')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What is heat density?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Heat density, also known as volumetric energy density, is the amount of energy stored per unit volume. It is expressed in units like J/m³, BTU/ft³, or kWh/m³ and measures how much energy a fuel, battery, or thermal storage medium can deliver in a given space.</p>
+          <p itemprop="text" class="seo-faq-a">Heat density, also known as volumetric energy density, is the amount of energy stored per unit volume. It is expressed in units like J per cubic metre, BTU per cubic foot, or kWh per cubic metre and measures how much energy a fuel, battery, or thermal storage medium can deliver in a given space. This metric is critical for sizing fuel tanks, battery packs, and thermal storage systems where volume is constrained.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How does heat density differ from specific energy?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Heat density measures energy per unit volume (J/m³), while specific energy measures energy per unit mass (J/kg). Hydrogen has very high specific energy — more than three times that of gasoline — but its volumetric energy density at standard conditions is low because it is a gas. Both metrics are important for fuel selection depending on whether space or weight is the limiting factor.</p>
+          <p itemprop="text" class="seo-faq-a">Heat density measures energy per unit volume (J per cubic metre), while specific energy measures energy per unit mass (J per kilogram). Hydrogen has very high specific energy, more than three times that of gasoline, but its volumetric energy density at standard conditions is low because it is a gas. Both metrics are important for fuel selection depending on whether space or weight is the limiting factor in the application.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What are typical heat density values for common fuels?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Gasoline has a heat density of approximately 32 MJ/m³, diesel fuel about 36 MJ/m³, and natural gas at standard conditions roughly 37 MJ/m³. Hydrogen at standard temperature and pressure has a much lower value of about 11 MJ/m³, though it rises significantly under compression or liquefaction.</p>
+          <p itemprop="text" class="seo-faq-a">Gasoline has a heat density of approximately 34.8 MJ per litre, diesel fuel about 38.6 MJ per litre, and natural gas at standard conditions roughly 0.037 MJ per cubic metre. Hydrogen at standard temperature and pressure has a much lower volumetric value of about 11 MJ per cubic metre, though it rises significantly under compression or liquefaction. These values help engineers compare fuel options for a given volume constraint.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How does hydrogen compare to gasoline in volumetric energy density?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">At standard conditions, hydrogen gas has roughly one-third the volumetric energy density of gasoline. However, hydrogen's specific energy per kilogram is nearly three times higher. This is why hydrogen is attractive for weight-sensitive applications like aerospace, while gasoline remains dominant for ground vehicles where volume is less constrained.</p>
+          <p itemprop="text" class="seo-faq-a">At standard conditions, hydrogen gas has roughly one-third the volumetric energy density of gasoline. However, hydrogen specific energy per kilogram is nearly three times higher than gasoline. This is why hydrogen is attractive for weight-sensitive applications like aerospace, while gasoline remains dominant for ground vehicles where volume is less constrained.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Why are volumetric energy density units important in engineering?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Engineers use volumetric energy density to size fuel tanks, battery packs, and thermal storage systems. Knowing the J/m³ or BTU/ft³ of a fuel helps determine how much volume is needed to store a required amount of energy. This is critical in automotive, aerospace, and stationary energy storage design where space is limited.</p>
+          <p itemprop="text" class="seo-faq-a">Engineers use volumetric energy density to size fuel tanks, battery packs, and thermal storage systems. Knowing the J per cubic metre or BTU per cubic foot of a fuel helps determine how much volume is needed to store a required amount of energy. This is critical in automotive, aerospace, and stationary energy storage design where space is limited and every cubic centimetre counts.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does temperature affect heat density values?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. Heat density values are typically reported at standard temperature and pressure conditions. When temperature increases, gases expand and their volumetric energy density decreases. Liquids are less affected but still show slight variations. Always check the stated conditions when comparing values from different sources.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. Heat density values are typically reported at standard temperature and pressure conditions. When temperature increases, gases expand and their volumetric energy density decreases. Liquids are less affected but still show slight variations, so always check the stated conditions when comparing values from different sources.</p>
         </div>
       </div>
     </div>

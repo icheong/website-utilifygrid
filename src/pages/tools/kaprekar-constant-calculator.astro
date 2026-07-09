@@ -54,36 +54,38 @@ const tool = tools.find(t => t.slug === 'kaprekar-constant-calculator')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the Kaprekar Constant Calculator</h2>
-    <p class="seo-p">Enter any 4-digit number (not all the same digit) and run the Kaprekar routine to watch it converge to 6174 step by step.</p>
+    <p class="seo-p">Type any 4-digit number with at least two different digits and the tool runs the Kaprekar routine step by step, sorting digits descending, sorting ascending, subtracting, and repeating until it reaches 6174. The journey takes at most seven iterations and the tool animates each step so you can follow the convergence in real time.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Enter a Number</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Type any 4-digit number with at least 2 distinct digits into the input field. Numbers like 1111 or 0000 are invalid because they produce zero at the first step.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Students exploring recreational number theory</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A maths teacher assigns a project on fixed-point algorithms. Enter 1234 and watch the sequence unfold: 4321 - 1234 = 3087, then 8730 - 0378 = 8352, then 8532 - 2358 = 6174. The result banner confirms convergence in three steps, and the progress bar tracks each iteration visually.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Run Kaprekar Routine</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Run button to start the iterative subtraction process, or use Random to generate a valid starting number automatically.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Maths bloggers researching convergence properties</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">You are writing a post about attractors in discrete dynamical systems and need to demonstrate that every non-repdigit 4-digit number converges to the same fixed point. Enter several starting values — 1000, 9876, 5551 — and record the step counts. The tool shows that 9876 takes exactly seven steps, which is the worst case.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">View Steps</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See each iteration's descending minus ascending subtraction displayed with the sorted digit arrangements and intermediate results.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Programmers benchmarking iterative algorithms</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">You are teaching a class on loop invariants and need a simple example of a function that always terminates. The Kaprekar routine is a perfect demonstration because it reaches a known fixed point in bounded steps. Use the Random button to generate a new starting number each time and show students that convergence is guaranteed.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">See Convergence</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Watch the sequence reach 6174 (Kaprekar's constant) or detect if the number enters a cycle. A progress bar tracks your position through the steps.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Parents helping children with maths homework</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A child brings home a worksheet asking what happens when you apply the Kaprekar routine to 2025. Enter the number and the tool produces the full chain: 5220 - 0225 = 4995, then 9954 - 4599 = 5355, then 5553 - 3555 = 1998, continuing until 6174. The step-by-step display makes it easy to copy into the homework.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the Kaprekar Constant Calculator Works</h2>
-    <p class="seo-p">The calculator implements the Kaprekar routine, a simple but powerful iterative algorithm that transforms any valid 4-digit number into the famous constant 6174.</p>
+    <p class="seo-p">The calculator implements the Kaprekar routine, an iterative subtraction algorithm that converges to the fixed point 6174 for every valid 4-digit starting number.</p>
     <h3 class="font-display seo-h3-sm">The Kaprekar Routine Algorithm</h3>
-    <p class="seo-p">At each step the calculator takes the current 4-digit number, sorts its digits in descending order to form one number, sorts them in ascending order to form another, and subtracts the smaller from the larger. The result becomes the input for the next iteration. This process repeats until the result is <code class="inline-code">6174</code>, at which point the routine enters an infinite loop since <code class="inline-code">7641 - 1467 = 6174</code>.</p>
-    <h3 class="font-display seo-h3-sm">Why 6174 is Special</h3>
-    <p class="seo-p">6174 is the only fixed point of the Kaprekar routine for 4-digit numbers. Every valid 4-digit number (one that is not a repdigit) converges to 6174 in at most 7 iterations. This was proven through exhaustive enumeration of all 9000 possible 4-digit numbers. The mathematical elegance lies in the fact that regardless of the starting number, the process always funnels toward this single attractor.</p>
-    <h3 class="font-display seo-h3-sm">Edge Cases and Repdigits</h3>
-    <p class="seo-p">Numbers where all four digits are identical (repdigits like <code class="inline-code">1111</code> or <code class="inline-code">9999</code>) are excluded because they yield <code class="inline-code">0</code> at the first subtraction step (e.g., <code class="inline-code">1111 - 1111 = 0</code>), which cannot continue the process. The calculator validates input to ensure at least two distinct digits are present before running the routine.</p>
+    <p class="seo-p">At each step the calculator takes the current 4-digit number, pads it with leading zeros if necessary, sorts its digits in descending order to form the largest number, sorts them in ascending order to form the smallest number, and subtracts the smaller from the larger. Starting with 3524, the digits sort descending as 5432 and ascending as 2345, giving 5432 - 2345 = 3087. The result becomes the input for the next iteration. This process repeats until the result is 6174, at which point 7641 - 1467 = 6174 forever.</p>
+    <h3 class="font-display seo-h3-sm">Why Every Number Converges</h3>
+    <p class="seo-p">Mathematicians proved through exhaustive enumeration of all 9000 possible 4-digit numbers that every non-repdigit input reaches 6174 in at most 7 iterations. The set of possible 4-digit numbers is finite, and the Kaprekar routine acts as a contraction mapping that reduces the state space at each step. No starting number escapes the attractor. The worst case is 7 steps, achieved by numbers like 1000 and 9876.</p>
+    <h3 class="font-display seo-h3-sm">Leading Zero Preservation</h3>
+    <p class="seo-p">Every intermediate result is padded to exactly 4 digits using leading zeros. This is critical because without it, a result like 999 would be treated as a 3-digit number and the digit sorting would fail. For example, starting from 1000 gives the subtraction 1000 - 0001 = 0999. The tool pads all results with padStart(4, 0) before each sort operation.</p>
+    <h3 class="font-display seo-h3-sm">Repdigit Detection</h3>
+    <p class="seo-p">Numbers where all four digits are identical — 0000, 1111, 2222, through 9999 — are excluded because they produce zero at the first step. Since zero has no valid 4-digit representation under the Kaprekar routine, the process cannot continue. The tool validates input by checking that at least two distinct digits exist before running the routine.</p>
   </div>
 
   <div slot="faq">
@@ -92,19 +94,19 @@ const tool = tools.find(t => t.slug === 'kaprekar-constant-calculator')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What is Kaprekar's constant 6174?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">6174 is the unique fixed point of the Kaprekar routine for 4-digit numbers. When you repeatedly sort a number's digits in descending and ascending order and subtract the smaller from the larger, you will always arrive at 6174. Once there, the process loops forever: 7641 minus 1467 equals 6174.</p>
+          <p itemprop="text" class="seo-faq-a">6174 is the unique fixed point of the Kaprekar routine for 4-digit numbers. When you repeatedly sort a number's digits in descending and ascending order and subtract the smaller from the larger, you will always arrive at 6174. Once there, the process loops forever because 7641 minus 1467 equals 6174.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How many steps does it take to reach 6174?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">No valid 4-digit number takes more than 7 iterations to reach 6174. Most numbers converge in 3 to 5 steps. The exact step count depends on the specific digits in the starting number, but convergence is guaranteed for all non-repdigit inputs.</p>
+          <p itemprop="text" class="seo-faq-a">No valid 4-digit number takes more than 7 iterations to reach 6174. Most numbers converge in 3 to 5 steps. For example, 1234 reaches 6174 in exactly 3 steps, while 1000 takes 7 steps — the worst case. The exact step count depends on the specific digits in the starting number, but convergence is guaranteed for all non-repdigit inputs.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does this work for 3-digit or 5-digit numbers?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes, but the constants differ. For 3-digit numbers the Kaprekar constant is 495, which is reached in at most 6 steps. For 5-digit numbers there is no single constant; instead the routine enters one of several cycles. The 4-digit case is special because it converges to exactly one fixed point.</p>
+          <p itemprop="text" class="seo-faq-a">Yes, but the constants differ. For 3-digit numbers the Kaprekar constant is 495, which is reached in at most 6 steps. For 5-digit numbers there is no single constant; instead the routine enters one of several cycles such as 63954 minus 49536 equals 14418, continuing until it loops. The 4-digit case is special because it converges to exactly one fixed point.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">

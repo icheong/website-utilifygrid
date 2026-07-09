@@ -48,20 +48,20 @@ const tool = tools.find(t => t.slug === 'numbers-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Number Base Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Binary, Hexadecimal, and Decimal</h2>
     <p class="seo-p">
-      This number base converter computes instant representations of a value across 15 different numeral systems, from binary (base 2) through base 36, entirely within your browser. Built with modern vanilla JavaScript, the tool executes every conversion locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are a developer debugging bit patterns, a student learning positional notation, or an engineer working with embedded systems.
+      You are debugging a C program and see a memory address 0x1A3F. What is that in decimal? Type 1A3F, select hexadecimal, and see that it equals 6719 in decimal, 1101000111111 in binary, and 15277 in octal. The copy button lets you paste the decimal value into your debugger or the binary value into a bitwise mask.
     </p>
     <p class="seo-p">
-      The converter supports the most commonly used bases across computing, mathematics, and engineering: <strong>binary</strong> (base 2) for hardware-level representation, <strong>octal</strong> (base 8) and <strong>hexadecimal</strong> (base 16) for compact binary display, <strong>decimal</strong> (base 10) for human-readable values, and less common bases like <strong>ternary</strong> (base 3), <strong>duodecimal</strong> (base 12), and <strong>base 36</strong> for specialized applications. Digits above 9 use letters A–Z (case-insensitive), supporting the full range of digit values from 0 to 35. The tool handles the JavaScript safe integer range up to 2⁵³ − 1 (approximately 9 × 10¹⁵) with full precision.
+      The converter handles 15 bases: binary (2), ternary (3), quaternary (4), quinary (5), senary (6), septenary (7), octal (8), nonary (9), decimal (10), undecimal (11), duodecimal (12), hexadecimal (16), vigesimal (20), base 32, and base 36. A student learning positional notation can type 42 and see binary 101010, octal 52, and hex 2A simultaneously, understanding that the value stays the same while the representation changes. A developer working with RGB colours sees that #FF5733 equals decimal 16734003.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">When the wrong base causes real problems</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Software debugging and low-level programming`, `Developers frequently need to convert between decimal, hexadecimal, and binary when debugging memory addresses, inspecting byte values, or working with bitwise operations. A memory address like 0x7FFF5FBFF8D0 is far more meaningful when converted to decimal (140,734,763,851,728) to understand its offset, or to binary to examine individual bit flags. This tool provides all 15 bases simultaneously, eliminating the need to mentally track which base each value represents.`],
-        [`Computer science education and positional notation`, `Students learning about numeral systems need to understand how the same value is represented differently across bases. Converting decimal 42 to binary (101010), octal (52), and hexadecimal (2A) demonstrates how positional weighting works: each digit position represents a power of the base. The tool's instant multi-base display helps students visualise these relationships and verify their manual calculations, reinforcing the concept that a number's value is independent of its representation.`],
-        [`Cryptography and encoding schemes`, `Cryptographic protocols and encoding schemes often use specific bases for key representation. Base64 encoding uses a 64-character alphabet (similar in concept to base 64, though technically a different encoding), and hexadecimal is the standard format for displaying cryptographic hashes (SHA-256 produces 64 hex characters). When working with hash values, converting between hex and binary helps verify that each hex digit maps to exactly 4 bits, which is essential for understanding data alignment and padding in cryptographic implementations.`]
+        ['Hex colour codes confuse beginners', 'A designer hands you the colour code FF5733. You need to extract the red, green, and blue components. In hex, FF = 255, 57 = 87, 33 = 51. The RGB value is (255, 87, 51). Without understanding that each pair of hex digits represents one colour channel, a beginner might try to treat FF5733 as a single decimal number (16,734,003), which is useless for colour manipulation. This converter shows all three colour components instantly.'],
+        ['Bitwise flags require binary thinking', 'A file permission value of 755 in octal means the owner has read-write-execute (7 = 111 binary), group has read-execute (5 = 101), and others have read-execute (5 = 101). Converting 755 to binary shows 111101101, which reveals each permission bit. If you treat 755 as decimal instead of octal, you get completely wrong permissions. The converter lets you verify octal-to-binary conversions quickly.'],
+        ['Network subnet masks need binary precision', 'A subnet mask of 255.255.255.0 in decimal equals 11111111.11111111.11111111.00000000 in binary. The number of 1-bits (24) determines the CIDR notation: /24. If you miscount the bits, you might use /23 or /25, which changes the network size from 256 addresses to 512 or 128. The converter shows the binary representation so you can count the 1-bits accurately.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -72,26 +72,25 @@ const tool = tools.find(t => t.slug === 'numbers-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Algorithms and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Number Base Converter Handles Binary, Hex, and Decimal</h2>
     <p class="seo-p">
-      A number's value is the same regardless of its base representation. For example, decimal <strong>255</strong> equals binary <strong>11111111</strong>, hexadecimal <strong>FF</strong>, and octal <strong>377</strong>. The converter uses two distinct algorithms: a <strong>division-remainder algorithm</strong> for converting from decimal to any target base, and a <strong>positional-weight algorithm</strong> for parsing input from any source base into a decimal integer. Both algorithms operate on JavaScript's IEEE 754 double-precision integers, providing up to 15 to 17 significant digits of precision.
+      Every number has the same value regardless of base. Decimal 255 is binary 11111111, hex FF, and octal 377. The converter uses two algorithms: a division-remainder method for decimal-to-target conversion, and a positional-weight method for parsing source-base input. Both run entirely in your browser using JavaScript integer arithmetic.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Division-remainder algorithm for decimal to any base</h3>
     <p class="seo-p-sm">
-      <strong>1. Input parsing and validation:</strong> The tool reads the raw input string and validates each character against the source base. For example, if the source base is 8 (octal), any character other than 0–7 is rejected. Characters A–Z (case-insensitive) are mapped to digit values 10–35. The validated string is then parsed into a JavaScript integer using <code class="inline-code">parseInt(raw, base)</code>, which handles the positional-weight decomposition internally.
+      To convert decimal 42 to binary: divide 42 by 2, get quotient 21 and remainder 0. Divide 21 by 2, get quotient 10 and remainder 1. Continue until quotient is 0. Reading remainders from last to first: 101010. The same method works for hex: 42 divided by 16 is 2 remainder 10 (A in hex). So 42 decimal = 2A hex. For base 36: 42 divided by 36 is 1 remainder 6, so 42 decimal = 16 base-36.
     </p>
     <p class="seo-p-sm">
-      <strong>2. Division-remainder algorithm:</strong> To convert the decimal integer to a target base, the tool repeatedly divides by the target base and collects the remainders. For example, converting decimal 255 to binary: 255 ÷ 2 = 127 remainder 1, 127 ÷ 2 = 63 remainder 1, 63 ÷ 2 = 31 remainder 1, and so on. Reading the remainders from last to first gives 11111111. This algorithm produces digits in reverse order, so the result string is built by prepending each new digit.
+      The digit characters are mapped using a lookup string: 0-9 for values 0-9, A-Z for values 10-35. When the remainder is 10, the digit is A. When 35, the digit is Z. This lets the converter handle all 15 supported bases (2 through 36) with a single mapping table.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Positional-weight parsing for source base to decimal</h3>
     <p class="seo-p-sm">
-      <strong>3. Digit character mapping:</strong> Digit values 0–9 map to characters '0'–'9'. Digit values 10–35 map to characters 'A'–'Z'. The converter uses a constant string <code class="inline-code">DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'</code> as a lookup table, indexing by the remainder value. This supports all 15 bases from binary through base 36.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Output display:</strong> Each target base produces a result string displayed in a copyable row. The results are shown for all 15 bases simultaneously, with the source base highlighted implicitly by omission (it is the input, so it does not appear in the output grid). Values exceeding JavaScript's safe integer range (2⁵³ − 1) trigger an error message rather than displaying imprecise results.
+      To parse hex 1A3F to decimal: each digit is multiplied by 16 raised to its position power. F (15) x 16^0 = 15. 3 x 16^1 = 48. A (10) x 16^2 = 2560. 1 x 16^3 = 4096. Sum = 6719. JavaScript's parseInt() function performs this internally, but the converter validates each digit against the source base first. If you enter G in base 16, it rejects it because G is not a valid hex digit.
     </p>
     <p class="seo-p-none">
-      <strong>Safe integer limits:</strong> JavaScript can safely represent integers up to <code class="inline-code">Number.MAX_SAFE_INTEGER</code> = 2⁵³ − 1 = 9,007,199,254,740,991 (approximately 9 × 10¹⁵). Beyond this threshold, IEEE 754 double-precision floats lose the ability to represent every consecutive integer, and conversion results may be incorrect. The converter enforces this limit to guarantee accuracy. Negative numbers are supported via a sign prefix, and the division-remainder algorithm preserves the sign through the conversion.
+      The converter supports the JavaScript safe integer range: up to 2^53 - 1 = 9,007,199,254,740,991 (about 9 quadrillion). Beyond this, IEEE 754 double-precision floats lose the ability to represent every consecutive integer, and conversion results become unreliable. The tool shows an error message rather than displaying wrong values. Negative numbers are handled by preserving the sign prefix through both algorithms.
     </p>
   </div>
 
@@ -100,32 +99,28 @@ const tool = tools.find(t => t.slug === 'numbers-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is a number base?",
-          a: "A number base (or radix) is the number of unique digits used to represent values in a positional numeral system. Base 10 (decimal) uses digits 0–9, base 2 (binary) uses only 0 and 1, and base 16 (hexadecimal) uses 0–9 and A–F. The base determines how many digit positions are needed before carrying over to the next position, just as decimal carries over after 9."
+          q: "How do I convert decimal 255 to binary?",
+          a: "Divide by 2 repeatedly and collect remainders: 255/2 = 127 R1, 127/2 = 63 R1, 63/2 = 31 R1, 31/2 = 15 R1, 15/2 = 7 R1, 7/2 = 3 R1, 3/2 = 1 R1, 1/2 = 0 R1. Reading remainders from bottom to top: 11111111. That is 8 bits, which fits in one byte. In hex, 255 = FF (15x16 + 15 = 255)."
         },
         {
-          q: "Why is binary used in computers?",
-          a: "Computers use binary because their hardware consists of transistors that have two states: on and off, represented as 1 and 0. This makes binary the most natural number system for electronic circuits. All data — numbers, text, images, and sound — is ultimately stored and processed as binary values, with each binary digit (bit) representing a single on/off state."
+          q: "Why does hex use letters A through F?",
+          a: "Hexadecimal (base 16) needs 16 unique digits. After 0-9, the remaining 6 values (10-15) are represented by A-F. A=10, B=11, C=12, D=13, E=14, F=15. This makes hex compact: one hex digit equals exactly 4 binary bits. So FF hex = 11111111 binary = 255 decimal. Hex is used everywhere in computing: memory addresses, colour codes, hash values."
         },
         {
-          q: "Why is hexadecimal used in programming?",
-          a: "Hexadecimal (base 16) is compact: one hex digit represents exactly 4 binary digits (bits), making it easy to read and write binary values. For example, binary 11111111 equals hex FF equals decimal 255. Hex is used for memory addresses, color codes (RGB values like #FF5733), character encoding (Unicode code points), and displaying binary data in a human-readable format."
+          q: "What is the largest number this converter can handle?",
+          a: "The converter supports up to 9,007,199,254,740,991 (2^53 - 1), which is about 9 quadrillion. This is the JavaScript safe integer limit. Beyond this, IEEE 754 double-precision floats lose accuracy and the converter shows an error instead of wrong results. For most practical purposes, this limit is more than sufficient."
         },
         {
-          q: "What is the maximum number I can convert?",
-          a: "This converter uses JavaScript's safe integer range: up to 2⁵³ − 1 = 9,007,199,254,740,991 (about 9 × 10¹⁵). Beyond this threshold, IEEE 754 double-precision floats lose the ability to represent every consecutive integer, and conversion results may be incorrect. The tool displays an error message rather than showing imprecise values."
+          q: "How do I read a binary subnet mask?",
+          a: "A subnet mask 255.255.255.0 in binary is 11111111.11111111.11111111.00000000. Count the 1-bits: 24 ones, so it is a /24 CIDR mask. This means the first 24 bits identify the network and the last 8 bits identify hosts. A /24 network has 256 addresses (2^8 = 256). If you miscount and use /23, you get 512 addresses, which may overlap with an adjacent network."
         },
         {
-          q: "What letters are used for digits above 9?",
-          a: "For bases above 10, letters A through Z represent digit values 10 through 35. For example, in hexadecimal (base 16): A=10, B=11, C=12, D=13, E=14, F=15. In base 36: Z=35. The converter accepts both uppercase and lowercase input and displays uppercase output for consistency."
+          q: "What is base 36 used for?",
+          a: "Base 36 uses digits 0-9 and letters A-Z (values 0-35). It is used for compact identifiers: short URLs, game codes, and session tokens. Base 36 is efficient because it uses only alphanumeric characters (no special symbols) and produces shorter strings than hex or decimal for the same value. For example, 1000000 decimal = LFLS base 36 (only 4 characters)."
         },
         {
-          q: "How do I convert binary to decimal manually?",
-          a: "Multiply each binary digit by 2 raised to the power of its position (starting from 0 on the right), then sum the results. For example, binary 1010 = 1×2³ + 0×2² + 1×2¹ + 0×2⁰ = 8 + 0 + 2 + 0 = 10. This positional-weight method works for any base: replace 2 with the target base and the digit values accordingly."
-        },
-        {
-          q: "Why would I use base 32 or base 36?",
-          a: "Base 32 and base 36 are used in encoding schemes where compact, human-readable representations are needed. Base 32 is used in TOTP (time-based one-time passwords) and DNS records, while base 36 is used for short URLs and game IDs because it produces compact strings using only alphanumeric characters. Base 36 is particularly efficient: it can represent large numbers in fewer characters than hex or decimal."
+          q: "Can I convert negative numbers between bases?",
+          a: "Yes. The converter preserves the negative sign through all conversions. Negative 42 decimal = -101010 binary = -2A hex = -52 octal. The sign is handled separately from the magnitude: the converter takes the absolute value, converts it using the division-remainder algorithm, then prepends the minus sign to the result."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

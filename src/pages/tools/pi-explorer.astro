@@ -42,85 +42,101 @@ const tool = tools.find(t => t.slug === 'pi-explorer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Pi Explorer Overview</h2>
+    <h2 class="font-display seo-h2">How to Use Pi Explorer</h2>
     <p class="seo-p">
-      Pi is the ratio of a circle's circumference to its diameter, approximately equal to 3.14159265&#x2026;. This interactive 3D tool demonstrates that relationship using a bicycle wheel metaphor: the circumference of a wheel is exactly pi times its diameter. By unrolling the circumference onto a flat line, you can physically see that it takes exactly 3 full lengths of the diameter plus a small remainder of approximately 0.14159 to wrap around the entire tire.
+      The tool visualises pi as the ratio of a circle's circumference to its diameter using a 3D bicycle wheel. The wheel renders with WebGL and Three.js, with spokes, a tyre, and a rim that you can orbit by dragging. Click Unroll Circumference to animate the tyre separating from the rim and laying flat, revealing three complete diameter-length segments plus the fractional pi remainder of approximately 0.14159.
     </p>
-    <p class="seo-p">
-      The tool renders a three-dimensional bicycle wheel using WebGL and Three.js, with spokes, a tyre, and a rim that can be rotated freely in 3D space. Click <strong>Unroll Circumference</strong> to animate the tyre separating from the rim and laying flat, revealing three complete diameter-length segments plus the fractional pi remainder. Adjust the animation speed with the slider, or drag and scroll to orbit the camera around the scene.
-    </p>
-
-    <h3 class="seo-h3-sm">Real-World Applications and Use Cases</h3>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['Teaching circle geometry in classrooms', 'Educators can project the 3D wheel onto a screen and animate the unrolling process to give students a tangible, visual proof that pi relates circumference to diameter. The animation makes an abstract ratio concrete by showing exactly how many diameter-lengths fit around a circle.'],
-        ['Engineering and manufacturing design', 'Mechanical engineers calculating belt lengths, pulley systems, or gear ratios rely on pi to convert between rotational and linear dimensions. This tool helps visualise why that conversion factor exists and how it manifests in physical systems like bicycle wheels or conveyor belts.'],
-        ['Understanding irrational number density', 'The library search feature demonstrates that pi is normal in base 10: every finite digit sequence appears somewhere in its decimal expansion. Students can search for their birthday, phone number, or any meaningful sequence to experience the surprising ubiquity of patterns within irrational numbers.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm">
-          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Teaching circle geometry in classrooms</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Educators project the 3D wheel onto a screen and animate the unrolling process to give students a tangible, visual proof that pi relates circumference to diameter. The animation makes an abstract ratio concrete by showing exactly how many diameter-lengths fit around a circle.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Engineering and manufacturing design</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Mechanical engineers calculating belt lengths, pulley systems, or gear ratios rely on pi to convert between rotational and linear dimensions. This tool helps visualise why that conversion factor exists and how it manifests in physical systems like bicycle wheels or conveyor belts.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Searching for patterns in pi digits</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">The library search feature lets you look for any digit sequence within the first 100,000 digits of pi. Enter your birthday, phone number, or any meaningful sequence to experience the surprising ubiquity of patterns within irrational numbers. The camera flies to the matching position in a 3D library of floating digit cubes.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Understanding irrational number density</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Pi is conjectured to be a normal number in base 10, meaning every finite digit sequence appears somewhere in its decimal expansion. The search feature demonstrates this empirically: most 8-digit sequences are found within the first 100,000 digits, giving a hands-on feel for digit distribution in irrational numbers.</p>
+      </div>
     </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Circumference Geometry and the Digit Library</h2>
+    <h2 class="font-display seo-h2">How the 3D Pi Visualisation Works</h2>
     <p class="seo-p">
-      The fundamental relationship expressed by pi is <code class="inline-code">C = pi x d</code>, where C is the circumference and d is the diameter. This means if you take the diameter of any circle and lay it end-to-end along the circumference, you need exactly pi copies to cover the full loop. Since pi is approximately 3.14159, that is 3 complete diameter-lengths plus approximately 0.14159 of a fourth.
+      The fundamental relationship expressed by pi is C equals pi times d, where C is the circumference and d is the diameter. This means if you take the diameter of any circle and lay it end-to-end along the circumference, you need exactly pi copies to cover the full loop. Since pi is approximately 3.14159, that is 3 complete diameter-lengths plus approximately 0.14159 of a fourth.
     </p>
-    <h3 class="seo-h3-sm">The Bicycle Wheel Metaphor</h3>
+    <h3 class="seo-h3-sm">The Bicycle Wheel Unroll Animation</h3>
     <p class="seo-p">
-      The visualisation models a bicycle wheel with a tyre of configurable radius. The tyre's circumference is computed as <code class="inline-code">2 x pi x r</code>, and the diameter as <code class="inline-code">2r</code>. During the unroll animation, the tyre mesh is deformed from a torus shape into a flat line segment. Three evenly-spaced markers along the flat segment show where each complete diameter-length ends, and the final segment displays the 0.14159&#x2026; remainder. The animation uses cubic easing for smooth deceleration.
+      The visualisation models a bicycle wheel with a tyre of configurable radius. The tyre circumference is computed as 2 times pi times r, and the diameter as 2r. During the unroll animation, the tyre mesh is deformed from a torus shape into a flat line segment. Three evenly-spaced markers along the flat segment show where each complete diameter-length ends, and the final segment displays the 0.14159 remainder. The animation uses cubic easing for smooth deceleration.
     </p>
     <h3 class="seo-h3-sm">The Infinite Digit Library</h3>
     <p class="seo-p">
-      The search feature accesses a pre-computed string of pi's decimal digits (first 100,000 digits). When a user enters a sequence, the tool scans this string using a naive substring search and returns the position of the first occurrence. If the sequence is found, the camera animates through a 3D library where each digit of pi is rendered as a floating cube. The camera flies to the cube at the matching position, highlighting it with a glowing outline to mark the discovery.
+      The search feature accesses a pre-computed string of pi's first 100,000 decimal digits. When a user enters a sequence, the tool scans this string using a substring search and returns the position of the first occurrence. If the sequence is found, the camera animates through a 3D library where each digit of pi is rendered as a floating cube, flying to the cube at the matching position and highlighting it with a glowing outline.
     </p>
     <h3 class="seo-h3-sm">Normality and Digit Distribution</h3>
     <p class="seo-p-none">
-      Pi is conjectured to be a normal number in base 10, meaning every finite digit sequence appears with equal asymptotic frequency. While this has not been formally proven, computational analysis of the first 100,000 digits shows a distribution consistent with normality: each digit 0-9 appears roughly 10% of the time, and all 2-digit, 3-digit, and 4-digit combinations appear with expected frequency. The library search demonstrates this empirically by finding user-provided sequences quickly.
+      Pi is conjectured to be a normal number in base 10, meaning every finite digit sequence appears with equal asymptotic frequency. While this has not been formally proven, computational analysis of the first 100,000 digits shows a distribution consistent with normality: each digit 0-9 appears roughly 10% of the time, and all 2-digit, 3-digit, and 4-digit combinations appear with expected frequency.
     </p>
   </div>
 
   <div slot="faq">
     <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
-      {[
-        {
-          q: 'What is pi and why does it matter?',
-          a: 'Pi is the mathematical constant representing the ratio of any circle\'s circumference to its diameter. Its value is approximately 3.14159265 and it continues infinitely without repeating. Pi appears throughout mathematics, from basic geometry and trigonometry to Fourier analysis, probability theory, and quantum physics. It is fundamental to any calculation involving circles, spheres, or periodic phenomena.'
-        },
-        {
-          q: 'How many digits of pi does this tool use?',
-          a: 'The tool stores the first 100,000 decimal digits of pi, which is sufficient for most educational and recreational searches. This represents pi accurate to about 0.00001%, far beyond the precision needed for any practical engineering calculation. For context, NASA uses only 15 decimal places for interplanetary navigation.'
-        },
-        {
-          q: 'Can I find my birthday in pi?',
-          a: 'Yes. Enter your birthdate as a continuous number (e.g., 19900415 for April 15, 1990) into the search box. If the sequence appears within the first 100,000 digits, the tool will locate it and fly the camera to that position in the 3D library. Most 8-digit dates are found, though some may not appear in this range due to the random distribution of digits.'
-        },
-        {
-          q: 'Is pi truly infinite, or does it eventually end?',
-          a: 'Pi is a proven irrational number, meaning its decimal representation never terminates and never enters a repeating pattern. This was first proven by Johann Lambert in 1761. The digits continue forever in a sequence that passes every known statistical test for randomness, though no one has proven that pi is a normal number.'
-        },
-        {
-          q: 'Why does the bicycle wheel show exactly 3 full lengths?',
-          a: 'The diameter of a circle fits into its circumference exactly pi times. Since pi is approximately 3.14159, that means 3 complete diameter-lengths cover most of the circumference, leaving a remainder of approximately 0.14159 of a diameter. The unroll animation makes this visible by laying the tyre flat and marking where each diameter-length ends.'
-        },
-        {
-          q: 'Does this tool work offline?',
-          a: 'The tool runs entirely in the browser using WebGL for 3D rendering and vanilla JavaScript for pi digit search. No server communication is required after the initial page load. Once the page is cached, all calculations, animations, and searches happen locally on your device with zero data sent externally.'
-        }
-      ].map((item) => (
-        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
-             class="surface-2 border-theme seo-faq-card">
-          <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-            <p itemprop="text" class="seo-faq-a">{item.a}</p>
-          </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is pi and why does it matter?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Pi is the mathematical constant representing the ratio of any circle's circumference to its diameter. Its value is approximately 3.14159265 and it continues infinitely without repeating. Pi appears throughout mathematics, from basic geometry and trigonometry to Fourier analysis, probability theory, and quantum physics. It is fundamental to any calculation involving circles, spheres, or periodic phenomena.</p>
         </div>
-      ))}
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How many digits of pi does this tool use?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool stores the first 100,000 decimal digits of pi, which is sufficient for most educational and recreational searches. This represents pi accurate to about 0.00001%, far beyond the precision needed for any practical engineering calculation. For context, NASA uses only 15 decimal places for interplanetary navigation.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Can I find my birthday in pi?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Yes. Enter your birthdate as a continuous number, such as 19900415 for April 15, 1990, into the search box. If the sequence appears within the first 100,000 digits, the tool locates it and flies the camera to that position in the 3D library. Most 8-digit dates are found, though some may not appear in this range due to the random distribution of digits.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Is pi truly infinite, or does it eventually end?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Pi is a proven irrational number, meaning its decimal representation never terminates and never enters a repeating pattern. This was first proven by Johann Lambert in 1761. The digits continue forever in a sequence that passes every known statistical test for randomness, though no one has proven that pi is a normal number.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why does the bicycle wheel show exactly 3 full lengths?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The diameter of a circle fits into its circumference exactly pi times. Since pi is approximately 3.14159, that means 3 complete diameter-lengths cover most of the circumference, leaving a remainder of approximately 0.14159 of a diameter. The unroll animation makes this visible by laying the tyre flat and marking where each diameter-length ends.</p>
+        </div>
+      </div>
+
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+        class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Does this tool work offline?</h3>
+        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool runs entirely in the browser using WebGL for 3D rendering and vanilla JavaScript for pi digit search. No server communication is required after the initial page load. Once the page is cached, all calculations, animations, and searches happen locally on your device with zero data sent externally.</p>
+        </div>
+      </div>
+
     </div>
     <div class="seo-disclaimer" style="margin-top:1.5rem; background:var(--bg-surface-2); border:1px solid var(--border); font-size:0.8rem; color:var(--text-muted); line-height:1.7">
       <strong class="text-primary" style="color:var(--text-secondary)">Disclaimer:</strong> This tool is for educational and visualisation purposes only. Pi digit data is sourced from published computational results. The 3D visualisation is an approximation and should not be used for precision engineering calculations.

@@ -52,45 +52,46 @@ const tool = tools.find(t => t.slug === 'mock-json-generator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Mock JSON Generator Overview</h2>
+    <h2 class="font-display seo-h2">How to Use the Mock JSON Generator</h2>
     <p class="seo-p">
-      This mock JSON generator creates realistic sample data from a JSON Schema definition (draft-07 compatible). Running entirely in-browser with vanilla JavaScript, the tool parses your schema using <code class="inline-code">JSON.parse()</code> and recursively generates compliant data that satisfies every constraint defined in the schema. No data is sent to any server — all generation occurs client-side, ensuring complete privacy for proprietary data models or sensitive API contracts.
+      Write a JSON Schema describing your desired data structure, set the number of records to generate, and click Generate Mock Data. The generator produces compliant data that satisfies every constraint defined in the schema. Use the Simple and Nested sample buttons to load pre-built schemas and see the tool in action instantly. All generation occurs client-side with no data sent to any server.
     </p>
-    <p class="seo-p">
-      Write a JSON Schema describing your desired data structure, set the number of records to generate (up to 100), and click <strong>Generate Mock Data</strong>. The generator supports <code class="inline-code">type</code>, <code class="inline-code">properties</code>, <code class="inline-code">items</code> (arrays), <code class="inline-code">enum</code>, <code class="inline-code">const</code>, <code class="inline-code">minimum/maximum</code>, <code class="inline-code">exclusiveMinimum/exclusiveMaximum</code>, <code class="inline-code">minLength/maxLength</code>, <code class="inline-code">pattern</code>, and <code class="inline-code">format</code> patterns. Use the <strong>Simple</strong> and <strong>Nested</strong> sample buttons to load pre-built schemas and see the tool in action instantly.
-    </p>
-
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['API testing and staging environments', 'A frontend developer building a React or Vue component that consumes a REST API can generate dozens of realistic mock records to test rendering, pagination, and edge cases before the backend is ready. The generated data respects type constraints, so email fields contain valid emails and numeric fields stay within the defined range.'],
-        ['Database seeding for development', 'A full-stack engineer setting up a local development database can define a schema for users, products, or orders and generate a batch of seed data. This eliminates the need to manually craft test records or install heavyweight mocking libraries, keeping the development environment lightweight and self-contained.'],
-        ['Prototyping and design mockups', 'A UI/UX designer creating wireframes or high-fidelity prototypes needs realistic content to evaluate layout, spacing, and responsive behaviour. The generator produces data that looks like real records, making it possible to identify overflow, truncation, or alignment issues that placeholder text like "Lorem ipsum" would not reveal.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm">
-          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">API testing and staging environments</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A frontend developer building a React or Vue component that consumes a REST API generates dozens of realistic mock records to test rendering, pagination, and edge cases before the backend is ready. The generated data respects type constraints, so email fields contain valid emails and numeric fields stay within the defined range.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Database seeding for development</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A full-stack engineer setting up a local development database defines a schema for users, products, or orders and generates a batch of seed data. This eliminates the need to manually craft test records or install heavyweight mocking libraries.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Prototyping and design mockups</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A UI/UX designer creating wireframes or high-fidelity prototypes needs realistic content to evaluate layout, spacing, and responsive behaviour. The generator produces data that looks like real records, making it possible to identify overflow, truncation, or alignment issues that placeholder text would not reveal.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Load testing with realistic payloads</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A performance engineer generates large batches of mock records to create realistic request payloads for load testing an API endpoint. The schema constraints ensure the test data matches the production data shape, giving accurate performance measurements.</p>
+      </div>
     </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Schema-Driven Recursive Data Generation</h2>
+    <h2 class="font-display seo-h2">How the Mock JSON Generator Works</h2>
     <p class="seo-p">
-      The generator operates in three distinct stages: schema validation, recursive value generation, and output serialisation. The schema is parsed with <code class="inline-code">JSON.parse()</code>, which validates the JSON structure. The generator then traverses the schema tree recursively, producing a random value for each property based on its declared type and constraints.
+      The generator reads your JSON Schema and recursively produces a random value for each property based on its declared type and constraints. The schema is parsed with <code class="inline-code">JSON.parse()</code>, and the generator traverses the schema tree, selecting a generation strategy for each property.
     </p>
     <h3 class="seo-h3-sm">Type Detection and Constraint Resolution</h3>
     <p class="seo-p">
-      For each property, the generator reads the <code class="inline-code">type</code> field and selects a generation strategy. Strings are generated using a pool of lowercase characters, with length controlled by <code class="inline-code">minLength</code> and <code class="inline-code">maxLength</code>. Integers and numbers use <code class="inline-code">minimum/maximum</code> and <code class="inline-code">exclusiveMinimum/exclusiveMaximum</code> to define the range. Booleans are random <code class="inline-code">true</code>/<code class="inline-code">false</code> values. Arrays use <code class="inline-code">minItems</code>/<code class="inline-code">maxItems</code> to control length, and each element is generated from the <code class="inline-code">items</code> schema.
+      For each property, the generator reads the type field and selects a generation strategy. Strings are generated using a pool of lowercase characters, with length controlled by minLength and maxLength. Integers and numbers use minimum/maximum and exclusiveMinimum/exclusiveMaximum to define the range. Booleans are random true/false values. Arrays use minItems/maxItems to control length, and each element is generated from the items schema.
     </p>
     <h3 class="seo-h3-sm">Format Pattern Generation</h3>
     <p class="seo-p">
-      When a <code class="inline-code">format</code> keyword is present, the generator produces values that match the specified pattern: <code class="inline-code">email</code> generates realistic email addresses from name pools and domain lists; <code class="inline-code">date-time</code> produces ISO 8601 timestamps; <code class="inline-code">date</code> generates YYYY-MM-DD strings; <code class="inline-code">uuid</code> calls <code class="inline-code">crypto.randomUUID()</code> for v4 UUIDs; <code class="inline-code">ipv4</code>/<code class="inline-code">ipv6</code> generate valid IP address formats. The <code class="inline-code">enum</code> keyword randomly selects from a fixed list of allowed values, and <code class="inline-code">const</code> returns the specified constant.
+      When a format keyword is present, the generator produces values that match the specified pattern. Email generates realistic email addresses from name pools and domain lists. Date-time produces ISO 8601 timestamps. UUID calls crypto.randomUUID() for v4 UUIDs. IPv4 and IPv6 generate valid IP address formats. The enum keyword randomly selects from a fixed list of allowed values, and const returns the specified constant.
     </p>
     <h3 class="seo-h3-sm">Nested Schema Resolution</h3>
     <p class="seo-p-none">
-      Object and array types are resolved recursively. A property with <code class="inline-code">type: "object"</code> generates its own sub-properties based on the nested <code class="inline-code">properties</code> definition. Arrays generate a random number of elements (between <code class="inline-code">minItems</code> and <code class="inline-code">maxItems</code>), each conforming to the <code class="inline-code">items</code> schema. This recursive approach supports arbitrarily deep nesting, allowing complex data models with multiple levels of embedded objects and arrays.
+      Object and array types are resolved recursively. A property with type object generates its own sub-properties based on the nested properties definition. Arrays generate a random number of elements between minItems and maxItems, each conforming to the items schema. This recursive approach supports arbitrarily deep nesting, allowing complex data models with multiple levels of embedded objects and arrays.
     </p>
   </div>
 
@@ -102,7 +103,7 @@ const tool = tools.find(t => t.slug === 'mock-json-generator')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What JSON Schema features are supported?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">The generator supports <code class="inline-code">type</code>, <code class="inline-code">properties</code>, <code class="inline-code">items</code> (for arrays), <code class="inline-code">enum</code>, <code class="inline-code">const</code>, <code class="inline-code">minimum/maximum</code>, <code class="inline-code">exclusiveMinimum/exclusiveMaximum</code>, <code class="inline-code">minLength/maxLength</code>, <code class="inline-code">pattern</code>, <code class="inline-code">format</code>, and <code class="inline-code">required</code> fields. Draft-07 compatible schemas are fully supported. Keywords like <code class="inline-code">$ref</code>, <code class="inline-code">allOf</code>, and <code class="inline-code">oneOf</code> are not currently resolved.</p>
+          <p itemprop="text" class="seo-faq-a">The generator supports type, properties, items (for arrays), enum, const, minimum/maximum, exclusiveMinimum/exclusiveMaximum, minLength/maxLength, pattern, format, and required fields. Draft-07 compatible schemas are fully supported. Keywords like $ref, allOf, and oneOf are not currently resolved.</p>
         </div>
       </div>
 
@@ -110,7 +111,7 @@ const tool = tools.find(t => t.slug === 'mock-json-generator')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What format patterns produce realistic data?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Supported formats include: <code class="inline-code">email</code> for realistic email addresses, <code class="inline-code">date-time</code> for ISO 8601 timestamps, <code class="inline-code">date</code> for YYYY-MM-DD strings, <code class="inline-code">time</code> for HH:mm:ss, <code class="inline-code">uri</code> for HTTPS URLs, <code class="inline-code">uuid</code> for v4 UUIDs via <code class="inline-code">crypto.randomUUID()</code>, <code class="inline-code">hostname</code> for domain names, and <code class="inline-code">ipv4</code>/<code class="inline-code">ipv6</code> for IP addresses. Each format produces contextually appropriate values rather than random strings.</p>
+          <p itemprop="text" class="seo-faq-a">Supported formats include email for realistic email addresses, date-time for ISO 8601 timestamps, date for YYYY-MM-DD strings, time for HH:mm:ss, uri for HTTPS URLs, uuid for v4 UUIDs via crypto.randomUUID(), hostname for domain names, and ipv4/ipv6 for IP addresses. Each format produces contextually appropriate values rather than random strings.</p>
         </div>
       </div>
 
@@ -118,7 +119,7 @@ const tool = tools.find(t => t.slug === 'mock-json-generator')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does it handle nested object and array schemas?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. The generator recursively resolves nested <code class="inline-code">object</code> and <code class="inline-code">array</code> schemas. A property with <code class="inline-code">type: "object"</code> generates its own sub-properties from the nested <code class="inline-code">properties</code> definition. Arrays produce a random number of elements (between <code class="inline-code">minItems</code> and <code class="inline-code">maxItems</code>), each conforming to the <code class="inline-code">items</code> schema. This supports arbitrarily deep nesting.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. The generator recursively resolves nested object and array schemas. A property with type object generates its own sub-properties from the nested properties definition. Arrays produce a random number of elements between minItems and maxItems, each conforming to the items schema. This supports arbitrarily deep nesting for complex data models.</p>
         </div>
       </div>
 
@@ -126,15 +127,15 @@ const tool = tools.find(t => t.slug === 'mock-json-generator')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Is the generated output always valid JSON?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. The output is always valid, parseable JSON. Each generated record is produced by the <code class="inline-code">generateValue()</code> function which returns a value matching the declared type and constraints. The final output is serialised with <code class="inline-code">JSON.stringify()</code> using 2-space indentation for readability.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. The output is always valid, parseable JSON. Each generated record is produced by the generateValue function which returns a value matching the declared type and constraints. The final output is serialised with JSON.stringify using 2-space indentation for readability.</p>
         </div>
       </div>
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">What happens if the schema is invalid?</h3>
+        <h3 itemprop="name" class="seo-faq-q">What happens if the schema is invalid or incomplete?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">If the schema is not valid JSON, the tool displays the exact error message from the JavaScript engine in a red error box below the input area. If the schema is valid JSON but does not conform to JSON Schema conventions (e.g., missing a <code class="inline-code">type</code> field), the generator will return <code class="inline-code">null</code> for unrecognised properties. Ensure your schema includes at minimum a <code class="inline-code">type</code> field at the root level.</p>
+          <p itemprop="text" class="seo-faq-a">If the schema is not valid JSON, the tool displays the exact error message from the JavaScript engine in a red error box below the input area. If the schema is valid JSON but does not conform to JSON Schema conventions, such as missing a type field, the generator returns null for unrecognised properties. Ensure your schema includes at minimum a type field at the root level.</p>
         </div>
       </div>
 

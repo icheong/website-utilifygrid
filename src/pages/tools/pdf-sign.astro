@@ -74,12 +74,12 @@ const tool = tools.find(t => t.slug === 'pdf-sign')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Sign PDF Overview</h2>
+    <h2 class="font-display seo-h2">How to use the Sign PDF tool</h2>
     <p class="seo-p">
-      This PDF sign tool lets you create signatures by drawing, typing, or uploading an image, then place them anywhere on PDF pages — entirely within your browser. Built with <strong>pdf-lib</strong> (for embedding signatures and saving) and <strong>PDF.js</strong> (for rendering pages), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Signatures are saved in your browser’s localStorage for reuse across sessions, and each placement is independently draggable and resizable.
+      You need to sign a PDF contract before sending it back to a client, but your printer and scanner are packed away. Drop the PDF into the tool, click Create Signature, and choose how to sign: draw freehand on the canvas, type your name in one of 8 script fonts, or upload a scanned image of your wet-ink signature. Click on the page where the signature goes, drag it into position, and hit Save PDF. The signed document downloads in seconds.
     </p>
     <p class="seo-p">
-      The tool supports three signature creation methods: <strong>Draw</strong> (freehand on a canvas with adjustable pen colour and size), <strong>Type</strong> (choose from 8 script fonts or Helvetica, with custom colour), and <strong>Upload</strong> (drag-and-drop or browse for PNG, JPG, GIF, or WebP images). An optional date element can be included alongside each signature. Placed elements are per-page with independent positioning and sizing.
+      A 3-page contract that needs two signatures and a date takes about 30 seconds end-to-end. The tool supports PNG, JPG, GIF, and WebP uploads, so you can use a photo of your signature taken on your phone. Saved signatures persist in your browser for reuse across sessions, so you only create your signature once.
     </p>
 
     <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
@@ -98,12 +98,12 @@ const tool = tools.find(t => t.slug === 'pdf-sign')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Signing Process</h2>
+    <h2 class="font-display seo-h2">How the Sign PDF tool works</h2>
     <p class="seo-p">
-      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla’s PDF renderer) renders each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) embeds signature images and date text onto the PDF on save. An SVG overlay handles signature placement, dragging, and resizing. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+      The tool uses a two-library architecture: <strong>PDF.js</strong> renders each page onto an HTML Canvas element, while <strong>pdf-lib</strong> embeds signature images and date text onto the PDF on save. An SVG overlay handles signature placement, dragging, and resizing. Both libraries execute in the browser via WebAssembly — no server round-trips occur at any stage.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Signature Creation Methods</h3>
+    <h3 class="font-display seo-h3-sm">Signature creation methods</h3>
     <p class="seo-p-sm">
       <strong>Draw:</strong> A 500×150 Canvas element captures freehand mouse/touch input. The pen colour (via color input) and stroke width (1-8px range slider) are configurable. The canvas uses a checkered transparency background to indicate the transparent areas of the signature. The signature is exported as a PNG data URL via <code class="inline-code">toDataURL('image/png')</code>.
     </p>

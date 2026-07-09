@@ -25,19 +25,20 @@ const tool = tools.find(t => t.slug === 'prompt-chain-builder')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to build a prompt chain</h2>
-    <p class="seo-p">Add steps to your chain using the Add Step button. Each step has a role (system, user, or assistant) and a content field. Reorder steps using the up and down arrows. Export as JSON for direct API use or as a readable text preview.</p>
+    <p class="seo-p">You are building a customer-support chatbot that needs to classify incoming tickets before responding. Instead of writing one massive prompt, add three steps: a system message setting the persona ("You are a support agent for Acme Corp"), a user message with the ticket text, and an assistant message pre-filled with the classification output you want. Export as JSON and paste it directly into the OpenAI API call.</p>
+    <p class="seo-p">A typical effective chain is 2 to 6 messages. The tool exports a valid messages array ready for OpenAI or Anthropic API calls, plus a human-readable text preview for documentation. Reorder steps with the up/down arrows to test different conversation flows before writing any code.</p>
     <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Multi-turn conversation design</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Build a system-to-user-to-assistant sequence to prototype chatbot flows before writing any API code.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Build a system-to-user-to-assistant sequence to prototype chatbot flows before writing any API code. A 4-step chain that sets the persona, provides context, asks the question, and pre-fills the expected answer format gives you a working prototype in minutes.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Few-shot prompting</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Pre-fill assistant messages with example responses to guide the model's output format and style consistently.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Pre-fill assistant messages with example responses to guide the model's output format and style consistently. Each example adds 50-200 tokens, so use 2-3 examples for best cost-quality balance rather than 10.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Iterative refinement chains</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Design a loop where the model's output feeds back into a new user message, enabling step-by-step improvement of code, text, or analysis.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Design a loop where the model's output feeds back into a new user message, enabling step-by-step improvement of code, text, or analysis. For example: "Review this code" -> assistant response -> "Now fix the bugs you found" -> updated response.</p>
       </div>
     </div>
   </div>
@@ -59,10 +60,11 @@ const tool = tools.find(t => t.slug === 'prompt-chain-builder')!;
     <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'How many steps should a prompt chain have?', a: 'There is no hard limit, but longer chains consume more tokens and cost more. Typical effective chains are 2 to 6 messages. Beyond that, consider whether the task should be broken into separate API calls with the output of one passed as context to the next.' },
-        { q: 'Can I use this chain with Claude as well as GPT?', a: 'Yes with adaptation. The JSON format exports in OpenAI style. For Anthropic Claude API, the system message should be passed as a separate system parameter, and the remaining messages array contains only user and assistant alternating turns.' },
-        { q: 'What is the difference between a chain and a single prompt?', a: 'A single prompt sends one message and gets one response. A chain pre-fills multiple turns of conversation history, letting you control the model\'s persona, show examples, and structure complex reasoning before the model generates its response.' },
-        { q: 'How do I handle variable inputs in a chain?', a: 'Use placeholder text like [INSERT DATA HERE] in your step content. After exporting, replace these placeholders with actual values programmatically or manually before sending to the API. This keeps your chain template reusable across different inputs.' },
+        { q: 'How many steps should a prompt chain have?', a: 'There is no hard limit, but longer chains consume more tokens and cost more. A system message plus 1-3 user/assistant turns is typical. Beyond 6 messages, consider whether the task should be broken into separate API calls with the output of one passed as context to the next. Each additional message adds latency and cost at inference time.' },
+        { q: 'Can I use this chain with Claude as well as GPT?', a: 'Yes with adaptation. The JSON format exports in OpenAI style with system/user/assistant roles. For Anthropic Claude API, pass the system message as a separate system parameter, and keep only user and assistant alternating turns in the messages array. The content of each step is portable — only the wrapping changes.' },
+        { q: 'What is the difference between a chain and a single prompt?', a: 'A single prompt sends one message and gets one response. A chain pre-fills multiple turns of conversation history, letting you control the model persona, show examples, and structure complex reasoning before the model generates its response. Chains are especially useful for few-shot learning and multi-step reasoning tasks.' },
+        { q: 'How do I handle variable inputs in a chain?', a: 'Use placeholder text like [INSERT DATA HERE] in your step content. After exporting, replace these placeholders with actual values programmatically or manually before sending to the API. This keeps your chain template reusable across different inputs — build once, use everywhere.' },
+        { q: 'What does pre-filling the assistant message do?', a: 'Pre-filling an assistant message tells the model to continue from that starting point rather than generating from scratch. This is useful for constraining output format (e.g., starting with "```json" to force JSON output), providing chain-of-thought reasoning, and ensuring consistent few-shot examples across calls.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="surface-2 border-theme seo-faq-card">

@@ -75,20 +75,20 @@ const tool = tools.find(t => t.slug === 'angular-acceleration-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Angular Acceleration Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between Rad/s², RPM/s, and Hz/s</h2>
     <p class="seo-p">
-      This angular acceleration converter computes precise conversions between 5 angular acceleration units — radians per second squared, degrees per second squared, revolutions per second per second, revolutions per second squared, and hertz per second — entirely within your browser. Built with modern vanilla JavaScript and SVG visualisation, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in mechanical engineering, robotics, physics education, or industrial automation.
+      A motor controller expects the ramp-up rate in rad/s², but your sensor outputs RPM/s. A conveyor motor programmed to reach 1,800 RPM in 3 seconds accelerates at 600 RPM/s. Type 600, select RPM/s, and see that it equals 62.83 rad/s², 10 Hz/s, and 22,619 deg/s². The tachometer gauge and bar chart show how this compares to real-world rotational accelerations.
     </p>
     <p class="seo-p">
-      The converter features both a tachometer-style gauge showing magnitude relative to reference accelerations and a comparative SVG bar chart for context against real-world rotational accelerations. The tool handles the full range from extremely slow astronomical rotations (micro-radians per second squared) to extremely fast hard drive spin-up rates (tens of thousands of rad/s²), with dynamic formatting that adapts to each result's magnitude. The quick-reference section provides benchmarks from turntable start-up to jet turbine acceleration.
+      The converter handles 5 units: rad/s², deg/s², rev/s² (same as Hz/s), RPM/s, and Hz/s. A robotics engineer programming a pick-and-place arm at 500 rad/s² sees it equals 4,775 RPM/s and 79.58 Hz/s. A physics student measuring a disk accelerating from rest to 600 RPM in 2 seconds enters 300 RPM/s and sees 31.42 rad/s² for the torque calculation τ = Iα.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">When the wrong unit breaks your control loop</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Motor control and industrial automation`, `Variable frequency drives (VFDs) and servo controllers specify angular acceleration in RPM/s or rad/s² when programming ramp-up and ramp-down profiles. A conveyor motor programmed to reach 1,800 RPM in 3 seconds has an angular acceleration of 600 RPM/s ≈ 62.8 rad/s². Converting between these units is essential when translating between motor datasheet specifications (typically in RPM/s) and control system parameters (typically in rad/s²).`],
-        [`Robotics and joint trajectory planning`, `Robotic arm joints are specified by their maximum angular acceleration, which determines how quickly they can change direction. A high-speed pick-and-place robot might have a joint acceleration of 500 rad/s², while a heavy-payload industrial robot might be limited to 50 rad/s². Trajectory planning algorithms compute joint paths using rad/s², but motor controllers may accept RPM/s — this converter bridges the gap.`],
-        [`Physics experiments and rotational dynamics labs`, `University physics labs measure angular acceleration using rotary motion sensors and compute it from angular velocity changes. A disk accelerating from rest to 600 RPM in 2 seconds has an angular acceleration of 300 RPM/s ≈ 31.4 rad/s². Students need to convert between sensor output units (often in °/s² or rev/s²) and the rad/s² required for torque and moment-of-inertia calculations using τ = Iα.`]
+        ['VFD ramp rates use RPM/s but torque formulas need rad/s', 'A variable frequency drive is programmed with a ramp rate of 600 RPM/s. The control engineer needs rad/s² for the torque equation. 600 RPM/s = 62.83 rad/s². If the engineer enters 600 directly into a formula expecting rad/s², the calculated torque is 9.55x too large, and the motor oversizes by the same factor. The converter eliminates this error.'],
+        ['Hard drive spin-up time requires precise Hz/s', 'A hard drive platter accelerates from 0 to 7,200 RPM in 0.5 seconds. That is 14,400 RPM/s = 240 Hz/s = 1,508 rad/s². The spin-up controller uses Hz/s to time the read/write head activation. If the head activates before the platter reaches speed, data corruption occurs. The converter helps verify the exact spin-up rate.'],
+        ['Robot joint limits are specified in rad/s²', 'A collaborative robot arm has a maximum joint acceleration of 50 rad/s² for safety. The motor datasheet specifies torque in N·m and expects α in rad/s². If you accidentally use deg/s² (50 deg/s² = 0.873 rad/s²), the robot moves 57x slower than intended. If you use RPM/s (50 RPM/s = 5.24 rad/s²), the robot exceeds safety limits by 10x.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -99,26 +99,22 @@ const tool = tools.find(t => t.slug === 'angular-acceleration-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Angular Acceleration Converter Handles Rad/s² and RPM/s</h2>
     <p class="seo-p">
-      All conversions use radians per second squared (rad/s²) as the universal base unit. Each supported angular acceleration unit is defined by a fixed conversion factor relative to one rad/s². To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain rad/s², then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      All conversions pass through radians per second squared (rad/s²). When you enter 600 RPM/s, the tool multiplies by (2π)/60 = π/30 = 0.10472 to get 62.83 rad/s². Then it divides by each target unit's factor: by π/180 for deg/s², by 2π for Hz/s, by 1 for rad/s². The result: 600 RPM/s = 62.83 rad/s² = 3,600 deg/s² = 10 Hz/s.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Why RPM/s and rad/s² differ by a factor of 9.55</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">rads2</code>, <code class="inline-code">rpms</code>, <code class="inline-code">hzs</code>) to its conversion factor relative to rad/s². Degree-based units use <code class="inline-code">π/180</code> per degree. Revolution-based units use <code class="inline-code">2π</code> per revolution. The radian is the natural angular unit, so its factor is exactly 1.
+      One revolution equals 2π radians (6.28319). RPM/s counts full revolutions per second per second. rad/s² counts radians per second per second. The conversion factor is 2π/60 = 0.10472 for RPM/s to rad/s², or equivalently 60/(2π) = 9.5493 for rad/s² to RPM/s. This factor is irrational (involving π), so it is stored as an IEEE 754 double-precision approximation with 15-17 significant digits.
     </p>
+
+    <h3 class="font-display seo-h3-sm">The tachometer gauge and how it scales</h3>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion to rad/s²:</strong> The input value is multiplied by the source unit's factor. For example, converting 2000 RPM/s to rad/s²: <code class="inline-code">2000 × (2π/60) = 2000 × 0.10472 ≈ 209.44 rad/s²</code>. Converting 1800°/s²: <code class="inline-code">1800 × (π/180) = 1800 × 0.01745 ≈ 31.42 rad/s²</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Target conversion from rad/s²:</strong> The rad/s² value is divided by the target unit's factor. Converting 209.44 rad/s² to Hz/s: <code class="inline-code">209.44 / (2π) ≈ 33.33 Hz/s</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. SVG gauge and chart rendering:</strong> The tachometer gauge uses a semicircular arc with <code class="inline-code">stroke-dasharray</code> and <code class="inline-code">stroke-dashoffset</code> to indicate magnitude. The needle rotates from -90° (left) to +90° (right) based on the value relative to the maximum reference. The bar chart dynamically scales to accommodate the user's value alongside reference accelerations using linear scaling.
+      The SVG tachometer shows your value on a semicircular arc. The needle position is proportional to your value relative to the maximum reference (jet turbine at ~5,000 rad/s²). The arc uses stroke-dasharray to show filled and unfilled portions. If your value exceeds the maximum reference, the needle pins to the right. If your value is very small, the needle stays near the left.
     </p>
     <p class="seo-p-none">
-      <strong>Exact conversion factors:</strong> All factors are derived from exact mathematical definitions: <code class="inline-code">1 revolution = 2π radians = 360°</code>. The radian factor is exactly 1. The degree factor is exactly <code class="inline-code">π/180</code>. The RPM/s factor is exactly <code class="inline-code">2π/60 = π/30</code>. The Hz/s factor is exactly <code class="inline-code">2π</code>. These are irrational values (involving π), so the JavaScript factors are IEEE 754 double-precision approximations providing approximately 15 to 17 significant decimal digits of precision.
+      The bar chart below the gauge compares your value to 6 reference accelerations: turntable start-up (2 rad/s²), blender (50 rad/s²), car engine (209 rad/s²), hard drive (1,508 rad/s²), centrifuge (5,236 rad/s²), and jet turbine (20,944 rad/s²). Each bar scales linearly. Your bar is highlighted in blue while references are grey. This gives immediate visual context for whether your angular acceleration is modest or extreme.
     </p>
   </div>
 
@@ -127,32 +123,28 @@ const tool = tools.find(t => t.slug === 'angular-acceleration-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is angular acceleration?",
-          a: "Angular acceleration is the rate at which angular velocity changes over time — it measures how quickly a rotating object speeds up or slows down. Its SI unit is radians per second squared (rad/s²). If a flywheel increases its rotation speed by 2π rad/s every second, its angular acceleration is exactly 1 rad/s². Angular acceleration is a vector quantity; its direction indicates whether the rotation is speeding up or slowing down."
+          q: "How do I convert 2000 RPM/s to rad/s²?",
+          a: "Multiply by π/30 (approximately 0.10472): 2000 x 0.10472 = 209.44 rad/s². This is the rate at which a car engine accelerates from idle to redline in about 3 seconds. For Hz/s, divide by 60: 2000 / 60 = 33.33 Hz/s. The converter shows all units simultaneously so you can verify the relationships."
         },
         {
-          q: "How is angular acceleration different from linear acceleration?",
-          a: "Linear acceleration describes changes in straight-line speed (m/s²), while angular acceleration describes changes in rotational speed (rad/s²). They are related by the equation a = α × r, where a is the tangential linear acceleration at the rim, α is the angular acceleration, and r is the radius. A point on the rim of a disk with α = 10 rad/s² at radius 0.5 m has a tangential acceleration of 5 m/s²."
+          q: "What is the angular acceleration of a hard drive spin-up?",
+          a: "A typical 7,200 RPM hard drive reaches full speed in about 0.5 seconds. That is 14,400 RPM/s = 240 Hz/s = 1,508 rad/s². A 10,000 RPM drive spinning up in 0.8 seconds achieves 12,500 RPM/s = 208.3 Hz/s = 1,309 rad/s². The spin-up controller must time the read/write head activation precisely to avoid data corruption."
         },
         {
-          q: "What is a good example of angular acceleration?",
-          a: "A car engine accelerating from idle (1,000 RPM) to redline (7,000 RPM) in 3 seconds has an angular acceleration of approximately 2,000 RPM/s ≈ 209 rad/s². A centrifuge spinning up from rest to 50,000 RPM in 30 seconds has approximately 1,667 RPM/s ≈ 175 rad/s². A hard drive platter reaching 7,200 RPM in 0.5 seconds achieves approximately 14,400 RPM/s ≈ 1,508 rad/s²."
+          q: "Why does the formula τ = Iα require rad/s²?",
+          a: "Newton's second law for rotation (τ = Iα) only works when α is in rad/s² because the radian is a dimensionless ratio. If you use RPM/s or deg/s², you get wrong torque values. For example: I = 2 kg·m², α = 600 RPM/s. The correct torque is τ = 2 x 62.83 = 125.66 N·m. Using 600 directly gives τ = 1200 N·m, which is 9.55x too large."
         },
         {
-          q: "What is the relationship between Hz/s and rad/s²?",
-          a: "1 Hz/s equals 1 revolution per second per second, which is exactly 2π radians per second per second. Therefore Hz/s and rev/s² are numerically identical, and both equal 2π rad/s². This is because one full revolution is defined as exactly 2π radians. The conversion factor between Hz/s and rad/s² is simply 2π."
+          q: "How is angular acceleration different from angular velocity?",
+          a: "Angular velocity (ω) measures how fast something rotates (rad/s). Angular acceleration (α) measures how fast the rotation speed changes (rad/s²). A motor running at constant 3000 RPM has ω = 314.16 rad/s but α = 0. If it speeds up from 0 to 3000 RPM in 2 seconds, α = 157.08 rad/s². Acceleration is the derivative of velocity."
         },
         {
-          q: "What is torque and how does it relate to angular acceleration?",
-          a: "Torque is the rotational equivalent of force, and it relates to angular acceleration through Newton's second law for rotation: τ = I × α, where τ is torque (N·m), I is moment of inertia (kg·m²), and α is angular acceleration (rad/s²). A larger torque or smaller moment of inertia produces greater angular acceleration. This equation is fundamental in mechanical engineering for sizing motors and flywheels."
+          q: "What is a realistic angular acceleration for a car engine?",
+          a: "A typical car engine accelerates from idle (1,000 RPM) to redline (7,000 RPM) in about 3 seconds. That is 2,000 RPM/s = 209.44 rad/s² = 33.33 Hz/s. A high-performance engine might do this in 1.5 seconds: 4,000 RPM/s = 418.88 rad/s². Formula 1 engines reach 18,000 RPM from idle in under 0.5 seconds: over 30,000 RPM/s."
         },
         {
-          q: "How do I calculate angular acceleration from measured data?",
-          a: "Angular acceleration equals the change in angular velocity divided by the time interval: α = Δω / Δt. If a motor's speed increases from 1,000 RPM to 3,000 RPM in 2 seconds, first convert to rad/s: Δω = (3,000 - 1,000) × (2π/60) ≈ 209.4 rad/s, then α = 209.4 / 2 = 104.7 rad/s². This tool can convert the result to any other angular acceleration unit."
-        },
-        {
-          q: "What units do motor manufacturers use for angular acceleration?",
-          a: "Motor manufacturers typically specify angular acceleration in RPM/s or rev/s² because these are intuitive for rotational machinery. However, control system engineers prefer rad/s² because it integrates directly with SI unit calculations for torque, power, and energy. This converter bridges both conventions, allowing engineers to translate between datasheet specifications and control system parameters."
+          q: "How do I measure angular acceleration experimentally?",
+          a: "Use a rotary motion sensor connected to a data logger. Record angular position or velocity over time. Compute α = Δω / Δt from the slope of the velocity-time graph. If a disk goes from 0 to 600 RPM in 2 seconds, the average α is 300 RPM/s = 31.42 rad/s². For instantaneous α, take the derivative of the velocity curve at each point."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

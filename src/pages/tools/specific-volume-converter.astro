@@ -45,20 +45,20 @@ const tool = tools.find(t => t.slug === 'specific-volume-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Specific Volume Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between M³/Kg, Ft³/Lb, and Cm³/G</h2>
     <p class="seo-p">
-      This specific volume converter computes precise conversions between 9 specific volume units — cubic meters per kilogram, cubic centimeters per gram, milliliters per gram, liters per kilogram, liters per gram, cubic feet per pound, cubic inches per pound, US gallons per pound, and imperial gallons per pound — entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in thermodynamics, fluid mechanics, HVAC engineering, or materials science.
+      Your steam table lists specific volume at 0.001 m³/kg. Your plant specification uses ft³/lb. Type 0.001, select m³/kg, and see that it equals 0.01602 ft³/lb, 1.0 cm³/g, and 1.0 mL/g. The material reference confirms water at standard conditions is 0.001 m³/kg, so the numbers match.
     </p>
     <p class="seo-p">
-      Specific volume is the mathematical reciprocal of density (<code class="inline-code">v = 1/ρ</code>), meaning a substance with high density has low specific volume and vice versa. The converter handles the full range from gases (air at approximately 0.816 m³/kg) to dense metals (osmium at approximately 0.0000443 m³/kg), with dynamic formatting that adapts to each result's magnitude. The material reference section provides benchmarks for common substances including air, water, metals, and precious metals.
+      The converter handles 9 units: m³/kg, cm³/g, mL/g, L/kg, L/g, ft³/lb, in³/lb, US gal/lb, and imp gal/lb. A thermodynamics student working with steam at 1.694 m³/kg sees it equals 27.14 ft³/lb and 1,694 L/kg. An HVAC engineer sizing a compressor for R-134a at 0.029 m³/kg sees it equals 0.4645 ft³/lb. The material reference shows air at 0.816 m³/kg to osmium at 0.0000443 m³/kg.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Why specific volume matters more than density in thermodynamics</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Thermodynamics and steam table calculations`, `Specific volume is a fundamental property in thermodynamics, appearing directly in steam tables and the ideal gas law (<code class="inline-code">v = RT/P</code>). Power plant engineers use specific volume to calculate steam flow rates, turbine efficiency, and boiler performance. At standard atmospheric pressure, water steam has a specific volume of approximately 1.694 m³/kg, while liquid water at the same conditions has a specific volume of 0.001 m³/kg — a ratio of nearly 1,700 to 1.`],
-        [`HVAC system design and refrigeration`, `HVAC engineers specify refrigerant properties using specific volume to size compressors, condensers, and evaporators. R-134a refrigerant has a specific volume of approximately 0.029 m³/kg at typical evaporator conditions, which determines the volume flow rate the compressor must handle. Converting between metric (m³/kg) and imperial (ft³/lb) units is essential when working with equipment from different manufacturers.`],
-        [`Chemical process engineering and mixing`, `Chemical engineers use specific volume to calculate vessel capacities, mixing ratios, and flow rates in process plants. A reactor vessel designed to hold 10,000 kg of a fluid with specific volume 0.0015 m³/kg requires a capacity of 15 m³. Converting between cm³/g (lab measurements) and m³/kg (plant specifications) ensures accurate scale-up from laboratory to production.`]
+        ['Steam tables use specific volume, not density', 'Power plant engineers read steam tables that list specific volume (v) at each pressure and temperature. At 100°C and 1 atm, steam v = 1.694 m³/kg while liquid water v = 0.001 m³/kg. The ratio is 1,694:1. To convert steam flow from m³/s to kg/s, divide by specific volume: mass flow = volume flow / v. Using density instead of specific volume gives the wrong direction of conversion.'],
+        ['HVAC compressors are sized by volume flow rate', 'A refrigerator compressor must move enough R-134a vapour to absorb the required heat. The evaporator output is 0.029 m³/kg. To move 0.05 kg/s of refrigerant, the compressor needs 0.05 x 0.029 = 0.00145 m³/s = 5.22 m³/hr. If you use density (34.5 kg/m³) instead of specific volume, you calculate 0.05 / 34.5 = 0.00145 m³/s, which happens to give the same answer because v = 1/rho. But the mental model is different.'],
+        ['Ideal gas law uses specific volume directly', 'The ideal gas law in specific volume form is Pv = RT, where v is m³/kg. For air at 20°C and 1 atm: v = RT/P = (287 x 293) / 101325 = 0.831 m³/kg. This tells you 1 kg of air occupies 831 litres. If you instead use density (rho = P/RT = 1.204 kg/m³), you get the same information but in a less convenient form for gas flow calculations.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -69,26 +69,22 @@ const tool = tools.find(t => t.slug === 'specific-volume-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Specific Volume Converter Handles M³/Kg and Ft³/Lb</h2>
     <p class="seo-p">
-      All conversions use cubic meters per kilogram (m³/kg) as the universal base unit. Each supported specific volume unit is defined by a fixed conversion factor relative to one m³/kg. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain m³/kg, then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      All conversions pass through cubic meters per kilogram (m³/kg). When you enter 1.694 m³/kg (steam at 100°C), the tool divides by each target unit's factor: by 0.062428 for ft³/lb, by 0.001 for cm³/g, by 1,000 for L/kg. The result: 1.694 m³/kg = 27.14 ft³/lb = 1,694 cm³/g = 1,694 L/kg.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">Why cm³/g, mL/g, and L/kg give the same number</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">m3kg</code>, <code class="inline-code">cm3g</code>, <code class="inline-code">ft3lb</code>) to its conversion factor relative to m³/kg. Metric units use powers of 10: <code class="inline-code">1 cm³/g = 0.001 m³/kg</code> (since 1 cm³ = 10⁻⁶ m³ and 1 g = 10⁻³ kg). Imperial units use exact definitions: <code class="inline-code">1 ft³/lb = 0.062428 m³/kg</code>.
+      1 cm³/g = 1 mL/g (since 1 cm³ = 1 mL) = 1 L/kg (since 1 L = 1,000 cm³ and 1 kg = 1,000 g, the factors cancel). All three equal 0.001 m³/kg. This equivalence means you can read lab measurements in cm³/g and industrial specs in L/kg without conversion. The converter shows all three as identical values.
     </p>
+
+    <h3 class="font-display seo-h3-sm">The imperial factor of 16.0185 in reverse</h3>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion to m³/kg:</strong> The input value is multiplied by the source unit's factor. For example, converting 1 cm³/g to m³/kg: <code class="inline-code">1 × 0.001 = 0.001 m³/kg</code>. Converting 27.68 in³/lb to m³/kg: <code class="inline-code">27.68 × 0.036127 ≈ 1.0 m³/kg</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Target conversion from m³/kg:</strong> The m³/kg value is divided by the target unit's factor. Converting 0.001 m³/kg to ft³/lb: <code class="inline-code">0.001 / 0.062428 ≈ 0.01602 ft³/lb</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Values above 1,000 use locale-formatted numbers with 4 decimal places. Values between 1 and 1,000 use 6 decimal places. Values between 0.001 and 1 use 8 decimal places. Values between 10⁻⁶ and 0.001 use 10 decimal places. Values below 10⁻⁶ use scientific notation. This ensures readability across the full range from gas-phase specific volumes to dense metal alloys.
+      For density, 1 lb/ft³ = 16.0185 kg/m³. For specific volume (the reciprocal), 1 ft³/lb = 1/16.0185 = 0.062428 m³/kg. This factor comes from 1 lb = 0.45359237 kg and 1 ft = 0.3048 m: 1 ft³/lb = (0.3048)^3 / 0.45359237 = 0.0283168 / 0.45359237 = 0.062428. The converter stores this factor directly.
     </p>
     <p class="seo-p-none">
-      <strong>Exact conversion factors:</strong> All factors are derived from exact definitions: <code class="inline-code">1 lb = 0.45359237 kg</code> (exactly), <code class="inline-code">1 ft = 0.3048 m</code> (exactly), <code class="inline-code">1 in = 0.0254 m</code> (exactly), <code class="inline-code">1 US gallon = 3.785411784 L</code> (exactly), and <code class="inline-code">1 imp gallon = 4.54609 L</code> (exactly). The metric factors are exact rational values: <code class="inline-code">1 cm³/g = 10⁻³ m³/kg</code> exactly. These are all exact by definition, so the IEEE 754 approximations provide full double-precision accuracy.
+      The dynamic formatting handles the full range from gases (air at 0.816 m³/kg) to dense metals (osmium at 0.0000443 m³/kg). Values below 10^-6 use scientific notation because they are too small for fixed decimal display. Values above 1,000 use locale-formatted numbers with commas for readability. This ensures you can read any value from any substance without losing precision.
     </p>
   </div>
 
@@ -97,32 +93,28 @@ const tool = tools.find(t => t.slug === 'specific-volume-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is specific volume?",
-          a: "Specific volume is the volume occupied by a unit mass of a substance, defined as the reciprocal of density (<code class='inline-code'>v = 1/ρ</code>). For example, water has a specific volume of 0.001 m³/kg, meaning 1 kilogram of water occupies exactly 0.001 cubic meters (1 liter). Specific volume is used when it is more convenient to think about volume per unit mass rather than mass per unit volume."
+          q: "How do I convert 0.816 m³/kg to ft³/lb?",
+          a: "Divide by 0.062428: 0.816 / 0.062428 = 13.07 ft³/lb. This is the specific volume of air at sea level. For a quick estimate, multiply m³/kg by 16.02 to get ft³/lb (since 1/0.062428 = 16.02). The converter shows all units simultaneously so you can verify the relationship."
         },
         {
-          q: "How is specific volume different from density?",
-          a: "Density equals mass divided by volume (kg/m³), while specific volume equals volume divided by mass (m³/kg). They are mathematical reciprocals. A substance with high density (like gold at 19,300 kg/m³) has low specific volume (0.0000518 m³/kg). A substance with low density (like air at 1.225 kg/m³) has high specific volume (0.816 m³/kg)."
+          q: "What is the specific volume of steam vs liquid water?",
+          a: "At 100°C and 1 atm: steam v = 1.694 m³/kg, liquid water v = 0.001 m³/kg. The ratio is 1,694:1. This means 1 kg of steam occupies 1,694 times more volume than 1 kg of liquid water. This enormous difference is why steam engines work: boiling water creates a massive volume increase that drives pistons."
         },
         {
-          q: "Where is specific volume used?",
-          a: "Specific volume is commonly used in thermodynamics and fluid mechanics. It appears in steam tables, ideal gas calculations (<code class='inline-code'>v = RT/P</code>), and HVAC system design. Engineers use it to determine how much space a given mass of fluid occupies, which is essential for sizing pipes, ducts, compressors, and storage vessels."
+          q: "Why do steam tables list specific volume instead of density?",
+          a: "Thermodynamic calculations use specific volume because it appears directly in the ideal gas law (Pv = RT) and in enthalpy/entropy calculations. When calculating steam flow through a pipe, you divide volume flow by specific volume to get mass flow. Using density would require an extra division step (mass flow = volume flow x density). Steam tables are designed for direct use."
         },
         {
-          q: "What is the specific volume of air?",
-          a: "At sea level and 15°C, air has a density of approximately 1.225 kg/m³, giving a specific volume of approximately 0.816 m³/kg. This means 1 kilogram of air occupies about 816 liters — air is nearly 800 times less dense than water. The specific volume of air changes significantly with temperature and pressure, which is why HVAC calculations must account for these variations."
+          q: "How does pressure affect the specific volume of a gas?",
+          a: "For an ideal gas, specific volume is inversely proportional to pressure (v = RT/P). Doubling the pressure halves the specific volume. Real gases deviate from this at high pressures. At 1 atm and 20°C, air v = 0.831 m³/kg. At 10 atm, v = 0.0831 m³/kg. At 100 atm, v = 0.0081 m³/kg (deviation from ideal behavior starts to matter)."
         },
         {
-          q: "Why are cm³/g, mL/g, and L/kg the same value?",
-          a: "All three units equal 0.001 m³/kg because of the relationships between metric units: 1 cm³ = 1 mL = 0.001 L, and 1 kg = 1,000 g. Therefore 1 cm³/g = (0.001 L) / (0.001 kg) = 1 L/kg = 0.001 m³/kg. This equivalence simplifies conversions between laboratory and industrial specifications."
+          q: "What is the specific volume of common materials?",
+          a: "Air: 0.816 m³/kg. Water: 0.001 m³/kg. Aluminum: 0.00037 m³/kg. Iron: 0.000127 m³/kg. Gold: 0.0000518 m³/kg. Osmium: 0.0000443 m³/kg. The material reference section in the converter shows these values. Notice that metals have very small specific volumes because they are dense."
         },
         {
-          q: "How does specific volume change with temperature?",
-          a: "Specific volume generally increases with temperature because most materials expand when heated (thermal expansion). For gases, specific volume increases dramatically with temperature at constant pressure, following the ideal gas law. For liquids and solids, the change is much smaller — water's specific volume increases by about 0.02% between 4°C and 20°C."
-        },
-        {
-          q: "How do I calculate specific volume from density?",
-          a: "Divide 1 by the density value. For example, if a fluid has a density of 800 kg/m³, its specific volume is 1/800 = 0.00125 m³/kg. In imperial units, if the density is 50 lb/ft³, the specific volume is 1/50 = 0.02 ft³/lb. This tool performs this calculation automatically for all supported unit pairs."
+          q: "How do I use specific volume to size a compressor?",
+          a: "A compressor must handle a specific volume flow rate (m³/s). Multiply the required mass flow rate (kg/s) by the specific volume at the compressor inlet. For R-134a at 0.029 m³/kg and 0.05 kg/s mass flow: volume flow = 0.05 x 0.029 = 0.00145 m³/s = 5.22 m³/hr. The compressor displacement must exceed this value."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

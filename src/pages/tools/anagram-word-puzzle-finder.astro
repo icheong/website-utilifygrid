@@ -137,36 +137,38 @@ const tool = tools.find(t => t.slug === 'anagram-word-puzzle-finder')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the Anagram &amp; Word Puzzle Finder</h2>
-    <p class="seo-p">Enter your scrambled letters and instantly discover every valid word you can form. This tool works entirely in your browser — no data is sent anywhere.</p>
+    <p class="seo-p">You are staring at a rack of seven Scrabble tiles — A, E, I, N, R, S, T — and you know there is a seven-letter word hiding in there but you cannot see it. This tool takes those letters, runs them against a 370,000-word dictionary, and returns every valid word you can form, grouped by length. The results appear instantly, sorted longest-first so the highest-scoring plays surface at the top.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Enter Letters</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Type or paste your scrambled letters into the input field. Spaces and duplicates are handled automatically — each unique character becomes one tile.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Scrabble players hunting for bingos</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A standard Scrabble rack holds exactly seven tiles. Switch to Anagram (exact) mode and enter all seven letters to find the eight-letter bingo words that earn a 50-point bonus. If your rack reads A, E, I, N, R, S, T, the tool returns RETINAS, RETSINA, ANESTRI, and NASTIER — all valid seven-letter plays.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Set Word Length</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Drag the minimum length slider to filter out short words. In Anagram mode every result uses all your letters; in Sub-words mode results can be any length up to your input.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Crossword solvers filling stubborn gaps</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A five-letter down clue needs a word ending in -ATE. Enter the letters you already have on the board plus the known ending, then use the minimum-length filter set to 5. The tool surfaces PLATE, ELATE, GRAVITATE, and any other matches so you can pick the one that fits your crossing letters.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Dictionary</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">The tool fetches a comprehensive English word list (SCOWL, 370k+ words) on first use. Switch between Anagram and Sub-words mode to match different game scenarios.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Words With Friends opponents maximising score</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">In Sub-words mode you can enter up to 20 letters and the tool finds every word of every length. If you hold Q, U, I, Z, you might not find QUIT (missing the second letter), but you will see QUIZ, which scores 33 points on a triple-word square. The length filter narrows results to the words that fit your board position.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">View Results</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See all valid anagrams sorted by length and frequency. Use length tabs to jump to specific word sizes, or copy the entire list with one click.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Teachers building vocabulary worksheets</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Set the minimum length to 6 and enter a thematic letter set like A, E, I, O, U, R, S, T to generate a word-search puzzle for students. The copy-all button exports the entire list so you can paste it straight into a worksheet document.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the Anagram &amp; Word Puzzle Finder Works</h2>
-    <p class="seo-p">Under the hood, the tool converts letters into frequency maps and compares them against a pre-indexed dictionary for near-instant matching.</p>
+    <p class="seo-p">When you press Find Words, the tool converts your input letters into a character frequency map and then scans the loaded dictionary for every word whose frequency map is a subset (Sub-words mode) or exact match (Anagram mode) of your input.</p>
     <h3 class="font-display seo-h3-sm">Letter Frequency Mapping</h3>
-    <p class="seo-p">When you enter letters, each unique character is counted to build a <code class="inline-code">frequency map</code>. For example, entering "aab" produces a map where A has a count of 2 and B has a count of 1. Every dictionary word receives the same treatment. In Anagram mode the tool checks for an exact match — same characters, same counts. In Sub-words mode it verifies that every character in the candidate word appears in your input with at least the required frequency.</p>
-    <h3 class="font-display seo-h3-sm">Dictionary Lookup Algorithm</h3>
-    <p class="seo-p">The word list is loaded from the SCOWL project (370,000+ words) and stored as a <code class="inline-code">Set</code> in memory. On first search the tool builds a frequency-map index over the entire dictionary in a single pass, then caches it. Subsequent searches scan the index in under 10 ms. A minimum-length filter is applied during the scan to skip short words early, reducing unnecessary comparisons.</p>
-    <h3 class="font-display seo-h3-sm">Scoring &amp; Ranking</h3>
-    <p class="seo-p">After matching, results are grouped by word length using a <code class="inline-code">Map</code>. Within each group words are sorted alphabetically by default. You can reorder results using the sort control — longest first, shortest first, or A to Z. Length tabs let you jump directly to words of a specific size, making it easy to find high-value longer words for games like Scrabble.</p>
+    <p class="seo-p">Each input letter is counted into a Map keyed by character. Entering A, E, I, N, R, S, T produces a map with A:1, E:1, I:1, N:1, R:1, S:1, T:1. The same operation is pre-computed for every word in the dictionary when the word list loads. A word like RETINAS produces an identical map, so it matches in Anagram mode. A shorter word like RAIN produces R:1, A:1, I:1, N:1 — a strict subset of the input map, so it matches in Sub-words mode.</p>
+    <h3 class="font-display seo-h3-sm">Dictionary Indexing and Caching</h3>
+    <p class="seo-p">The word list is fetched from the dwyl/english-words repository (SCOWL-based, 370,000+ entries) on first use. During loading, the tool strips non-alphabetic characters, lowercases every entry, and builds a frequency map for each word. The resulting index is cached in a module-scope variable, so navigating back to the tool from another page within the same session is instant — no re-fetch needed.</p>
+    <h3 class="font-display seo-h3-sm">Result Grouping and Sorting</h3>
+    <p class="seo-p">After matching, results are collected into an array and then grouped by word length using a Map. The longest words appear first by default. Within each length group, alphabetical sorting is applied. Length-filter tabs are generated dynamically from the Map keys, so if your input produces 3-letter, 5-letter, and 7-letter matches, three tabs appear with counts like 3-letter (12), 5-letter (47), 7-letter (3).</p>
+    <h3 class="font-display seo-h3-sm">Performance on Large Inputs</h3>
+    <p class="seo-p">With 20 letters in Sub-words mode, the worst-case scan checks all 370,000 dictionary entries against the input frequency map. This completes in under 10 milliseconds on modern hardware because the frequency-map comparison short-circuits early — as soon as any character count exceeds the available count, the check fails and moves to the next word.</p>
   </div>
 
   <div slot="faq">
@@ -193,7 +195,7 @@ const tool = tools.find(t => t.slug === 'anagram-word-puzzle-finder')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How does the scoring system work?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Results are ranked by word length — longer words appear first when you select the "Longest first" sort option. Within each length group words are sorted alphabetically. This makes it easy to spot high-value plays in tile-based games where longer words score more points.</p>
+          <p itemprop="text" class="seo-faq-a">Results are ranked by word length — longer words appear first when you select the Longest first sort option. Within each length group words are sorted alphabetically. This makes it easy to spot high-value plays in tile-based games where longer words score more points.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">

@@ -108,23 +108,23 @@ const tool = tools.find(t => t.slug === 'bulk-case-mutator')!;
   <!-- HOW TO USE ───────────────────────────────── -->
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the Bulk Case Mutator</h2>
-    <p class="seo-p">Paste one or more identifiers into the input area and instantly see every case variant side by side. The tool detects the original format automatically and renders all enabled conversions in real time.</p>
+    <p class="seo-p">You have a list of variable names written in camelCase and your CSS linter demands kebab-case. Or you just inherited a codebase where half the identifiers use snake_case and the other half use PascalCase, and you need to standardise them all before a refactor. Paste every identifier into the input area, one per line, and the tool generates all eight case variants side by side so you can grab the exact format you need.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Text</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter identifiers with any original casing — camelCase, snake_case, kebab-case, PascalCase, or mixed formats. Each line is processed independently.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Frontend developers renaming CSS class names</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A React component uses backgroundColor in JavaScript but background-color in the stylesheet. Paste the camelCase name and the tool outputs background-color, BACKGROUND_COLOR, BackgroundColor, and every other variant. Click the kebab-case row to copy it straight into your CSS file.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Select Case</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Toggle the format chips to show or hide UPPERCASE, lowercase, Title Case, Sentence case, camelCase, snake_case, PascalCase, SCREAMING_SNAKE, and kebab-case outputs.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Database engineers converting column naming conventions</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A Postgres migration uses snake_case columns (user_profile, created_at) but the ORM expects camelCase (userProfile, createdAt). Paste the full column list and copy the camelCase block into your model definitions. Numbers and acronyms like HTTPResponse are preserved as separate tokens, so HTTPResponse becomes http_response in snake_case and HTTP_RESPONSE in SCREAMING_SNAKE.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Set Options</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Acronyms like HTTP and URL are preserved as single uppercase tokens. Hyphens and underscores are recognized as word boundaries. Small words such as a, an, and, the are lowercased in Title Case output.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Technical writers converting code identifiers to documentation prose</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A README references getUserProfile but the written sentence needs a readable form. The Title Case output gives Get User Profile, and the lower output gives get user profile. The tool handles small words correctly — a tale of two cities becomes A Tale of Two Cities with of kept lowercase.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click any row in the specimen grid to copy that format's values to your clipboard. Use the footer buttons to copy all lines for a single format at once.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Multi-language teams aligning naming across ecosystems</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A Python backend uses snake_case, a Go service uses PascalCase, and a TypeScript frontend uses camelCase. Paste the shared field names once and copy each format into the respective codebase. Unicode characters like e-acute are handled correctly, so cafe-au-lait becomes CafeAuLait in PascalCase.</p>
       </div>
     </div>
   </div>
@@ -132,13 +132,15 @@ const tool = tools.find(t => t.slug === 'bulk-case-mutator')!;
   <!-- HOW IT WORKS ────────────────────────────── -->
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the Bulk Case Mutator Works</h2>
-    <p class="seo-p">The tool splits each input identifier into individual word tokens, then reassembles those tokens into every enabled target format. The process is fully Unicode-aware and handles the most common programming naming conventions.</p>
-    <h3 class="font-display seo-h3-sm">Character Case Transformation</h3>
-    <p class="seo-p">Each token is converted using Unicode-aware case mapping. Characters like <code class="inline-code">é</code> or <code class="inline-code">ñ</code> are lowercased and uppercased correctly using the browser's built-in <code class="inline-code">toLocaleLowerCase</code> and <code class="inline-code">toLocaleUpperCase</code> methods. This means identifiers containing non-ASCII characters are handled reliably across locales.</p>
-    <h3 class="font-display seo-h3-sm">Title Case Rules</h3>
-    <p class="seo-p">When generating Title Case output, the first and last words are always capitalized regardless of their part of speech. Articles (a, an, the), short prepositions (of, in, on, at, to, for, by), and coordinating conjunctions (and, or, but, nor, yet, so) remain lowercase unless they appear at the start or end of the identifier. All other words receive initial capitalization.</p>
-    <h3 class="font-display seo-h3-sm">Programmatic Cases</h3>
-    <p class="seo-p">camelCase is formed by lowering the first token and title-casing the rest, then concatenating without separators. PascalCase title-cases every token and joins them directly. snake_case and SCREAMING_SNAKE join tokens with underscores — lowercase and uppercase respectively. kebab-case joins lowercase tokens with hyphens. The tokenizer splits on uppercase boundaries, underscores, hyphens, and dots, so identifiers like <code class="inline-code">parseHTTPSResponse</code> or <code class="inline-code">fetch_api_data</code> are parsed correctly into their component words.</p>
+    <p class="seo-p">The tool splits each input identifier into word tokens using boundary detection on uppercase letters, underscores, hyphens, and dots, then reassembles those tokens into every enabled target format.</p>
+    <h3 class="font-display seo-h3-sm">Tokenisation Rules</h3>
+    <p class="seo-p">The tokenizer first replaces underscores, hyphens, and dots with spaces, then inserts a space before each uppercase letter preceded by a lowercase letter (camelCase boundary). A second pass splits runs of consecutive uppercase letters followed by a lowercase letter — so HTTPSRequest becomes HTTPS Request, not HTTP SRequest. The result is an array of lowercase word tokens: getUserProfile produces [get, user, profile], and fetch_api_data produces [fetch, api, data].</p>
+    <h3 class="font-display seo-h3-sm">Title Case and Small-Word Rules</h3>
+    <p class="seo-p">When generating Title Case, the first and last tokens are always capitalised regardless of their part of speech. Articles (a, an, the), short prepositions (of, in, on, at, to, for, by), and coordinating conjunctions (and, or, but, nor, yet, so) remain lowercase in middle positions. For example, get_the_value of two cities becomes Get the Value of Two Cities — the stays lowercase but Cities is capitalised because it is the last word.</p>
+    <h3 class="font-display seo-h3-sm">Acronym Handling</h3>
+    <p class="seo-p">Consecutive uppercase letters are treated as a single token. In PascalCase, acronyms remain fully uppercase within the word: parseHTTPSResponse becomes ParseHTTPSResponse. In camelCase, the first token is lowercased but later acronyms stay uppercase: the result is parseHTTPSResponse. In SCREAMING_SNAKE, every token is uppercased and joined with underscores: PARSE_HTTPS_RESPONSE.</p>
+    <h3 class="font-display seo-h3-sm">Unicode and Locale-Aware Case Mapping</h3>
+    <p class="seo-p">Case conversion uses the browser's built-in toLowerCase and toUpperCase methods, which handle Unicode correctly. Characters like e-acute, enye, and German eszett are lowercased and uppercased according to Unicode rules. The tool processes up to 500 input lines in a single render pass without blocking the main thread.</p>
   </div>
 
   <!-- FAQ ─────────────────────────────────────── -->
@@ -148,25 +150,25 @@ const tool = tools.find(t => t.slug === 'bulk-case-mutator')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How does Title Case handle small words like a, an, and, the?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Short articles, prepositions, and coordinating conjunctions are kept lowercase in Title Case output. The first and last words are always capitalized regardless. For example, "a tale of two cities" becomes "A Tale of Two Cities" — the word "of" stays lowercase because it sits in the middle of the phrase.</p>
+          <p itemprop="text" class="seo-faq-a">Short articles, prepositions, and coordinating conjunctions are kept lowercase in Title Case output. The first and last words are always capitalised regardless. For example, get_the_value becomes Get the Value — the stays lowercase because it sits in the middle of the phrase.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does the tool support Unicode and non-English characters?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. Case conversion uses the browser's Unicode-aware case mapping, so characters like é, ñ, ü, and Cyrillic or Greek letters are transformed correctly. Identifiers containing non-ASCII characters will produce accurate outputs in every enabled format.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. Case conversion uses the browser's Unicode-aware case mapping, so characters like e-acute, enye, and German eszett are transformed correctly. Identifiers containing non-ASCII characters will produce accurate outputs in every enabled format.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What is the difference between Sentence case and Title Case?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Sentence case capitalizes only the first letter of the first word, treating the input as a single sentence. Title Case capitalizes the first letter of every significant word. For identifiers, Sentence case is less common but useful when generating human-readable labels from code-style names.</p>
+          <p itemprop="text" class="seo-faq-a">Sentence case capitalises only the first letter of the first word, treating the input as a single sentence. Title Case capitalises the first letter of every significant word. For identifiers, Sentence case is less common but useful when generating human-readable labels from code-style names.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How are acronyms like HTTP, URL, and API handled?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">The tokenizer detects runs of consecutive uppercase letters and preserves them as a single token. In PascalCase, an acronym remains fully uppercase within the word: parseHTTPSResponse becomes ParseHTTPSRequest. In camelCase, the first token is lowered but acronyms in later positions stay uppercase.</p>
+          <p itemprop="text" class="seo-faq-a">The tokenizer detects runs of consecutive uppercase letters and preserves them as a single token. In PascalCase, an acronym remains fully uppercase within the word: parseHTTPSResponse becomes ParseHTTPSResponse. In camelCase, the first token is lowered but acronyms in later positions stay uppercase.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
@@ -178,7 +180,7 @@ const tool = tools.find(t => t.slug === 'bulk-case-mutator')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What happens with numbers and special characters in identifiers?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Numbers adjacent to letters are treated as separate tokens. For example, rgb2hex tokenizes to rgb, 2, hex. Underscores and hyphens are recognized as word delimiters and are not included in the output tokens. Special characters outside common word boundaries are stripped during tokenization.</p>
+          <p itemprop="text" class="seo-faq-a">Numbers adjacent to letters are treated as separate tokens. For example, rgb2hex tokenizes to rgb, 2, hex. Underscores and hyphens are recognised as word delimiters and are not included in the output tokens. Special characters outside common word boundaries are stripped during tokenization.</p>
         </div>
       </div>
     </div>

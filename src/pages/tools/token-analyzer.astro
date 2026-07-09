@@ -139,29 +139,29 @@ const MODELS = [
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: BPE Tokenization, Truncation &amp; Heatmap</h2>
+    <h2 class="font-display seo-h2">How the Token Analyzer works</h2>
 
-    <h3 class="font-display seo-h3-sm">How Byte-Pair Encoding Works</h3>
+    <h3 class="font-display seo-h3-sm">How byte-pair encoding works</h3>
     <p class="seo-p">
       Byte-Pair Encoding is a subword tokenization algorithm that starts with individual bytes and iteratively merges the most frequently co-occurring adjacent pairs into a single token until the target vocabulary size is reached. The <code class="inline-code">cl100k_base</code> vocabulary contains 100,256 tokens - a mix of full common words, subword fragments, punctuation sequences, and whitespace patterns. At inference time, the algorithm applies the learned merge rules in priority order to split input text into the fewest possible tokens.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Truncation Boundary Detection</h3>
+    <h3 class="font-display seo-h3-sm">Truncation boundary detection</h3>
     <p class="seo-p">
       The tokenizer returns an array of integer token IDs. The tool walks this array until the cumulative count equals the selected model's context limit, then converts the corresponding byte offset back to a JavaScript string character index using a <code class="inline-code">TextEncoder</code>/<code class="inline-code">TextDecoder</code> round-trip. Text before the boundary is rendered normally; text after it is wrapped in a <code class="inline-code">&lt;mark&gt;</code> element with a red background. The overlay is positioned absolutely behind the <code class="inline-code">&lt;textarea&gt;</code> with matching font metrics so the highlight aligns precisely.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Paragraph Token Heatmap</h3>
+    <h3 class="font-display seo-h3-sm">Paragraph token heatmap</h3>
     <p class="seo-p">
       After tokenizing the full text, the tool splits it into paragraphs (double-newline delimited), estimates each paragraph's token count via the BPE encoder, and maps the count to a blue colour scale where darker blue indicates higher token density. This visualises which sections of a long prompt consume the most context budget, making it easy to identify candidates for condensation or removal.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Cost Estimation Logic</h3>
+    <h3 class="font-display seo-h3-sm">Cost estimation logic</h3>
     <p class="seo-p">
       Input cost is estimated using each model's published input price per million tokens. For example: GPT-5.5 at <code class="inline-code">$5.00/M</code>, GPT-4.1 at <code class="inline-code">$2.00/M</code>, Claude Opus 4.7 at <code class="inline-code">$5.00/M</code>, Gemini 3.1 Pro at <code class="inline-code">$2.00/M</code>. The formula is <code class="inline-code">cost = (tokenCount / 1,000,000) x pricePerMillion</code>. Output tokens, caching discounts, and batch API pricing are not included.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Claude, Gemini &amp; Kimi Approximation</h3>
+    <h3 class="font-display seo-h3-sm">Claude, Gemini and Kimi approximation</h3>
     <p class="seo-p">
       Anthropic, Google, and Moonshot have not publicly released their tokenizer vocabularies. This tool applies calibration factors derived from published benchmark comparisons: Claude and Kimi counts are the cl100k_base count multiplied by <code class="inline-code">1.04</code>, and Gemini counts are multiplied by <code class="inline-code">0.97</code>. Qwen models use a compatible tokenizer so counts are exact. Accuracy across typical English prompts is within <code class="inline-code">+-3%</code>.
     </p>

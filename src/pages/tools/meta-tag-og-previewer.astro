@@ -63,19 +63,19 @@ const tool = tools.find(t => t.slug === 'meta-tag-og-previewer')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to use the Meta Tag &amp; Social Card Previewer</h2>
-    <p class="seo-p">Fill in the fields and watch the Google search snippet and Twitter card preview update live. Once you are happy with how the page will appear when shared, copy the generated HTML and paste it inside the head of your page.</p>
+    <p class="seo-p">Fill in the five fields: Page Title, Meta Description, Canonical URL, OG Image URL, and Site Name. The Google Search Preview and Twitter Card Preview update in real time as you type. Once you are happy with how the page will appear when shared, click Copy HTML to get the complete meta tag block and paste it into the head of your page.</p>
     <div style="display:flex; flex-direction:column; gap:0.75rem;">
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">SEO snippet optimisation</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Craft title and description tags that fit within Google's display limits, ensuring your search result looks professional and entices clicks.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Google displays approximately 60 characters of title and 155-160 characters of description on desktop. The preview shows you exactly what gets truncated. If your title reads "Best Project Management Software for Small Business Teams in 2024" the preview shows it cut off at "Best Project Management Software for Small Business Tea..." -- prompting you to shorten it.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">Social media preview control</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Preview exactly how your page will appear when shared on Facebook, Twitter, and LinkedIn before publishing, preventing embarrassing truncated or missing previews.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">When someone shares your page on Twitter, Facebook, or LinkedIn, the platform reads your OG tags to build a link preview card. The tool shows you exactly how that card will look -- title, description, image, and domain. If the OG image field is empty, you see a placeholder icon instead of a broken image, which is what your audience would see.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem">New page setup</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">When launching a new page, generate the complete set of meta tags including OG, Twitter, and canonical tags in one step instead of writing each manually.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">When launching a new page, fill in all five fields and copy the generated HTML. It includes the title tag, meta description, canonical link, Open Graph tags (og:type, og:title, og:description, og:url, og:image, og:site_name), and Twitter Card tags (twitter:card, twitter:title, twitter:description, twitter:image). Paste this block into your page head and you are done.</p>
       </div>
     </div>
   </div>
@@ -107,19 +107,23 @@ const tool = tools.find(t => t.slug === 'meta-tag-og-previewer')!;
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How long should a meta description be?</h3>
-        <p itemprop="text" class="seo-faq-a">Google displays up to about 155-160 characters on desktop. Aim for 120-155 characters to ensure full display on both desktop and mobile. Include your primary keyword naturally.</p>
+        <p itemprop="text" class="seo-faq-a">Google displays up to approximately 155-160 characters on desktop and about 120 characters on mobile. Aim for 120-155 characters to ensure full display across devices. Include your primary keyword naturally in the first 100 characters. The preview tool shows you exactly where truncation occurs for your specific text.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What size should my OG image be?</h3>
-        <p itemprop="text" class="seo-faq-a">1200x630 pixels is the standard. This ratio ensures correct display on Facebook, Twitter, and LinkedIn. Images smaller than 300x200 pixels may not display as rich cards.</p>
+        <p itemprop="text" class="seo-faq-a">1200x630 pixels is the standard for all major platforms. This 1.91:1 aspect ratio ensures correct display on Facebook, Twitter (summary_large_image card), and LinkedIn. Images smaller than 300x200 pixels may not display as rich cards. Keep the file under 8 MB and use PNG for graphics or JPEG for photographs.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Do I need both OG and Twitter tags?</h3>
-        <p itemprop="text" class="seo-faq-a">Twitter falls back to OG tags if Twitter-specific tags are absent, but explicitly setting twitter:card ensures consistent rendering. Adding both guarantees correct display across platforms.</p>
+        <p itemprop="text" class="seo-faq-a">Twitter falls back to OG tags if Twitter-specific tags are absent, so technically you could use only OG tags. However, explicitly setting twitter:card to summary_large_image ensures consistent rendering. Without it, Twitter may default to the smaller summary card format. Adding both guarantees correct display across all platforms.</p>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Why isn't my social card updating?</h3>
-        <p itemprop="text" class="seo-faq-a">Social platforms aggressively cache link previews. Use Facebook's Sharing Debugger, Twitter's Card Validator, and LinkedIn's Post Inspector to force a refresh.</p>
+        <p itemprop="text" class="seo-faq-a">Social platforms aggressively cache link previews -- Facebook caches for up to 30 days. To force a refresh, use Facebook's Sharing Debugger (click "Scrape Again"), Twitter's Card Validator (enter your URL and click "Preview card"), and LinkedIn's Post Inspector. After updating your OG tags, you must trigger a re-scrape on each platform individually.</p>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What is a canonical URL and why does it matter?</h3>
+        <p itemprop="text" class="seo-faq-a">A canonical URL tells search engines which version of a page is the authoritative one. Without it, Google may index both https://example.com/page and https://www.example.com/page as separate pages, splitting your ranking signals. The canonical tag consolidates these variants into a single authoritative URL. Always use the full HTTPS URL with trailing slash if your site uses one.</p>
       </div>
     </div>
   </div>

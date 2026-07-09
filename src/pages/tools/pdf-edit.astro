@@ -149,20 +149,20 @@ const tool = tools.find(t => t.slug === 'pdf-edit')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Edit PDF Overview</h2>
+    <h2 class="font-display seo-h2">Add Text, Shapes, and Annotations to Any PDF</h2>
     <p class="seo-p">
-      This PDF edit tool lets you add text, images, shapes, freehand drawings, highlights, underlines, and comments to any PDF page — entirely within your browser. Built with <strong>pdf-lib</strong> (for applying edits and saving) and <strong>PDF.js</strong> (for rendering pages to canvas), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are filling out forms, annotating contracts, redacting sensitive information, or adding watermarks, the editing is performed client-side with no file uploads.
+      You received a 12-page contract as a PDF and need to highlight three clauses, add a comment on page 4, and redact an account number on page 7. Opening the file in a full PDF editor is overkill for these annotations. Drop the PDF into the edit tool, use the highlight tool on the clauses, add a comment bubble on page 4, switch to the redact tool and draw a black box over the account number on page 7, then click Save PDF. The output is the same document with all your annotations applied.
     </p>
     <p class="seo-p">
-      The tool provides a full vector editing workspace with 13 tools (text, rectangle, redact, circle, line, arrow, freehand draw, image, highlight, underline, comment, eraser, and hand/pan), colour swatches, adjustable stroke size, font size, opacity, and fill options. Edits are stored per-page with undo/redo history, and the save operation draws each edit onto the PDF using pdf-lib’s vector drawing API — producing sharp output at any resolution.
+      The editor provides 13 tools: text, rectangle, redact, circle, line, arrow, freehand draw, image, highlight, underline, comment, eraser, and hand/pan. Each edit is stored per-page with its own colour, size, opacity, and fill settings. The undo/redo history lets you step through changes. When you save, every edit across all pages is drawn onto the PDF as vector graphics -- sharp at any zoom level.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Common editing tasks and how to accomplish them</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Document annotation and markup`, `Legal and business teams annotate contracts, proposals, and reports with highlights, underlines, and comments. The highlight tool marks important clauses, the underline tool emphasizes key terms, and the comment tool adds contextual notes. Each edit is stored per-page with its own colour and opacity, making it easy to distinguish between different reviewers or annotation types.`],
-        [`Form filling and text insertion`, `The text tool lets you add typed content to PDF forms, invoices, and documents that lack editable form fields. Click anywhere on the page, type your text, and it is rendered at the specified font size and colour. The tool supports font sizes from 8 to 120 points, making it suitable for both fine print and large headings. Text edits are drawn as vector characters, remaining sharp at any zoom level.`],
-        [`Redaction and sensitive data removal`, `The redact tool draws solid black rectangles over sensitive content — names, addresses, account numbers, or confidential information. Unlike simple highlighting, the redact tool uses full opacity with no transparency, ensuring the underlying content is completely obscured. Combined with the rectangle tool for bordered annotations and the eraser for removing accidental edits, the tool provides complete control over document markup.`]
+        ['Contract markup and redaction', 'A lawyer receives a 40-page merger agreement as a PDF. The highlight tool marks key clauses in yellow. The comment tool adds notes like "Needs board approval" at specific paragraphs. The redact tool draws solid black rectangles over sensitive financial figures. The save produces a marked-up PDF ready for review by the opposing counsel.'],
+        ['Form filling without editable fields', 'An invoice PDF has blank lines for quantity, unit price, and total -- but no editable form fields. The text tool adds typed content at the exact positions. Click anywhere on the page, type the value, and the text appears at the specified font size and colour. The output looks like the form was filled in electronically.'],
+        ['Image insertion and visual annotation', 'A designer adds a logo to a PDF proposal. The image tool accepts PNG, JPG, GIF, and WebP files. The freehand tool draws circling marks around areas needing revision. The arrow tool points to specific elements. The rectangle tool frames sections. All annotations are stored as vector overlays, preserving the original page content underneath.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -173,26 +173,25 @@ const tool = tools.find(t => t.slug === 'pdf-edit')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Edit Pipeline</h2>
+    <h2 class="font-display seo-h2">How Edits Are Stored as SVG Overlays and Drawn on Save</h2>
     <p class="seo-p">
-      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla’s PDF renderer) renders each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) applies edits as vector drawing operations on save. An SVG overlay captures user interactions (clicks, drags, freehand strokes) and renders them as live preview elements. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+      When you load a PDF, PDF.js renders the current page onto a Canvas element. An SVG element is positioned over the canvas to capture your interactions -- clicks, drags, and freehand strokes. Each edit is stored as a data object with type, coordinates, colour, size, opacity, and other properties. The SVG provides a live preview while the actual PDF drawing happens on save.
     </p>
 
-    <h3 class="font-display seo-h3-sm">The Edit Pipeline</h3>
+    <h3 class="font-display seo-h3-sm">Coordinate conversion between screen and PDF space</h3>
     <p class="seo-p-sm">
-      <strong>1. Page rendering:</strong> PDF.js renders the current page onto a Canvas element at a scale that fits the container width. The canvas dimensions and PDF page dimensions are stored for coordinate conversion between viewport space (CSS pixels) and PDF space (points).
+      The SVG overlay uses viewport coordinates (origin at top-left, measured in CSS pixels). PDF pages use point coordinates (origin at bottom-left, 1 point = 1/72 inch). The conversion functions vpToPdf() and pdfToVp() handle the Y-axis flip and scale factor. This ensures edits render correctly regardless of container size or zoom level. For a letter-size page (612x792 points) displayed at 500px width, the scale factor is approximately 0.817.
     </p>
     <p class="seo-p-sm">
-      <strong>2. SVG overlay:</strong> An SVG element is positioned absolutely over the canvas. User interactions (mousedown, mousemove, mouseup) are captured by the SVG and converted to PDF coordinates using the stored scale factors. Each edit is stored as a data object with type, coordinates, colour, size, opacity, and other properties.
+      When you click Save PDF, pdf-lib loads the original document, embeds the Helvetica font, and iterates through all edits on all pages. Each edit type uses the corresponding API: drawText() for text, drawRectangle() for rects/highlights/redactions, drawEllipse() for circles, drawLine() for lines/arrows/underlines/freehand, and drawImage() for images. The edits are drawn directly onto the PDF pages, producing vector output that remains sharp at any zoom level.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Per-page undo and redo history</h3>
     <p class="seo-p-sm">
-      <strong>3. Live preview:</strong> Edits are rendered as SVG elements (rect, circle, line, polyline, text, image) with real-time coordinate conversion. Drag-to-move and drag-to-resize handles allow repositioning and resizing after creation. The preview is purely visual — the actual PDF drawing happens on save.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Save operation:</strong> When the user clicks “Save PDF”, pdf-lib loads the original document, embeds the Helvetica font, and iterates through all edits on all pages. Each edit type is drawn using the corresponding pdf-lib API: <code class="inline-code">drawText()</code> for text, <code class="inline-code">drawRectangle()</code> for rects/highlights/redactions, <code class="inline-code">drawEllipse()</code> for circles, <code class="inline-code">drawLine()</code> for lines/arrows/underlines/freehand, and <code class="inline-code">drawImage()</code> for images.
+      Each page maintains its own independent undo/redo stack. When you add, move, resize, or delete an edit, the current state is pushed onto the history stack. Undo restores the previous state. Redo moves forward. The Clear button removes all edits on the current page. Each page's history is independent -- editing page 3 does not affect the undo history for page 7.
     </p>
     <p class="seo-p-none">
-      <strong>Coordinate system:</strong> Edits are stored in PDF point coordinates (origin at bottom-left). The SVG overlay uses viewport coordinates (origin at top-left). The conversion functions <code class="inline-code">vpToPdf()</code> and <code class="inline-code">pdfToVp()</code> handle the Y-axis flip and scale factor. This ensures edits render correctly regardless of container size or zoom level.
+      The editor supports text in sizes from 8 to 120 points using the Helvetica font (Latin characters). For non-Latin text, you would need a custom font embedding solution not currently included. The redact tool draws solid black rectangles at full opacity, completely obscuring the underlying content. This is distinct from the highlight tool, which uses 30% opacity to mark text while keeping it readable.
     </p>
   </div>
 
@@ -200,18 +199,19 @@ const tool = tools.find(t => t.slug === 'pdf-edit')!;
     <h2 class="font-display seo-h2-faq">Frequently Asked Questions</h2>
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Is my data uploaded to a server?', a: 'No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your files never leave your device — there is no server upload at any point.' },
-        { q: 'What types of edits can I make?', a: 'You can add text (with custom font size and colour), draw shapes (rectangles, circles, lines, arrows), add images (PNG, JPG, GIF, WebP), make freehand drawings, highlight text, add underlines, insert comments, redact sensitive content, and erase any edit you have added. All edits are stored per-page.' },
-        { q: 'Can I undo or redo edits?', a: 'Yes. Use the Undo and Redo buttons (or Ctrl+Z / Ctrl+Y keyboard shortcuts) to step through your edit history per page. You can also clear all edits on the current page with the Clear Page button.' },
-        { q: 'Is there a file size limit?', a: 'There is no hard limit, but very large PDFs (hundreds of pages or tens of MB) may slow down rendering. For best results, keep files under 50 MB. Each page is rendered individually, so larger documents simply take a bit longer to navigate.' },
-        { q: 'Does editing reduce PDF quality?', a: 'No. Your edits are drawn as vector graphics and embedded text directly onto the PDF pages. The original page content is preserved. Only the elements you add are new — nothing from the original is recompressed or degraded.' },
-        { q: 'What fonts are available for text edits?', a: 'The tool uses Helvetica as the standard PDF font, which supports Latin characters. Text is drawn using pdf-lib’s drawText() API with the embedded Helvetica font. For non-Latin characters, you would need a custom font embedding solution not currently included in this tool.' },
-        { q: 'Can I edit multiple pages?', a: 'Yes. Use the Prev/Next buttons to navigate between pages. Each page stores its own independent set of edits with separate undo/redo history. When you save, all edits across all pages are applied to the output PDF.' }
+        { q: 'Is my data uploaded to a server?', a: 'No. All processing happens in your browser. Your files never leave your device -- there is no server upload at any point. This matters for confidential documents like legal contracts, financial statements, or medical records.' },
+        { q: 'What types of edits can I make?', a: 'You can add text (8-120pt, Helvetica), draw shapes (rectangles, circles, lines, arrows), add images (PNG, JPG, GIF, WebP), make freehand drawings, highlight text (30% opacity), add underlines, insert comment bubbles, redact sensitive content (solid black), and erase any edit you have added. All edits are stored per-page.' },
+        { q: 'Can I undo or redo edits?', a: 'Yes. Use the Undo and Redo buttons (or Ctrl+Z / Ctrl+Y) to step through your edit history per page. Each page maintains its own independent history stack. You can also clear all edits on the current page with the Clear button.' },
+        { q: 'Is there a file size limit?', a: 'There is no hard limit, but very large PDFs (hundreds of pages or tens of MB) may slow down rendering because PDF.js renders each page individually. For best results, keep files under 50 MB.' },
+        { q: 'Does editing reduce PDF quality?', a: 'No. Your edits are drawn as vector graphics and embedded text directly onto the PDF pages. The original page content is preserved. Only the elements you add are new -- nothing from the original is recompressed or degraded.' },
+        { q: 'What fonts are available for text edits?', a: 'The tool uses Helvetica, which supports Latin characters (English, French, German, Spanish, etc.). Text is drawn using pdf-lib drawText() with the embedded Helvetica font. For non-Latin characters (Chinese, Japanese, Arabic), you would need a custom font embedding solution not currently included.' },
+        { q: 'Can I edit multiple pages?', a: 'Yes. Use the Prev/Next buttons to navigate between pages. Each page stores its own independent set of edits with separate undo/redo history. When you save, all edits across all pages are applied to the output PDF.' },
+        { q: 'How is this different from Adobe Acrobat?', a: 'Adobe Acrobat is a full-featured PDF editor with form fields, digital signatures, OCR, and PDF creation. This tool focuses on annotation -- adding text, shapes, highlights, and redactions. For quick markups without a subscription, this tool covers the essentials. For advanced features like form creation or digital signatures, Acrobat is the better choice.' }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
             <p itemprop="text" class="seo-faq-a">{item.a}</p>
           </div>
         </div>

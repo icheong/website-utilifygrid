@@ -64,43 +64,50 @@ const tool = tools.find(t => t.slug === 'bmr-katch-mcardle-calculator')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to use the BMR & TDEE Calculator (Katch-McArdle)</h2>
-    <p class="seo-p">Enter your total body weight in kilograms and body fat percentage. If you don't know your body fat percentage, a DEXA scan or body composition scale can measure it. Select your activity level that best matches your weekly exercise.</p>
+    <p class="seo-p">Most BMR calculators rely on height, weight, age, and sex, which means two people with the same stats but very different body compositions get the same estimate. That is a problem if you carry more muscle or carry more fat than average, because your actual metabolic rate depends on how much lean tissue you have. The Katch-McArdle formula solves this by using your lean body mass directly, giving you a caloric baseline that reflects your real physiology rather than a population average. Enter your weight, body fat percentage, and activity level to get a maintenance calorie target you can actually use.</p>
     <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:1rem;">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Calorie target setting</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Calculate your precise TDEE to establish the exact calorie intake needed to maintain, lose, or gain weight based on your individual body composition.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Setting a calorie target for fat loss</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A 82 kg runner at 15% body fat who trains five days per week needs roughly 2,680 kcal to maintain. Subtracting 400 gives a 2,280 kcal cut target that preserves performance while dropping about 0.35 kg per week. Entering those exact numbers here removes the guesswork from the equation.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Cut vs bulk planning</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Determine your maintenance calories, then subtract for a deficit or add for a surplus to create a evidence-based nutrition plan for your goals.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Lean bulk for strength athletes</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A 95 kg powerlifter at 22% body fat who lifts four times per week gets a maintenance of about 2,850 kcal. Adding a 300 kcal surplus to 3,150 kcal supports gradual muscle gain without excessive fat accumulation over a 12-week training block.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Athlete baseline assessment</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Establish an accurate BMR baseline for athletes or muscular individuals where lean body mass makes the Katch-McArdle formula more accurate than height-based estimates.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Recomp for sedentary-to-active transitions</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A 68 kg office worker at 28% body fat starting a lifting program three days per week can eat near maintenance at roughly 1,950 kcal. Over six months this supports simultaneous fat loss and muscle gain, a pattern that is realistic for beginners adapting to resistance training.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Adjusting for body composition changes</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">As you lose fat or gain muscle over weeks, your lean body mass shifts and so does your BMR. Re-entering your updated weight and body fat every four to six weeks keeps your calorie targets aligned with your current physiology rather than stale starting numbers.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">The Katch-McArdle formula</h2>
-    <h3 class="font-display seo-h3-sm">Why Katch-McArdle?</h3>
-    <p class="seo-p">Unlike Harris-Benedict or Mifflin-St Jeor, the Katch-McArdle formula uses <code class="inline-code">Lean Body Mass</code> directly, making it more accurate for muscular athletes or those with higher body fat percentages.</p>
+    <p class="seo-p">The Katch-McArdle formula estimates basal metabolic rate using lean body mass instead of height and weight. It was published by Katch and McArdle in their 1996 textbook Nutrition, Weight Control, and Exercise, and it remains one of the most cited BMR equations in sports nutrition research.</p>
+    <h3 class="font-display seo-h3-sm">Why Katch-McArdle over Harris-Benedict or Mifflin-St Jeor?</h3>
+    <p class="seo-p">Harris-Benedict and Mifflin-St Jeor estimate BMR from total body mass, which means a 100 kg marathoner and a 100 kg sedentary person receive nearly identical results despite having vastly different metabolic profiles. Katch-McArdle sidesteps this by isolating lean body mass, which is the metabolically active tissue that drives resting energy expenditure. Published validation studies show Katch-McArdle achieves a standard error of estimate of approximately 219 kcal per day, compared to roughly 260-300 kcal for height-based equations when tested against indirect calorimetry. The formula is particularly reliable for individuals whose body composition deviates from the statistical norm that height-based models assume.</p>
     <h3 class="font-display seo-h3-sm">Lean Body Mass</h3>
-    <p class="seo-p"><code class="inline-code">LBM = Total Weight × (1 − Body Fat% / 100)</code> — This is the portion of your body mass that is not fat tissue.</p>
+    <p class="seo-p"><code class="inline-code">LBM = Total Weight × (1 − Body Fat% / 100)</code> subtracts fat tissue from total weight to isolate metabolically active mass. For a 75 kg person at 22% body fat, the calculation is 75 × (1 − 22/100) = 75 × 0.78 = 58.5 kg of lean body mass. Accurate body fat measurement is critical here, because a 3% error in body fat input can shift BMR by 50-80 kcal per day. Methods such as DEXA scans, hydrostatic weighing, and skinfold calipers each carry different precision margins, with DEXA generally considered the gold standard for clinical settings.</p>
     <h3 class="font-display seo-h3-sm">BMR calculation</h3>
-    <p class="seo-p"><code class="inline-code">BMR = 370 + (21.6 × LBM in kg)</code> — This is the calories your body burns at complete rest to keep organs functioning.</p>
+    <p class="seo-p"><code class="inline-code">BMR = 370 + (21.6 × LBM in kg)</code> calculates the calories your body burns at complete rest to sustain organ function, cellular repair, and baseline neurological activity. Using the previous example: BMR = 370 + (21.6 × 58.5) = 370 + 1,263.6 = 1,633.6 kcal per day. The constant 370 represents basal energy for non-lean-tissue processes, while the coefficient 21.6 reflects the documented metabolic rate of lean tissue per kilogram. This baseline represents roughly 60-70% of total daily energy expenditure for most individuals.</p>
     <h3 class="font-display seo-h3-sm">TDEE calculation</h3>
-    <p class="seo-p"><code class="inline-code">TDEE = BMR × Activity Multiplier</code> — Sedentary is 1.2, lightly active is 1.375, moderately active is 1.55, very active is 1.725, extra active is 1.9.</p>
+    <p class="seo-p"><code class="inline-code">TDEE = BMR × Activity Multiplier</code> scales your resting metabolic rate to account for all physical activity throughout the day. The multipliers correspond to established activity categories: sedentary (1.2) for desk jobs with no structured exercise, lightly active (1.375) for 1-3 light workouts per week, moderately active (1.55) for 3-5 moderate sessions, very active (1.725) for 6-7 intense sessions, and extremely active (1.9) for athletes or physically demanding occupations. Using the continued example at moderately active: TDEE = 1,634 × 1.55 = 2,533 kcal per day. This is the maintenance target, and adjusting from there by 300-500 kcal produces a realistic deficit or surplus for most goals.</p>
   </div>
 
   <div slot="faq">
     <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'How accurate is the Katch-McArdle formula?', a: 'It is generally considered the most accurate BMR formula when you know your body fat percentage, within 5-8% of measured RMR for most individuals. The main source of error is inaccurate body fat measurement.' },
-        { q: 'What is the difference between BMR and TDEE?', a: 'BMR is the calories your body burns at complete rest. TDEE adds calories burned through all daily activity, including exercise and non-exercise activity thermogenesis.' },
-        { q: 'Which activity multiplier should I choose?', a: 'Most people overestimate their activity level. Moderately active (1.55x) applies to genuine 45-60 minute workouts 4-5 times per week. If your job is mostly sitting, choose lightly active.' },
-        { q: 'Why is my BMR different from other calculators?', a: 'Other calculators estimate lean mass from height, weight, age, and sex. Katch-McArdle uses measured body fat directly, so it will differ. It tends to be more accurate for unusual body compositions.' },
+        { q: 'How accurate is the Katch-McArdle formula?', a: 'The Katch-McArdle formula is generally considered the most accurate BMR equation when body fat percentage is known with reasonable precision. Validation studies against indirect calorimetry show it falls within 5 to 8 percent of measured resting metabolic rate for most individuals. The primary source of error is inaccurate body fat input rather than the formula itself, which is why the quality of your body fat measurement matters significantly.' },
+        { q: 'What is the difference between BMR and TDEE?', a: 'BMR represents the calories your body burns at complete rest to maintain basic physiological functions such as breathing, circulation, and cellular repair. TDEE adds all additional energy expenditure from daily movement, structured exercise, and non-exercise activity thermogenesis (NEAT). BMR typically accounts for 60 to 70 percent of your total daily energy expenditure, with the remaining 30 to 40 percent coming from physical activity and the thermic effect of food.' },
+        { q: 'Which activity multiplier should I choose?', a: 'Most people overestimate their true activity level, which leads to inflated calorie targets. Moderately active (1.55x) applies to someone who completes genuine 45 to 60 minute moderate-to-intense workouts 4 to 5 times per week with a mostly sedentary job. If your daily routine involves extended sitting and you exercise fewer than three times per week, lightly active (1.375x) is the more honest starting point.' },
+        { q: 'Why is my BMR different from other calculators?', a: 'Harris-Benedict and Mifflin-St Jeor estimate lean body mass indirectly from height, weight, age, and sex, which means they assume a standard body composition ratio. Katch-McArdle uses your actual measured body fat percentage, so it produces a different and often more accurate result for individuals whose composition deviates from the population average. This is especially noticeable for muscular athletes, individuals with higher body fat percentages, and older adults with atypical muscle-to-fat ratios.' },
+        { q: 'What happens if my body fat measurement is inaccurate?', a: 'The formula is only as reliable as the body fat number you enter, and even small measurement errors compound across the calculation. A 3 percent error in body fat input can shift your estimated BMR by 50 to 80 kcal per day, which accumulates to roughly 1,500 to 2,400 kcal per month. DEXA scans offer the most consistent accuracy at plus or minus 1 to 2 percent, while bioelectrical impedance scales can vary by 5 to 8 percent depending on hydration status and timing.' },
+        { q: 'Is Katch-McArdle suitable for everyone?', a: 'The formula works well for most adults with a reasonably accurate body fat measurement and no unusual medical conditions affecting fluid balance. It may produce less reliable estimates for very lean individuals below approximately 8% body fat, elderly populations with atypical muscle distribution, or people with edema or other fluid retention issues. If you have a chronic health condition or are under medical care, a registered dietitian or physician can help determine whether this formula is appropriate for your specific situation.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>

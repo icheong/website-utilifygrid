@@ -49,41 +49,40 @@ const tool = tools.find(t => t.slug === 'json-minifier')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">JSON Minifier and Compact Formatter Overview</h2>
-    <p class="seo-p">
-      This JSON minifier strips all non-essential whitespace from JSON documents to produce the most compact possible payload. Paste any formatted or prettified JSON into the input panel and click Minify to see a single-line output with all line breaks, tabs, and padding removed. The tool runs entirely in your browser using native JavaScript methods — no data is sent to any server, making it safe for minimising API payloads containing sensitive information.
-    </p>
-    <p class="seo-p">
-      A stats badge shows the exact byte reduction: the original and minified sizes are compared using <code class="inline-code">TextEncoder</code> for accurate UTF-8 byte counts, and the percentage saved is displayed alongside the raw byte savings. This is particularly useful for estimating bandwidth savings in API calls, reducing storage for JSON configuration files, or preparing data for environments with strict payload size limits.
-    </p>
-
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
+    <h2 class="font-display seo-h2">How to Use the JSON Minifier and Compact Formatter</h2>
+    <p class="seo-p">A mobile app developer receives a 50 KB prettified JSON response from a REST API and needs to reduce bandwidth consumption on cellular networks. Paste the formatted JSON into the input panel and click Minify. The tool strips all whitespace, line breaks, and indentation, producing a single-line payload. The reduction badge shows that the payload shrank from 50 KB to 15 KB, a 70 percent reduction. Copy the minified output and use it in the mobile app codebase to reduce data transfer and improve load times.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['API payload size optimisation', 'A mobile app developer can minimise JSON API responses to reduce bandwidth consumption on cellular networks. Reducing a 50 KB prettified response to 15 KB of minified JSON translates to faster load times and lower data costs for end users, especially in regions with expensive data plans.'],
-        ['Configuration file storage reduction', 'A DevOps engineer managing hundreds of Kubernetes ConfigMap JSON files can shrink total storage by minifying before committing. The reduction badge provides immediate feedback on savings, which compound across large fleets of microservice configurations.'],
-        ['Log and metrics pipeline preprocessing', 'An observability engineer can minify JSON log entries before ingestion into log aggregators, reducing storage costs and improving throughput. The tool helps estimate the compression benefit for different log verbosity levels and payload structures.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm">
-          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">API payload size optimisation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A backend developer prepares API responses for a bandwidth-constrained IoT application. Paste the prettified JSON response, click Minify, and review the reduction badge. The exact byte count and percentage savings help determine whether the payload fits within the device transmission limits. The minified output is safe to embed directly in HTTP responses because it is semantically identical to the prettified version.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Configuration file storage reduction</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A DevOps engineer managing hundreds of Kubernetes ConfigMap JSON files wants to minimise storage on the Git server. Paste each file, click Minify, and review the reduction badge. The savings compound across large fleets of microservice configurations, reducing repository size and clone times. The minified JSON remains valid and parseable by any JSON consumer.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Log pipeline preprocessing</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">An observability engineer minifies JSON log entries before ingestion into a log aggregator to reduce storage costs and improve throughput. Paste a sample log entry, click Minify, and review the reduction badge to estimate savings at scale. The tool helps determine whether minification provides meaningful compression benefit for different log verbosity levels and payload structures.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Email attachment optimisation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A consultant needs to email a large JSON data export to a client but the file exceeds the 25 MB attachment limit. Paste the JSON, click Minify, and check whether the reduced size fits within the limit. The reduction badge shows the exact byte savings, helping you decide whether minification alone is sufficient or if you need to split the file into multiple attachments.</p>
+      </div>
     </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Whitespace Elimination and JSON Re-serialisation</h2>
+    <h2 class="font-display seo-h2">How the JSON Minifier Works</h2>
     <p class="seo-p">
-      The minifier operates through a two-step round-trip via the native JavaScript JSON parser and serialiser. First, <code class="inline-code">JSON.parse()</code> validates the input and constructs an in-memory object tree. This step enforces strict RFC 8259 compliance — any syntax error is reported immediately with the exact position of the failure. Because <code class="inline-code">JSON.parse()</code> discards all whitespace during parsing, the object tree contains only the semantic data.
+      The minifier takes prettified JSON with indentation, line breaks, and spacing, and strips it down to a single continuous line. It does this by parsing the input with <code class="inline-code">JSON.parse()</code> to validate the structure, then re-serialising it with <code class="inline-code">JSON.stringify()</code> and no indentation argument. This round-trip guarantees the output is valid JSON while removing every byte of non-essential whitespace.
     </p>
-    <h3 class="seo-h3-sm">Re-serialisation without Indentation</h3>
+    <h3 class="seo-h3-sm">Why Round-Trip Parsing Is Safer Than Regex</h3>
     <p class="seo-p">
-      The second step calls <code class="inline-code">JSON.stringify(obj)</code> with no arguments for the space parameter (defaulting to <code class="inline-code">undefined</code>), which produces the most compact output — a single continuous line with no spaces, line breaks, or indentation. The native implementation handles all JSON value types correctly: strings are escaped according to the JSON specification, numbers follow the IEEE 754 double-precision representation, and special values like <code class="inline-code">undefined</code>, <code class="inline-code">Infinity</code>, and <code class="inline-code">NaN</code> are serialised as <code class="inline-code">null</code> or omitted.
+      A naive find-and-replace approach that strips spaces and newlines would break string values containing spaces. The round-trip approach avoids this entirely: <code class="inline-code">JSON.parse()</code> correctly distinguishes structural whitespace from string content, so only formatting characters are removed. Strings like "hello world" or "line one\nline two" are preserved exactly as they appear in the original data.
     </p>
-    <h3 class="seo-h3-sm">Byte-Size Calculation</h3>
+    <h3 class="seo-h3-sm">Accurate Byte-Size Calculation</h3>
     <p class="seo-p-none">
-      The reduction badge computes the exact byte savings using <code class="inline-code">TextEncoder.encode()</code> with UTF-8 encoding. This is more accurate than using <code class="inline-code">string.length</code> because UTF-16 surrogate pairs and multi-byte Unicode characters are counted correctly. The percentage reduction is calculated as <code class="inline-code">(original - minified) / original * 100</code>, providing a precise measure of payload compression efficiency.
+      The reduction badge uses <code class="inline-code">TextEncoder.encode()</code> with UTF-8 encoding to count bytes rather than characters. This matters because multi-byte Unicode characters like emoji or accented letters take 2-4 bytes in UTF-8 but only count as one character in string.length. The percentage is calculated as <code class="inline-code">(original bytes - minified bytes) / original bytes * 100</code>, giving you a precise measure of how much bandwidth you save.
     </p>
   </div>
 
@@ -93,41 +92,41 @@ const tool = tools.find(t => t.slug === 'json-minifier')!;
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">Does minification change the data?</h3>
+        <h3 itemprop="name" class="seo-faq-q">Does minification change any of the actual data?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">No. Minification only removes whitespace that exists outside of string literals. The round-trip through <code class="inline-code">JSON.parse()</code> and <code class="inline-code">JSON.stringify()</code> guarantees the parsed data is identical before and after. Running <code class="inline-code">JSON.parse()</code> on the minified output produces the same object tree as parsing the original input.</p>
+          <p itemprop="text" class="seo-faq-a">No. The tool uses JSON.parse followed by JSON.stringify, which guarantees the parsed data is identical before and after. String values like "hello world" retain their spaces, numbers keep their precision, and booleans stay true or false. The only thing removed is formatting whitespace outside of string literals.</p>
         </div>
       </div>
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">Why not just use a find-and-replace?</h3>
+        <h3 itemprop="name" class="seo-faq-q">How much size reduction should I expect?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Regex-based whitespace removal can break string values that contain spaces, escaped characters, or whitespace patterns that match the removal criteria. <code class="inline-code">JSON.parse()</code> followed by <code class="inline-code">JSON.stringify()</code> is the only safe approach because the parser correctly distinguishes structural whitespace from string content, guaranteeing zero data corruption.</p>
+          <p itemprop="text" class="seo-faq-a">It depends on how heavily your JSON is indented. Deeply nested structures with 4-space indentation and long property names typically see 40-70% reduction. Already-minified JSON with minimal whitespace saves under 5%. The reduction badge shows the exact byte count and percentage for every input, so you can immediately see whether minification is worth the effort for your specific payload.</p>
         </div>
       </div>
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">How much space is typically saved?</h3>
+        <h3 itemprop="name" class="seo-faq-q">Why not just use a text editor to remove spaces?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Savings depend on the input. Well-indented JSON with deep nesting and long property names can see 40-70% reduction. Already-compact JSON with minimal whitespace saves very little — sometimes under 5%. The reduction badge displays the exact byte count and percentage for every input, so you always know exactly how much was saved.</p>
+          <p itemprop="text" class="seo-faq-a">Find-and-replace whitespace removal would break string values that contain spaces. For example, a JSON field with the value "New York" would become "NewYork" if you naively stripped all spaces. The parse-and-serialise approach is the only safe method because the parser knows the difference between structural whitespace and content inside quoted strings.</p>
         </div>
       </div>
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">Is minified JSON still valid?</h3>
+        <h3 itemprop="name" class="seo-faq-q">Is the minified output always valid JSON?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. Minified output is always valid, parseable JSON. Because the tool first parses the input and then re-serialises it, the output is guaranteed to conform to RFC 8259, even if the original input had minor formatting inconsistencies. The minified output can be used anywhere standard JSON is accepted.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. Because the tool first parses the input to validate it, then re-serialises with no indentation, the output is guaranteed to be valid RFC 8259 JSON. If the original input had syntax errors, the tool reports them before producing any output. The minified result can be used anywhere standard JSON is accepted.</p>
         </div>
       </div>
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">Does it handle special numeric values like NaN or Infinity?</h3>
+        <h3 itemprop="name" class="seo-faq-q">What happens to values like NaN or Infinity?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">JavaScript values like <code class="inline-code">NaN</code>, <code class="inline-code">Infinity</code>, and <code class="inline-code">-Infinity</code> are not valid JSON values per the specification. When encountered, <code class="inline-code">JSON.stringify()</code> converts them to <code class="inline-code">null</code>. If your input contains these values, the minified output will differ from the original — review the output to confirm this treatment is acceptable for your use case.</p>
+          <p itemprop="text" class="seo-faq-a">JavaScript values like NaN and Infinity are not valid JSON per the specification. When JSON.stringify encounters them, it converts them to null. If your data contains these values, the minified output may differ from the original. Review the output after minification to confirm the null substitution is acceptable for your use case.</p>
         </div>
       </div>
 

@@ -111,12 +111,12 @@ const faqs = [
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Unix Timestamp Converter — Overview</h2>
+    <h2 class="font-display seo-h2">How to use the Unix Timestamp Converter</h2>
     <p class="seo-p">
-      A Unix timestamp is a single integer representing the number of seconds (or milliseconds) elapsed since the Unix epoch — midnight UTC on 1 January 1970. This tool converts any Unix timestamp into six immediately useful representations: UTC, ISO 8601, local browser time, relative time, day of week, and the millisecond equivalent. All processing runs entirely in your browser using the JavaScript <code class="inline-code">Date</code> API — no data is transmitted to any server, and there is no rate limit or file-size constraint.
+      An API response returns <code class="inline-code">"created_at": 1735689600</code> and you need to know if that date is correct. Paste the number into the input field, or click <strong>Use now</strong> to grab the current timestamp. The tool instantly shows UTC, ISO 8601, local browser time, relative time ("3 hours ago"), day of week, and the millisecond equivalent. Each row has a copy button for pasting into code or documentation.
     </p>
     <p class="seo-p">
-      Paste a timestamp into the input field, or click <strong>Use now</strong> to convert the current moment. The tool auto-detects whether the input is in seconds (10 digits) or milliseconds (13 digits) based on magnitude. Each output row has a copy button for quick insertion into code, documentation, or database queries.
+      The tool auto-detects seconds versus milliseconds: values below 10^12 (like 1735689600) are treated as seconds and multiplied by 1,000 internally; values at or above that threshold (like 1735689600000) are passed directly to the Date constructor. A DevOps engineer correlating logs from three different data centres can paste a timestamp from each, compare the UTC strings, and confirm all three events happened within the same 5-second window — no mental arithmetic required.
     </p>
 
     <h3 class="font-display seo-h3-sm">Real-World Applications &amp; Use Cases</h3>
@@ -131,9 +131,9 @@ const faqs = [
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Detection Logic &amp; Output Formats</h2>
+    <h2 class="font-display seo-h2">How the Unix Timestamp Converter works</h2>
 
-    <h3 class="font-display seo-h3-sm">Seconds vs. Milliseconds Auto-Detection</h3>
+    <h3 class="font-display seo-h3-sm">Seconds vs. milliseconds auto-detection</h3>
     <p class="seo-p">
       The converter applies a single threshold rule: if the numeric input is greater than or equal to <code class="inline-code">1e12</code> (one trillion), it is treated as milliseconds; otherwise it is treated as seconds and multiplied by 1,000 before being passed to <code class="inline-code">new Date(ms)</code>. This boundary was chosen because <code class="inline-code">1e12</code> milliseconds corresponds to 9 September 2001 — a date far enough in the past that any real-world timestamp representing a future or recent date in seconds will always be below the threshold, while any millisecond timestamp for a date after 2001 will always be above it. The resulting <code class="inline-code">Date</code> object is validated with <code class="inline-code">isNaN(d.getTime())</code> before rendering.
     </p>
@@ -141,7 +141,7 @@ const faqs = [
       Edge cases are handled explicitly: non-numeric input (including empty strings, whitespace, or text) triggers a validation error before any conversion occurs. Floating-point values such as <code class="inline-code">1735689600.5</code> are accepted — the <code class="inline-code">parseFloat</code> call preserves sub-second precision, and the resulting ISO 8601 string will include fractional seconds. Negative timestamps (representing dates before 1 January 1970) are valid and convert correctly, since the <code class="inline-code">Date</code> constructor handles negative millisecond values natively. Values outside JavaScript's safe integer range (<code class="inline-code">Number.MAX_SAFE_INTEGER</code>) may produce inaccurate results due to floating-point precision limits, but such values are far beyond any practical timestamp.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Output Format Reference</h3>
+    <h3 class="font-display seo-h3-sm">Output format reference</h3>
     <div class="ts-format-table">
       <div class="info-row"><span class="info-label">Seconds</span><span class="info-value">Values &lt; 10¹² — treated as Unix seconds, multiplied ×1000 internally</span></div>
       <div class="info-row"><span class="info-label">Milliseconds</span><span class="info-value">Values ≥ 10¹² — passed directly to <code class="inline-code">new Date(ms)</code></span></div>
@@ -151,7 +151,7 @@ const faqs = [
       <div class="info-row"><span class="info-label">Relative</span><span class="info-value">Computed from <code class="inline-code">Date.now()</code> diff — minutes, hours, or days from now / ago</span></div>
     </div>
 
-    <h3 class="font-display seo-h3-sm">Relative Time Calculation</h3>
+    <h3 class="font-display seo-h3-sm">Relative time calculation</h3>
     <p class="seo-p">
       The relative time output computes the difference between the input timestamp and <code class="inline-code">Date.now()</code> in milliseconds, then buckets the result into human-readable labels: under 60,000 ms displays as "just now"; under 3,600,000 ms (one hour) shows rounded minutes; under 86,400,000 ms (one day) shows rounded hours; beyond that shows rounded days. The sign of the difference determines whether the suffix is "from now" or "ago", correctly handling future timestamps such as scheduled event times or token expiry values.
     </p>
@@ -159,7 +159,7 @@ const faqs = [
       Rounding uses <code class="inline-code">Math.round()</code> rather than truncation, so "3 hr 45 min ago" is displayed instead of "3 hr ago" when the actual difference is 3 hours and 45 minutes. The "just now" threshold of 60 seconds avoids noisy single-second updates when monitoring live timestamps. Because the relative calculation runs on every input event, the output updates in real time as you type — no submit button is required.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Timezone Handling &amp; the JavaScript Date API</h3>
+    <h3 class="font-display seo-h3-sm">Timezone handling and the JavaScript Date API</h3>
     <p class="seo-p">
       All internal computation uses UTC. The <code class="inline-code">Date</code> object stores time as a single UTC millisecond value; the UTC and ISO 8601 output fields call <code class="inline-code">toUTCString()</code> and <code class="inline-code">toISOString()</code> respectively, both of which are timezone-independent. The local time output uses <code class="inline-code">toLocaleString()</code> with no explicit timezone argument, which delegates to the browser's IANA timezone setting (typically configured by the operating system). This means the same timestamp will produce different local time strings on machines in different timezones — an intentional design choice that lets you verify how a timestamp appears in your own locale without manual offset arithmetic.
     </p>

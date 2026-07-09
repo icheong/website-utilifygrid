@@ -45,8 +45,9 @@ const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">How to use the Prompt Architect</h2>
-    <p class="seo-p">Type or paste your AI prompt into the input field. Click one of the three format buttons to see it structured for Claude (XML tags), GPT (JSON messages array), or Gemini (plain structured text). The token count, character count, word count, and estimated API cost update live based on your $/1000 tokens setting. Copy the formatted output with one click.</p>
+    <h2 class="font-display seo-h2">How to use the Prompt Architect and Tokenizer</h2>
+    <p class="seo-p">You are building a customer-support chatbot and need to structure the system prompt for Claude. Paste the prompt into the text area — "You are a helpful assistant for Acme Corp. Answer questions about our pricing plans..." — and click Claude XML. The tool wraps it in instructions, context, and task XML tags. The token count shows 847 tokens, and at $0.003 per 1K tokens the estimated cost is $0.0025 per inference call. Switch to GPT JSON to see the same prompt formatted as a messages array with role/content objects.</p>
+    <p class="seo-p">Edit the prompt text and the stats update instantly — add a few-shot example and watch the token count jump from 847 to 1,203. This lets you A/B test prompt variations and estimate monthly API spend before committing to a provider. The $/1K tokens input defaults to $0.003 but can be set to any rate for your specific model and tier.</p>
     <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem;">Model-specific formatting</strong>
@@ -64,13 +65,13 @@ const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Format structures explained</h2>
+    <h2 class="font-display seo-h2">How the Prompt Architect formats your prompt</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
       {[
-        ['Claude XML', 'Anthropic recommends wrapping context, instructions, and data in XML tags like <code class=\'inline-code\'>&lt;instructions&gt;</code>, <code class=\'inline-code\'>&lt;context&gt;</code>, and <code class=\'inline-code\'>&lt;task&gt;</code>. This helps Claude understand structure and reduces prompt injection risk.'],
-        ['GPT JSON', `OpenAI API expects a messages array with role/content objects: <code class="inline-code">[{role:'system',content:'...'},{role:'user',content:'...'}]</code>. System prompts set behaviour; user messages contain the task.`],
-        ['Gemini Structured', 'Google Gemini works best with clearly delineated sections using markdown-style headers and plain structured prose. Context, role, and task are clearly separated as labelled paragraphs.'],
-        ['Token count', 'Estimated as total characters divided by 4, a common approximation. Actual token counts depend on the model\'s tokenizer. Use the model\'s native tokenization API for precise pricing.'],
+        ['Claude XML', 'Anthropic recommends wrapping context, instructions, and data in XML tags like <code class=\'inline-code\'>&lt;instructions&gt;</code>, <code class=\'inline-code\'>&lt;context&gt;</code>, and <code class=\'inline-code\'>&lt;task&gt;</code>. This helps Claude understand structure and reduces prompt injection risk. For example, a customer-support prompt would place the persona in instructions, the product FAQ in context, and the user question in task.'],
+        ['GPT JSON', 'OpenAI API expects a messages array with role/content objects: <code class="inline-code">[{role:\'system\',content:\'...\'},{role:\'user\',content:\'...\'}]</code>. System prompts set behaviour and constraints; user messages contain the actual request. A typical GPT prompt places persona and rules in the system message and the task in the user message.'],
+        ['Gemini Structured', 'Google Gemini works best with clearly delineated sections using markdown-style headers and plain structured prose. Context, role, and task are clearly separated as labelled paragraphs. This format avoids the overhead of XML or JSON while still giving the model clear structural signals.'],
+        ['Token count', 'Estimated as total characters divided by 4, a common approximation for English text. Actual token counts depend on the model\'s tokenizer — code, non-Latin scripts, and special characters may tokenize differently. For pricing accuracy, use the model\'s native tokenization API.'],
       ].map(([label, desc]) => (
         <div>
           <h3 class="font-display seo-h3-sm">{label}</h3>
@@ -84,15 +85,19 @@ const tool = tools.find(t => t.slug === 'prompt-architect-tokenizer')!;
     <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'How accurate is the token count?', a: 'The chars/4 estimate is within 10-15% for most English text. Code, non-Latin scripts, and special characters may tokenize differently. For pricing accuracy, use tiktoken (OpenAI) or the Anthropic/Google SDKs which count tokens precisely using the model\'s actual tokenizer.' },
-        { q: 'Should I use a system prompt or a user prompt for instructions?', a: 'For GPT models, system messages are more authoritative for persistent instructions, persona, and constraints. User messages represent the actual request. For Claude, Anthropic recommends placing instructions in a human turn wrapped in XML tags when using the API.' },
-        { q: 'What is prompt injection and how do I prevent it?', a: 'Prompt injection occurs when user-supplied text contains instructions that override your system prompt. Mitigations include using XML delimiters to separate instructions from data, sanitising user input, and using model-specific safety features.' },
-        { q: 'How can I reduce token costs?', a: 'Shorten prompts by removing verbose explanations and using concise phrasing. Use few-shot examples only when necessary. Cache system prompts using provider prompt caching features. For high-volume tasks, batch API calls. Consider smaller models for simple classification tasks.' },
+        { q: 'How accurate is the token count?', a: 'The chars/4 estimate is within 10-15% for most English text. Code, non-Latin scripts, and special characters may tokenize differently. For example, Chinese text typically tokenizes at roughly 1.5-2 tokens per character, not 0.25. For pricing accuracy, use tiktoken (OpenAI) or the Anthropic/Google SDKs which count tokens precisely using the model\'s actual tokenizer.' },
+        { q: 'Should I use a system prompt or a user prompt for instructions?', a: 'For GPT models, system messages are more authoritative for persistent instructions, persona, and constraints. User messages represent the actual request. For Claude, Anthropic recommends placing instructions in a human turn wrapped in XML tags when using the API. The key difference: system prompts cannot be overridden by user input in most providers, while user messages can.' },
+        { q: 'What is prompt injection and how do I prevent it?', a: 'Prompt injection occurs when user-supplied text contains instructions that override your system prompt — for example, a user pasting "Ignore all previous instructions" into a chatbot. Mitigations include using XML delimiters to separate instructions from data, sanitising user input, using model-specific safety features, and keeping system prompts concise and specific.' },
+        { q: 'How can I reduce token costs?', a: 'Shorten prompts by removing verbose explanations and using concise phrasing. Use few-shot examples only when necessary — each example adds 50-200 tokens. Cache system prompts using provider prompt caching features (available on OpenAI and Anthropic). For high-volume tasks, batch API calls. Consider smaller models like GPT-4o-mini or Claude Haiku for simple classification tasks.' },
+        { q: 'When should I use Claude XML versus GPT JSON format?', a: 'Use Claude XML when working with Anthropic\'s API, as their models are trained to parse XML structure effectively. Use GPT JSON when working with OpenAI\'s chat completion API, which expects the messages array format natively. For Gemini, use plain structured text with clear section headers. The format choice is provider-specific — do not mix formats across providers.' },
+        { q: 'How do few-shot examples affect token count?', a: 'Each few-shot example adds roughly 50-200 tokens depending on length. A single example with input/output pair might add 100 tokens, while three examples could add 300+. This directly impacts API cost — at $0.003/1K tokens, 300 extra tokens cost $0.0009 per call. Over 10,000 daily calls, that adds up to $9/month. Use few-shot examples sparingly and only when they meaningfully improve output quality.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
-          <p itemprop="text" class="seo-faq-a">{item.a}</p>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
+          </div>
         </div>
       ))}
     </div>

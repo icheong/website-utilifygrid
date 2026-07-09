@@ -100,23 +100,23 @@ const tool = tools.find(t => t.slug === 'smart-log-cleaner')!;
   ══════════════════════════════════════════════ -->
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the Smart Log Cleaner</h2>
-    <p class="seo-p">Clean and filter server logs in four simple steps — no server required, everything runs in your browser.</p>
+    <p class="seo-p">Server logs grow fast, and finding the signal in a mountain of noise can waste hours of your day. Health checks, bot traffic, and static asset requests routinely make up 40 to 60 percent of access logs, burying the errors and slow requests that actually matter. This filter strips away the clutter so you can focus on the lines that need attention.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Paste Logs</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Enter your raw log output in the input area</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">DevOps On-Call</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">You just got paged at 3 AM because response times spiked. You pull a 50,000-line access log from the last hour, but half of it is health check hits from your load balancer. Toggle the Health Checks filter and strip 200-status lines to isolate the 4xx and 5xx entries in seconds.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Choose Cleaning Mode</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Select trim, dedup, filter, or reformat</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Marketing Analyst</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">You need to report organic search traffic, but bot crawlers like Googlebot and bingbot are inflating your pageview counts by 15 to 25 percent. Enable the Known Bots filter to remove crawler lines, then export the cleaned log for your analytics pipeline.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Apply Filters</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Set log level, timestamp, or pattern filters</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Frontend Developer</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">You suspect a broken CSS file is causing layout issues on production. Paste your access log, filter for 404 responses and static asset patterns, and pinpoint the missing stylesheet in under a minute.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Export Clean Logs</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Copy or download the cleaned output</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Security Auditor</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A suspicious DELETE request with a 403 response keeps appearing in your logs. Apply a custom regex filter to isolate all DELETE and PUT requests, then cross-reference with your authentication logs to trace the source.</p>
       </div>
     </div>
   </div>
@@ -126,13 +126,13 @@ const tool = tools.find(t => t.slug === 'smart-log-cleaner')!;
   ══════════════════════════════════════════════ -->
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the Smart Log Cleaner Works</h2>
-    <p class="seo-p">The tool parses your logs, detects patterns, and applies transformations — all locally in the browser.</p>
+    <p class="seo-p">Smart Log Cleaner reads your log text line by line, matches each line against active filter patterns, and removes any line that hits a match. All processing happens locally, so your log data never leaves your device.</p>
     <h3 class="font-display seo-h3-sm">Pattern Detection Engine</h3>
-    <p class="seo-p">Auto-detects log formats including Apache Combined, Nginx, Node.js, and JSON-per-line. The engine identifies common structures like <code class="inline-code">IP addresses</code>, <code class="inline-code">timestamps</code>, and <code class="inline-code">HTTP methods</code> to build a format profile before cleaning begins.</p>
+    <p class="seo-p">The pattern engine identifies common log structures by scanning for recurring field patterns such as IP addresses in dotted-quad format, timestamps in common formats like Apache bracket notation, and HTTP methods (GET, POST, PUT, DELETE). It builds a format profile from the first few hundred lines, then applies that profile to validate and categorize the rest. For example, given a 10,000-line Nginx access log, the engine detects the combined log format after analyzing the first 50 lines and uses that profile to correctly identify field boundaries across the entire file.</p>
     <h3 class="font-display seo-h3-sm">Deduplication &amp; Trimming</h3>
-    <p class="seo-p">Removes exact and near-duplicate lines while preserving the first occurrence. Strips leading and trailing <code class="inline-code">whitespace</code>, normalizes <code class="inline-code">line endings</code>, and collapses redundant blank lines without altering the original log semantics.</p>
+    <p class="seo-p">Deduplication compares each line against previously seen lines using an exact string match. The first occurrence is always kept, and subsequent duplicates are counted and removed. Trimming strips leading and trailing whitespace from every line, normalizes line endings to a consistent format, and collapses sequences of blank lines down to a single separator. In a typical log rotation scenario, you might find that 800 out of 12,000 lines are exact duplicates from overlapping rotation windows, and trimming removes another 200 lines of blank or whitespace-only entries.</p>
     <h3 class="font-display seo-h3-sm">Reformatting &amp; Output</h3>
-    <p class="seo-p">Transforms cleaned logs into a consistent format using configurable <code class="inline-code">timestamp patterns</code> and <code class="inline-code">field orderings</code>. Output can be copied to clipboard or downloaded as a <code class="inline-code">.log</code> file for downstream analysis.</p>
+    <p class="seo-p">Reformatting transforms each kept line into a consistent structure using configurable field orderings and timestamp patterns. You can normalize timestamps to ISO 8601, reorder fields to put the timestamp first, or strip optional fields like the referrer header. The cleaned output is presented in the output panel and can be copied to the clipboard or downloaded as a timestamped <code class="inline-code">.log</code> file. After filtering a 25,000-line log down to 6,500 lines, the download generates a single file ready for import into your analysis tools.</p>
   </div>
 
   <!-- ══════════════════════════════════════════════
@@ -144,31 +144,49 @@ const tool = tools.find(t => t.slug === 'smart-log-cleaner')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Are my logs sent to a server?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">No. All processing is done entirely in your browser using JavaScript. Your log data never leaves your device and is never transmitted anywhere. This makes the tool safe for use with sensitive production logs.</p>
+          <p itemprop="text" class="seo-faq-a">No. All processing happens locally using JavaScript. Your log data never leaves your device and is never transmitted anywhere. This makes the tool safe for use with sensitive production logs containing IP addresses, user agents, and request paths.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What log formats does the cleaner support?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Any plain-text, newline-delimited log format works. This includes Apache Combined Log Format, Nginx access logs, Node.js stdout, JSON-per-line logs, systemd journal exports, and AWS CloudWatch log exports. The tool treats each line independently.</p>
+          <p itemprop="text" class="seo-faq-a">Any plain-text, newline-delimited log format works. This includes Apache Combined Log Format, Nginx access logs, Node.js stdout, JSON-per-line logs, systemd journal exports, and AWS CloudWatch log exports. The tool treats each line independently, so even mixed-format logs can be filtered by line-level patterns.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">How do I filter out a specific endpoint?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Type the endpoint path in the Custom Pattern field. For example, typing /api/healthcheck will strip all lines containing that string. For multiple endpoints, use the pipe operator: /healthcheck|/metrics|/ping.</p>
+          <p itemprop="text" class="seo-faq-a">Type the endpoint path in the Custom Pattern field. For example, typing /api/healthcheck will strip all lines containing that string. For multiple endpoints, use the pipe operator: /healthcheck|/metrics|/ping. You can also combine this with regex anchors like ^ to match only lines that start with the pattern.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Can I filter logs by severity level?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. The Quick Filters section provides toggle buttons for common log levels such as ERROR, WARN, INFO, and DEBUG. You can also combine these with the Custom Pattern field to target specific severity strings like FATAL or CRITICAL.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. The Quick Filters section provides toggle buttons for common log levels such as ERROR, WARN, INFO, and DEBUG. You can also combine these with the Custom Pattern field to target specific severity strings like FATAL or CRITICAL. Multiple filters can be active simultaneously, and each filter match count appears in the summary bar.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What is the maximum log size?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">There is no hard limit — the tool processes entirely in memory in your browser. In practice, very large logs over 50 MB may cause the browser tab to slow down. For typical access logs up to a few megabytes, the tool handles them instantly.</p>
+          <p itemprop="text" class="seo-faq-a">There is no hard limit on input size. In practice, very large logs over 50 MB may cause the browser tab to slow down due to memory constraints. For typical access logs up to a few megabytes, the tool handles them instantly. Logs with 100,000 lines or fewer generally process in under two seconds.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">How does this compare to using grep or sed?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">grep and sed are powerful command-line tools, but they require syntax knowledge and terminal access. This tool provides a visual interface with one-click filters for common patterns like health checks and bot traffic. For quick log exploration without memorizing regex flags, the visual toggle approach is faster for most users.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">What happens if my log contains binary data?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">The tool operates on plain text only. Binary characters in your log input may cause unexpected behavior in pattern matching. If your log file contains binary headers or encoded payloads, strip those sections before pasting. Plain-text exports from standard logging frameworks work without issues.</p>
+        </div>
+      </div>
+      <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
+        <h3 itemprop="name" class="seo-faq-q">Why are some lines not removed when I expect them to be?</h3>
+        <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+          <p itemprop="text" class="seo-faq-a">Filters match against the exact text of each line. A health check endpoint like /healthz must appear verbatim in the log line to be matched. If your logs use a different path or include query parameters, adjust the pattern accordingly. The Custom Pattern field accepts any valid regular expression for precise matching.</p>
         </div>
       </div>
     </div>

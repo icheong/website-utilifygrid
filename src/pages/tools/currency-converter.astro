@@ -64,9 +64,12 @@ const tool = tools.find(t => t.slug === 'currency-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Currency Converter — Overview</h2>
+    <h2 class="font-display seo-h2">How to use the Currency Converter</h2>
     <p class="seo-p">
-      This tool converts any amount between 30 major world currencies using live mid-market exchange rates. Enter a numeric value, select its currency from the dropdown, and all other currency values update instantly as you type. The converter fetches rates from a free open exchange-rate API on page load, caches them for your session, and performs every calculation entirely in your browser — no data is sent to any server. Whether you are budgeting for international travel, comparing remittance options, or invoicing a client in a foreign currency, the tool gives you an immediate side-by-side view of what your money is worth across all supported markets.
+      You are planning a two-week trip across Europe and need to know how far your Australian dollars stretch. Enter your travel budget — say 5,000 AUD — select Australian Dollar from the dropdown, and instantly see the equivalent in EUR, GBP, CHF, and every other supported currency. Each row has a Copy button for pasting into your budget spreadsheet.
+    </p>
+    <p class="seo-p">
+      The converter fetches live mid-market rates from the Exchange Rate API on page load and caches them for your session. Converting 100 EUR to JPY, for example, uses the cross-rate formula: 100 x (Rate_JPY / Rate_EUR), which produces approximately 16,400 JPY. A freelancer invoicing a US client 2,000 USD can instantly see that equals roughly 1,832 EUR or 2,700 SGD, helping them decide whether to accept foreign-currency payment.
     </p>
 
     <h3 class="font-display seo-h3-sm">Real-World Applications &amp; Use Cases</h3>
@@ -87,14 +90,14 @@ const tool = tools.find(t => t.slug === 'currency-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Exchange Rate Conversion Mechanics</h2>
+    <h2 class="font-display seo-h2">How exchange rate conversion works</h2>
 
-    <h3 class="font-display seo-h3-sm">Rate Source and Base Currency</h3>
+    <h3 class="font-display seo-h3-sm">Rate source and base currency</h3>
     <p class="seo-p">
       The converter uses USD (US Dollar) as its base currency. When the page loads, it fetches the latest rates from the Exchange Rate API (<code class="inline-code">open.er-api.com/v6/latest/USD</code>), which returns a JSON object mapping every supported currency code to its current value relative to 1 USD. These are mid-market indicative rates — the midpoint between bid and ask prices on global currency markets — and are updated daily by the API provider. If the API is unavailable, the tool falls back to a hardcoded set of static rates so the converter remains functional.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Cross-Rate Calculation Formula</h3>
+    <h3 class="font-display seo-h3-sm">Cross-rate calculation formula</h3>
     <p class="seo-p">
       Since all rates are expressed relative to USD, converting between any two non-USD currencies requires a cross-rate calculation. To convert from currency A to currency B, the formula is:
     </p>
@@ -105,14 +108,14 @@ const tool = tools.find(t => t.slug === 'currency-converter')!;
       For example, converting 100 EUR to JPY uses the rates <code class="inline-code">Rate_EUR = 1.0912</code> (per USD) and <code class="inline-code">Rate_JPY = 149.53</code> (per USD). The calculation becomes <code class="inline-code">100 x (149.53 / 1.0912) = 13,703.81 JPY</code>. This two-step routing through USD is standard practice in currency conversion APIs because it avoids maintaining a full matrix of every currency pair — only N rates are needed instead of N-squared.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Rounding and Display Precision</h3>
+    <h3 class="font-display seo-h3-sm">Rounding and display precision</h3>
     <p class="seo-p">
       Most currencies are displayed to two decimal places, matching the smallest unit in circulation (cents, pence, centimes). Currencies without practical sub-units — Japanese Yen (<code class="inline-code">JPY</code>), South Korean Won (<code class="inline-code">KRW</code>), and Indonesian Rupiah (<code class="inline-code">IDR</code>) — are rounded to whole numbers. The <code class="inline-code">toLocaleString</code> method is used for formatting, which applies region-appropriate thousands separators automatically.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Client-Side Architecture</h3>
+    <h3 class="font-display seo-h3-sm">Offline fallback and session caching</h3>
     <p class="seo-p">
-      All conversion logic runs entirely in the browser. The rate fetch uses the Fetch API, and the result grid is rebuilt on every input event by iterating over the <code class="inline-code">CURRENCIES</code> array, computing each converted value, and appending a DOM element with a Copy button. No server-side processing, analytics tracking, or data storage is involved — the tool is a single self-contained Astro page with inline JavaScript.
+      Once rates are fetched, they are cached in memory and all conversions work without network access for the rest of your session. If the API is unavailable, the tool falls back to a hardcoded set of static rates so you can still perform conversions, though the rates may be outdated. No server-side processing, analytics tracking, or data storage is involved — the tool is a single self-contained Astro page with inline JavaScript.
     </p>
   </div>
 

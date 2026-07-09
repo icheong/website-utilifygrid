@@ -36,20 +36,21 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">How to use the Hallucination & Fact-Check Guard</h2>
-    <p class="seo-p">Paste the AI-generated text you want to verify into the input field. Add any reference facts, source text, or ground-truth context in the reference field. Click Analyse to run pattern-based checks that flag unverifiable claims, unsupported statistics, and statements that lack source attribution.</p>
+    <h2 class="font-display seo-h2">How to use the Hallucination and Fact-Check Guard</h2>
+    <p class="seo-p">Paste the AI-generated text you want to verify into the input field and click Scan for Claims. The tool highlights years (yellow), dollar amounts (red), proper nouns (green), and statistics (blue) — each is a potential factual claim that needs verification. Check off items on the verification checklist as you confirm them against your source material.</p>
+    <p class="seo-p">A blog post draft containing the sentence "According to a 2024 McKinsey study, 67% of enterprises reduced costs by $2.3M annually after adopting AI" would flag four claims: the year 2024, the statistic 67%, the proper noun McKinsey, and the dollar amount $2.3M. Each needs checking against the original source before publishing.</p>
     <div style="display:flex; flex-direction:column; gap:1rem;">
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem;">Blog post verification</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Before publishing AI-drafted articles, run them through the guard to catch fabricated statistics, invented expert quotes, and unverifiable factual claims.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Before publishing AI-drafted articles, run them through the guard to catch fabricated statistics, invented expert quotes, and unverifiable factual claims. A 1,500-word article typically flags 8-15 claims that need manual verification.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem;">Academic citation check</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Verify that AI-generated research summaries contain claims that match the provided source material and flag any unsupported extrapolations.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Verify that AI-generated research summaries contain claims that match the provided source material and flag any unsupported extrapolations. The checklist lets you mark each claim as verified or suspicious as you cross-reference against the original paper.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
         <strong style="color:var(--text-primary); font-size:0.875rem;">Product description audit</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Ensure AI-written product pages do not contain exaggerated claims or features not present in the specification sheet provided as reference.</p>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Ensure AI-written product pages do not contain exaggerated claims or features not present in the specification sheet provided as reference. Dollar amounts and statistics are especially important to verify in e-commerce contexts.</p>
       </div>
     </div>
   </div>
@@ -81,15 +82,18 @@ const tool = tools.find(t => t.slug === 'hallucination-fact-check-guard')!;
     <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
     <div class="seo-faq-list" itemscope itemtype="https://schema.org/FAQPage">
       {[
-        { q: 'Does this tool require an API key?', a: 'No. All checks run locally in the browser using pattern matching and text analysis. No data is sent to any external service, making it suitable for sensitive or confidential content.' },
-        { q: 'Can it detect all types of hallucination?', a: 'It catches common patterns like fabricated statistics, unsupported claims, and missing citations. Subtle hallucinations that are factually wrong but linguistically plausible may require human review. Use it as a first-pass filter, not a replacement for domain expert verification.' },
-        { q: 'How should I structure the reference text?', a: 'Paste the source material, specification sheet, or ground-truth facts that the AI output should be based on. The tool compares each claim against this reference. More complete reference text yields more accurate flagging.' },
-        { q: 'Is the analysis deterministic?', a: 'Yes. The same input and reference text will always produce the same results. There is no randomness or temperature-based variation since all checks are rule-based rather than model-based.' },
+        { q: 'Does this tool require an API key?', a: 'No. All checks run locally in the browser using pattern matching and text analysis. No data is sent to any external service, making it suitable for sensitive or confidential content like legal documents, medical records, and proprietary business materials.' },
+        { q: 'Can it detect all types of hallucination?', a: 'It catches common patterns like fabricated statistics, unsupported claims, and missing citations. Subtle hallucinations that are factually wrong but linguistically plausible — such as an incorrect but plausible-sounding date or a slightly wrong number — may require human review. Use it as a first-pass filter, not a replacement for domain expert verification.' },
+        { q: 'How should I structure the reference text?', a: 'Paste the source material, specification sheet, or ground-truth facts that the AI output should be based on. The tool compares each claim against this reference using keyword overlap. More complete reference text yields more accurate flagging — a full article will catch more issues than a single sentence summary.' },
+        { q: 'Is the analysis deterministic?', a: 'Yes. The same input and reference text will always produce the same results. There is no randomness or temperature-based variation since all checks are rule-based rather than model-based. This makes the tool reliable for repeatable audits and CI/CD integration.' },
+        { q: 'What do the highlight colours mean?', a: 'Yellow highlights indicate years and dates that need date verification. Red highlights mark dollar amounts and financial figures. Green highlights flag proper nouns — company names, person names, and organisation names. Blue highlights identify statistics and percentages. Each colour corresponds to a verification checklist category.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="surface-2 border-theme seo-faq-card">
           <h3 itemprop="name" class="seo-faq-q">{item.q}</h3>
-          <p itemprop="text" class="seo-faq-a">{item.a}</p>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" class="seo-faq-a">{item.a}</p>
+          </div>
         </div>
       ))}
     </div>

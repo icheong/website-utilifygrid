@@ -45,20 +45,20 @@ const tool = tools.find(t => t.slug === 'pdf-rotate')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Rotate PDF Overview</h2>
+    <h2 class="font-display seo-h2">How to Fix Sideways and Upside-Down PDF Pages</h2>
     <p class="seo-p">
-      This PDF rotate tool lets you change the orientation of specific pages or all pages in a PDF document — entirely within your browser. Built with <strong>pdf-lib</strong> (for rotation metadata) and <strong>PDF.js</strong> (for thumbnail rendering), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are fixing sideways scans, correcting upside-down pages from a mobile capture, or reorienting landscape pages in a portrait document, the rotation is applied as metadata without re-rendering or re-encoding page content.
+      A 20-page scanned legal filing has 5 pages sideways (90 degrees) and 3 pages upside-down (180 degrees). Click each wrong page to cycle its rotation: 0, 90, 180, 270. The yellow badge shows the current angle. Or use the bulk button to set all pages to 0 degrees at once. The thumbnails update to show the corrected orientation before you download.
     </p>
     <p class="seo-p">
-      Every page is rendered as a thumbnail with a click-to-cycle interface (0° → 90° → 180° → 270°). Rotated pages show a yellow badge with the current angle. Bulk rotation buttons let you set a target angle for every page at once. The rotation is metadata-only — pdf-lib modifies the page’s <code class="inline-code">/Rotate</code> entry without touching the underlying content stream, preserving perfect quality.
+      The rotate tool renders every page as a thumbnail. Click to cycle rotation (0, 90, 180, 270 degrees). Rotated pages show a yellow badge with the angle. Bulk buttons set all pages to a target angle simultaneously. The rotation is metadata-only: pdf-lib changes the /Rotate entry in the page dictionary without re-rendering the content, preserving perfect quality.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Common rotation problems and how to fix them</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Scan orientation correction`, `When scanning documents with an auto-feed scanner, pages often come in sideways or upside-down depending on how they were placed in the feeder. A 20-page legal filing might have 5 pages rotated 90 degrees and 3 pages rotated 180 degrees. The click-to-cycle interface lets you fix each page individually, while the bulk Reset button restores all pages to 0 degrees if the entire document needs correction.`],
-        [`Mobile photo-to-PDF correction`, `Documents photographed with a smartphone often have inconsistent orientations — some pages are portrait, others landscape, and some are upside-down depending on the camera angle. The rotate tool lets you standardize every page to the correct orientation before sharing. The thumbnail preview shows the current rotation state with yellow badges, making it easy to identify which pages need adjustment.`],
-        [`Landscape content in portrait documents`, `Technical drawings, spreadsheets, and wide tables are often created in landscape orientation but embedded in portrait-oriented reports. The bulk rotate buttons let you quickly set all pages to 90 or 270 degrees for consistent landscape viewing. Individual page rotation is useful when only specific pages need reorientation while the rest remain in portrait.`]
+        ['Auto-feed scanners produce mixed orientations', 'A 30-page document scanned with an auto-feed scanner has pages 1-10 correct, pages 11-15 rotated 90 degrees (fed sideways), and pages 16-20 rotated 180 degrees (fed upside-down). Click pages 11-15 three times each (to 270 degrees) and pages 16-20 twice each (to 180 degrees). Or use Reset to set everything to 0 and fix individually.'],
+        ['Mobile phone photos create inconsistent PDFs', 'A 10-page contract photographed with a phone has alternating orientations: pages 1, 3, 5 are portrait; pages 2, 4, 6 are landscape; page 7 is upside-down. Click each page to cycle to the correct angle. The yellow badge shows the current rotation so you can track which pages still need adjustment.'],
+        ['Landscape tables in portrait reports need rotation', 'A 50-page portrait report has 8 pages of landscape spreadsheets. Select those 8 pages and set them to 90 degrees. The bulk button "Set All 90" rotates everything, which is wrong for the portrait pages. Instead, click each landscape page individually to 90 degrees while leaving portrait pages at 0.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -69,26 +69,22 @@ const tool = tools.find(t => t.slug === 'pdf-rotate')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Rotation Mechanism</h2>
+    <h2 class="font-display seo-h2">How the PDF Rotate Tool Changes Orientation Without Re-Rendering</h2>
     <p class="seo-p">
-      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla’s PDF renderer) handles page thumbnail rendering by drawing each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual rotation by modifying the page’s rotation metadata. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+      PDF pages have a /Rotate entry in their page dictionary that specifies the clockwise rotation angle (0, 90, 180, or 270 degrees). When a PDF viewer displays the page, it rotates the content by this angle. The rotate tool changes only this metadata entry: it does not re-render, re-encode, or recompress the page content. This means rotation is instant and lossless.
     </p>
 
-    <h3 class="font-display seo-h3-sm">How PDF Rotation Works</h3>
+    <h3 class="font-display seo-h3-sm">Why metadata-only rotation preserves perfect quality</h3>
     <p class="seo-p-sm">
-      PDF pages have a <code class="inline-code">/Rotate</code> entry in their page dictionary that specifies the clockwise rotation angle in degrees. Valid values are 0, 90, 180, and 270. When a PDF viewer encounters this entry, it rotates the page content by the specified angle before displaying it. The underlying content stream is not modified — only the metadata entry changes.
+      The page content stream (text, images, vectors) is stored as-is. The /Rotate entry tells the viewer how to display it. Changing /Rotate from 0 to 90 does not modify any pixels or vectors. The viewer simply rotates the display. This is why the rotate tool can change orientation without any quality loss: it only modifies a single integer value in the page dictionary.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Click-to-cycle and bulk rotation</h3>
     <p class="seo-p-sm">
-      <strong>1. File ingestion:</strong> When the user drops or selects a PDF file, the file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. The file data is held in browser memory — no network requests are made. The file is validated as a PDF by checking the file type and attempting to parse it with PDF.js.
-    </p>
-    <p class="seo-p-sm">
-      <strong>2. Thumbnail generation:</strong> PDF.js renders every page at 25% scale onto temporary Canvas elements, converting them to inline thumbnail cards. Each card displays a rotation badge (yellow when rotated, hidden when at 0°). The canvas renders the page in its current orientation as defined by the existing <code class="inline-code">/Rotate</code> value.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Rotation interface:</strong> Clicking a page cycles its rotation: 0° → 90° → 180° → 270° → 0°. The bulk buttons set all pages to a specific angle. The rotation state is tracked in an array that maps each page index to its target rotation angle. The thumbnail re-renders to show the visual effect of the rotation.
+      Clicking a page cycles its target rotation: 0, 90, 180, 270, then back to 0. The thumbnail re-renders to show the visual effect. Bulk buttons set all pages to a specific angle: "Set All 0" resets everything, "Set All 90" rotates all pages 90 degrees clockwise. The rotation state is tracked in an array that maps each page index to its target angle.
     </p>
     <p class="seo-p-none">
-      <strong>4. Download execution:</strong> When the user clicks “Download Rotated PDF”, pdf-lib loads the source document, copies all pages, and applies the target rotation to each page using <code class="inline-code">setRotation(degrees())</code>. The rotation is applied as a metadata change — the page content stream is not re-encoded. The resulting PDF downloads with all rotations applied.
+      When you click Download, pdf-lib loads the source document, copies all pages, and applies setRotation() to each page with the target angle. The resulting PDF downloads with all rotations applied. The file size is essentially unchanged because only metadata was modified.
     </p>
   </div>
 
@@ -97,32 +93,28 @@ const tool = tools.find(t => t.slug === 'pdf-rotate')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "Is my file uploaded to a server?",
-          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your file never leaves your device — there is no server upload at any point. This provides complete privacy for confidential documents."
+          q: "Does rotating change the page content?",
+          a: "No. Rotation changes only the /Rotate metadata entry. The content stream (text, images, vectors) is untouched. The PDF viewer displays the content at the rotated angle. The file size is essentially unchanged. Quality is perfectly preserved because nothing is re-rendered or re-encoded."
         },
         {
-          q: "Does rotating reduce PDF quality?",
-          a: "No. Rotation is applied as metadata — the /Rotate entry in the page dictionary is modified without touching the content stream. Pages are not re-rendered, re-encoded, or recompressed. Quality is perfectly preserved."
+          q: "What angles can I rotate to?",
+          a: "The PDF specification supports four angles: 0, 90, 180, and 270 degrees. These are the only values that PDF viewers recognize. The tool cycles through these four values when you click a page. Intermediate angles like 45 degrees are not supported by the PDF format."
         },
         {
-          q: "Can I rotate individual pages differently?",
-          a: "Yes. Click each page to cycle its rotation independently through 0° → 90° → 180° → 270°. You can set different angles for different pages before downloading. The bulk buttons set all pages to the same angle."
+          q: "Can I rotate just one page in a 50-page document?",
+          a: "Yes. Click that specific page to cycle its rotation. The other 49 pages remain at their current angle. The bulk buttons affect all pages, so use individual clicks when you only need to fix one or two pages. The yellow badge shows which pages are rotated."
         },
         {
-          q: "What rotation angles are supported?",
-          a: "The tool supports four rotation angles: 0° (no rotation), 90° (clockwise), 180° (upside-down), and 270° (counter-clockwise). These are the standard rotation values defined by the PDF specification. Intermediate angles like 45° are not supported by the PDF format."
+          q: "Does rotation change the page size?",
+          a: "No. A letter-size page (612x792 points) remains 612x792 points regardless of rotation. The viewer rotates the display, not the page dimensions. If you need to actually swap width and height (portrait to landscape), you need a different tool that modifies the page media box."
         },
         {
-          q: "Does rotation change the page dimensions?",
-          a: "No. Rotation changes the viewing orientation but not the page dimensions. A page that is 612×792 points (letter size) remains 612×792 points regardless of its rotation angle. The PDF viewer handles the visual rotation at display time."
+          q: "What if a page is already rotated?",
+          a: "The tool adds 90 degrees to the current rotation when you click. If a page is already at 90 and you click it, it becomes 180. The bulk buttons set all pages to the exact angle regardless of their current rotation. Use Reset (set all to 0) to clear all existing rotations."
         },
         {
-          q: "Can I undo a rotation?",
-          a: "Yes. Click a rotated page to cycle through the angles until it returns to 0°, or use the Reset bulk button to set all pages to 0° simultaneously. The original file is never modified — you are always working with a fresh copy."
-        },
-        {
-          q: "What happens to existing rotation metadata?",
-          a: "The tool overwrites any existing rotation metadata with the target angle you specify. If a page was already rotated 90° and you click it once, it becomes 180° (adding 90° to the current value). The bulk buttons set all pages to the exact angle regardless of their current rotation."
+          q: "Can I rotate a scanned PDF?",
+          a: "Yes. Scanned PDFs are regular PDFs with image content. The rotation tool handles them identically: metadata changes, no re-rendering. A 30-page scanned document with mixed orientations can be corrected page by page. The thumbnails show the current orientation so you can verify which pages need fixing."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

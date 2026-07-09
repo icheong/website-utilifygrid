@@ -31,36 +31,36 @@ const tool = tools.find(t => t.slug === 'thermal-resistance-converter')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the Thermal Resistance Converter</h2>
-    <p class="seo-p">Enter a thermal resistance value, pick its source unit, and instantly see the equivalent in all supported units.</p>
+    <p class="seo-p">A building inspector measures the wall insulation as R-19 in imperial units but the energy audit report requires Kelvin per watt. A CPU heatsink datasheet lists thermal resistance as 0.5 K/W but the system design document uses degrees C per watt. Enter the value, pick the source unit, and the converter shows the equivalent in all four thermal resistance units.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Enter R-Value</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Input the thermal resistance value in the text field and select the source unit from the dropdown menu.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Building inspectors checking insulation compliance</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A residential wall has an R-value of 19 in imperial units (degrees F times square feet times hours per BTU). The energy auditor needs the value in K/W for a European-standard report. Enter 19 in R-value and the converter shows 3.346 K/W. This conversion uses the factor 0.176110, which accounts for both the Fahrenheit-to-Kelvin and the square-foot-to-square-metre differences.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Select Target Unit</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose the thermal resistance unit you want to convert to, such as K/W, °C/W, or R-value.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Electronics engineers sizing heatsinks</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A CPU cooler specification lists 0.45 degrees C per watt. The thermal simulation software requires K/W. Enter 0.45 in degrees C/W and the result shows 0.45 K/W — identical because Celsius and Kelvin have the same degree size. The converter confirms this equivalence so you do not need to memorise which units are interchangeable.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">View All Results</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">See the converted value displayed in all supported units simultaneously, updated in real time.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">HVAC designers converting between component and envelope R-values</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A window manufacturer lists thermal resistance as 0.25 degrees F times square feet times hours per BTU. The HVAC design document requires the value in the per-watt format. Enter 0.25 in degrees F times h per BTU and the converter shows 0.528 K/W. The 0.527528 conversion factor handles the imperial-to-SI translation automatically.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Copy Result</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Click the Copy button next to any result to copy the converted value to your clipboard for use in documents or calculations.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Textile engineers comparing clothing insulation</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A winter jacket is rated at 2.5 clo. The material science report requires the value in the standard SI unit. Since 1 clo equals 0.155 square metre kelvin per watt, a 2.5 clo jacket has a thermal resistance of 0.3875 square metre kelvin per watt. Enter 2.5 in clo and the converter shows the equivalent across all supported units.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the Thermal Resistance Converter Works</h2>
-    <p class="seo-p">The converter translates thermal resistance values between different unit systems using standardized conversion factors, all computed instantly in your browser.</p>
-    <h3 class="font-display seo-h3-sm">Thermal Resistance Units</h3>
-    <p class="seo-p">Thermal resistance is measured in several units depending on the system. The SI unit is <code class="inline-code">m²K/W</code> (square meter kelvin per watt). In the US, the <code class="inline-code">R-value</code> expressed as <code class="inline-code">ft²·°F·h/BTU</code> is standard for building insulation. Other units include <code class="inline-code">K/W</code> and <code class="inline-code">°C/W</code> for component-level thermal management, plus <code class="inline-code">clo</code> (used for clothing insulation) and <code class="inline-code">tog</code> (used for bedding warmth ratings).</p>
-    <h3 class="font-display seo-h3-sm">Conversion Between Unit Systems</h3>
-    <p class="seo-p">All conversions route through <code class="inline-code">K/W</code> as the base unit. Since Kelvin and Celsius share the same degree size, <code class="inline-code">1 K/W = 1 °C/W</code> exactly. Imperial units use different temperature and energy scales: <code class="inline-code">1 °F·h/BTU = 0.527528 K/W</code> and <code class="inline-code">1 R-value (ft²·°F·h/BTU) = 0.176110 K/W</code>. The converter multiplies the input by its source factor and divides by the target factor.</p>
+    <p class="seo-p">The converter normalises every thermal resistance unit to Kelvin per watt (K/W) as the common base, then converts from that base to the target unit.</p>
+    <h3 class="font-display seo-h3-sm">Unit Definitions</h3>
+    <p class="seo-p">Kelvin per watt (K/W) is the base unit. Celsius per watt (degrees C/W) is identical to K/W because the degree sizes match. Fahrenheit per BTU per hour (degrees F times h per BTU) equals 0.527528 K/W. The imperial R-value (degrees F times square feet times hours per BTU) equals 0.176110 K/W and includes a square-foot-to-square-metre area conversion on top of the temperature conversion.</p>
+    <h3 class="font-display seo-h3-sm">Conversion Formula</h3>
+    <p class="seo-p">Each unit stores a factor relative to K/W. Converting from unit A to unit B follows: Result = Input x (FactorA / FactorB). For example, converting R-value 19 to K/W computes 19 x 0.176110 = 3.346 K/W. Converting the same R-value to degrees F times h per BTU computes 19 x (0.176110 / 0.527528) = 6.343 degrees F times h per BTU.</p>
     <h3 class="font-display seo-h3-sm">Relationship to Thermal Conductivity</h3>
-    <p class="seo-p">Thermal resistance <code class="inline-code">R</code> is related to thermal conductivity <code class="inline-code">k</code> by the formula <code class="inline-code">R = thickness / k</code>. A material with lower conductivity or greater thickness produces a higher R-value, meaning better insulation. This relationship lets you derive R-value from material properties or calculate required thickness for a target insulation level.</p>
+    <p class="seo-p">Thermal resistance R is related to thermal conductivity k by the formula R equals thickness divided by k. A material with lower conductivity or greater thickness produces a higher R-value, meaning better insulation. For example, fibreglass with k equals 0.04 W per metre kelvin and a thickness of 0.2 metres has an R-value of 5 square metre kelvin per watt. This relationship lets you derive R-value from material properties or calculate required thickness for a target insulation level.</p>
   </div>
 
   <div slot="faq">

@@ -132,36 +132,38 @@ const tool = tools.find(t => t.slug === 'convert-from-pdf')!;
 
   <div slot="how-to-use">
     <h2 class="font-display seo-h2">How to Use the PDF Converter</h2>
-    <p class="seo-p">Convert PDF documents into images, text, or HTML files directly in your browser.</p>
+    <p class="seo-p">A legal team receives a 50-page scanned contract as a PDF and needs the text extracted for a compliance search. The document has no selectable text layer because it was scanned on a flatbed scanner. Open this tool, drag the PDF onto the upload area, switch to the Text tab, enable OCR mode, and click Extract Text. Tesseract.js loads on first use and processes each page, converting the scanned images into machine-readable text. Copy the result or download it as a .txt file for your search tool.</p>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Upload PDF File</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Drag and drop your PDF onto the upload area or click the browse button to select a file from your device.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Designers extracting page images</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A designer receives a 12-page brand guideline PDF and needs individual page images for a presentation. Upload the PDF, select the Image tab, set scale to 2x for crisp resolution, choose PNG format, and click Export as Images. Each page renders to a canvas at 144 dpi and downloads as a separate file. For 12 pages, the tool bundles them into a ZIP archive automatically.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Select Output Format</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Choose between PDF to Image, PDF to Text, or PDF to HTML using the tab buttons.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Developers converting PDF to HTML</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A developer needs to embed the content of a PDF report into a web page. Upload the PDF, switch to the HTML tab, check Include basic CSS, and click Convert to HTML. The tool extracts text content from each page, detects heading sizes based on font metrics, and generates a styled HTML document. Copy the output or download the .html file directly.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Configure Extraction</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Set your preferred page range, image format and scale, or OCR mode for scanned documents.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Researchers extracting specific pages</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A researcher needs only page 3 of a 200-page technical report. Upload the PDF, navigate to page 3 using the preview arrows, select Current page only in the Pages dropdown, and click Export as Images. The tool renders just that single page and downloads it as a PNG or JPG without processing the remaining 199 pages.</p>
       </div>
       <div class="border-theme surface-2 seo-card-sm">
-        <strong style="color:var(--text-primary); font-size:0.875rem">Download Results</strong>
-        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Export and save the extracted content as individual images, a text file, or an HTML document.</p>
+        <strong style="color:var(--text-primary); font-size:0.875rem">Accountants extracting text from invoices</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">An accountant receives 20 PDF invoices and needs to extract the line items into a spreadsheet. Upload each PDF, switch to the Text tab, select Native text layer, and click Extract Text. For digitally created invoices the text layer is already embedded and extracts instantly. Copy the text and paste it into your spreadsheet or accounting software for processing.</p>
       </div>
     </div>
   </div>
 
   <div slot="how-it-works">
     <h2 class="font-display seo-h2">How the PDF Converter Works</h2>
-    <p class="seo-p">The tool leverages client-side libraries to parse PDF structure and extract content without server uploads.</p>
+    <p class="seo-p">The tool leverages client-side libraries to parse PDF structure and extract content without server uploads. All processing happens in your browser memory.</p>
     <h3 class="font-display seo-h3-sm">PDF Text Extraction</h3>
-    <p class="seo-p">PDF.js reads the <code class="inline-code">text layer</code> embedded in each page, returning the raw text content. This method is fast and accurate for digitally created PDFs.</p>
+    <p class="seo-p">PDF.js reads the text layer embedded in each page, returning the raw text content as a sequence of positioned text items. This method is fast and accurate for digitally created PDFs where the text was typed or generated rather than scanned. The tool concatenates the text items in reading order and separates pages with clear delimiters.</p>
     <h3 class="font-display seo-h3-sm">Image Extraction</h3>
-    <p class="seo-p">Each page is rendered to a <code class="inline-code">canvas</code> element at your chosen scale, then exported as a PNG or JPG image. Multi-page exports are bundled into a ZIP archive.</p>
+    <p class="seo-p">Each page is rendered to a canvas element at your chosen scale factor, then exported as a PNG or JPG image. The scale factor controls the resolution: 1x produces 72 dpi, 2x produces 144 dpi, and 3x produces 216 dpi. Multi-page exports are bundled into a ZIP archive using JSZip, with each page saved as a separate image file named by page number.</p>
     <h3 class="font-display seo-h3-sm">OCR Processing</h3>
-    <p class="seo-p">For scanned PDFs, Tesseract.js performs optical character recognition on the rendered page image, converting visual text into machine-readable characters.</p>
+    <p class="seo-p">For scanned PDFs, Tesseract.js performs optical character recognition on the rendered page image, converting visual text into machine-readable characters. The OCR engine loads on first use, adding about 10 MB to the initial download. Each page is rendered at 2x scale to improve recognition accuracy, then the Tesseract worker processes the canvas image and returns the extracted text.</p>
+    <h3 class="font-display seo-h3-sm">HTML Conversion</h3>
+    <p class="seo-p">The HTML export mode reads the text content items from each page and reconstructs the document structure by detecting heading sizes based on font metrics. Text items with large font sizes are wrapped in heading tags, while smaller text becomes paragraph content. The tool detects line breaks by comparing the vertical position of consecutive text items and inserts appropriate spacing.</p>
   </div>
 
   <div slot="faq">
@@ -170,37 +172,37 @@ const tool = tools.find(t => t.slug === 'convert-from-pdf')!;
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Are scanned PDFs supported?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. Enable OCR mode in the text extraction tab, and the tool will use Tesseract.js to recognize text from scanned pages.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. Enable OCR mode in the text extraction tab, and the tool will use Tesseract.js to recognise text from scanned pages. The OCR engine loads on first use, adding about 10 MB to the initial download. Recognition accuracy depends on the scan quality, font clarity, and language of the document.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What about encrypted PDFs?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Password-protected PDFs can be opened if you provide the correct password when prompted. Without the password, the file cannot be processed.</p>
+          <p itemprop="text" class="seo-faq-a">Password-protected PDFs can be opened if you provide the correct password when prompted. Without the password, the file cannot be processed. The tool uses PDF.js error-tolerant parsing to handle partially encrypted or damaged files where possible.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does formatting get preserved?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Text extraction returns plain text without styling. HTML conversion preserves basic structure and font sizes but may not match the original layout exactly.</p>
+          <p itemprop="text" class="seo-faq-a">Text extraction returns plain text without styling because PDF text layers do not embed font formatting information in a standardised way. HTML conversion preserves basic structure and font sizes by detecting heading sizes from font metrics, but may not match the original layout exactly. For pixel-perfect reproduction, use the image export mode instead.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">What is the maximum page count?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">There is no hard page limit. Processing time increases with page count and chosen output format. Very large files may slow down your browser.</p>
+          <p itemprop="text" class="seo-faq-a">There is no hard page limit. Processing time increases linearly with page count and chosen output format. Very large files with hundreds of pages may slow down your browser, especially in OCR mode where each page requires Tesseract processing. For best results with large documents, process pages in smaller batches using the Current page only option.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Are tables extracted correctly?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Tables are extracted as continuous text. The structure may not be preserved in text mode. HTML mode attempts to maintain block-level elements but complex tables may lose alignment.</p>
+          <p itemprop="text" class="seo-faq-a">Tables are extracted as continuous text in text mode because PDF text layers do not encode table structure information. The structure may not be preserved. HTML mode attempts to maintain block-level elements and detects line breaks by comparing vertical positions of text items, but complex tables with merged cells may lose alignment.</p>
         </div>
       </div>
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Can I extract only specific pages?</h3>
         <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Yes. In each output format you can choose to process all pages or only the currently previewed page before exporting.</p>
+          <p itemprop="text" class="seo-faq-a">Yes. In each output format you can choose to process all pages or only the currently previewed page before exporting. Navigate to the desired page using the preview arrows, select Current page only in the Pages dropdown, and click the export button. This is useful when you need just one page from a large document.</p>
         </div>
       </div>
     </div>

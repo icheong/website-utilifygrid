@@ -55,10 +55,13 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
   <!-- ═══ HOW TO USE ═══ -->
   <div slot="how-to-use">
     <h2 class="seo-h2" >
-      Overview and Technical Context
+      How to use the SQL Schema Translator
     </h2>
     <p class="seo-p" >
-      The SQL Schema Translator is a client-side utility that converts <code class="inline-code">CREATE TABLE</code> definitions between MySQL, PostgreSQL, and SQLite dialects. Built entirely with modern vanilla JavaScript and regular-expression-based parsing, the tool runs with zero server calls — your schema definitions never leave your device. Whether you are migrating a legacy MySQL database to PostgreSQL, porting an SQLite prototype to a production MySQL server, or standardising schema files across a polyglot team, this converter produces dialect-correct output instantly without requiring a running database instance.
+      Your team is migrating from MySQL to PostgreSQL and you have 40 CREATE TABLE statements that need converting. Instead of manually rewriting AUTO_INCREMENT to SERIAL, TINYINT(1) to BOOLEAN, and backtick-quoted identifiers to double-quoted ones, paste each statement into the left panel, select MySQL as the source and PostgreSQL as the target, and the translated output appears instantly. Copy it into your migration script.
+    </p>
+    <p class="seo-p" >
+      A developer converting a single CREATE TABLE statement from MySQL to PostgreSQL sees the output in under 10 milliseconds. The translator handles AUTO_INCREMENT to SERIAL conversion, TINYINT(1) to BOOLEAN mapping, DATETIME to TIMESTAMP normalisation, and identifier quoting adjustments — eliminating hours of manual dialect research and reducing migration errors.
     </p>
     <h3 style="font-size:1rem; font-weight:600; margin:1.25rem 0 0.5rem">Real-World Applications and Use Cases</h3>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
@@ -78,21 +81,21 @@ const tool = tools.find(t => t.slug === 'sql-schema-syntax-translator')!;
   <!-- ═══ HOW IT WORKS ═══ -->
   <div slot="how-it-works">
     <h2 class="seo-h2" >
-      Deep-Dive Technical Mechanics
+      How the SQL Schema Translator works
     </h2>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Parsing and Normalisation Pipeline</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Parsing and normalisation pipeline</h3>
     <p class="seo-p" >
       The translator begins by normalising the input SQL to a dialect-neutral intermediate form. If the source is MySQL, backtick-quoted identifiers (e.g. <code class="inline-code">`column_name`</code>) are stripped to plain names. If the source is PostgreSQL, double-quoted identifiers (e.g. <code class="inline-code">"column_name"</code>) are similarly unquoted. This normalisation step ensures that the subsequent transformation rules operate on a consistent baseline, regardless of the source dialect's quoting conventions.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Type Mapping Engine</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Type mapping engine</h3>
     <p class="seo-p" >
       After normalisation, the converter applies a priority-ordered table of regular-expression rules. Each rule matches a specific SQL construct and emits the target-dialect equivalent. For example, <code class="inline-code">INT AUTO_INCREMENT</code> becomes <code class="inline-code">SERIAL</code> in PostgreSQL, stays as <code class="inline-code">INT AUTO_INCREMENT</code> in MySQL, and maps to <code class="inline-code">INTEGER</code> in SQLite (where auto-increment is implicit for <code class="inline-code">INTEGER PRIMARY KEY</code>). The type map covers ten common patterns including <code class="inline-code">TINYINT(1)</code> to <code class="inline-code">BOOLEAN</code>, <code class="inline-code">DATETIME</code> to <code class="inline-code">TIMESTAMP</code>, <code class="inline-code">MEDIUMINT</code> to <code class="inline-code">INTEGER</code>, and timestamp functions like <code class="inline-code">NOW()</code> to dialect-appropriate defaults.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Identifier Re-Quoting</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Identifier re-quoting</h3>
     <p class="seo-p" >
       Once type transformations are applied, the converter re-quotes identifiers for the target dialect. For MySQL output, column names that match data-type keywords are wrapped in backticks (<code class="inline-code">`name`</code>). PostgreSQL uses double quotes (<code class="inline-code">"name"</code>). SQLite accepts both quoting styles and passes identifiers through unquoted. Reserved words like <code class="inline-code">CREATE</code>, <code class="inline-code">TABLE</code>, <code class="inline-code">NOT</code>, <code class="inline-code">NULL</code>, <code class="inline-code">PRIMARY</code>, and <code class="inline-code">KEY</code> are excluded from quoting to avoid syntax errors.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Translation Notes</h3>
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Translation notes</h3>
     <p class="seo-p" >
       When a conversion involves a compatibility decision — such as implicit versus explicit auto-increment behaviour, or the absence of native ENUM types in certain dialects — the tool surfaces a warning note below the editor. These notes alert the developer to review the output carefully and test against the target database before deploying, particularly for schemas that use dialect-specific features like MySQL ENUMs, PostgreSQL array types, JSON columns, or composite constraints.
     </p>

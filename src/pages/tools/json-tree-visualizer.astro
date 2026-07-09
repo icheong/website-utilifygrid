@@ -33,45 +33,42 @@ const tool = tools.find(t => t.slug === 'json-tree-visualizer')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">JSON Tree Visualizer Overview</h2>
+    <h2 class="font-display seo-h2">How to Use the JSON Tree Visualizer</h2>
     <p class="seo-p">
-      This interactive JSON tree visualizer transforms raw, nested JSON data into a collapsible, type-highlighted tree structure that you can explore node by node. Running entirely in-browser with vanilla JavaScript, the tool parses input using the native <code class="inline-code">JSON.parse()</code> method and constructs a live DOM tree without uploading any data to external servers. Every operation is performed client-side, ensuring complete privacy for sensitive configuration files, API payloads, or database exports.
+      Paste any valid JSON into the input field and click Visualise. The tree renders with collapsible object and array nodes, letting you click any branch to expand or collapse its children. Hover over a key to see its data type and raw value in a tooltip. Use Expand All and Collapse All for quick navigation of deeply nested structures.
     </p>
-    <p class="seo-p">
-      Paste any valid JSON into the input field and click <strong>Visualise</strong>. The tree renders with collapsible object and array nodes — click any branch to expand or collapse its children. Hover over a key to see its data type (String, Number, Boolean, Array, Object, Null) and raw value in a tooltip. Use <strong>Expand All</strong> and <strong>Collapse All</strong> for quick navigation of deeply nested structures, and <strong>Load Sample</strong> to see the tool in action with a pre-built example.
-    </p>
-
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
     <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['Debugging complex API responses', 'A backend developer inspecting a deeply nested REST API response can paste the raw payload into the tree visualizer to immediately understand the structure, identify unexpected null values, and verify that all expected fields are present without manually parsing flat JSON text.'],
-        ['Inspecting configuration files', 'DevOps engineers working with multi-level JSON configuration files for Kubernetes, Docker Compose, or CI/CD pipelines can use the tree view to navigate nested objects and arrays without losing context, making it easy to spot misconfigurations or missing keys in deeply nested sections.'],
-        ['Teaching and learning JSON structure', 'Students and educators can use the visualizer to demonstrate how JSON objects, arrays, and primitive values relate to each other in a hierarchical structure. The color-coded type badges and expand/collapse interaction make abstract data structures concrete and tangible.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm">
-          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Debugging complex API responses</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A backend developer inspecting a deeply nested REST API response pastes the raw payload into the tree visualizer to immediately understand the structure, identify unexpected null values, and verify that all expected fields are present without manually parsing flat JSON text.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Inspecting configuration files</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">DevOps engineers working with multi-level JSON configuration files for Kubernetes, Docker Compose, or CI/CD pipelines use the tree view to navigate nested objects and arrays without losing context, making it easy to spot misconfigurations or missing keys in deeply nested sections.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Teaching JSON structure</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">Students and educators use the visualizer to demonstrate how JSON objects, arrays, and primitive values relate to each other in a hierarchical structure. The color-coded type badges and expand/collapse interaction make abstract data structures concrete and tangible.</p>
+      </div>
+      <div class="border-theme surface-2 seo-card-sm">
+        <strong style="color:var(--text-primary); font-size:0.875rem">Validating data migration output</strong>
+        <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">A data engineer migrating records between databases pastes a sample JSON export into the tree view to visually verify that nested objects and arrays were preserved correctly during the transformation, catching structural issues that flat text comparison would miss.</p>
+      </div>
     </div>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Recursive Tree Construction and Lazy Rendering</h2>
+    <h2 class="font-display seo-h2">How the JSON Tree Visualizer Works</h2>
     <p class="seo-p">
-      The visualizer operates in three distinct stages: parsing, recursive tree construction, and interactive state management. The parsing stage uses the native <code class="inline-code">JSON.parse()</code> method, which implements the ECMAScript JSON grammar per the ECMA-404 and RFC 8259 specifications. This method validates the input against strict JSON grammar — any deviation, such as trailing commas, single quotes, or unquoted keys, triggers a <code class="inline-code">SyntaxError</code> that is displayed in the error panel.
+      The visualizer parses your input with the native <code class="inline-code">JSON.parse()</code> method, which validates the JSON against strict grammar rules. Any deviation, such as trailing commas or single quotes, triggers a SyntaxError displayed in the error panel. The parsed object is then walked using a recursive depth-first traversal to build the interactive DOM tree.
     </p>
     <h3 class="seo-h3-sm">Recursive DOM Construction</h3>
     <p class="seo-p">
-      After parsing, the tool walks the resulting object tree using a recursive depth-first traversal. For each object or array node, the algorithm creates a collapsible row element with a toggle indicator and a badge showing the type and child count (e.g., <code class="inline-code">Object(3)</code> or <code class="inline-code">Array(5)</code>). Primitive values — strings, numbers, booleans, and null — are rendered as leaf nodes with color-coded type badges: green for strings, purple for numbers, pink for booleans, and grey for null.
+      For each object or array node, the algorithm creates a collapsible row element with a toggle indicator and a badge showing the type and child count, such as Object(3) or Array(5). Primitive values are rendered as leaf nodes with color-coded type badges: green for strings, purple for numbers, pink for booleans, and grey for null. Each node determines its type using a strict classification function that checks Array.isArray first, then null by strict equality, then the typeof operator for remaining types.
     </p>
-    <h3 class="seo-h3-sm">Lazy Rendering and Performance</h3>
-    <p class="seo-p">
-      To handle large JSON structures efficiently, the tool uses lazy rendering. Child nodes are only constructed in the DOM when the parent node is first expanded. This means that a 10,000-node JSON object only renders the top-level keys initially, and deeper levels are built on demand. This approach keeps the initial render fast and reduces memory consumption for structures that are only partially explored.
-    </p>
-    <h3 class="seo-h3-sm">Type Detection and Tooltip Metadata</h3>
+    <h3 class="seo-h3-sm">Lazy Rendering for Performance</h3>
     <p class="seo-p-none">
-      Each node determines its type using a strict classification function: <code class="inline-code">Array.isArray()</code> checks for arrays, <code class="inline-code">null</code> is checked by strict equality (since <code class="inline-code">typeof null === 'object'</code> in JavaScript), and all remaining objects are classified as Object. Primitives use the <code class="inline-code">typeof</code> operator. On hover, a tooltip displays the full type and a truncated preview of the value (capped at 120 characters) for quick inspection without expanding the node.
+      To handle large JSON structures efficiently, child nodes are only constructed in the DOM when the parent node is first expanded. This means a 10,000-node JSON object only renders the top-level keys initially, and deeper levels are built on demand. This approach keeps the initial render fast and reduces memory consumption for structures that are only partially explored.
     </p>
   </div>
 
@@ -97,7 +94,7 @@ const tool = tools.find(t => t.slug === 'json-tree-visualizer')!;
 
       <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
         class="surface-2 border-theme seo-faq-card">
-        <h3 itemprop="name" class="seo-faq-q">How does the tool handle different data types?</h3>
+        <h3 itemprop="name" class="seo-faq-q">How does the tool display different data types?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
           <p itemprop="text" class="seo-faq-a">Each node is assigned a type badge with a distinct color: green for String, purple for Number, pink for Boolean, grey for Null, and blue labels for Array and Object. Hovering over any key displays a tooltip with the full type and raw value, making it easy to distinguish between types at a glance without expanding nested structures.</p>
         </div>
@@ -107,7 +104,7 @@ const tool = tools.find(t => t.slug === 'json-tree-visualizer')!;
         class="surface-2 border-theme seo-faq-card">
         <h3 itemprop="name" class="seo-faq-q">Does it support circular references in JSON?</h3>
         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-          <p itemprop="text" class="seo-faq-a">Standard JSON per RFC 8259 cannot contain circular references, and <code class="inline-code">JSON.parse()</code> will reject such input. If your data structure contains cycles, you will need to serialise it with a library that handles circular references, then manually break the cycles before pasting into this tool.</p>
+          <p itemprop="text" class="seo-faq-a">Standard JSON per RFC 8259 cannot contain circular references, and JSON.parse will reject such input. If your data structure contains cycles, you need to serialise it with a library that handles circular references, then manually break the cycles before pasting into this tool.</p>
         </div>
       </div>
 

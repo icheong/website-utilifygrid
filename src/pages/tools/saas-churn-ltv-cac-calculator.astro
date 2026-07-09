@@ -58,56 +58,71 @@ const tool = tools.find(t => t.slug === 'saas-churn-ltv-cac-calculator')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="seo-h2" >Overview and Technical Context</h2>
-    <p class="seo-p" >
-      The SaaS Churn, LTV and CAC Calculator is a client-side business metrics tool that computes four core SaaS health indicators from user inputs. Running entirely in the browser, it calculates Customer Lifetime Value, LTV:CAC ratio, CAC payback period, and annualised churn rate — the standard metrics investors and founders use to evaluate unit economics. No data is sent to any server — your inputs remain entirely private.
+    <h2 class="seo-h2">Check whether your SaaS unit economics are sustainable</h2>
+    <p class="seo-p">
+      You are pitching investors next month and they will ask for your LTV:CAC ratio. Right now you are not sure what the number is. This calculator takes four inputs — average revenue per user, monthly churn rate, gross margin, and customer acquisition cost — and outputs the four metrics investors screen for: LTV, LTV:CAC ratio, CAC payback period, and annualised churn.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
-    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['Evaluating unit economics before fundraising', 'Investors screen SaaS decks for LTV:CAC above 3x and payback under 12 months. Run your numbers through this calculator before a pitch so you know exactly where you stand and which levers to pull if the ratios are weak.'],
-        ['Modelling pricing or margin changes', 'Considering a price increase or switching to annual billing? Adjust ARPU and gross margin to see how the change ripples through LTV and the payback period. A $10 ARPU increase often doubles LTV at the same churn rate.'],
-        ['Comparing channels or cohorts', 'Run the calculator for each acquisition channel (paid ads vs. organic vs. referral) using channel-specific CAC and churn figures. The side-by-side comparison reveals which channels deliver the healthiest, most sustainable growth.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm" >
-          <strong style="color:#0F172A; font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
-    </div>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 1: Enter your average revenue per user (ARPU)</h3>
+    <p class="seo-p">
+      ARPU is the average monthly revenue you earn from one customer. If you charge $49 per month for your base plan and $99 for your pro plan, and 60% of customers are on the base plan, your blended ARPU is about $61. Enter the number your billing system reports — the calculator uses this to compute how much gross profit each customer generates.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 2: Set your monthly churn rate</h3>
+    <p class="seo-p">
+      Monthly churn is the percentage of customers who cancel each month. For SMB-focused SaaS, 3% to 5% is typical. Enterprise SaaS with annual contracts usually sees under 1%. If you only know your annual churn rate, divide by 12 to get an approximate monthly figure. Churn is the single most sensitive input — cutting churn from 5% to 3% can increase your LTV by 67%.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 3: Enter your gross margin</h3>
+    <p class="seo-p">
+      Gross margin is the percentage of revenue left after direct costs — hosting, payment processing, support, and infrastructure. Pure software companies typically run at 75% to 85% gross margin. If your margin is 80%, that means 80 cents of every dollar in revenue contributes to covering acquisition costs and generating profit. The calculator multiplies ARPU by this margin to get the gross profit per customer.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 4: Set your customer acquisition cost (CAC)</h3>
+    <p class="seo-p">
+      CAC is the total cost of acquiring one new customer — salaries, ad spend, tools, events, and agency fees divided by new customers acquired in the period. A startup spending $30,000 per month on sales and marketing to acquire 100 customers has a CAC of $300. If your CAC exceeds your LTV, you are losing money on every new customer and the business model does not work at scale.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 5: Read the results</h3>
+    <p class="seo-p">
+      The calculator shows four metrics: LTV (customer lifetime value), LTV:CAC ratio, CAC payback period in months, and annualised churn. The health bar visualises your LTV:CAC ratio — green at 3x or above, amber between 1x and 3x, red below 1x. Investors typically screen for LTV:CAC above 3x and payback under 12 months. If your numbers are below these benchmarks, adjust any input to see which lever — reducing churn, increasing margin, or lowering CAC — moves the needle the most.
+    </p>
   </div>
 
   <div slot="how-it-works">
-    <h2 class="seo-h2" >Deep-Dive Technical Mechanics</h2>
+    <h2 class="seo-h2">How SaaS unit economics are calculated</h2>
     <p style="font-size:0.9rem; line-height:1.75; margin-bottom:0.875rem">
       The four metrics are interconnected: churn rate feeds directly into LTV, LTV feeds into the ratio, and the ratio determines whether your acquisition spend is sustainable. Understanding each formula helps you identify exactly which lever to pull.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Core metric definitions</h3>
-    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['Customer LTV', 'LTV = (ARPU x Gross Margin %) / Monthly Churn Rate. This represents the average total gross profit you earn from a single customer over their lifetime. A higher LTV means each customer is worth more to your business.'],
-        ['LTV : CAC Ratio', 'LTV divided by your Customer Acquisition Cost. This is the fundamental efficiency metric for SaaS. Investors typically look for ratios above 3x. Below 1x means you are losing money on every new customer.'],
-        ['CAC Payback Period', 'CAC / (ARPU x Gross Margin % / 100). The number of months required to recover the cost of acquiring one customer. Best-in-class SaaS targets under 12 months. Longer payback means more cash tied up in growth.'],
-        ['Annual Churn Rate', 'Calculated as 1 - (1 - monthly churn)^12. This converts monthly churn to an annual figure, which gives a clearer picture of year-over-year customer retention and revenue erosion.'],
-      ].map(([label, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm" >
-          <div style="font-size:0.82rem; font-weight:700; color:#0F172A; margin-bottom:0.3rem">{label}</div>
-          <p style="font-size:0.82rem; line-height:1.6; margin:0">{desc}</p>
-        </div>
-      ))}
-    </div>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Why these metrics matter together</h3>
-    <p class="seo-p" >
-      A high LTV is meaningless if CAC is also high. A low churn rate is great but not if gross margins are razor-thin. The ratio and payback period tie everything together into a single picture of whether your growth engine is sustainable. The health bar in the calculator visualises this combined view so you can see at a glance whether adjustments are needed.
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Customer lifetime value (LTV)</h3>
+    <p class="seo-p">
+      LTV equals (ARPU multiplied by gross margin percentage) divided by monthly churn rate. This represents the average total gross profit you earn from a single customer over their entire lifetime. A SaaS company charging $60 per month with 80% gross margin and 4% monthly churn has an LTV of $1,200. This means each customer is worth $1,200 in gross profit before accounting for acquisition costs. If you raise ARPU from $60 to $70 without changing churn, LTV jumps to $1,400 — a $200 increase from a $10 monthly price change.
     </p>
-    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Improving your numbers</h3>
-    <p class="seo-p" >
-      There are only three ways to improve SaaS unit economics: increase revenue per customer (raise prices, upsell, cross-sell), reduce churn (better onboarding, product improvements, win-back campaigns), or lower acquisition cost (organic channels, referrals, product-led growth). The calculator lets you model the impact of each lever instantly.
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">LTV:CAC ratio</h3>
+    <p class="seo-p">
+      The ratio is LTV divided by CAC. A company with $1,200 LTV and $400 CAC has a 3:1 ratio — the industry benchmark. Below 1:1 means you are spending more to acquire customers than they are worth, which burns cash. Above 5:1 may indicate you are under-investing in growth and could afford to spend more aggressively on acquisition. The ratio ties revenue, churn, margin, and acquisition cost into a single number that tells you whether the growth engine is sustainable.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">CAC payback period</h3>
+    <p class="seo-p">
+      Payback equals CAC divided by (ARPU multiplied by gross margin percentage). This tells you how many months it takes to recover the cost of acquiring one customer. At $400 CAC, $60 ARPU, and 80% margin, payback is about 8 months. Best-in-class SaaS targets under 12 months. Longer payback means more cash tied up in growth, which increases funding requirements and reduces runway.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Annualised churn rate</h3>
+    <p class="seo-p">
+      The calculator converts monthly churn to annual using the formula 1 minus (1 minus monthly churn) raised to the 12th power. At 4% monthly churn, annual churn is about 39% — meaning you lose roughly 4 in 10 customers each year. This is why small monthly churn improvements have massive annual impact. Reducing monthly churn from 4% to 2% cuts annual churn from 39% to 21%, nearly doubling your customer retention.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Three levers to improve unit economics</h3>
+    <p class="seo-p">
+      There are only three ways to improve SaaS unit economics: increase revenue per customer (raise prices, upsell, cross-sell), reduce churn (better onboarding, product improvements, win-back campaigns), or lower acquisition cost (organic channels, referrals, product-led growth). The calculator lets you model the impact of each lever instantly. A $10 ARPU increase often has a larger impact on LTV than a 1% churn reduction, because revenue improvements compound across the entire customer lifetime.
     </p>
   </div>
 
   <div slot="faq">
-    <h2 class="seo-h2-faq" >Frequently Asked Questions</h2>
+    <h2 class="seo-h2-faq">Frequently Asked Questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         { q: 'What is a good LTV:CAC ratio for SaaS?', a: 'A ratio of 3:1 or higher is generally considered healthy. Below 1:1 means you are spending more to acquire customers than they are worth, which is unsustainable without significant funding. Above 5:1 may indicate under-investment in growth and an opportunity to spend more aggressively on acquisition.' },
@@ -116,6 +131,8 @@ const tool = tools.find(t => t.slug === 'saas-churn-ltv-cac-calculator')!;
         { q: 'What should I include in CAC?', a: 'CAC should include all sales and marketing expenses: salaries, ad spend, tooling, events, and agency fees. Divide the total period cost by the number of new customers acquired in that period. Many companies calculate both blended CAC across all channels and paid CAC for paid channels separately.' },
         { q: 'How does gross margin affect LTV?', a: 'LTV is directly proportional to gross margin. A SaaS company with 80 percent gross margin will have an LTV roughly double that of one with 40 percent margin at the same churn rate. Improving margin through infrastructure optimisation or pricing adjustments therefore has a linear impact on customer lifetime value.' },
         { q: 'Should I use monthly or annual churn in the formula?', a: 'This calculator takes monthly churn as input because most SaaS businesses track churn on a monthly basis. The formula then annualises it automatically. If you only have annual churn figures, divide by 12 to get an approximate monthly rate, though this is a simplification that assumes even distribution across months.' },
+        { q: 'What is the difference between logo churn and revenue churn?', a: 'Logo churn counts the number of customers who cancel. Revenue churn counts the dollar value of recurring revenue lost. A customer on a $49 plan cancelling has the same logo churn impact as a $499 customer cancelling, but the revenue impact is 10 times larger. For unit economics, revenue churn gives a more accurate picture of financial impact.' },
+        { q: 'How do I calculate CAC for a bootstrapped startup with no ad spend?', a: 'Even bootstrapped startups have acquisition costs. Include the time founders spend on sales, content creation, community building, and support that drives word-of-mouth. Estimate the hourly cost of that time and divide by the number of customers acquired. Many bootstrapped SaaS companies have very low CAC because organic channels — SEO, referrals, product-led growth — are their primary acquisition drivers.' },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
           class="seo-faq-card">
@@ -134,7 +151,7 @@ const tool = tools.find(t => t.slug === 'saas-churn-ltv-cac-calculator')!;
         {
           "@type": "Question",
           "name": "What is a good LTV:CAC ratio for SaaS?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A ratio of 3:1 or higher is generally considered healthy. Below 1:1 means you are spending more to acquire customers than they are worth, which is unsustainable without significant funding. Above 5:1 may indicate under-investment in growth." }
+          "acceptedAnswer": { "@type": "Answer", "text": "A ratio of 3:1 or higher is generally considered healthy. Below 1:1 means you are spending more to acquire customers than they are worth. Above 5:1 may indicate under-investment in growth." }
         },
         {
           "@type": "Question",
@@ -158,8 +175,8 @@ const tool = tools.find(t => t.slug === 'saas-churn-ltv-cac-calculator')!;
         },
         {
           "@type": "Question",
-          "name": "Should I use monthly or annual churn in the formula?",
-          "acceptedAnswer": { "@type": "Answer", "text": "This calculator takes monthly churn as input and annualises it automatically. If you only have annual churn, divide by 12 for an approximate monthly rate." }
+          "name": "What is the difference between logo churn and revenue churn?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Logo churn counts the number of customers who cancel. Revenue churn counts the dollar value of recurring revenue lost. Revenue churn gives a more accurate picture of financial impact." }
         }
       ]
     })} />

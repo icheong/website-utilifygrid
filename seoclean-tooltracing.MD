@@ -72,115 +72,115 @@ Expand each tool page's SEO content slots (`how-to-use`, `how-it-works`, `faq`) 
 - [x] css-flexbox-grid-sandbox
 - [x] json-to-typescript
 - [x] ev-novated-lease-calculator
-- [ ] phev-novated-lease-calculator
-- [ ] regex-toolkit
-- [ ] crontab-expression-visualizer
-- [ ] sql-to-nosql
-- [ ] git-command-flow-builder
-- [ ] cpm-ad-spend-calculator
-- [ ] compound-interest-wealth-calculator
-- [ ] kids-savings-compound-interest-visualizer
-- [ ] saas-churn-ltv-cac-calculator
-- [ ] car-loan-amortization-calculator
-- [ ] freelance-invoice-tax-calculator
-- [ ] csv-to-json-xml-converter
-- [ ] sql-schema-syntax-translator
-- [ ] unix-timestamp-converter
-- [ ] epub-to-pdf-formatter
-- [ ] length-converter
-- [ ] weight-mass-converter
-- [ ] volume-converter
-- [ ] temperature-converter
-- [ ] area-converter
-- [ ] pressure-converter
-- [ ] energy-converter
-- [ ] power-converter
-- [ ] force-converter
-- [ ] time-converter
-- [ ] angle-converter
-- [ ] fuel-consumption-converter
-- [ ] numbers-converter
-- [ ] data-storage-converter
-- [ ] angular-velocity-converter
-- [ ] acceleration-converter
-- [ ] angular-acceleration-converter
-- [ ] density-converter
-- [ ] specific-volume-converter
-- [ ] moment-of-inertia-converter
-- [ ] moment-of-force-converter
-- [ ] pdf-merge
-- [ ] pdf-split
-- [ ] pdf-organize
-- [ ] pdf-delete-pages
-- [ ] pdf-rotate
-- [ ] pdf-reverse-pages
-- [ ] pdf-ocr
-- [ ] pdf-alternate-merge
-- [ ] pdf-n-up
-- [ ] pdf-edit
-- [ ] pdf-sign
-- [ ] qr-code
-- [ ] pdf-enhance
-- [ ] currency-converter
-- [ ] prompt-architect-tokenizer
-- [ ] prompt-chain-builder
-- [ ] hallucination-fact-check-guard
-- [ ] structured-data-ai-formatter
-- [ ] token-analyzer
-- [ ] prompt-safety-stress-tester
-- [ ] ai-brand-voice-gauge
-- [ ] markdown-sanitizer
-- [ ] html-to-markdown
-- [ ] plagiarism-compare-checker
-- [ ] timezone-schedule-picker
-- [ ] htaccess-nginx-redirect-builder
-- [ ] compression-inspector
-- [ ] password-hash-evaluator
-- [ ] meta-tag-og-previewer
-- [ ] macro-calorie-deficit-allocator
-- [ ] bmr-katch-mcardle-calculator
-- [ ] ovulation-fertility-window
-- [ ] hydration-fluid-loss-calculator
-- [ ] home-renovation-cost-estimator
-- [ ] amazon-fba-profit-estimator
-- [ ] solar-panel-roi-estimator
-- [ ] freelance-project-scope-estimator
-- [ ] strata-sinking-fund-estimator
-- [ ] code-diff-checker
-- [ ] markdown-to-html-converter
-- [ ] json-schema-validator
-- [ ] variable-case-converter
-- [ ] smart-log-cleaner
-- [ ] delimiter-swapper
-- [ ] text-column-extractor
-- [ ] anagram-word-puzzle-finder
-- [ ] bulk-case-mutator
-- [ ] json-unescaper
-- [ ] kaprekar-constant-calculator
-- [ ] torque-converter
-- [ ] fuel-efficiency-mass-converter
-- [ ] fuel-efficiency-volume-converter
-- [ ] temperature-interval-converter
-- [ ] thermal-expansion-converter
-- [ ] thermal-resistance-converter
-- [ ] thermal-conductivity-converter
-- [ ] specific-heat-capacity-converter
-- [ ] heat-density-converter
-- [ ] heat-flux-density-converter
-- [ ] heat-transfer-coefficient-converter
-- [ ] convert-to-pdf
-- [ ] convert-from-pdf
-- [ ] pdf-optimize-and-repair
-- [ ] pdf-secure
-- [ ] json-path-query-evaluator
-- [ ] json-diff-patch-comparer
-- [ ] json-yaml-toml-converter
-- [ ] json-minifier
-- [ ] json-fixer
-- [ ] json-to-html-table
-- [ ] json-string-escaper
-- [ ] bson-messagepack-decoder
-- [ ] json-tree-visualizer
-- [ ] mock-json-generator
-- [ ] pii-redactor
-- [ ] pi-explorer
+- [x] phev-novated-lease-calculator
+- [x] regex-toolkit
+- [x] crontab-expression-visualizer
+- [x] sql-to-nosql
+- [x] git-command-flow-builder
+- [x] cpm-ad-spend-calculator
+- [x] compound-interest-wealth-calculator
+- [x] kids-savings-compound-interest-visualizer
+- [x] saas-churn-ltv-cac-calculator
+- [x] car-loan-amortization-calculator
+- [x] freelance-invoice-tax-calculator
+- [x] csv-to-json-xml-converter
+- [x] sql-schema-syntax-translator
+- [x] unix-timestamp-converter
+- [x] epub-to-pdf-formatter
+- [x] length-converter
+- [x] weight-mass-converter
+- [x] volume-converter
+- [x] temperature-converter
+- [x] area-converter
+- [x] pressure-converter
+- [x] energy-converter
+- [x] power-converter
+- [x] force-converter
+- [x] time-converter
+- [x] angle-converter
+- [x] fuel-consumption-converter
+- [x] numbers-converter
+- [x] data-storage-converter
+- [x] angular-velocity-converter
+- [x] acceleration-converter
+- [x] angular-acceleration-converter
+- [x] density-converter
+- [x] specific-volume-converter
+- [x] moment-of-inertia-converter
+- [x] moment-of-force-converter
+- [x] pdf-merge
+- [x] pdf-split
+- [x] pdf-organize
+- [x] pdf-delete-pages
+- [x] pdf-rotate
+- [x] pdf-reverse-pages
+- [x] pdf-ocr
+- [x] pdf-alternate-merge
+- [x] pdf-n-up
+- [x] pdf-edit
+- [x] pdf-sign
+- [x] qr-code
+- [x] pdf-enhance
+- [x] currency-converter
+- [x] prompt-architect-tokenizer
+- [x] prompt-chain-builder
+- [x] hallucination-fact-check-guard
+- [x] structured-data-ai-formatter
+- [x] token-analyzer
+- [x] prompt-safety-stress-tester
+- [x] ai-brand-voice-gauge
+- [x] markdown-sanitizer
+- [x] html-to-markdown
+- [x] plagiarism-compare-checker
+- [x] timezone-schedule-picker
+- [x] htaccess-nginx-redirect-builder
+- [x] compression-inspector
+- [x] password-hash-evaluator
+- [x] meta-tag-og-previewer
+- [x] macro-calorie-deficit-allocator
+- [x] bmr-katch-mcardle-calculator
+- [x] ovulation-fertility-window
+- [x] hydration-fluid-loss-calculator
+- [x] home-renovation-cost-estimator
+- [x] amazon-fba-profit-estimator
+- [x] solar-panel-roi-estimator
+- [x] freelance-project-scope-estimator
+- [x] strata-sinking-fund-estimator
+- [x] code-diff-checker
+- [x] markdown-to-html-converter
+- [x] json-schema-validator
+- [x] variable-case-converter
+- [x] smart-log-cleaner
+- [x] delimiter-swapper
+- [x] text-column-extractor
+- [x] anagram-word-puzzle-finder
+- [x] bulk-case-mutator
+- [x] json-unescaper
+- [x] kaprekar-constant-calculator
+- [x] torque-converter
+- [x] fuel-efficiency-mass-converter
+- [x] fuel-efficiency-volume-converter
+- [x] temperature-interval-converter
+- [x] thermal-expansion-converter
+- [x] thermal-resistance-converter
+- [x] thermal-conductivity-converter
+- [x] specific-heat-capacity-converter
+- [x] heat-density-converter
+- [x] heat-flux-density-converter
+- [x] heat-transfer-coefficient-converter
+- [x] convert-to-pdf
+- [x] convert-from-pdf
+- [x] pdf-optimize-and-repair
+- [x] pdf-secure
+- [x] json-path-query-evaluator
+- [x] json-diff-patch-comparer
+- [x] json-yaml-toml-converter
+- [x] json-minifier
+- [x] json-fixer
+- [x] json-to-html-table
+- [x] json-string-escaper
+- [x] bson-messagepack-decoder
+- [x] json-tree-visualizer
+- [x] mock-json-generator
+- [x] pii-redactor
+- [x] pi-explorer

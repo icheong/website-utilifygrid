@@ -39,20 +39,20 @@ const tool = tools.find(t => t.slug === 'pdf-merge')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Merge PDF Overview</h2>
+    <h2 class="font-display seo-h2">How to Combine Multiple PDFs Into One File</h2>
     <p class="seo-p">
-      This PDF merge tool combines multiple PDF files into a single document entirely within your browser — no files are ever uploaded to a server. Built with <strong>pdf-lib</strong> (for merging) and <strong>PDF.js</strong> (for preview rendering), both running via WebAssembly and Canvas, the tool provides complete privacy and zero server latency. Whether you are consolidating report chapters, combining signed contracts, or assembling presentation handouts, the merge is performed client-side with full lossless quality preservation.
+      You have 12 separate contract PDFs that need to become a single filing for court. Drag them into the merge tool, rearrange the order with drag-and-drop, and click Merge. The output is one consolidated PDF with all 12 documents in the sequence you specified. The inline preview shows each file's first page so you can verify the order before merging.
     </p>
     <p class="seo-p">
-      The tool supports unlimited file counts with drag-and-drop reordering, inline page previews for each file, and a clear visual interface showing file count, page counts, and merge progress. The merged output preserves text, images, vector graphics, bookmarks, and annotations from the original files. Page size and orientation from the first file are used as defaults for the merged document.
+      The merge tool handles unlimited file counts with drag-and-drop reordering. Each file shows a thumbnail preview and page count. The merged output preserves text, images, vector graphics, bookmarks, and annotations from the originals. Page size and orientation default to the first file's specifications. A progress indicator shows merge status for large file sets.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">When you need to combine documents quickly</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Legal document assembly and contract management`, `Law firms and legal departments regularly combine multiple documents — contracts, amendments, exhibits, and appendices — into single court filings or client deliverables. A typical merger filing might require combining 15 to 30 separate PDF documents into one consolidated file. This tool handles the merge entirely in-browser, eliminating the security risk of uploading confidential legal documents to third-party servers.`],
-        [`Academic and research document compilation`, `Researchers compile multi-author papers, supplementary materials, and reference documents into single PDFs for journal submissions or conference proceedings. A thesis might combine 6 chapters, each authored and formatted separately, into one submission-ready document. The drag-and-drop reordering ensures the correct chapter sequence before merging.`],
-        [`Business reporting and presentation assembly`, `Corporate teams consolidate quarterly reports from multiple departments, combine slide decks from different presenters, or assemble training materials from various sources. A quarterly business review might merge financial summaries, marketing analytics, and operational reports into a single executive briefing document. The inline preview feature lets users verify page content before merging.`]
+        ['Legal filings require consolidated documents', 'A court filing might combine 15 to 30 separate PDFs: the petition, exhibits A through M, affidavits, and the proposed order. Each document was created by a different attorney. The merge tool combines them into one file with drag-and-drop reordering so the exhibits appear in alphabetical order. The preview thumbnails let you verify each document before the final merge.'],
+        ['Academic papers need merged supplementary materials', 'A journal submission requires the main paper, supplementary figures, datasets, and author responses as a single PDF. The paper is 12 pages, the figures appendix is 8 pages, and the response is 3 pages. Drag them in, verify the order, and merge. The output preserves all vector figures at full resolution because the merge copies page objects byte-for-byte.'],
+        ['Quarterly reports combine multiple department inputs', 'Finance sends their 10-page summary. Marketing sends 8 pages of analytics. Operations sends 15 pages of metrics. The CEO needs one 33-page briefing document. Drop all three PDFs, arrange in the order the CEO prefers, and merge. The inline preview shows each department\'s first page so you can confirm the documents before combining.']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -63,26 +63,22 @@ const tool = tools.find(t => t.slug === 'pdf-merge')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Technical Architecture and Merge Process</h2>
+    <h2 class="font-display seo-h2">How the PDF Merge Tool Combines Files Without Upload</h2>
     <p class="seo-p">
-      The tool uses a two-library architecture: <strong>PDF.js</strong> (Mozilla's PDF renderer) handles page preview rendering by drawing each page onto an HTML Canvas element, while <strong>pdf-lib</strong> (a lightweight PDF manipulation library) performs the actual merge by copying page objects between PDF documents. Both libraries execute entirely in the browser via WebAssembly — no server round-trips occur at any stage.
+      When you drop files into the merge tool, each PDF is read into browser memory as an ArrayBuffer. PDF.js renders the first page of each file as a thumbnail for the preview panel. When you click Merge, pdf-lib creates a new empty PDFDocument and copies pages from each source file in sequence using copyPages(). The result is a single PDF with all pages from all files.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Merge Process</h3>
+    <h3 class="font-display seo-h3-sm">How copyPages preserves the original quality</h3>
     <p class="seo-p-sm">
-      <strong>1. File ingestion:</strong> When the user drops or selects PDF files, each file is read as an <code class="inline-code">ArrayBuffer</code> using the File API. The file data is held in browser memory — no network requests are made. Each file is validated as a PDF by checking the file type and attempting to parse it with PDF.js.
+      pdf-lib copies page objects byte-for-byte from the source document. Text, images, vector graphics, and embedded fonts are transferred without re-encoding or recompression. This means the merged PDF has exactly the same visual quality as the originals. Bookmarks and annotations are preserved where the source structure allows. The one limitation is interactive form fields: AcroForm merging is not fully supported, so form fields may lose functionality in the merged output.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Drag-and-drop reordering and the file sequence</h3>
     <p class="seo-p-sm">
-      <strong>2. Thumbnail generation:</strong> For each file, PDF.js renders the first 5 pages at 25% scale onto temporary Canvas elements, converting them to data URLs for inline preview. The page count is extracted from the PDF document metadata. This provides instant visual feedback without uploading anything.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Drag-and-drop reordering:</strong> The file list uses HTML5 Drag and Drop API. When a file is dropped onto a new position, the internal array is spliced and re-ordered. The preview panel updates to reflect the new sequence. This ensures the merge order matches the user's intent.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Merge execution:</strong> When the user clicks "Merge PDFs", pdf-lib creates a new empty <code class="inline-code">PDFDocument</code>. For each source file in order, it loads the file as a <code class="inline-code">PDFDocument</code>, copies all pages using <code class="inline-code">copyPages()</code>, and adds them to the merged document. The merged PDF is serialised to bytes and offered as a download via a Blob URL.
+      The file list uses the HTML5 Drag and Drop API. When you drag a file to a new position, the internal array is spliced and re-ordered. The preview panel updates to reflect the new sequence. This is important because page size and orientation default to the first file. If your first file is letter-size portrait and the second is A4 landscape, the merged document uses letter-size portrait for all pages. Reorder so the correct file is first.
     </p>
     <p class="seo-p-none">
-      <strong>Feature preservation:</strong> The merge copies page content objects (text, images, vectors) byte-for-byte from the source, preserving visual fidelity. Bookmarks and annotations are preserved where the source structure allows. Embedded fonts are kept — pdf-lib does not re-encode font data. Page size and orientation default to the first file's specifications. Interactive form fields may lose functionality because pdf-lib's copy operation does not fully support AcroForm merging.
+      The merge processes files sequentially to manage memory. Each source file is loaded, its pages are copied to the merged document, and then the source is released. This allows merging 50 to 100 files of moderate size (a few MB each) on most modern devices with 4 GB or more of RAM. Very large files (hundreds of MB each) may slow down the browser.
     </p>
   </div>
 
@@ -91,32 +87,28 @@ const tool = tools.find(t => t.slug === 'pdf-merge')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "Is my data uploaded to a server?",
-          a: "No. All processing happens entirely in your browser using WebAssembly (pdf-lib) and Canvas (PDF.js). Your files never leave your device — there is no server upload at any point. This provides complete privacy for confidential documents such as legal filings, medical records, and financial reports."
+          q: "How many PDFs can I merge at once?",
+          a: "There is no artificial limit. You can merge as many files as your browser memory allows. In practice, 50 to 100 files of a few MB each works smoothly on most devices. The tool processes files sequentially: load one, copy its pages, release it, then load the next. This keeps memory usage manageable even for large file sets."
         },
         {
-          q: "What PDF features are preserved during merge?",
-          a: "The merge preserves page content, text, images, vector graphics, bookmarks, and annotations. Embedded fonts are kept without re-encoding. Page size and orientation from the first file are used as defaults. Interactive form fields may lose functionality in the merged output because pdf-lib's copy operation does not fully support AcroForm field merging."
-        },
-        {
-          q: "Is there a file size limit?",
-          a: "There is no hard limit, but very large files (hundreds of megabytes) may slow down your browser due to memory constraints. Each file is loaded entirely into browser memory as an ArrayBuffer. For best results, keep individual files under 50 MB each and the total under 200 MB. Modern browsers can handle this comfortably on devices with 4 GB or more of RAM."
+          q: "What happens to the file order when I merge?",
+          a: "Pages from each file appear in the order you arrange them. The first file's page size and orientation become the defaults for the merged document. If you need A4 landscape pages from the second file to match, put that file first or accept that all pages will use the first file's dimensions. The drag-and-drop interface lets you reorder before merging."
         },
         {
           q: "Can I merge password-protected PDFs?",
-          a: "This tool can merge encrypted PDFs only if they are encrypted without a user password (i.e., they open freely but restrict editing or printing). PDFs protected with an owner password can be merged. PDFs with a user password (requiring a password to open) cannot be processed because pdf-lib cannot decrypt them without the password."
+          a: "PDFs encrypted with an owner password (restricting editing or printing) can be merged because they open without a password. PDFs with a user password (requiring a password to open) cannot be processed because the tool cannot decrypt them. You would need to remove the password first using a PDF reader that supports decryption."
         },
         {
-          q: "Does merging reduce PDF quality?",
-          a: "No. The merge is a lossless copy of pages — text, vectors, and images are copied byte-for-byte from the source documents. There is no re-encoding, recompression, or rasterisation. The merged PDF has exactly the same visual quality as the original files."
+          q: "Does merging change the visual quality?",
+          a: "No. The merge copies page objects byte-for-byte from each source. Text, vector graphics, and images are transferred without re-encoding or recompression. The merged PDF looks identical to the originals. Embedded fonts are kept as-is. The only limitation is interactive form fields, which may lose functionality."
         },
         {
-          q: "How many PDFs can I merge at once?",
-          a: "There is no artificial limit on the number of files. You can merge as many PDFs as your browser's memory allows. In practice, merging 50 to 100 files of moderate size (a few MB each) works smoothly on most modern devices. The tool processes files sequentially to manage memory usage."
+          q: "What happens to bookmarks in the merged PDF?",
+          a: "Bookmarks from each source file are preserved in the merged output. However, since the merge creates a new document, the bookmark page numbers may point to wrong locations if the page offsets shifted. For a unified table of contents, you would need to edit the bookmarks in a dedicated PDF editor after merging."
         },
         {
-          q: "What happens to bookmarks and table of contents?",
-          a: "Bookmarks (outlines) from the source PDFs are preserved where the source structure allows. However, because the merge creates a new PDF document, the bookmark hierarchy may need manual adjustment in a dedicated PDF editor if you require a unified table of contents pointing to specific pages in the merged output."
+          q: "Can I merge a PDF with images or scans?",
+          a: "Yes. Scanned PDFs are just regular PDFs with image content. The merge tool handles them the same way: pages are copied byte-for-byte. A 50-page scanned document merges just as easily as a text-based PDF. The resulting file size depends on the scan resolution and compression of the originals."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

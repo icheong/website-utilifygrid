@@ -110,20 +110,20 @@ const tool = tools.find(t => t.slug === 'moment-of-force-converter')!;
   </div>
 
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2">Moment of Force Converter Overview</h2>
+    <h2 class="font-display seo-h2">How to Convert Between N·m, Lbf·Ft, and Kgf·Cm</h2>
     <p class="seo-p">
-      This moment of force converter computes precise conversions between 14 torque units — Newton-meters, kilonewton-meters, millinewton-meters, centinewton-meters, micronewton-meters, pound-feet, pound-inches, ounce-inches, kilogram-force meters, kilogram-force centimeters, gram-force centimeters, gram-force meters, dyne-centimeters, and dyne-meters — entirely within your browser. Built with modern vanilla JavaScript, the tool executes every calculation locally using standard browser APIs — no data is transmitted to any server, no cookies are set, and no tracking scripts execute during conversion. The 100% client-side architecture ensures zero server latency and complete privacy for your calculations, whether you are working in automotive engineering, mechanical design, aerospace, or physics education.
+      Your torque wrench is calibrated in lbf·ft, but the engine manual specifies 110 N·m for the cylinder head bolts. Type 110, select N·m, and see that it equals 81.13 lbf·ft, 11,217 kgf·cm, and 973 lbf·in. The wrench diagram shows the linear relationship between lever arm length and torque.
     </p>
     <p class="seo-p">
-      Torque is defined as force multiplied by the perpendicular distance from the pivot axis (<code class="inline-code">τ = F × r</code>). Unlike moment of inertia where distance is squared, torque depends <strong>linearly</strong> on distance — doubling the lever arm doubles the torque. The wrench diagram below demonstrates this principle visually. The converter handles the full range from micronewton-meters (microelectronics) to kilonewton-meters (heavy machinery), with dynamic formatting that adapts to each result's magnitude.
+      The converter handles 14 units: N·m, kN·m, mN·m, cN·m, μN·m, lbf·ft, lbf·in, oz·in, kgf·m, kgf·cm, gf·cm, gf·m, dyn·cm, and dyn·m. A mechanic tightening wheel nuts at 100 lbf·ft sees it equals 135.6 N·m. A physicist measuring 2,500 dyn·cm from a torsion balance sees it equals 0.00025 N·m. The material reference covers torque values from smartphone vibration motors to Formula 1 engines.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Real-World Applications and Use Cases</h3>
+    <h3 class="font-display seo-h3-sm">Why N·m and Joules are not interchangeable</h3>
     <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.75rem">
       {[
-        [`Automotive maintenance and fastener specifications`, `Mechanics specify lug nut tightening torque in N·m or lbf·ft to ensure proper clamping force without stripping threads. A typical passenger car lug nut requires 80–110 N·m (60–80 lbf·ft). A heavy truck might require 300–600 N·m. Converting between N·m (metric specifications) and lbf·ft (US tools) is essential when using torque wrenches calibrated in different unit systems.`],
-        [`Industrial automation and servo motor sizing`, `Engineers specify servo motor torque in N·m or kgf·cm to ensure sufficient force for the application. A pick-and-place robot might require 0.5 N·m at the joint, while a CNC machine spindle might need 50 N·m. Converting between N·m (motor datasheets) and kgf·cm (legacy specifications) ensures proper motor selection and prevents under-powered designs.`],
-        [`Physics experiments and rotational mechanics labs`, `University physics labs measure torque using force sensors and lever arms, then verify it against calculated values. A 10 N force applied at 0.25 m produces 2.5 N·m of torque. Students need to convert between N·m (SI calculations), dyn·cm (CGS output from some sensors), and lbf·in (imperial lab equipment) when comparing results across different measurement systems.`]
+        ['N·m is torque, Joule is energy', 'Both have dimensions of kg·m²/s², but torque is a vector (force x distance) and energy is a scalar (work done). A motor producing 100 N·m does not produce 100 J unless it rotates through 1 radian. Energy = torque x angle in radians. Using N·m when you mean J (or vice versa) produces wrong results in power calculations.'],
+        ['Longer wrench means more torque', 'A mechanic using a 0.25 m wrench with 200 N force gets 50 N·m. Switching to a 0.5 m wrench doubles the torque to 100 N·m with the same force. This is why breaker bars and cheater pipes exist: they increase the lever arm. The wrench diagram on this page demonstrates this linear relationship.'],
+        ['Car lug nut torque specs are critical', 'Under-torqued lug nuts can vibrate loose. Over-torqued nuts can strip threads or crack the wheel hub. A typical car requires 80-110 N·m (60-80 lbf·ft). A truck requires 300-600 N·m. If you use a wrench calibrated in lbf·ft but read the N·m specification without converting, you under-torque by 36% (since 1 lbf·ft = 1.356 N·m).']
       ].map(([title, desc]) => (
         <div class="border-theme surface-2 seo-card-sm">
           <strong style="color:var(--text-primary);font-size:0.875rem">{title}</strong>
@@ -134,26 +134,22 @@ const tool = tools.find(t => t.slug === 'moment-of-force-converter')!;
   </div>
 
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2">Deep-Dive: Conversion Factors and Mathematical Logic</h2>
+    <h2 class="font-display seo-h2">How the Moment of Force Converter Handles N·m and Lbf·Ft</h2>
     <p class="seo-p">
-      All conversions use Newton-meters (N·m) as the universal base unit. Each supported torque unit is defined by a fixed conversion factor relative to one N·m. To convert from unit A to unit B, the tool multiplies the input value by A's factor to obtain N·m, then divides by B's factor to obtain the target value. This hub-and-spoke model guarantees that any two-unit conversion inherits the exactness of the underlying definitions — no cumulative rounding errors accumulate through intermediate steps.
+      All conversions pass through Newton-meters (N·m). When you enter 100 lbf·ft, the tool multiplies by 1.35582 to get 135.58 N·m. Then it divides by each target unit's factor: by 1,000 for kN·m, by 0.09807 for kgf·cm, by 0.11298 for lbf·in. The result: 100 lbf·ft = 135.58 N·m = 1,627 lbf·in = 13,826 kgf·cm.
     </p>
 
-    <h3 class="font-display seo-h3-sm">Step-by-Step Conversion Process</h3>
+    <h3 class="font-display seo-h3-sm">The lbf·ft factor of 1.35582 comes from two exact definitions</h3>
     <p class="seo-p-sm">
-      <strong>1. Factor lookup:</strong> The tool maintains a lookup table mapping each unit identifier (e.g. <code class="inline-code">Nm</code>, <code class="inline-code">lfft</code>, <code class="inline-code">kgfcm</code>) to its conversion factor relative to N·m. SI units use powers of 10: <code class="inline-code">1 kN·m = 1,000 N·m</code>. Force-based units use standard definitions: <code class="inline-code">1 lbf·ft = 1.35582 N·m</code> (derived from <code class="inline-code">1 lbf = 4.44822 N</code> and <code class="inline-code">1 ft = 0.3048 m</code>).
+      1 lbf·ft = 1 lbf x 1 ft = 4.44822 N x 0.3048 m = 1.35582 N·m. The lbf (pound-force) is defined as the force on 1 pound mass in standard gravity: 1 lbf = 0.45359237 kg x 9.80665 m/s² = 4.44822 N. The foot is exactly 0.3048 m. Multiplying gives 1.35582 N·m exactly.
     </p>
+
+    <h3 class="font-display seo-h3-sm">Why kgf·cm is still common in Asian manufacturing</h3>
     <p class="seo-p-sm">
-      <strong>2. Hub conversion to N·m:</strong> The input value is multiplied by the source unit's factor. For example, converting 100 lbf·ft to N·m: <code class="inline-code">100 × 1.35582 = 135.582 N·m</code>. Converting 50 kgf·cm to N·m: <code class="inline-code">50 × 0.0980665 = 4.9033 N·m</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>3. Target conversion from N·m:</strong> The N·m value is divided by the target unit's factor. Converting 135.582 N·m to lbf·in: <code class="inline-code">135.582 / 0.112985 ≈ 1,200 lbf·in</code>. The combined formula is: <code class="inline-code">Result = Input × (FromFactor / ToFactor)</code>.
-    </p>
-    <p class="seo-p-sm">
-      <strong>4. Dynamic formatting:</strong> The display format adapts to the magnitude of the result. Very large values (10³⁰ or greater) use scientific notation. Values between 1 and 10¹⁵ use locale-formatted numbers with 6 decimal places. Values between 0.001 and 1 use 8 decimal places. Values between 10⁻⁶ and 0.001 use 12 decimal places. Values below 10⁻⁶ use scientific notation. This ensures readability across the full range from dyne-centimeters to kilonewton-meters.
+      1 kgf·cm = 0.0980665 N·m (since 1 kgf = 9.80665 N and 1 cm = 0.01 m). Japanese and Chinese motor datasheets often specify torque in kgf·cm because it relates directly to the force a 1 kg mass exerts at 1 cm lever arm. A servo motor rated at 50 kgf·cm produces 4.903 N·m. Converting to N·m: 50 x 0.09807 = 4.903 N·m. Converting to lbf·ft: 4.903 / 1.35582 = 3.62 lbf·ft.
     </p>
     <p class="seo-p-none">
-      <strong>Exact conversion factors:</strong> All factors are derived from exact international definitions: <code class="inline-code">1 lbf = 4.448221615367 N</code> (derived from <code class="inline-code">1 lb = 0.45359237 kg</code> and <code class="inline-code">1 ft = 0.3048 m</code>), <code class="inline-code">1 kgf = 9.80665 N</code> (exactly, standard gravity), <code class="inline-code">1 dyn = 10⁻⁵ N</code> (exactly), and <code class="inline-code">1 ozf = 0.27801385 N</code> (derived from <code class="inline-code">1 oz = 1/16 lb</code>). These are all exact by definition, so the IEEE 754 approximations provide full double-precision accuracy.
+      The dynamic formatting handles the full range from micronewton-meters (MEMS devices, 10^-9 N·m) to kilonewton-meters (heavy machinery, 10^5 N·m). Very small values use scientific notation. Very large values use locale-formatted numbers. The converter also handles dyne-centimeters (CGS, 10^-7 N·m) for physics lab work with torsion balances.
     </p>
   </div>
 
@@ -162,32 +158,28 @@ const tool = tools.find(t => t.slug === 'moment-of-force-converter')!;
     <div style="display:flex;flex-direction:column;gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
-          q: "What is moment of force (torque)?",
-          a: "Moment of force, commonly called torque, is the rotational effect of a force applied at a distance from a pivot point. It equals force multiplied by the perpendicular distance from the axis: <code class='inline-code'>τ = F × r</code>. The SI unit is the Newton-meter (N·m). Torque is a vector quantity; its direction indicates the axis and sense of rotation."
+          q: "How do I convert 100 lbf·ft to N·m?",
+          a: "Multiply by 1.35582: 100 x 1.35582 = 135.58 N·m. For a quick estimate, multiply by 1.36: 100 x 1.36 = 136 N·m. The reverse: divide by 1.35582 or multiply by 0.7376. So 200 N·m = 147.5 lbf·ft. The converter shows all 14 units simultaneously."
         },
         {
-          q: "What is the difference between moment of force and moment of inertia?",
-          a: "Moment of force (torque) is the cause of rotational acceleration — it equals F × r. Moment of inertia is the resistance to rotational acceleration — it equals Σmr². Torque depends linearly on distance; moment of inertia depends on the square of distance. A long wrench gives more torque, but a heavy rim gives more moment of inertia."
+          q: "What is the torque of a car engine?",
+          a: "A typical gasoline engine produces 100-300 N·m (74-221 lbf·ft). A diesel engine produces 250-600 N·m (184-443 lbf·ft) because diesel combustion creates higher cylinder pressure. A Formula 1 engine produces about 450 N·m (332 lbf·ft) but at 15,000 RPM. A motorcycle produces 50-200 N·m at much higher RPM."
         },
         {
-          q: "Why are N·m and J used in different contexts?",
-          a: "N·m and J (joules) have the same dimensions (kg·m²/s²), but they represent different physical quantities. N·m is torque (force × distance), while J is energy (work done). The numerical values may be identical, but the units are not interchangeable in physics. Torque is a vector quantity; energy is a scalar. Using the wrong unit in equations produces incorrect results."
-        },
-        {
-          q: "What is a common torque value?",
-          a: "A car engine typically produces 100–500 N·m. A smartphone vibration motor produces approximately 0.001 N·m. A lug nut requires approximately 110 N·m (80 lbf·ft) to tighten properly. A bicycle pedal applies approximately 25 N·m. A Formula 1 engine produces approximately 450 N·m at over 15,000 RPM."
+          q: "Why are N·m and Joules different if they look the same?",
+          a: "N·m is torque: force x distance (a vector). J is energy: work done (a scalar). A motor producing 100 N·m does 100 J of work only if it rotates through 1 radian (57.3 degrees). Through a full revolution (2π radians), it does 628 J. Using N·m when you mean J produces wrong power calculations: P = torque x angular velocity, not P = energy x angular velocity."
         },
         {
           q: "How does a longer wrench help?",
-          a: "Torque equals force multiplied by distance. If you double the wrench length, you double the torque for the same applied force. This is why mechanics use breaker bars and cheater pipes — they increase the lever arm to generate more torque with less effort. The wrench diagram on this page demonstrates this linear relationship visually."
+          a: "Torque = force x distance. Double the wrench length, double the torque for the same force. A mechanic using 200 N on a 0.25 m wrench gets 50 N·m. On a 0.5 m wrench, the same 200 N produces 100 N·m. This is why breaker bars and cheater pipes exist: they increase the lever arm. The wrench diagram on this page shows this linear relationship."
         },
         {
-          q: "What is the relationship between torque and power?",
-          a: "Power equals torque multiplied by angular velocity: <code class='inline-code'>P = τ × ω</code>, where τ is in N·m and ω is in rad/s. A motor producing 100 N·m at 3,000 RPM (314.16 rad/s) delivers approximately 31.4 kW (42 hp). This relationship is fundamental in engine and motor sizing — high torque at low RPM (diesel) vs. low torque at high RPM (gasoline) can produce the same power."
+          q: "What is the torque of a smartphone vibration motor?",
+          a: "About 0.001 N·m (1 mN·m or 0.1 dyn·cm). This is enough to make the phone vibrate against your hand. The motor spins an eccentric mass at 10,000-20,000 RPM. The torque is tiny because the mass is small (a few grams) and the lever arm is short (a few millimetres). The converter handles this micro-torque range alongside engine-scale torque."
         },
         {
-          q: "How do I convert between lbf·ft and N·m?",
-          a: "To convert lbf·ft to N·m, multiply by 1.35582. To convert N·m to lbf·ft, divide by 1.35582 (or multiply by 0.73756). For example, 100 lbf·ft equals approximately 135.6 N·m, and 200 N·m equals approximately 147.5 lbf·ft. This conversion is essential when working with US tool specifications and metric engineering calculations."
+          q: "What is the difference between lbf·ft and lb·ft?",
+          a: "lbf·ft (pound-force foot) is torque: force x distance. lb·ft (pound foot) is ambiguous and sometimes used for moment of inertia (lb·ft²). Always use lbf·ft for torque to avoid confusion. The lbf (pound-force) is the force on 1 lb mass in standard gravity: 1 lbf = 4.44822 N. The converter uses lbf·ft for clarity."
         }
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"

@@ -198,65 +198,70 @@ const tool = tools.find(t => t.slug === 'git-command-flow-builder')!;
 
   <!-- ═══ HOW TO USE ═══ -->
   <div slot="how-to-use">
-    <h2 class="font-display seo-h2" >Overview and Technical Context</h2>
-    <p class="seo-p" >
-      The Git Command Flow Builder is a scenario-driven CLI reference that maps common Git situations to the exact commands needed to resolve them. Built with vanilla JavaScript and running entirely in the browser, it requires no server calls, no installed Git binary, and stores no data. Each scenario includes inline variable inputs, refinement options for multi-path workflows, and clearly flagged danger commands — so you get the right command without memorising flags or searching documentation.
+    <h2 class="font-display seo-h2">Get the exact Git commands for your situation — without memorising flags</h2>
+    <p class="seo-p">
+      You accidentally committed to the wrong branch and now you need to undo it, but you are not sure whether to use reset --soft or --hard, and you definitely do not want to lose anyone else's work. This tool reads your situation, shows you the exact commands, and flags the dangerous ones before you run them.
     </p>
-    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Real-World Applications and Use Cases</h3>
-    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-bottom:0.75rem">
-      {[
-        ['Recovering from a mistaken commit on a shared branch', 'A developer accidentally pushes a commit with sensitive data or a broken build to a shared feature branch. The tool walks them through the exact sequence: reset locally, amend or remove the offending commit, then force-push with --force-with-lease — without needing to remember the flag differences between --soft, --mixed, and --hard.'],
-        ['Cleaning up feature branch history before code review', 'Before opening a pull request, a developer needs to squash six WIP commits into a clean two-commit sequence. The Squash Commits scenario generates the interactive rebase command with the correct HEAD~n reference, and the inline instructions explain how to mark commits for squashing in the editor.'],
-        ['Migrating a team workflow from merge commits to rebase', 'A team lead wants to adopt a linear history strategy. The tool provides the pull --rebase configuration, the rebase-onto-main workflow, and the safe force-push command — all in one place — so the team can transition without hunting through multiple Git documentation pages.'],
-      ].map(([title, desc]) => (
-        <div class="border-theme surface-2 seo-card-sm" >
-          <strong style="color:var(--text-primary); font-size:0.875rem">{title}</strong>
-          <p style="font-size:0.85rem; line-height:1.65; margin:0.35rem 0 0">{desc}</p>
-        </div>
-      ))}
-    </div>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 1: Pick your scenario</h3>
+    <p class="seo-p">
+      The tool presents a grid of common Git situations: undo last commit, undo pushed commit, squash commits, recover deleted branch, stash and switch, and more. Click the card that matches your situation. Each scenario loads a tailored set of commands with variable inputs for branch names, commit counts, and SHA references.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 2: Choose your approach</h3>
+    <p class="seo-p">
+      Some scenarios have multiple paths. For example, "undo last commit" offers two options: keep your changes staged (soft reset) or discard them entirely (hard reset). The tool shows sub-option pills for each approach. Click the one you want and the command sequence updates immediately. If you are not sure which to pick, the tool explains what each option does in plain English.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 3: Fill in the variables</h3>
+    <p class="seo-p">
+      Type your branch name, commit SHA, or number of commits into the inline input fields. The commands update in real time as you type. If you leave a field blank, the tool uses a placeholder like feature-branch or HEAD~3 so you can see the command structure before committing to specific values.
+    </p>
+
+    <h3 style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Step 4: Review and copy</h3>
+    <p class="seo-p">
+      Destructive commands like git reset --hard and git push --force-with-lease are flagged with a red border and a warning block. Commands that rewrite history carry a "Rewrites history" badge. Read the warnings before running anything. Click "Copy all" to grab the full command sequence — comment lines are excluded so you paste only executable commands into your terminal.
+    </p>
   </div>
 
   <!-- ═══ HOW IT WORKS ═══ -->
   <div slot="how-it-works">
-    <h2 class="font-display seo-h2" >Deep-Dive Technical Mechanics</h2>
-    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Scenario Decision Engine</h3>
-    <p class="seo-p" >
-      Each scenario card maps to a configuration object that defines sub-options (when multiple approaches exist), variable input fields (for branch names, SHAs, or counts), command templates with <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">&#123;varName&#125;</code> tokens, and optional warning text. When you click a card, the engine initialises the scenario state, renders sub-option pills or variable inputs as needed, and immediately generates the command sequence using default values. This means you can see the commands before filling in any custom values — useful for understanding the workflow before committing to specific parameters.
+    <h2 class="font-display seo-h2">How the Git Command Flow Builder generates your commands</h2>
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Each scenario is a pre-built configuration object</h3>
+    <p class="seo-p">
+      When you click a scenario card, the tool loads a configuration that defines sub-options (when multiple approaches exist), variable input fields (for branch names, SHAs, or counts), command templates with placeholder tokens, and optional warning text. The engine immediately generates the command sequence using default values, so you can see the commands before filling in any custom information. This lets you understand the workflow before committing to specific parameters.
     </p>
-    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Command Template Interpolation</h3>
-    <p class="seo-p" >
-      Command templates use a simple <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">&#123;variable&#125;</code> interpolation syntax. When you type into a variable input field, a listener updates the internal state object and triggers a re-render of all command blocks. The interpolation function replaces every <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">&#123;key&#125;</code> token with the current value, falling back to a placeholder if the field is empty. Comment-only lines (starting with <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">#</code>) are rendered in italic muted text without a copy button, keeping the focus on actionable commands.
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Commands update as you type variables</h3>
+    <p class="seo-p">
+      Command templates use a simple placeholder syntax. When you type into a variable input field, a listener updates the internal state and re-renders all command blocks. The interpolation function replaces every placeholder token with the current value, falling back to a descriptive placeholder if the field is empty. Comment-only lines (starting with #) are rendered in italic muted text without a copy button, keeping the focus on actionable commands.
     </p>
-    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Safety-First UX Design</h3>
-    <p class="seo-p" >
-      Destructive commands — such as <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">git reset --hard</code>, <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">git clean -fd</code>, and <code style="background:#EFF6FF; padding:0.1rem 0.35rem; border-radius:0.25rem; font-family:'Fira Code',monospace; font-size:0.82rem">git push --force-with-lease</code> — are flagged with a red border and a warning block that appears automatically. Scenarios that rewrite history carry a "Rewrites history" badge. The "Copy all" button excludes comment lines, so you only paste executable commands into your terminal. Every design decision prioritises preventing accidental data loss over speed of interaction.
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">Dangerous commands are flagged automatically</h3>
+    <p class="seo-p">
+      Destructive commands like git reset --hard, git clean -fd, and git push --force-with-lease are flagged with a red border and a warning block that appears automatically. Scenarios that rewrite history carry a "Rewrites history" badge. The tool is designed so that you cannot accidentally run a destructive command without seeing the warning first. The "Copy all" button excludes comment lines, so you only paste executable commands into your terminal.
     </p>
-    <div style="display:flex; flex-direction:column; gap:0.625rem; margin-top:1rem">
-      {[
-        ['git reset',     'Moves the HEAD pointer and optionally the index/working tree. --soft keeps changes staged; --mixed unstages them; --hard discards them entirely.'],
-        ['git commit --amend', 'Replaces the last commit with a new one incorporating staged changes or a new message. Rewrites history — avoid on shared branches.'],
-        ['git rebase -i', 'Interactive rebase opens an editor listing commits. Change "pick" to "squash" or "fixup" to fold commits together. Rewrites commit SHAs.'],
-        ['git stash',     'Saves uncommitted work to a stack so you can switch contexts. stash pop restores and removes; stash apply restores and keeps it on the stack.'],
-        ['git reflog',    'Records every position HEAD has been. Even after a hard reset or branch deletion, reflog lets you find the lost SHA and recover it.'],
-        ['git cherry-pick', 'Applies the diff introduced by a specific commit onto the current branch, creating a new commit with a new SHA.'],
-      ].map(([cmd, desc]) => (
-        <div class="surface-2" style="background:var(--bg-surface); border:1px solid var(--border); border-radius:0.625rem; padding:0.875rem 1rem">
-          <code style="font-family:'Fira Code',monospace; font-size:0.82rem; color:#1D4ED8; background:#EFF6FF; padding:0.15rem 0.5rem; border-radius:0.25rem; display:inline-block; margin-bottom:0.35rem">{cmd}</code>
-          <p class="text-secondary" style="font-size:0.82rem; margin:0; line-height:1.6">{desc}</p>
-        </div>
-      ))}
-    </div>
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">The six core Git commands behind most scenarios</h3>
+    <p class="seo-p">
+      Most scenarios use a combination of six fundamental Git commands. git reset moves the HEAD pointer and optionally the index or working tree — --soft keeps changes staged, --mixed unstages them, and --hard discards them. git commit --amend replaces the last commit with a new one. git rebase -i opens an interactive editor where you can squash, reorder, or edit commits. git stash saves uncommitted work to a stack so you can switch contexts. git reflog records every position HEAD has been, letting you recover lost commits. git cherry-pick applies a specific commit from one branch to another.
+    </p>
+
+    <h3 class="font-display" style="font-size:1rem; font-weight:600; margin:1rem 0 0.5rem">How the "undo pushed commit" scenario works</h3>
+    <p class="seo-p">
+      When you need to undo a commit that has already been pushed to a shared branch, the tool generates a three-step sequence: first, reset locally to remove the commit; second, amend or remove the offending commit; third, force-push with --force-with-lease. The --force-with-lease flag is safer than --force because it only pushes if nobody else has pushed to the branch since your last fetch. The tool explains this distinction in the warning block so you understand why it matters.
+    </p>
   </div>
 
   <!-- ═══ FAQ ═══ -->
   <div slot="faq">
-    <h2 class="font-display seo-h2-faq" >Frequently asked questions</h2>
+    <h2 class="font-display seo-h2-faq">Frequently asked questions</h2>
     <div style="display:flex; flex-direction:column; gap:0.75rem" itemscope itemtype="https://schema.org/FAQPage">
       {[
         {
           q: 'What is the difference between git reset --soft and --hard?',
-          a: '--soft moves HEAD back to the previous commit but keeps all your changes staged in the index, ready to be re-committed. --hard moves HEAD back AND discards all changes in the index and working tree permanently — this is irreversible. --mixed (the default) moves HEAD back and unstages changes but leaves the files modified on disk so you can review them before deciding what to keep.',
+          a: '--soft moves HEAD back to the previous commit but keeps all your changes staged in the index, ready to be re-committed. --hard moves HEAD back AND discards all changes in the index and working tree permanently — this is irreversible. --mixed (the default) moves HEAD back and unstages changes but leaves the files modified on disk so you can review them.',
         },
         {
           q: 'Is it safe to force push to a shared branch?',
@@ -264,7 +269,7 @@ const tool = tools.find(t => t.slug === 'git-command-flow-builder')!;
         },
         {
           q: 'What is git rebase and when should I use it?',
-          a: 'Rebase replays your branch\'s commits on top of another commit (usually the tip of main), producing a linear history without merge commits. Use it before merging a feature branch to incorporate recent changes from main, or interactively with -i to clean up commit history before code review. Avoid rebasing commits that have already been pushed to a shared branch, as it forces collaborators to reconcile diverged histories.',
+          a: 'Rebase replays your branch\'s commits on top of another commit (usually the tip of main), producing a linear history without merge commits. Use it before merging a feature branch to incorporate recent changes from main, or interactively with -i to clean up commit history before code review. Avoid rebasing commits that have already been pushed to a shared branch.',
         },
         {
           q: 'How do I recover a commit I accidentally reset away?',
@@ -272,19 +277,19 @@ const tool = tools.find(t => t.slug === 'git-command-flow-builder')!;
         },
         {
           q: 'What is the difference between git merge and git rebase?',
-          a: 'Both integrate changes from one branch into another. Merge creates a new "merge commit" that joins the histories, preserving the full branching context and audit trail. Rebase rewrites the feature branch commits as if they were created on top of the latest main, producing a clean linear history. Teams often use rebase for cleaner PR history and merge for long-lived branch integrations or when preserving the complete branching record is important.',
+          a: 'Both integrate changes from one branch into another. Merge creates a new merge commit that joins the histories, preserving the full branching context. Rebase rewrites the feature branch commits as if they were created on top of the latest main, producing a clean linear history. Teams often use rebase for cleaner PR history and merge for long-lived branch integrations.',
         },
         {
           q: 'What does git stash actually save?',
-          a: 'By default, git stash saves modifications to tracked files and staged changes, then reverts the working tree to match HEAD. Untracked files (new files not yet added with git add) are NOT stashed unless you use git stash -u or --include-untracked. Ignored files require git stash -a or --all. Stash entries are stored in a stack-like structure, and you can list them with git stash list to reference specific entries by index.',
+          a: 'By default, git stash saves modifications to tracked files and staged changes, then reverts the working tree to match HEAD. Untracked files are not stashed unless you use git stash -u. Ignored files require git stash -a. Stash entries are stored in a stack-like structure, and you can list them with git stash list to reference specific entries by index.',
         },
         {
           q: 'When should I use cherry-pick instead of merge or rebase?',
-          a: 'Cherry-pick is designed for applying a single specific commit from one branch to another — it is not a full branch integration strategy. Use it when you need to backport a bugfix from main to a release branch, or when a single commit was made on the wrong branch and needs to be moved. For integrating entire branches, merge or rebase is almost always the better choice.',
+          a: 'Cherry-pick applies a single specific commit from one branch to another — it is not a full branch integration strategy. Use it when you need to backport a bugfix from main to a release branch, or when a single commit was made on the wrong branch and needs to be moved. For integrating entire branches, merge or rebase is almost always better.',
         },
         {
-          q: 'Why does the tool show a "Rewrites history" badge on some scenarios?',
-          a: 'Commands like reset --amend, rebase, and squash change the commit SHA of existing commits. If those commits have already been pushed to a shared remote, collaborators will have a diverged history that requires force pushing or manual reconciliation. The badge is a visual reminder to review whether the branch is shared before executing the command, preventing unexpected conflicts for your team.',
+          q: 'Why does the tool show a "Rewrites history" badge?',
+          a: 'Commands like commit --amend, rebase, and squash change the commit SHA of existing commits. If those commits have already been pushed to a shared remote, collaborators will have a diverged history that requires force pushing or manual reconciliation. The badge is a visual reminder to check whether the branch is shared before executing the command.',
         },
       ].map(item => (
         <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
@@ -309,7 +314,7 @@ const tool = tools.find(t => t.slug === 'git-command-flow-builder')!;
         {
           "@type": "Question",
           "name": "Is it safe to force push to a shared branch?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No — force pushing rewrites remote history. Use --force-with-lease instead, which only force pushes if nobody else has pushed since your last fetch. Never force push to shared branches without team agreement." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No — force pushing rewrites remote history. Use --force-with-lease instead, which only force pushes if nobody else has pushed since your last fetch." }
         },
         {
           "@type": "Question",
@@ -320,6 +325,26 @@ const tool = tools.find(t => t.slug === 'git-command-flow-builder')!;
           "@type": "Question",
           "name": "How do I recover a commit I accidentally reset away?",
           "acceptedAnswer": { "@type": "Answer", "text": "Use git reflog to find the SHA from before the reset, then git checkout -b recovery-branch <sha> to create a new branch pointing to it. Reflog entries expire after 90 days." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between git merge and git rebase?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Merge creates a merge commit joining histories. Rebase rewrites feature branch commits on top of main for a linear history." }
+        },
+        {
+          "@type": "Question",
+          "name": "What does git stash actually save?",
+          "acceptedAnswer": { "@type": "Answer", "text": "By default, git stash saves tracked file modifications and staged changes. Untracked files require -u, ignored files require -a." }
+        },
+        {
+          "@type": "Question",
+          "name": "When should I use cherry-pick instead of merge or rebase?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Cherry-pick applies a single commit from one branch to another. Use it for backporting bugfixs or moving a single commit. For entire branches, use merge or rebase." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does the tool show a Rewrites history badge?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Commands like amend, rebase, and squash change existing commit SHAs. If pushed to a shared remote, collaborators get a diverged history. The badge reminds you to check." }
         }
       ]
     })} />
