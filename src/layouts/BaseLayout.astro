@@ -9,9 +9,10 @@ interface Props {
   canonicalUrl?: string;
   ogType?: string;
   structuredData?: object;
+  bodyClass?: string;
 }
 
-const { title, description, canonicalUrl, ogType = 'website', structuredData } = Astro.props;
+const { title, description, canonicalUrl, ogType = 'website', structuredData, bodyClass } = Astro.props;
 
 const siteUrl   = 'https://utilifygrid.com';
 const siteName  = 'UtilifyGrid';
@@ -66,7 +67,10 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
   )}
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body class:list={["min-h-screen flex flex-col", bodyClass]}>
+
+  <!-- Skip to content (accessibility) -->
+  <a href="#main-content" class="skip-link">Skip to content</a>
 
   <!-- Header -->
   <header class="sticky top-0 z-50 shadow-md" style="background:#1E3A8A; border-bottom:3px solid #F59E0B;">
@@ -94,8 +98,8 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
             <div style="display:flex; align-items:center; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.18); border-radius:0.625rem; overflow:visible; transition:all 0.2s;" id="omnibox-container">
               <!-- All Tools dropdown trigger -->
               <button id="omnibus-cats-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="omnibox-cats-panel"
-                style="display:flex; align-items:center; gap:0.3rem; padding:0.5rem 0.65rem; border:none; background:transparent; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.78rem; font-weight:600; color:#BFDBFE; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.12); transition:color 0.15s; flex-shrink:0;"
-                onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='#BFDBFE'">
+                class="header-nav-link"
+                style="display:flex; align-items:center; gap:0.3rem; padding:0.5rem 0.65rem; border:none; background:transparent; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.78rem; font-weight:600; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.12); transition:color 0.15s; flex-shrink:0;">
                 <svg width="14" height="14" viewBox="0 0 15 15" fill="none" aria-hidden="true" style="flex-shrink:0;">
                   <rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor" opacity="0.9"/>
                   <rect x="9" y="1" width="5" height="5" rx="1" fill="currentColor" opacity="0.7"/>
@@ -123,7 +127,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
               style="visibility:hidden; opacity:0; pointer-events:none; position:absolute; top:calc(100% + 6px); left:0; padding:0.875rem 1rem; min-width:340px; z-index:300; transition:opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s; transform:translateY(-4px);">
               <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.625rem; padding-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08);">
                 <span style="font-family:'Sora',sans-serif; font-size:0.68rem; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.1em;">Browse Categories</span>
-                <a href="/" style="font-size:0.72rem; color:#F59E0B; text-decoration:none; font-weight:600; display:flex; align-items:center; gap:0.25rem; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+                <a href="/" style="font-size:0.72rem; color:#F59E0B; text-decoration:none; font-weight:600; display:flex; align-items:center; gap:0.25rem; transition:opacity 0.15s;" class="hover-opacity">
                   View all
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M2 5h6M5 2l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
@@ -149,9 +153,10 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
           <div class="hidden lg:flex items-center" style="gap:0.125rem; margin-left:0.5rem; padding-left:0.625rem; border-left:1px solid rgba(255,255,255,0.15);">
             {categories.filter(c => ['ai-web-tools','web-tools','pdf-tools','maths-numbers'].includes(c.slug)).map(cat => (
               <a href={`/category/${cat.slug}`}
-                style="display:flex; align-items:center; gap:0.35rem; padding:0.4rem 0.7rem; border-radius:0.5rem; font-size:0.82rem; color:#BFDBFE; text-decoration:none; transition:all 0.15s; white-space:nowrap;"
-                onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='#FFF';"
-                onmouseout="this.style.background='transparent';this.style.color='#BFDBFE';">
+                class="header-nav-link"
+                style="display:flex; align-items:center; gap:0.35rem; padding:0.4rem 0.7rem; border-radius:0.5rem; font-size:0.82rem; text-decoration:none; transition:all 0.15s; white-space:nowrap;"
+                onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                onmouseout="this.style.background='transparent'">
                 <span style="font-size:0.9rem; line-height:1;">{cat.icon}</span>
                 {cat.name}
               </a>
@@ -191,7 +196,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
                   </svg>
                   <span style="font-family:'Sora',sans-serif; font-size:0.78rem; font-weight:700; color:#F1F5F9;">Favourites</span>
                 </div>
-                <a href="/favourites" style="font-size:0.72rem; color:#F59E0B; text-decoration:none; font-weight:600; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+                <a href="/favourites" style="font-size:0.72rem; color:#F59E0B; text-decoration:none; font-weight:600; transition:opacity 0.15s;" class="hover-opacity">
                   View all →
                 </a>
               </div>
@@ -213,7 +218,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
               <!-- Footer link -->
               <div id="fav-panel-footer" style="display:none; padding:0.625rem 1rem; border-top:1px solid rgba(255,255,255,0.08);">
                 <a href="/favourites" style="display:flex; align-items:center; justify-content:center; gap:0.375rem; padding:0.5rem; border-radius:0.5rem; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); font-size:0.78rem; font-weight:600; color:#F59E0B; text-decoration:none; transition:background 0.15s;"
-                  onmouseover="this.style.background='rgba(245,158,11,0.2)'" onmouseout="this.style.background='rgba(245,158,11,0.12)'">
+                  style="background:rgba(245,158,11,0.12)" class="hover-bg-amber"">
                   Manage all favourites
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
@@ -235,8 +240,11 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
           <!-- Mobile hamburger -->
           <button id="mobile-menu-btn" style="color:#BFDBFE; padding:0.5rem; border-radius:0.375rem;" class="md:hidden"
             aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg id="hamburger-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <svg id="hamburger-icon-close" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:none;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
           </button>
         </div>
@@ -258,8 +266,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
           {categories.filter(c => ['ai-web-tools','web-tools','pdf-tools','maths-numbers'].includes(c.slug)).map(cat => (
             <a href={`/category/${cat.slug}`}
               style="display:flex; align-items:center; gap:0.35rem; padding:0.4rem 0.7rem; border-radius:0.5rem; font-size:0.8rem; color:#BFDBFE; text-decoration:none; transition:all 0.15s; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);"
-              onmouseover="this.style.background='rgba(255,255,255,0.12)';"
-              onmouseout="this.style.background='rgba(255,255,255,0.06)';">
+              class="mobile-cat-link">
               <span style="font-size:0.9rem;">{cat.icon}</span>
               {cat.name}
             </a>
@@ -270,8 +277,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
           {categories.map(cat => (
             <a href={`/category/${cat.slug}`}
               style="display:flex; align-items:center; gap:0.5rem; padding:0.55rem 0.75rem; border-radius:0.5rem; font-size:0.85rem; color:#BFDBFE; text-decoration:none; transition:background 0.12s;"
-              onmouseover="this.style.background='rgba(255,255,255,0.08)';"
-              onmouseout="this.style.background='transparent';">
+              class="mobile-cat-link">
               <span style="font-size:1rem;">{cat.icon}</span>
               <span>{cat.name}</span>
             </a>
@@ -286,8 +292,8 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
     <div style="position:relative;" id="omnibox-mobile-wrap">
       <div style="display:flex; align-items:center; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.18); border-radius:0.625rem; overflow:visible;">
         <button id="omnibus-cats-trigger-mobile" aria-haspopup="true" aria-expanded="false" aria-controls="omnibox-cats-panel-mobile"
-          style="display:flex; align-items:center; gap:0.25rem; padding:0.5rem 0.55rem; border:none; background:transparent; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; color:#BFDBFE; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.12); transition:color 0.15s; flex-shrink:0;"
-          onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='#BFDBFE'">
+          class="header-nav-link"
+          style="display:flex; align-items:center; gap:0.25rem; padding:0.5rem 0.55rem; border:none; background:transparent; cursor:pointer; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.12); transition:color 0.15s; flex-shrink:0;">
           <svg width="13" height="13" viewBox="0 0 15 15" fill="none" aria-hidden="true" style="flex-shrink:0;">
             <rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor" opacity="0.9"/>
             <rect x="9" y="1" width="5" height="5" rx="1" fill="currentColor" opacity="0.7"/>
@@ -312,7 +318,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
         style="visibility:hidden; opacity:0; pointer-events:none; position:absolute; top:calc(100% + 4px); left:0; right:0; padding:0.75rem 0.875rem; z-index:300; transition:opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s; transform:translateY(-4px);">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem; padding-bottom:0.4rem; border-bottom:1px solid rgba(255,255,255,0.08);">
           <span style="font-family:'Sora',sans-serif; font-size:0.65rem; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.1em;">Browse Categories</span>
-          <a href="/" style="font-size:0.68rem; color:#F59E0B; text-decoration:none; font-weight:600; display:flex; align-items:center; gap:0.2rem; transition:opacity 0.15s;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+          <a href="/" style="font-size:0.68rem; color:#F59E0B; text-decoration:none; font-weight:600; display:flex; align-items:center; gap:0.2rem; transition:opacity 0.15s;" class="hover-opacity">
             View all
             <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M2 5h6M5 2l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
@@ -344,7 +350,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
   </div>
   )}
 
-  <main class="flex-1"><slot /></main>
+  <main id="main-content" class="flex-1"><slot /></main>
 
   <!-- Footer -->
   <footer style="background:#0B1120; color:#94A3B8; margin-top:5rem; border-top:1px solid rgba(255,255,255,0.06);">
@@ -367,8 +373,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
           <ul style="font-size:0.875rem; list-style:none; padding:0; margin:0;">
             {categories.map(cat => (
               <li style="margin-bottom:0.5rem;">
-                <a href={`/category/${cat.slug}`} style="color:#94A3B8; text-decoration:none; transition:color 0.15s;"
-                  onmouseover="this.style.color='#F59E0B';" onmouseout="this.style.color='#94A3B8';">{cat.name}</a>
+                <a href={`/category/${cat.slug}`} class="footer-link">{cat.name}</a>
               </li>
             ))}
           </ul>
@@ -378,8 +383,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
           <ul style="font-size:0.875rem; list-style:none; padding:0; margin:0;">
             {[['Favourites','/favourites'],['About','/about'],['Contact','/contact'],['Privacy Policy','/privacy-policy'],['Sitemap','/sitemap.xml']].map(([label, href]) => (
               <li style="margin-bottom:0.5rem;">
-                <a href={href} style="color:#94A3B8; text-decoration:none; transition:color 0.15s;"
-                  onmouseover="this.style.color='#F59E0B';" onmouseout="this.style.color='#94A3B8';">{label}</a>
+                <a href={href} class="footer-link">{label}</a>
               </li>
             ))}
           </ul>
@@ -389,8 +393,7 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
           <ul style="font-size:0.875rem; list-style:none; padding:0; margin:0;">
             {[['BMI Calculator','bmi-calculator'],['Colour Palette','colour-palette-css-generator'],['Percentage Calc','percentage-calculator'],['Word Counter','word-counter'],['JWT Debugger','jwt-debugger']].map(([label, slug]) => (
               <li style="margin-bottom:0.5rem;">
-                <a href={`/tools/${slug}`} style="color:#94A3B8; text-decoration:none; transition:color 0.15s;"
-                  onmouseover="this.style.color='#F59E0B';" onmouseout="this.style.color='#94A3B8';">{label}</a>
+                <a href={`/tools/${slug}`} class="footer-link">{label}</a>
               </li>
             ))}
           </ul>
@@ -579,6 +582,8 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
     @media (min-width: 768px) {
       #mobile-search-bar { display: none !important; }
     }
+    /* Hide mobile search bar on homepage (hero search serves same purpose) */
+    body.home-page #mobile-search-bar { display: none !important; }
 
     /* Mobile categories panel */
     #omnibox-cats-panel-mobile {
@@ -607,10 +612,17 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
     /* ── Mobile menu ── */
     const mobileBtn  = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
+    const hamburgerOpen  = document.getElementById('hamburger-icon-open');
+    const hamburgerClose = document.getElementById('hamburger-icon-close');
     mobileBtn?.addEventListener('click', () => {
       const open = !mobileMenu?.classList.contains('hidden');
       mobileMenu?.classList.toggle('hidden');
       mobileBtn?.setAttribute('aria-expanded', String(!open));
+      mobileBtn?.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      if (hamburgerOpen && hamburgerClose) {
+        hamburgerOpen.style.display  = open ? 'none'  : 'block';
+        hamburgerClose.style.display = open ? 'block' : 'none';
+      }
       if (open) closeAllDropdowns();
     });
 
@@ -844,8 +856,9 @@ const toolsMeta = tools.map(t => ({ slug: t.slug, name: t.name, icon: t.icon, ca
     function closeFav(d=0)  { if (d) { favClose = setTimeout(() => { favPanel?.classList.remove('is-open'); favTrigger?.setAttribute('aria-expanded','false'); }, d); } else { if (favClose) { clearTimeout(favClose); favClose = null; } favPanel?.classList.remove('is-open'); favTrigger?.setAttribute('aria-expanded','false'); } }
 
     favTrigger?.addEventListener('click', e => { e.stopPropagation(); favPanel?.classList.contains('is-open') ? closeFav() : openFav(); });
-    favWrapper?.addEventListener('mouseenter', () => openFav());
-    favWrapper?.addEventListener('mouseleave', () => closeFav(150));
+    let favOpenDelay: ReturnType<typeof setTimeout> | null = null;
+    favWrapper?.addEventListener('mouseenter', () => { favOpenDelay = setTimeout(() => openFav(), 200); });
+    favWrapper?.addEventListener('mouseleave', () => { if (favOpenDelay) { clearTimeout(favOpenDelay); favOpenDelay = null; } closeFav(150); });
     document.addEventListener('click', e => { if (favWrapper && !favWrapper.contains(e.target as Node)) closeFav(); });
 
     window.addEventListener('ug:favs-changed', () => { if (favPanel?.classList.contains('is-open')) renderFavPanel(); });

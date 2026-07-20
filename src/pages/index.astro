@@ -25,6 +25,7 @@ const structuredData = {
   description="Browser-based tools for everyday tasks. Calculators, unit converters, health estimators, and developer utilities — accurate, instant, and always free."
   canonicalUrl="/"
   structuredData={structuredData}
+  bodyClass="home-page"
 >
 
   <!-- ═══ HERO ═══ -->
@@ -79,7 +80,7 @@ const structuredData = {
   </section>
 
   <!-- ═══ CATEGORY TABS ═══ -->
-  <section class="cat-tabs-bar sticky top-16 z-40">
+  <section class="cat-tabs-bar sticky md:top-16 top-0 z-40">
     <div style="max-width:80rem; margin:0 auto; padding:0 1rem; overflow-x:auto;">
       <div style="display:flex; gap:0.25rem; padding:0.625rem 0; min-width:max-content;">
         <button class="cat-btn active" data-category="all"
@@ -135,7 +136,7 @@ const structuredData = {
     </div>
 
     <!-- ═══ ALL TOOLS ═══ -->
-    <div>
+    <div id="all-tools-section" style="opacity:0; transform:translateY(20px); transition:opacity 0.4s ease, transform 0.4s ease;">
       <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem;">
         <div style="width:4px; height:1.5rem; background:#1D4ED8; border-radius:2px;"></div>
         <h2 style="font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:700; color:var(--text-primary); margin:0;">All Tools</h2>
@@ -266,6 +267,21 @@ const structuredData = {
     filterTools();
   });
 
+  /* Navigate to first matching tool on Enter */
+  searchInput?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const query = searchInput.value.toLowerCase().trim();
+      if (!query) return;
+      const firstVisible = Array.from(allCards).find(card => {
+        return card.style.display !== 'none';
+      });
+      if (firstVisible) {
+        window.location.href = firstVisible.getAttribute('href') || '/';
+      }
+    }
+  });
+
   catBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       activeCategory = btn.dataset.category || 'all';
@@ -280,4 +296,19 @@ const structuredData = {
       filterTools();
     });
   });
+
+  /* Lazy-reveal "All Tools" grid when it scrolls into view */
+  const allToolsSection = document.getElementById('all-tools-section');
+  if (allToolsSection) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          allToolsSection.style.opacity = '1';
+          allToolsSection.style.transform = 'translateY(0)';
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '200px' });
+    observer.observe(allToolsSection);
+  }
 </script>

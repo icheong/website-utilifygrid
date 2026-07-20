@@ -79,9 +79,9 @@ const structuredData = {
     <!-- Breadcrumb -->
     <nav style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;" aria-label="Breadcrumb">
       <ol style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; list-style:none; padding:0; margin:0;">
-        <li><a href="/" style="color:var(--text-secondary); text-decoration:none; transition:color 0.15s;" onmouseover="this.style.color='#1D4ED8';" onmouseout="this.style.color='var(--text-secondary)';">Home</a></li>
+        <li><a href="/" class="breadcrumb-link">Home</a></li>
         <li style="color:var(--text-muted);">›</li>
-        <li><a href={`/category/${tool.category}`} style="color:var(--text-secondary); text-decoration:none; text-transform:capitalize; transition:color 0.15s;" onmouseover="this.style.color='#1D4ED8';" onmouseout="this.style.color='var(--text-secondary)';">{tool.category.replace(/-/g, ' ')}</a></li>
+        <li><a href={`/category/${tool.category}`} class="breadcrumb-link" style="text-transform:capitalize;">{tool.category.replace(/-/g, ' ')}</a></li>
         <li style="color:var(--text-muted);">›</li>
         <li style="color:var(--text-primary); font-weight:500;">{tool.name}</li>
       </ol>
@@ -130,21 +130,23 @@ const structuredData = {
                       )}
                     </div>
                     {isActive && categoryTools.length > 0 && (
-                      <div id={`cat-tools-${cat.slug}`} class="cat-tools-list" style="padding:0.25rem 0 0.25rem 2.125rem;">
-                        {categoryTools.map(t => (
-                          <a
-                            href={`/tools/${t.slug}`}
-                            class={t.slug === tool.slug ? 'sidebar-tool-link current' : 'sidebar-tool-link'}
-                            style={`display:block; padding:0.3rem 0.5rem; border-radius:0.375rem; font-size:0.775rem; line-height:1.35; text-decoration:none; transition:background 0.1s, color 0.1s; ${t.slug === tool.slug ? 'color:var(--text-primary); font-weight:600;' : 'color:var(--text-secondary);'}`}
-                          >
-                            {t.name}
-                          </a>
-                        ))}
-                        {tools.filter(t => t.category === cat.slug).length > categoryTools.length && (
-                          <a href={`/category/${cat.slug}`} style="display:block; padding:0.3rem 0.5rem; font-size:0.75rem; color:#1D4ED8; text-decoration:none; font-weight:600; margin-top:0.125rem;">
-                            + {tools.filter(t => t.category === cat.slug).length - categoryTools.length} more →
-                          </a>
-                        )}
+                      <div id={`cat-tools-${cat.slug}`} class="cat-tools-list" style="padding:0 0 0 2.125rem;">
+                        <div style="padding:0.25rem 0;">
+                          {categoryTools.map(t => (
+                            <a
+                              href={`/tools/${t.slug}`}
+                              class={t.slug === tool.slug ? 'sidebar-tool-link current' : 'sidebar-tool-link'}
+                              style={`display:block; padding:0.3rem 0.5rem; border-radius:0.375rem; font-size:0.775rem; line-height:1.35; text-decoration:none; transition:background 0.1s, color 0.1s; ${t.slug === tool.slug ? 'color:var(--text-primary); font-weight:600;' : 'color:var(--text-secondary);'}`}
+                            >
+                              {t.name}
+                            </a>
+                          ))}
+                          {tools.filter(t => t.category === cat.slug).length > categoryTools.length && (
+                            <a href={`/category/${cat.slug}`} style="display:block; padding:0.3rem 0.5rem; font-size:0.75rem; color:#1D4ED8; text-decoration:none; font-weight:600; margin-top:0.125rem;">
+                              + {tools.filter(t => t.category === cat.slug).length - categoryTools.length} more →
+                            </a>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -415,20 +417,37 @@ const structuredData = {
   .sidebar-tool-link.current { background: var(--bg-surface-2); }
   .sidebar-expand-btn:hover { color: var(--text-primary) !important; }
   .sidebar-expand-btn[aria-expanded="false"] .expand-icon { transform: rotate(-90deg); }
-  .cat-tools-list.is-collapsed { display: none; }
+  .cat-tools-list {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.25s ease, opacity 0.25s ease;
+    opacity: 1;
+  }
+  .cat-tools-list.is-collapsed {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+  .cat-tools-list > div {
+    overflow: hidden;
+  }
   .related-tool-link:hover { background: var(--bg-surface-2); }
   .related-tool-link:hover span:last-child { color: #1D4ED8; }
   :root.dark .related-tool-link:hover span:last-child { color: #60A5FA; }
 
   /* ── Dark mode overrides ── */
+  /* NOTE: These attribute selectors match inline styles on tool pages.
+     Future tool pages should use CSS classes (.dark-card-bg, .dark-text-primary, etc.)
+     instead of hardcoded inline colors to avoid the performance cost of attribute matching. */
   :root.dark .tool-card-surface [style*="background:#fff"],
   :root.dark .tool-card-surface [style*="background: #fff"],
   :root.dark .tool-card-surface [style*="background:#FFFFFF"],
   :root.dark .seo-section [style*="background:#fff"],
   :root.dark .seo-section [style*="background:#FFFFFF"],
   :root.dark .seo-section-alt [style*="background:#fff"],
-  :root.dark .seo-section-alt [style*="background:#FFFFFF"] {
-    background: var(--bg-surface-3) !important; border-color: var(--border) !important;
+  :root.dark .seo-section-alt [style*="background:#FFFFFF"],
+  :root.dark .tool-card-surface button[style*="background:#fff"],
+  :root.dark .tool-card-surface button[style*="background:#FFFFFF"] {
+    background: var(--bg-surface-3) !important; border-color: var(--border) !important; color: var(--text-secondary) !important;
   }
   :root.dark .tool-card-surface [style*="background:#F8FAFC"],
   :root.dark .tool-card-surface [style*="background:#F1F5F9"],
@@ -439,7 +458,10 @@ const structuredData = {
   :root.dark .tool-card-surface [style*="color:#0F172A"],
   :root.dark .tool-card-surface [style*="color:#1E293B"],
   :root.dark .seo-section [style*="color:#0F172A"],
-  :root.dark .seo-section-alt [style*="color:#0F172A"] { color: var(--text-primary) !important; }
+  :root.dark .seo-section-alt [style*="color:#0F172A"],
+  :root.dark .tool-card-surface h2, :root.dark .tool-card-surface h3,
+  :root.dark .seo-section h2, :root.dark .seo-section h3,
+  :root.dark .seo-section-alt h2, :root.dark .seo-section-alt h3 { color: var(--text-primary) !important; }
   :root.dark .tool-card-surface [style*="color:#475569"],
   :root.dark .tool-card-surface [style*="color:#64748B"],
   :root.dark .seo-section [style*="color:#475569"],
@@ -449,7 +471,10 @@ const structuredData = {
   :root.dark .tool-card-surface [style*="border:1px solid #E2E8F0"],
   :root.dark .tool-card-surface [style*="border:1.5px solid #E2E8F0"],
   :root.dark .seo-section [style*="border:1px solid #E2E8F0"],
-  :root.dark .seo-section-alt [style*="border:1px solid #E2E8F0"] { border-color: var(--border) !important; }
+  :root.dark .seo-section-alt [style*="border:1px solid #E2E8F0"],
+  :root.dark .seo-section [style*="border:1.5px solid #E2E8F0"] {
+    background: var(--bg-surface-2) !important; border-color: var(--border) !important;
+  }
   :root.dark .tool-card-surface input,
   :root.dark .tool-card-surface textarea,
   :root.dark .tool-card-surface select {
@@ -462,17 +487,7 @@ const structuredData = {
   :root.dark .tool-card-surface select:focus {
     border-color: #3B82F6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.15) !important;
   }
-  :root.dark .seo-section [style*="border:1.5px solid #E2E8F0"] {
-    background: var(--bg-surface-2) !important; border-color: var(--border) !important;
-  }
   :root.dark .tool-card-surface textarea[readonly] { background: var(--bg-surface-3) !important; }
-  :root.dark .tool-card-surface button[style*="background:#fff"],
-  :root.dark .tool-card-surface button[style*="background:#FFFFFF"] {
-    background: var(--bg-surface-2) !important; border-color: var(--border) !important; color: var(--text-secondary) !important;
-  }
-  :root.dark .tool-card-surface h2, :root.dark .tool-card-surface h3,
-  :root.dark .seo-section h2, :root.dark .seo-section h3,
-  :root.dark .seo-section-alt h2, :root.dark .seo-section-alt h3 { color: var(--text-primary) !important; }
   :root.dark [itemtype*="Question"] { background: var(--bg-surface-2) !important; border-color: var(--border) !important; }
   :root.dark [itemtype*="Question"] h3 { color: var(--text-primary) !important; }
   :root.dark [itemtype*="Question"] p { color: var(--text-secondary) !important; }

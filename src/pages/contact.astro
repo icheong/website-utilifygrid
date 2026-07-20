@@ -117,7 +117,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const bg     = type === 'success' ? '#F0FDF4' : '#FEF2F2';
     const border = type === 'success' ? '#BBF7D0' : '#FECACA';
     const color  = type === 'success' ? '#166534' : '#DC2626';
-    const icon   = type === 'success' ? '✓' : '⚠';
+    const icon   = type === 'success' ? '&#10003;' : '&#9888;';
     alertEl.innerHTML = `<div style="background:${bg}; border:1px solid ${border}; color:${color}; border-radius:0.5rem; padding:0.75rem 1rem; font-size:0.875rem;">${icon} ${msg}</div>`;
     alertEl.style.display = 'block';
   }
@@ -130,14 +130,27 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     if (!name) { showAlert('Please enter your name.', 'error'); return; }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showAlert('Please enter a valid email address.', 'error'); return;
-    }
+      showAlert('Please enter a valid email address.', 'error'); return; }
     if (!message) { showAlert('Please enter a message.', 'error'); return; }
 
     const mailSubject = encodeURIComponent(`[UtilifyGrid] ${subject}`);
     const mailBody    = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-    window.location.href = `mailto:contact@utilifygrid.com?subject=${mailSubject}&body=${mailBody}`;
+    const mailtoUrl   = `mailto:contact@utilifygrid.com?subject=${mailSubject}&body=${mailBody}`;
 
-    showAlert('Your email client should open with the message pre-filled. If nothing happened, email us directly at contact@utilifygrid.com.', 'success');
+    /* Try clipboard copy as fallback, then attempt mailto */
+    const plainText = `Subject: [UtilifyGrid] ${subject}\nFrom: ${name} (${email})\n\n${message}`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(plainText).then(() => {
+        window.location.href = mailtoUrl;
+        showAlert('Message copied to clipboard. If your email client didn\'t open, paste the clipboard contents into an email to contact@utilifygrid.com.', 'success');
+      }).catch(() => {
+        window.location.href = mailtoUrl;
+        showAlert('Your email client should open with the message pre-filled. If nothing happened, email us directly at contact@utilifygrid.com.', 'success');
+      });
+    } else {
+      window.location.href = mailtoUrl;
+      showAlert('Your email client should open with the message pre-filled. If nothing happened, email us directly at contact@utilifygrid.com.', 'success');
+    }
   });
 </script>
