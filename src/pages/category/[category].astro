@@ -54,8 +54,242 @@ const structuredData = {
       <p style="color:var(--text-secondary); max-width:42rem; font-size:0.95rem; line-height:1.65; margin:0 0 0.375rem;">{category.description}</p>
       <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">{categoryTools.length} tool{categoryTools.length !== 1 ? 's' : ''} available</p>
       {category.longDescription && (
-        <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75; margin:0.75rem 0 0;">{category.longDescription}</p>
+        <div style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75; margin:0.75rem 0 0;">
+          {category.longDescription.split('\n\n').map((paragraph: string) => (
+            <p style="margin:0 0 0.75rem;">{paragraph}</p>
+          ))}
+        </div>
       )}
+    </div>
+
+    <!-- Editorial: How to choose -->
+    <div style="margin-top:2.5rem; padding:1.5rem; background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem;">
+      <h2 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">How to choose the right tool</h2>
+      <div style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7;">
+        {category.slug === 'personal-finance' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>Start with your decision type.</strong> Comparing home loan options? The Mortgage Amortization Calculator shows full payment schedules. Planning long-term savings? The Compound Interest Visualizer projects growth over decades. Need to quote a freelance project? The Invoice & Tax Calculator estimates your take-home after tax.</p>
+            <p style="margin:0;"><strong>Check the time horizon.</strong> For short-term decisions (car loan, renovation budget), use the amortization or cost estimators. For long-term projections (retirement, kids' savings), use the compound interest tools with different contribution scenarios.</p>
+          </div>
+        )}
+        {category.slug === 'business-metrics' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>Know your metric.</strong> Customer acquisition cost and lifetime value are the foundation — start with the SaaS Churn, LTV & CAC Runway Calculator if you're evaluating growth health. For advertising ROI, use the CPM Calculator with your actual campaign data.</p>
+            <p style="margin:0;"><strong>Validate before committing.</strong> Run your numbers through multiple tools: if the FBA Margin Estimator shows thin margins, check whether the CPM Calculator suggests the ad spend is sustainable. Cross-referencing tools gives you a more complete picture than any single metric.</p>
+          </div>
+        )}
+        {category.slug === 'maths-numbers' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>For everyday calculations,</strong> the Percentage Calculator handles most common scenarios — discounts, markups, percentage changes, and reverse calculations. It shows the formula so you can verify the result.</p>
+            <p style="margin:0;"><strong>For exploration,</strong> the Pi Explorer and Kaprekar Constant Calculator demonstrate fascinating mathematical properties. These are educational tools that reveal patterns in numbers most people never see.</p>
+          </div>
+        )}
+        {category.slug === 'converters' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>Match the converter to your precision needs.</strong> The basic Length, Weight, and Volume converters handle everyday tasks. For engineering work, use the Pressure, Energy, or Force converters which handle more units and show the conversion factor.</p>
+            <p style="margin:0;"><strong>Watch the Data Storage Converter</strong> for cloud provisioning — manufacturers use decimal (1 GB = 1,000 MB) but operating systems use binary (1 GiB = 1,024 MiB). The tool shows both so you can compare accurately.</p>
+          </div>
+        )}
+        {category.slug === 'health' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>Start with BMI for a quick overview,</strong> then use the BMR & TDEE Calculator for a more detailed metabolic picture. BMI alone doesn't distinguish muscle from fat, so pair it with the calorie deficit tool if you're planning weight changes.</p>
+            <p style="margin:0;"><strong>For endurance athletes,</strong> the Hydration & Sweat-Rate Calculator estimates fluid loss during exercise — useful for planning intake during long runs or rides where dehydration affects performance.</p>
+          </div>
+        )}
+        {category.slug === 'web-tools' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>For front-end work,</strong> start with the Colour Palette Generator for design systems, the CSS Flexbox & Grid Sandbox for layout prototyping, and the HTML Meta Tag Previewer for SEO and social sharing.</p>
+            <p style="margin:0;"><strong>For data pipelines,</strong> the CSV to JSON Converter handles delimiter detection and nested fields. Use the JSON Validator and Prettifier to clean up API responses before integration.</p>
+          </div>
+        )}
+        {category.slug === 'text-processing' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>For data cleaning,</strong> start with the Delimiter Swapper and Duplicate Line Remover — these handle the most common issues with CSV exports and text lists. The Whitespace Trimmer catches formatting inconsistencies.</p>
+            <p style="margin:0;"><strong>For content migration,</strong> the Markdown to HTML Converter produces clean output with proper heading hierarchy. Use the Text Diff Checker to compare versions before and after conversion.</p>
+          </div>
+        )}
+        {category.slug === 'ai-web-tools' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>Start with token counting.</strong> The Prompt Architect & Tokenizer shows exactly how many tokens your prompt consumes across different models — this affects both cost and whether your prompt will be truncated.</p>
+            <p style="margin:0;"><strong>For production workflows,</strong> the Prompt Chain Builder lets you design multi-step processes. The Hallucination Guard and Safety Stress-Tester are essential for deploying prompts that interact with users.</p>
+          </div>
+        )}
+        {category.slug === 'pdf-tools' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>For basic operations,</strong> Merge PDF and Split PDF handle the most common tasks. Both support drag-and-drop reordering and work efficiently with large files.</p>
+            <p style="margin:0;"><strong>For document preparation,</strong> use OCR PDF for scanned documents, Edit PDF for annotations, and Secure PDF before sharing sensitive files. The Optimize & Repair tool reduces file size for email attachments.</p>
+          </div>
+        )}
+        {category.slug === 'lexical-tools' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>For word games,</strong> the Anagram Finder finds all valid words from a set of letters, filtered by length. Useful for Scrabble strategy and crossword solving.</p>
+            <p style="margin:0;"><strong>For content work,</strong> the Lorem Ipsum Generator produces placeholder text in different tones — corporate, technical, conversational — with control over density and length.</p>
+          </div>
+        )}
+        {category.slug === 'randomizers' && (
+          <div>
+            <p style="margin:0 0 0.5rem;"><strong>For decisions,</strong> the Random Number Generator and Coin Flipper handle quick binary or ranged choices. Both use cryptographic randomness for fairness.</p>
+            <p style="margin:0;"><strong>For lists and sets,</strong> the List Randomizer shuffles any pasted list. The Dice Roller supports tabletop RPG dice (d4 through d20) with advantage/disadvantage mechanics.</p>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <!-- Editorial: Common use cases -->
+    <div style="margin-top:1.5rem; padding:1.5rem; background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem;">
+      <h2 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Common use cases</h2>
+      <ol style="font-size:0.875rem; color:var(--text-secondary); line-height:1.7; margin:0; padding-left:1.25rem;">
+        {category.slug === 'personal-finance' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>First-home buyer comparing loan options</strong> — Use the Mortgage Amortization Calculator with different interest rates and term lengths to see how a 0.5% rate difference affects total cost over 30 years.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Freelancer setting project rates</strong> — The Invoice & Tax Calculator estimates quarterly tax obligations based on your income bracket, so you know your actual take-home before quoting a price.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Parent planning for education costs</strong> — The Kids Savings Compound Interest Visualizer projects how much regular contributions will grow by the time your child reaches university age.</li>
+          </div>
+        )}
+        {category.slug === 'business-metrics' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>SaaS founder evaluating growth health</strong> — Run your churn rate and CAC through the SaaS Churn, LTV & CAC Runway Calculator to see your months of runway at current burn.</li>
+            <li style="margin-bottom:0.5rem;"><strong>FBA seller assessing product viability</strong> — The Amazon FBA Margin Estimator accounts for referral fees, fulfilment charges, and storage — not just the product price.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Agency quoting a project</strong> — The Freelance Project Scope & Budget Estimator breaks work into phases with hourly allocations, ensuring your fee covers actual costs plus target margin.</li>
+          </div>
+        )}
+        {category.slug === 'maths-numbers' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>Student checking homework</strong> — The Percentage Calculator verifies discount and markup calculations, showing the formula so you can follow the working.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Curious explorer</strong> — The Pi Explorer lets you search for digit sequences (like your birthday) within millions of digits of Pi.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Mathematics educator</strong> — The Kaprekar Constant Calculator demonstrates a surprising property of four-digit numbers through interactive iteration.</li>
+          </div>
+        )}
+        {category.slug === 'converters' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>Engineer working across imperial and metric</strong> — The Pressure Converter handles PSI, bar, Pascal, and mmHg with visible conversion factors for verification.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Cook following an international recipe</strong> — The Temperature Converter correctly handles the offset and scale between Celsius and Fahrenheit at extreme values.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Developer provisioning cloud storage</strong> — The Data Storage Converter shows both decimal and binary units so you can compare manufacturer specs with OS-reported capacity.</li>
+          </div>
+        )}
+        {category.slug === 'health' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>Person starting a fitness journey</strong> — BMI Calculator gives a quick overview, then the BMR & TDEE Calculator sets a calorie target based on your activity level.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Endurance athlete planning race nutrition</strong> — The Sweat-Rate Calculator estimates fluid loss to help plan hydration during long runs.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Couple planning pregnancy</strong> — The Ovulation & Fertility Window Calculator estimates fertile days based on cycle length using standard clinical methods.</li>
+          </div>
+        )}
+        {category.slug === 'web-tools' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>Designer building a colour system</strong> — The Colour Palette Generator creates complementary and analogous palettes with ready-to-copy CSS custom properties.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Developer debugging an API</strong> — The JWT Debugger decodes tokens and validates signatures, showing exactly what claims are in the payload.</li>
+            <li style="margin-bottom:0.5rem;"><strong>SEO specialist auditing pages</strong> — The HTML Meta Tag Previewer renders how a page will appear when shared on Twitter, Facebook, and LinkedIn.</li>
+          </div>
+        )}
+        {category.slug === 'text-processing' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>Data analyst cleaning a CSV export</strong> — The Delimiter Swapper converts between CSV and TSV, while the Duplicate Line Remover deduplicates in a single pass.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Technical writer migrating documentation</strong> — The Markdown to HTML Converter produces clean output with proper heading hierarchy for Confluence or static sites.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Developer comparing code versions</strong> — The Side-by-Side Diff Checker highlights line-level differences with syntax highlighting.</li>
+          </div>
+        )}
+        {category.slug === 'ai-web-tools' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>Prompt engineer optimising costs</strong> — The Token Analyzer counts tokens across multiple schemes so you can see exactly what a prompt costs on GPT-4 versus Claude.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Developer building a RAG pipeline</strong> — The Structured Data Formatter converts unstructured text into JSON-LD for model input.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Product team testing safety</strong> — The System Prompt Stress-Tester probes for injection vulnerabilities with adversarial inputs.</li>
+          </div>
+        )}
+        {category.slug === 'pdf-tools' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>Office admin combining reports</strong> — Merge PDF combines multiple files with drag-and-drop reordering, handling large documents efficiently.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Lawyer extracting specific pages</strong> — Split PDF extracts page ranges or splits at intervals, useful for isolating clauses from a larger contract.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Job applicant signing a form</strong> — Sign PDF supports typed and drawn signatures for digital signing without printing.</li>
+          </div>
+        )}
+        {category.slug === 'lexical-tools' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>Scrabble player maximising score</strong> — The Anagram Finder finds all valid words from available tiles, filtered by minimum length.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Designer needing placeholder text</strong> — The Lorem Ipsum Generator produces text in different tones with control over paragraph count and word complexity.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Crossword solver</strong> — Enter known letters and the tool finds matching words from the dictionary.</li>
+          </div>
+        )}
+        {category.slug === 'randomizers' && (
+          <div>
+            <li style="margin-bottom:0.5rem;"><strong>Team leader assigning tasks</strong> — The List Randomizer shuffles a list of names for fair rotation of responsibilities.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Dungeon Master running a game</strong> — The Dice Roller supports d4 through d20 with advantage/disadvantage mechanics.</li>
+            <li style="margin-bottom:0.5rem;"><strong>Settling a binary decision</strong> — The Coin Flipper uses cryptographic randomness for a fair result.</li>
+          </div>
+        )}
+      </ol>
+    </div>
+
+    <!-- Editorial: Related categories -->
+    <div style="margin-top:1.5rem; padding:1.5rem; background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem;">
+      <h2 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Related categories</h2>
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        {category.slug === 'personal-finance' && (
+          <div>
+            <a href="/category/converters" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Converters</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">Use the Currency Converter alongside financial calculators when comparing international investment options or overseas mortgage rates.</p>
+          </div>
+        )}
+        {category.slug === 'business-metrics' && (
+          <div>
+            <a href="/category/personal-finance" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Personal Finance</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">For personal financial planning — mortgage, savings, and tax calculators that complement the business-focused metrics here.</p>
+          </div>
+        )}
+        {category.slug === 'maths-numbers' && (
+          <div>
+            <a href="/category/converters" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Converters</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">When you need to convert between number bases (binary, hex, octal), the Number Base Converter in this category handles it.</p>
+          </div>
+        )}
+        {category.slug === 'converters' && (
+          <div>
+            <a href="/category/maths-numbers" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Maths & Numbers</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">For percentage calculations and number exploration beyond unit conversion.</p>
+          </div>
+        )}
+        {category.slug === 'health' && (
+          <div>
+            <a href="/category/personal-finance" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Personal Finance</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">If your health goals involve budgeting for gym memberships, nutrition plans, or insurance, the finance tools help with those decisions.</p>
+          </div>
+        )}
+        {category.slug === 'web-tools' && (
+          <div>
+            <a href="/category/text-processing" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Text Processing</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">For cleaning and transforming text data — CSV manipulation, Markdown conversion, and string case conversion complement the developer tools here.</p>
+          </div>
+        )}
+        {category.slug === 'text-processing' && (
+          <div>
+            <a href="/category/web-tools" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Web Tools</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">For encoding, compression, and developer utilities that work alongside text transformation tasks.</p>
+          </div>
+        )}
+        {category.slug === 'ai-web-tools' && (
+          <div>
+            <a href="/category/web-tools" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Web Tools</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">JSON validators, regex tools, and encoding utilities that support AI workflow integration.</p>
+          </div>
+        )}
+        {category.slug === 'pdf-tools' && (
+          <div>
+            <a href="/category/text-processing" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Text Processing</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">For cleaning text extracted from PDFs — whitespace trimming, delimiter swapping, and case conversion.</p>
+          </div>
+        )}
+        {category.slug === 'lexical-tools' && (
+          <div>
+            <a href="/category/text-processing" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Text Processing</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">For cleaning and transforming text after you've found the words you need.</p>
+          </div>
+        )}
+        {category.slug === 'randomizers' && (
+          <div>
+            <a href="/category/web-tools" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Web Tools</a>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">For generating random test data and integrating randomness into web development workflows.</p>
+          </div>
+        )}
+      </div>
     </div>
 
     <!-- Tools grid -->

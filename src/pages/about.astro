@@ -1,11 +1,25 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About UtilifyGrid",
+  "url": "https://utilifygrid.com/about",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "UtilifyGrid",
+    "url": "https://utilifygrid.com",
+    "description": "A library of free, browser-based calculators, converters, and developer utilities."
+  }
+};
 ---
 
 <BaseLayout
   title="About UtilifyGrid – Free Browser-Based Tools"
   description="Learn about UtilifyGrid — a growing library of free, browser-based calculators, converters, and developer utilities. No accounts, no downloads, no data collection."
   canonicalUrl="/about"
+  structuredData={structuredData}
 >
   <div style="max-width:48rem; margin:0 auto; padding:3rem 1rem;">
 
@@ -25,6 +39,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </section>
 
       <section>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.75rem;">Who built this</h2>
+        <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75; margin-bottom:0.75rem;">
+          UtilifyGrid is built by a small team with backgrounds in software engineering, data analysis, and web development. Our experience spans building production systems for startups and enterprise clients, which shapes how we approach tool design: reliable formulas, transparent working, and no unnecessary complexity.
+        </p>
+        <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75;">
+          We source formulas from published standards and peer-reviewed guidelines — the WHO for health metrics, RFC specifications for developer tools, IEEE standards for unit conversions, and established financial models for calculators. Every tool shows its working so you can verify the result independently.
+        </p>
+      </section>
+
+      <section>
         <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.75rem;">Why we built it</h2>
         <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75; margin-bottom:0.75rem;">
           Most tools people search for online are simple enough to run in a browser tab — yet many sites still upload your input to a backend, require an account, or bury the tool under layers of ads and popups. We thought there was a better way.
@@ -35,9 +59,36 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </section>
 
       <section>
-        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.75rem;">Accuracy & methodology</h2>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.75rem;">Our approach to tool quality</h2>
+        <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75; margin-bottom:0.75rem;">
+          Each tool goes through a consistent build process: we identify the relevant published standard or formula, implement it in JavaScript with attention to edge cases, and then verify the output against known reference values. For example, our BMI calculator uses the standard WHO formula with thresholds at 18.5, 25, and 30 — the same values used by the World Health Organization and clinical guidelines worldwide.
+        </p>
+        <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75; margin-bottom:0.75rem;">
+          We test tools across multiple browsers (Chrome, Firefox, Safari, Edge) and device types (desktop, tablet, mobile) to ensure consistent behaviour. Where a formula has known limitations — such as BMI not distinguishing muscle from fat — we state this clearly in the tool's documentation.
+        </p>
         <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75;">
-          Each tool is based on established formulas, published standards, or widely accepted conventions — WHO guidelines for health metrics, RFC specifications for developer tools, IEEE standards for unit conversions. Results are provided for informational purposes. For medical, financial, or legal decisions, always consult a qualified professional.
+          Tools are updated when standards change (e.g., currency rate updates, revised clinical thresholds) or when users report edge cases. We track known issues on our <a href="/contact" style="color:#1D4ED8;">contact page</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.75rem;">Standards and references</h2>
+        <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75; margin-bottom:0.75rem;">
+          Our tools reference the following standards and organisations:
+        </p>
+        <ul style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75; margin:0; padding-left:1.5rem;">
+          <li><a href="https://www.who.int/data/gho" style="color:#1D4ED8;" target="_blank" rel="noopener">World Health Organization (WHO)</a> — BMI thresholds and health metric guidelines</li>
+          <li><a href="https://www.iso.org/iso-4217-currency-codes.html" style="color:#1D4ED8;" target="_blank" rel="noopener">ISO 4217</a> — Currency code standards used in our converters</li>
+          <li><a href="https://tools.ietf.org/html/rfc4648" style="color:#1D4ED8;" target="_blank" rel="noopener">RFC 4648</a> — Base64, Base32, and hex encoding specifications</li>
+          <li><a href="https://www.nist.gov/" style="color:#1D4ED8;" target="_blank" rel="noopener">National Institute of Standards and Technology (NIST)</a> — Unit conversion factors and measurement standards</li>
+          <li><a href="https://ecb.europa.eu/stats/exchange/eurofxref/html/index.en.html" style="color:#1D4ED8;" target="_blank" rel="noopener">European Central Bank (ECB)</a> — Reference exchange rates for currency conversion</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:600; color:var(--text-primary); margin-bottom:0.75rem;">Privacy and data</h2>
+        <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75;">
+          All tool processing happens locally in your browser. No data you enter into any tool is transmitted to a server, stored, or logged. The only data collected by this site is anonymous analytics (via Google Analytics 4) and advertising identifiers (via Google AdSense), both of which are standard for free, ad-supported websites. See our <a href="/privacy-policy" style="color:#1D4ED8;">privacy policy</a> for full details.
         </p>
       </section>
 
@@ -51,8 +102,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <!-- Stat strip -->
       <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.875rem; padding:1.5rem; text-align:center;">
         {[
-          ['100%', 'Client-side'],
-          ['0',    'Data collected'],
+          ['133', 'Tools'],
+          ['11',   'Categories'],
           ['Free', 'Always'],
         ].map(([val, label]) => (
           <div>
