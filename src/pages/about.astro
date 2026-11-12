@@ -1,5 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import tools from '../data/tools.json';
+import categories from '../data/categories.json';
+import { isVisibleCategory, isVisibleTool } from '../data/hiddenCategories.js';
+
+const toolCount = tools.filter(isVisibleTool).length;
+const categoryCount = categories.filter(c => isVisibleCategory(c.slug)).length;
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -34,7 +40,7 @@ const structuredData = {
           UtilifyGrid is a growing library of free, browser-based tools built for developers, designers, writers, and anyone who needs a quick, accurate answer without the friction of signing up, downloading an app, or waiting for a server.
         </p>
         <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.75;">
-          Every tool on this site — from health calculators and unit converters to JWT debuggers and CSS sandboxes — runs entirely in your browser using JavaScript. Nothing you type is ever sent to a server. Your data stays on your device.
+          Every tool on this site — from text processors and JSON helpers to JWT debuggers and CSS sandboxes — runs entirely in your browser using JavaScript. Nothing you type is ever sent to a server. Your data stays on your device.
         </p>
       </section>
 
@@ -102,8 +108,8 @@ const structuredData = {
       <!-- Stat strip -->
       <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; background:var(--bg-surface-2); border:1px solid var(--border); border-radius:0.875rem; padding:1.5rem; text-align:center;">
         {[
-          ['133', 'Tools'],
-          ['11',   'Categories'],
+          [toolCount.toString(),    'Tools'],
+          [categoryCount.toString(),'Categories'],
           ['Free', 'Always'],
         ].map(([val, label]) => (
           <div>

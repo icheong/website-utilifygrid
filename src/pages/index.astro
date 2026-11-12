@@ -2,15 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import tools from '../data/tools.json';
 import categories from '../data/categories.json';
+import { isVisibleCategory, isVisibleTool } from '../data/hiddenCategories.js';
 
-const sortedTools = [...tools].sort((a, b) => a.name.localeCompare(b.name));
+const visibleCategories = categories.filter(c => isVisibleCategory(c.slug));
+const sortedTools = [...tools].filter(isVisibleTool).sort((a, b) => a.name.localeCompare(b.name));
 const featuredTools = sortedTools.filter(t => t.featured);
 
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   "name": "UtilifyGrid – Online Tools Collection",
-  "description": "A curated collection of browser-based calculators, converters, and utility tools.",
+  "description": "A curated collection of browser-based tools for developers, writers, and AI workflows.",
   "itemListElement": sortedTools.map((tool, i) => ({
     "@type": "ListItem",
     "position": i + 1,
@@ -21,8 +23,8 @@ const structuredData = {
 ---
 
 <BaseLayout
-  title="UtilifyGrid – Calculators, Converters & Web Utilities"
-  description="Browser-based tools for everyday tasks. Calculators, unit converters, health estimators, and developer utilities — accurate, instant, and always free."
+  title="UtilifyGrid – Web, Text & AI Tools for Developers and Writers"
+  description="Browser-based tools for developers, writers, and AI workflows — text processing, web utilities, and developer helpers. Accurate, instant, and always free."
   canonicalUrl="/"
   structuredData={structuredData}
   bodyClass="home-page"
@@ -42,7 +44,7 @@ const structuredData = {
       </h1>
 
       <p style="color:#BFDBFE; font-size:1.05rem; max-width:36rem; margin:0 auto 2rem; line-height:1.75;">
-        UtilifyGrid is a growing library of practical browser tools — from health calculators and unit converters to developer utilities and financial estimators. Everything runs locally in your browser. No data leaves your device.
+        UtilifyGrid is a growing library of practical browser tools built for developers, writers, and AI workflows — text processing, JSON and encoding helpers, developer utilities, and more. Everything runs locally in your browser. No data leaves your device.
       </p>
 
       <!-- Search box — solid white background, clearly visible -->
@@ -54,7 +56,7 @@ const structuredData = {
           <input
             id="tool-search"
             type="search"
-            placeholder="Search tools… e.g. BMI, hex, percentage, JWT"
+            placeholder="Search tools… e.g. JWT, hex, markdown, word counter"
             style="flex:1; padding:1rem 1rem 1rem 0.75rem; border:none; outline:none; font-size:0.95rem; color:#0F172A; background:transparent; font-family:'Inter',sans-serif;"
             autocomplete="off"
             aria-label="Search tools"
@@ -65,8 +67,8 @@ const structuredData = {
       <!-- Stats strip -->
       <div style="display:flex; justify-content:center; gap:2.5rem; margin-top:2.5rem; flex-wrap:wrap;">
         {[
-          [`${tools.length}+`, 'Tools available'],
-          [categories.length.toString(), 'Categories'],
+          [`${sortedTools.length}+`, 'Tools available'],
+          [visibleCategories.length.toString(), 'Categories'],
           ['100%', 'Runs in browser'],
         ].map(([num, label]) => (
           <div style="text-align:center;">
@@ -87,7 +89,7 @@ const structuredData = {
           style="padding:0.4rem 1rem; border-radius:0.5rem; font-size:0.875rem; font-weight:500; border:none; cursor:pointer; background:#1D4ED8; color:#fff; transition:all 0.15s;">
           All Tools
         </button>
-        {categories.map(cat => (
+        {visibleCategories.map(cat => (
           <button class="cat-btn" data-category={cat.slug}
             style="padding:0.4rem 1rem; border-radius:0.5rem; font-size:0.875rem; font-weight:500; border:none; cursor:pointer; background:transparent; color:var(--text-secondary); transition:all 0.15s;">
             {cat.icon} {cat.name}
@@ -176,14 +178,14 @@ const structuredData = {
             UtilifyGrid is a collection of practical, browser-based tools designed to handle the calculations and conversions that come up in everyday life and work. Every tool on this site runs entirely in your browser — nothing is sent to a server, and nothing requires an account or download.
           </p>
           <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
-            Whether you're checking a health metric, converting between units, working with colour values in CSS, or debugging an API token, UtilifyGrid aims to give you a clean, accurate answer quickly.
+            Whether you're cleaning up a CSV export, converting Markdown to HTML, generating a colour palette in CSS, or debugging an API token, UtilifyGrid aims to give you a clean, accurate answer quickly.
           </p>
         </div>
 
         <div>
           <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Why browser-based tools?</h2>
           <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-            Most tools people search for online don't need a server. A BMI calculation, a unit conversion, or a colour format change can be done instantly with JavaScript — which means your data stays on your device, the tool loads in milliseconds, and there's nothing to install or maintain.
+            Most tools people search for online don't need a server. Parsing JSON, counting words in a draft, or decoding a JWT can be done instantly with JavaScript — which means your data stays on your device, the tool loads in milliseconds, and there's nothing to install or maintain.
           </p>
           <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
             This approach also makes UtilifyGrid fast and reliable on any device — desktop, tablet, or mobile — without apps or logins.
@@ -193,7 +195,7 @@ const structuredData = {
         <div>
           <h2 style="font-family:'Sora',sans-serif; font-size:1.2rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Accuracy & methodology</h2>
           <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75; margin-bottom:0.75rem;">
-            Each tool on UtilifyGrid is based on established formulas, published standards, or widely accepted conventions. Where relevant, tools link to their source methodology — for example, WHO definitions for health metrics, or IEEE standards for unit conversions.
+            Each tool on UtilifyGrid is based on established formulas, published standards, or widely accepted conventions. Where relevant, tools link to their source methodology — for example, RFC specifications for developer tools, or published Unicode and encoding standards for text processing.
           </p>
           <p style="color:var(--text-secondary); font-size:0.9rem; line-height:1.75;">
             Results are provided for informational purposes. For medical, financial, or legal decisions, always consult a qualified professional.
@@ -206,7 +208,7 @@ const structuredData = {
       <div style="margin-top:3rem;">
         <h2 style="font-family:'Sora',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Browse by category</h2>
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem;">
-          {categories.map(cat => (
+          {visibleCategories.map(cat => (
             <a
               href={`/category/${cat.slug}`}
               class="tool-card-themed"

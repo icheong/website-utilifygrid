@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import tools from '../data/tools.json';
 import categories from '../data/categories.json';
+import { isHiddenCategory, isHiddenTool } from '../data/hiddenCategories.js';
 
 interface Props {
   tool: {
@@ -19,8 +20,11 @@ const { tool } = Astro.props;
 const adsenseId = 'ca-pub-7704630721055432';
 const isProd = import.meta.env.PROD;
 
+/* Paused categories are noindexed during the AdSense review */
+const isHidden = isHiddenCategory(tool.category);
+
 const relatedTools = tools
-  .filter(t => t.slug !== tool.slug)
+  .filter(t => t.slug !== tool.slug && (!isHiddenTool(t) || t.category === tool.category))
   .map(t => ({
     ...t,
     score:
@@ -35,6 +39,9 @@ const categoryTools = tools
   .slice(0, 8);
 
 const activeCategory = categories.find(c => c.slug === tool.category);
+
+/* Sidebar lists public categories, plus this tool's own category on paused pages */
+const sidebarCategories = categories.filter(c => !isHiddenCategory(c.slug) || c.slug === tool.category);
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -73,6 +80,7 @@ const structuredData = {
   canonicalUrl={`/tools/${tool.slug}`}
   ogType="website"
   structuredData={structuredData}
+  noindex={isHidden}
 >
   <div style="max-width:80rem; margin:0 auto; padding:2rem 1rem 3rem;">
 
@@ -98,7 +106,7 @@ const structuredData = {
               <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em;">Categories</span>
             </div>
             <nav aria-label="Tool categories" style="padding:0.375rem 0;">
-              {categories.map(cat => {
+              {sidebarCategories.map(cat => {
                 const isActive = cat.slug === tool.category;
                 const catTools = tools.filter(t => t.category === cat.slug);
                 return (

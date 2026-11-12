@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import tools from '../../data/tools.json';
 import categories from '../../data/categories.json';
+import { isHiddenCategory } from '../../data/hiddenCategories.js';
 
 export async function getStaticPaths() {
   return categories.map(cat => ({
@@ -12,6 +13,12 @@ export async function getStaticPaths() {
 
 const { category } = Astro.props;
 const categoryTools = tools.filter(t => t.category === category.slug).sort((a, b) => a.name.localeCompare(b.name));
+
+/* Paused categories stay built (so the noindex tag is crawlable) but are noindexed */
+const isHidden = isHiddenCategory(category.slug);
+
+/* Only cross-link categories that are currently listed */
+const canLink = (slug: string) => !isHiddenCategory(slug);
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -32,6 +39,7 @@ const structuredData = {
   description={category.description}
   canonicalUrl={`/category/${category.slug}`}
   structuredData={structuredData}
+  noindex={isHidden}
 >
   <div style="max-width:80rem; margin:0 auto; padding:2.5rem 1rem 3rem;">
 
@@ -223,19 +231,19 @@ const structuredData = {
     <div style="margin-top:1.5rem; padding:1.5rem; background:var(--bg-surface); border:1.5px solid var(--border); border-radius:0.875rem;">
       <h2 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:0.75rem;">Related categories</h2>
       <div style="display:flex; flex-direction:column; gap:0.75rem;">
-        {category.slug === 'personal-finance' && (
+        {category.slug === 'personal-finance' && canLink('converters') && (
           <div>
             <a href="/category/converters" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Converters</a>
             <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">Use the Currency Converter alongside financial calculators when comparing international investment options or overseas mortgage rates.</p>
           </div>
         )}
-        {category.slug === 'business-metrics' && (
+        {category.slug === 'business-metrics' && canLink('personal-finance') && (
           <div>
             <a href="/category/personal-finance" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Personal Finance</a>
             <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">For personal financial planning — mortgage, savings, and tax calculators that complement the business-focused metrics here.</p>
           </div>
         )}
-        {category.slug === 'maths-numbers' && (
+        {category.slug === 'maths-numbers' && canLink('converters') && (
           <div>
             <a href="/category/converters" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Converters</a>
             <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">When you need to convert between number bases (binary, hex, octal), the Number Base Converter in this category handles it.</p>
@@ -247,7 +255,7 @@ const structuredData = {
             <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">For percentage calculations and number exploration beyond unit conversion.</p>
           </div>
         )}
-        {category.slug === 'health' && (
+        {category.slug === 'health' && canLink('personal-finance') && (
           <div>
             <a href="/category/personal-finance" style="font-size:0.875rem; color:#1D4ED8; text-decoration:none; font-weight:600;">Personal Finance</a>
             <p style="font-size:0.85rem; color:var(--text-secondary); margin:0.25rem 0 0;">If your health goals involve budgeting for gym memberships, nutrition plans, or insurance, the finance tools help with those decisions.</p>
@@ -336,7 +344,7 @@ const structuredData = {
       <h2 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:1.25rem;">Browse Other Categories</h2>
       <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px,1fr)); gap:0.75rem;">
         {categories
-          .filter(c => c.slug !== category.slug)
+          .filter(c => c.slug !== category.slug && canLink(c.slug))
           .map(cat => (
             <a
               href={`/category/${cat.slug}`}

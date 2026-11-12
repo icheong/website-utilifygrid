@@ -2,8 +2,11 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import tools from '../data/tools.json';
 import categories from '../data/categories.json';
+import { isVisibleCategory, isVisibleTool } from '../data/hiddenCategories.js';
 
-const featuredTools = tools.filter(t => t.featured).slice(0, 6);
+const visibleCategories = categories.filter(c => isVisibleCategory(c.slug));
+const visibleTools = tools.filter(isVisibleTool);
+const featuredTools = visibleTools.filter(t => t.featured).slice(0, 6);
 ---
 
 <BaseLayout
@@ -61,7 +64,7 @@ const featuredTools = tools.filter(t => t.featured).slice(0, 6);
     <div>
       <h2 style="font-family:'Sora',sans-serif; font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:1rem;">Browse by category</h2>
       <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px,1fr)); gap:0.75rem;">
-        {categories.map(cat => (
+        {visibleCategories.map(cat => (
           <a
             href={`/category/${cat.slug}`}
             class="tool-card-themed"
@@ -77,7 +80,7 @@ const featuredTools = tools.filter(t => t.featured).slice(0, 6);
   </div>
 </BaseLayout>
 
-<script define:vars={{ tools }}>
+<script define:vars={{ tools: visibleTools }}>
   (function() {
     var input = document.getElementById('search-404');
     var resultsBox = document.getElementById('search-results-404');
